@@ -2,9 +2,11 @@
 
 A rudimentary custom car loader for Derail Valley. It works great as is, but is missing many of the planned features I had for it. You can setup a car in Unity and then export it as an assetbundle. After that you can use the Derail Valley mod to load the car. The cars can be spawned with the Comms Radio in game using "Custom Car Spawner".
 
-The unity exporter source/plugin is included in .7z file in release.
+### This release doesn't include the save data manager for loading cars back in after exiting the game. You will have to code this yourself.
 
 ## HOW TO EXPORT
+
+The unity exporter source/plugin is included in .7z file in release.
 
 1) Open your Unity project. Import the CUSTOM_CAR_LOADER.unitypackage
 
