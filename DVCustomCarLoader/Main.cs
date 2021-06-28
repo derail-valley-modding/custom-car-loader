@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using Harmony12;
+using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
 using Object = UnityEngine.Object;
@@ -11,12 +11,16 @@ namespace DVCustomCarLoader
 	{
 		private static bool Load(UnityModManager.ModEntry modEntry)
 		{
-			HarmonyInstance.Create(modEntry.Info.Id).PatchAll(Assembly.GetExecutingAssembly());
+			var harmony = new Harmony(modEntry.Info.Id);
+			harmony.PatchAll(Assembly.GetExecutingAssembly());
+
 			Main.Enabled = modEntry.Enabled;
 			Main.ModEntry = modEntry;
 			
 			//Create sky manager instance.
 			ModEntry.Logger.Log("Creating CustomCarManager");
+
+			Application.quitting += AppQuitWatcher.OnAppQuit;
 
 			var nsmgr = new GameObject("[CustomCarManagerInstance]");
 			Object.DontDestroyOnLoad(nsmgr);
@@ -32,4 +36,14 @@ namespace DVCustomCarLoader
 		public static UnityModManager.ModEntry ModEntry;
 		public static bool Enabled;
 	}
+
+	internal static class AppQuitWatcher
+    {
+		public static bool isQuitting { get; private set; } = false;
+
+		public static void OnAppQuit()
+        {
+			isQuitting = true;
+        }
+    }
 }

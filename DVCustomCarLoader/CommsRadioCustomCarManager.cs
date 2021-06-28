@@ -305,7 +305,7 @@ namespace DVCustomCarLoader
             var num = 1f;
             while (true)
             {
-                foreach (var allTrack in TrackFinder.AllTracks)
+                foreach (var allTrack in RailTrackRegistry.AllTracks)
                     if (RailTrack.GetPointWithinRangeWithYOffset(allTrack, transform.position, num * 200f)
                         .HasValue)
                         potentialTracks.Add(allTrack);
