@@ -1,8 +1,8 @@
 # DVCustomCarLoader (Unfinished)
 
-A rudimentary custom car loader for Derail Valley. It works great as is, but is missing many of the planned features I had for it. You can setup a car in Unity and then export it as an assetbundle. After that you can use the Derail Valley mod to load the car. The cars can be spawned with the Comms Radio in game using "Custom Car Spawner".
+[Forked from Freznosis/DVCustomCarLoader]
 
-### This release doesn't include the save data manager for loading cars back in after exiting the game. You will have to code this yourself.
+A rudimentary custom car loader for Derail Valley. It works great as is, but is missing many of the planned features I had for it. You can setup a car in Unity and then export it as an assetbundle. After that you can use the Derail Valley mod to load the car. The cars can be spawned with the Comms Radio in game using "Custom Car Spawner".
 
 ## HOW TO EXPORT
 
