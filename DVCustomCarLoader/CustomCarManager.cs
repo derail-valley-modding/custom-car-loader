@@ -8,6 +8,23 @@ namespace DVCustomCarLoader
     public class CustomCarManager : MonoBehaviour
     {
         public List<CustomCar> CustomCarsToSpawn;
+
+        private Dictionary<TrainCar, string> SpawnedCustomCarIds = new Dictionary<TrainCar, string>();
+
+        public bool TryGetCustomCarId( TrainCar trainCar, out string id )
+        {
+            return SpawnedCustomCarIds.TryGetValue(trainCar, out id);
+        }
+
+        public void RegisterSpawnedCar( TrainCar car, string identifier )
+        {
+            SpawnedCustomCarIds[car] = identifier;
+        }
+
+        public void DeregisterCar( TrainCar car )
+        {
+            SpawnedCustomCarIds.Remove(car);
+        }
         
         public void Setup()
         {

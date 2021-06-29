@@ -236,6 +236,9 @@ namespace DVCustomCarLoader
             }
 
             #endregion
+
+            trainCar.OnDestroyCar += Main.CustomCarManagerInstance.DeregisterCar;
+            Main.CustomCarManagerInstance.RegisterSpawnedCar(trainCar, identifier);
         }
 
         private float _interCouplerDistance;
