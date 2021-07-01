@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -24,6 +25,12 @@ namespace DVCustomCarLoader
         //Bogies
         public Vector3 FrontBogiePosition;
         public Vector3 RearBogiePosition;
+
+        public string FrontBogieReplacement = null;
+        public string RearBogieReplacement = null;
+
+        public CustomBogieParams FrontBogieConfig = null;
+        public CustomBogieParams RearBogieConfig = null;
         
         //Couplers
         public Vector3 FrontCouplerPosition;
@@ -47,13 +54,21 @@ namespace DVCustomCarLoader
         
         public void Spawn(TrainCar trainCar)
         {
-            
+
             #region Spawn Car
-            
-            var NewCar = Object.Instantiate(CarPrefab, trainCar.transform.root, true);
-            NewCar.SetActive(true);
-            NewCar.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-            NewCar.transform.localRotation = Quaternion.identity;
+
+            if( CarPrefab == null )
+            {
+                Main.ModEntry.Logger.Warning($"{identifier} has a missing prefab");
+            }
+
+#if DEBUG
+            Main.ModEntry.Logger.Log($"Adding custom model {identifier} to traincar");
+#endif
+            var newCar = Object.Instantiate(CarPrefab, trainCar.transform.root, true);
+            newCar.SetActive(true);
+            newCar.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+            newCar.transform.localRotation = Quaternion.identity;
             
             //Deactivate underlying train car model
             switch (TrainCarType)
@@ -131,26 +146,57 @@ namespace DVCustomCarLoader
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             #endregion
-            
+
             #region Bogies
+
+            // Front Bogie
+            Bogie bogieF = trainCar.Bogies[0];
+            bogieF.gameObject.SetActive(false);
             
-            var bogey1 = trainCar.Bogies[0];
-            var bogey2 = trainCar.Bogies[1];
-            
-            if (FrontBogiePosition != Vector3.zero)
+            if( (FrontBogieReplacement != null) && (newCar.transform.Find(FrontBogieReplacement) is Transform frontBogieTransform) )
             {
-                bogey1.gameObject.SetActive(false);
-                bogey1.transform.localPosition = FrontBogiePosition;
-                bogey1.gameObject.SetActive(true);
+#if DEBUG
+                Main.ModEntry.Logger.Log($"Replacing front bogie on {identifier}");
+#endif
+                // custom bogie object
+                // we'll copy the bogie component from the original prefab
+                bogieF = Object.Instantiate(bogieF, frontBogieTransform);
+                if( FrontBogieConfig != null )
+                {
+                    // replace parameters
+                    FrontBogieConfig.ApplyToBogie(bogieF);
+                }
+            }
+            else
+            {
+                // use existing bogie
+                bogieF.transform.localPosition = FrontBogiePosition;
+                bogieF.gameObject.SetActive(true);
             }
 
-            if (RearBogiePosition != Vector3.zero)
+            // Rear Bogie
+            int bogie2idx = trainCar.Bogies.Length - 1;
+            Bogie bogieR = trainCar.Bogies[bogie2idx];
+            bogieR.gameObject.SetActive(false);
+
+            if( (RearBogieReplacement != null) && (newCar.transform.Find(RearBogieReplacement) is Transform rearBogieTransform) )
             {
-                bogey2.gameObject.SetActive(false);
-                bogey2.transform.localPosition = RearBogiePosition;
-                bogey2.gameObject.SetActive(true);
+#if DEBUG
+                Main.ModEntry.Logger.Log($"Replacing rear bogie on {identifier}");
+#endif
+                bogieR = Object.Instantiate(bogieR, rearBogieTransform);
+                if( RearBogieConfig != null )
+                {
+                    RearBogieConfig.ApplyToBogie(bogieR);
+                }
+            }
+            else
+            {
+                // use existing bogie
+                bogieR.transform.localPosition = RearBogiePosition;
+                bogieR.gameObject.SetActive(true);
             }
 
             #endregion
@@ -307,6 +353,33 @@ namespace DVCustomCarLoader
                 newBounds.Encapsulate(r.bounds);
                 return newBounds;
             }
+        }
+    }
+
+    public class CustomBogieParams
+    {
+        public int AxleCount;
+        public float AxleSeparation;
+        public float BrakingForcePerBar;
+        public float RollingResistanceCoefficient;
+
+        public static CustomBogieParams FromJSON( JSONObject json )
+        {
+            return new CustomBogieParams()
+            {
+                AxleCount = (int)json.GetField("axleCount").i,
+                AxleSeparation = json.GetField("axleSeparation").n,
+                BrakingForcePerBar = json.GetField("brakingForcePerBar").n,
+                RollingResistanceCoefficient = json.GetField("rollingResistance").n
+            };
+        }
+
+        public void ApplyToBogie( Bogie target )
+        {
+            if( AxleCount > 0 ) target.axleCount = AxleCount;
+            if( AxleSeparation > 0 ) target.axleSeparation = AxleSeparation;
+            if( BrakingForcePerBar > 0 ) target.brakingForcePerBar = BrakingForcePerBar;
+            if( RollingResistanceCoefficient > 0 ) target.rollingResistanceCoefficient = RollingResistanceCoefficient;
         }
     }
 }
