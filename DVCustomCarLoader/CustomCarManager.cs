@@ -103,7 +103,7 @@ namespace DVCustomCarLoader
                                         {
                                             CarPrefab = carPrefab,
                                             identifier = jsonFile["identifier"].str,
-                                            TrainCarType = (TrainCarType)jsonFile["carType"].i
+                                            BaseCarType = (TrainCarType)jsonFile["carType"].i
                                         };
 
                                         //Bogies
@@ -132,25 +132,31 @@ namespace DVCustomCarLoader
                                             }
                                         }
 
-                                        //Couplers
+                                        // Couplers
+                                        // must have x = 0, y = 1.05 for proper lineup
                                         newCar.FrontCouplerPosition = JSONTemplates.ToVector3(jsonFile["frontCouplerPos"]);
+                                        newCar.FrontCouplerPosition = new Vector3(0f, 1.05f, newCar.FrontCouplerPosition.z);
+
                                         newCar.RearCouplerPosition = JSONTemplates.ToVector3(jsonFile["rearCouplerPos"]);
+                                        newCar.RearCouplerPosition = new Vector3(0f, 1.05f, newCar.RearCouplerPosition.z);
 
-                                        //Chains
-                                        newCar.FrontChainPosition =JSONTemplates.ToVector3(jsonFile["frontChainPos"]);
-                                        newCar.RearChainPosition = JSONTemplates.ToVector3(jsonFile["rearChainPos"]);
+                                        ////Chains
+                                        //newCar.FrontChainPosition =JSONTemplates.ToVector3(jsonFile["frontChainPos"]);
+                                        //newCar.RearChainPosition = JSONTemplates.ToVector3(jsonFile["rearChainPos"]);
 
-                                        //Hoses
-                                        newCar.FrontHosePosition = JSONTemplates.ToVector3(jsonFile["frontHosePos"]);
-                                        newCar.RearHosePosition =JSONTemplates.ToVector3(jsonFile["rearHosePos"]);
+                                        ////Hoses
+                                        //newCar.FrontHosePosition = JSONTemplates.ToVector3(jsonFile["frontHosePos"]);
+                                        //newCar.RearHosePosition =JSONTemplates.ToVector3(jsonFile["rearHosePos"]);
 
-                                        //Buffers
-                                        newCar.FrontBufferPosition = JSONTemplates.ToVector3(jsonFile["frontBufferPos"]);
-                                        newCar.RearBufferPosition = JSONTemplates.ToVector3(jsonFile["rearBufferPos"]);
+                                        ////Buffers
+                                        //newCar.FrontBufferPosition = JSONTemplates.ToVector3(jsonFile["frontBufferPos"]);
+                                        //newCar.RearBufferPosition = JSONTemplates.ToVector3(jsonFile["rearBufferPos"]);
 
                                         //Name Plates
                                         newCar.SidePlate1Position = JSONTemplates.ToVector3(jsonFile["sidePlate1Pos"]);
                                         newCar.SidePlate2Position = JSONTemplates.ToVector3(jsonFile["sidePlate2Pos"]);
+
+                                        newCar.FinalizePrefab();
 
                                         CustomCarsToSpawn.Add(newCar);
 

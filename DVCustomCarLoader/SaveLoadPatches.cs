@@ -38,7 +38,8 @@ namespace DVCustomCarLoader
                 CustomCar match = Main.CustomCarManagerInstance.CustomCarsToSpawn.Find(cc => cc.identifier == customType);
                 if( match != null )
                 {
-                    match.Spawn(__result);
+                    //match.Spawn(__result);
+                    Main.ModEntry.Logger.Warning($"Reverting {match.identifier} to its base type");
                 }
                 else
                 {

@@ -79,6 +79,7 @@
     <Compile Include="JSONObject\JSONObject.cs" />
     <Compile Include="JSONObject\VectorTemplates.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="CarPartConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoadPatches.cs" />
   </ItemGroup>
