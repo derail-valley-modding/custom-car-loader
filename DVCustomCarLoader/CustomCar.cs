@@ -175,17 +175,60 @@ namespace DVCustomCarLoader
             #endregion
 
             // Colliders
-            GameObject colliderRoot = null;
-            if( !newFab.transform.Find(CarPartNames.COLLIDERS_ROOT) )
+            // [colliders]
+            Transform colliderRoot = newFab.transform.Find(CarPartNames.COLLIDERS_ROOT);
+            if( !colliderRoot )
             {
                 // collider should be initialized in prefab, but make sure
                 Main.ModEntry.Logger.Warning($"Adding collision root to {identifier}, should have been part of prefab!");
 
-                colliderRoot = new GameObject(CarPartNames.COLLIDERS_ROOT);
-                colliderRoot.transform.parent = newFab.transform;
+                GameObject colliders = new GameObject(CarPartNames.COLLIDERS_ROOT);
+                colliderRoot = colliders.transform;
+                colliderRoot.parent = newFab.transform;
+            }
 
-                var collisions = new GameObject(CarPartNames.COLLISION_ROOT);
-                collisions.transform.parent = colliderRoot.transform;
+            // [collision]
+            Transform collision = colliderRoot.Find(CarPartNames.COLLISION_ROOT);
+            if( !collision )
+            {
+                var collisionObj = new GameObject(CarPartNames.COLLISION_ROOT);
+                collision = collisionObj.transform;
+                collision.parent = colliderRoot.transform;
+            }
+
+            // find [walkable]
+            // copy walkable to items if items doesn't exist
+            Transform walkable = colliderRoot.Find(CarPartNames.WALKABLE_COLLIDERS);
+            if( walkable )
+            {
+                Transform items = colliderRoot.Find(CarPartNames.ITEM_COLLIDERS);
+                if( !items )
+                {
+                    Main.ModEntry.Logger.Log("Reusing walkable colliders as item colliders");
+                    GameObject newItemsObj = Object.Instantiate(walkable.gameObject, colliderRoot);
+                    newItemsObj.name = CarPartNames.ITEM_COLLIDERS;
+                }
+
+                var boundingColliders = collision.GetComponentsInChildren<BoxCollider>();
+                if( boundingColliders.Length == 0 )
+                {
+                    // autogenerate bounding box from walkable extents (only works with box collider bits though)
+                    var walkableColliders = walkable.GetComponentsInChildren<BoxCollider>();
+                    if( walkableColliders.Length > 0 )
+                    {
+                        Main.ModEntry.Logger.Log("Building bounding collision box from walkable colliders");
+
+                        Bounds boundBox = BoundsUtil.BoxColliderAABB(walkableColliders[0], newFab.transform);
+                        for( int i = 1; i < walkableColliders.Length; i++ )
+                        {
+                            boundBox.Encapsulate(BoundsUtil.BoxColliderAABB(walkableColliders[i], newFab.transform));
+                        }
+
+                        BoxCollider newCollisionBox = collision.gameObject.AddComponent<BoxCollider>();
+                        newCollisionBox.center = boundBox.center - collision.localPosition;
+                        newCollisionBox.size = boundBox.size;
+                    }
+                }
             }
 
             Transform bogieColliderTform = colliderRoot.transform.Find(CarPartNames.BOGIE_COLLIDERS);
@@ -210,7 +253,6 @@ namespace DVCustomCarLoader
             }
 
             // Setup new car script
-            //TrainCar newCar = Object.Instantiate(baseCar, newFab.transform);
             TrainCar newCar = newFab.AddComponent<TrainCar>();
 
             // setup traincar properties
@@ -253,12 +295,6 @@ namespace DVCustomCarLoader
 
         public TrainCar SpawnCar( RailTrack track, Vector3 position, Vector3 forward, bool playerSpawnedCar = false )
         {
-            if( CarPrefab == null )
-            {
-                Main.ModEntry.Logger.Error($"{identifier} CarPrefab disappeared :(");
-                return null;
-            }
-
             GameObject carObj = Object.Instantiate(CarPrefab);
             if( !carObj.activeSelf )
             {
@@ -269,6 +305,55 @@ namespace DVCustomCarLoader
             spawnedCar.playerSpawnedCar = playerSpawnedCar;
             spawnedCar.InitializeNewLogicCar();
             spawnedCar.SetTrack(track, position, forward);
+            
+            spawnedCar.OnDestroyCar += Main.CustomCarManagerInstance.DeregisterCar;
+            Main.CustomCarManagerInstance.RegisterSpawnedCar(spawnedCar, identifier);
+
+            RaiseCarSpawned(spawnedCar);
+            return spawnedCar;
+        }
+
+        public TrainCar SpawnLoadedCar(
+            string carId, string carGuid, bool playerSpawnedCar, Vector3 position, Quaternion rotation,
+            bool bogie1Derailed, RailTrack bogie1Track, double bogie1PositionAlongTrack,
+            bool bogie2Derailed, RailTrack bogie2Track, double bogie2PositionAlongTrack,
+            bool couplerFCoupled, bool couplerRCoupled )
+        {
+            GameObject carObj = Object.Instantiate(CarPrefab, position, rotation);
+            if( !carObj.activeSelf )
+            {
+                carObj.SetActive(true);
+            }
+
+            TrainCar spawnedCar = carObj.GetComponentInChildren<TrainCar>();
+            spawnedCar.playerSpawnedCar = playerSpawnedCar;
+            spawnedCar.InitializeExistingLogicCar(carId, carGuid);
+
+            if( !bogie1Derailed )
+            {
+                spawnedCar.Bogies[0].SetTrack(bogie1Track, bogie1PositionAlongTrack);
+            }
+            else
+            {
+                spawnedCar.Bogies[0].SetDerailedOnLoadFlag(true);
+            }
+
+            if( !bogie2Derailed )
+            {
+                spawnedCar.Bogies[1].SetTrack(bogie2Track, bogie2PositionAlongTrack);
+            }
+            else
+            {
+                spawnedCar.Bogies[1].SetDerailedOnLoadFlag(true);
+            }
+
+            spawnedCar.frontCoupler.forceCoupleStateOnLoad = true;
+            spawnedCar.frontCoupler.loadedCoupledState = couplerFCoupled;
+            spawnedCar.rearCoupler.forceCoupleStateOnLoad = true;
+            spawnedCar.rearCoupler.loadedCoupledState = couplerRCoupled;
+
+            spawnedCar.OnDestroyCar += Main.CustomCarManagerInstance.DeregisterCar;
+            Main.CustomCarManagerInstance.RegisterSpawnedCar(spawnedCar, identifier);
 
             RaiseCarSpawned(spawnedCar);
             return spawnedCar;

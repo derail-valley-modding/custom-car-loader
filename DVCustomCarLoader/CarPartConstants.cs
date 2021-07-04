@@ -13,9 +13,13 @@ namespace DVCustomCarLoader
         public static readonly string[] BUFFER_REAR_PADS = { "Buffer_RL", "Buffer_RR" };
         public const string BUFFER_CHAIN_RIG = "BuffersAndChainRig"; // same name front and rear
 
-        public const string BOGIE_COLLIDERS = "[bogies]";
+        // Collider parts
         public const string COLLIDERS_ROOT = "[colliders]";
         public const string COLLISION_ROOT = "[collision]";
+        public const string WALKABLE_COLLIDERS = "[walkable]";
+        public const string ITEM_COLLIDERS = "[items]";
+        public const string BOGIE_COLLIDERS = "[bogies]";
+        public const string CAMERA_DAMP_COLLIDERS = "[camera dampening]";
 
         public const string COUPLER_FRONT = "[coupler front]";
         public const string COUPLER_REAR = "[coupler rear]";

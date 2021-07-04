@@ -162,17 +162,9 @@ namespace DVCustomCarLoader
                         var forward = closestPointOnDestinationTrack.Value.forward;
                         if (!spawnWithTrackDirection) forward = -forward;
 
-                        //bool poolingBackup = CarSpawner.useCarPooling;
-                        //CarSpawner.useCarPooling = false; // need to bypass pooling to force it to use our prefab
-
-                        //var trainCar = CarSpawner.SpawnCar(carPrefabToSpawn, destinationTrack,
-                        //    (Vector3) closestPointOnDestinationTrack.Value.position + WorldMover.currentMove,
-                        //    forward, true);
                         var trainCar = carToSpawn.SpawnCar(destinationTrack,
                             (Vector3)closestPointOnDestinationTrack.Value.position + WorldMover.currentMove,
                             forward, true);
-
-                        //CarSpawner.useCarPooling = poolingBackup; // set this back to normal value
 
                         if( trainCar != null)
                         {
@@ -180,7 +172,6 @@ namespace DVCustomCarLoader
                             CommsRadioController.PlayAudioFromCar(spawnVehicleSound, trainCar);
                             CommsRadioController.PlayAudioFromRadio(confirmSound, transform);
                             canSpawnAtPoint = false;
-                            //Main.CustomCarManagerInstance.CustomCarsToSpawn[selectedCarTypeIndex].Spawn(trainCar);
                             break;
                         }
 
