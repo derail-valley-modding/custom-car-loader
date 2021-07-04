@@ -40,7 +40,7 @@ namespace DVCustomCarLoader
         private RaycastHit hit;
         private LayerMask trackMask;
         private int selectedCarTypeIndex;
-        private GameObject carPrefabToSpawn;
+        private CustomCar carToSpawn;
         private Bounds carBounds;
         private bool canSpawnAtPoint;
         private RailTrack destinationTrack;
@@ -138,7 +138,7 @@ namespace DVCustomCarLoader
                     SetState(State.PickCar);
                     break;
                 case State.PickCar:
-                    if (carPrefabToSpawn == null)
+                    if (carToSpawn == null)
                     {
                         Debug.LogError("carPrefabToSpawn is null! Something is wrong, can't spawn this car.",
                             this);
@@ -161,20 +161,21 @@ namespace DVCustomCarLoader
                     {
                         var forward = closestPointOnDestinationTrack.Value.forward;
                         if (!spawnWithTrackDirection) forward = -forward;
-                        var trainCar = CarSpawner.SpawnCar(carPrefabToSpawn, destinationTrack,
-                            (Vector3) closestPointOnDestinationTrack.Value.position + WorldMover.currentMove,
+
+                        var trainCar = carToSpawn.SpawnCar(destinationTrack,
+                            (Vector3)closestPointOnDestinationTrack.Value.position + WorldMover.currentMove,
                             forward, true);
-                        if (trainCar != null)
+
+                        if( trainCar != null)
                         {
                             SingletonBehaviour<UnusedTrainCarDeleter>.Instance.MarkForDelete(trainCar);
                             CommsRadioController.PlayAudioFromCar(spawnVehicleSound, trainCar);
                             CommsRadioController.PlayAudioFromRadio(confirmSound, transform);
                             canSpawnAtPoint = false;
-                            Main.CustomCarManagerInstance.CustomCarsToSpawn[selectedCarTypeIndex].Spawn(trainCar);
                             break;
                         }
 
-                        Debug.LogError("Couldn't spawn car!", carPrefabToSpawn);
+                        Debug.LogError("Couldn't spawn car!", carToSpawn.CarPrefab);
                         ClearFlags();
                         break;
                     }
@@ -285,11 +286,13 @@ namespace DVCustomCarLoader
 
         private void SetCarToSpawn(CustomCar car)
         {
-            carPrefabToSpawn = CarTypes.GetCarPrefab(car.TrainCarType);
-            if (carPrefabToSpawn == null)
+            //carPrefabToSpawn = CarTypes.GetCarPrefab(car.TrainCarType);
+            carToSpawn = car;
+
+            if( carToSpawn == null)
             {
                 Debug.LogError(
-                    $"Couldn't load car prefab: {car.TrainCarType}! Won't be able to spawn this car.", this);
+                    $"Couldn't load car prefab: {car.identifier}! Won't be able to spawn this car.", this);
             }
             else
             {
