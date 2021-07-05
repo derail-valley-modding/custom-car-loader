@@ -24,34 +24,14 @@ namespace DVCustomCarLoader
         public GameObject CarPrefab;
 
         //Bogies
-        public Vector3 FrontBogiePosition;
-        public Vector3 RearBogiePosition;
-
-        public string FrontBogieReplacement = null;
-        public string RearBogieReplacement = null;
-
+        public bool HasCustomFrontBogie = false;
+        public bool HasCustomRearBogie = false;
         public CustomBogieParams FrontBogieConfig = null;
         public CustomBogieParams RearBogieConfig = null;
         
         //Couplers
         public Vector3 FrontCouplerPosition;
         public Vector3 RearCouplerPosition;
-
-        ////Chains
-        //public Vector3 FrontChainPosition;
-        //public Vector3 RearChainPosition;
-
-        ////Hoses
-        //public Vector3 FrontHosePosition;
-        //public Vector3 RearHosePosition;
-        
-        ////Buffers
-        //public Vector3 FrontBufferPosition;
-        //public Vector3 RearBufferPosition;
-
-        //Name Plates
-        public Vector3 SidePlate1Position;
-        public Vector3 SidePlate2Position;
 
         public void FinalizePrefab()
         {
@@ -66,7 +46,36 @@ namespace DVCustomCarLoader
 
             GameObject copiedObject;
 
-            // Buffers/Chains
+            //==============================================================================================================
+            #region Buffers/Chains
+
+            // yeet the dummy buffer rigs so they aren't duplicated
+            Transform frontCouplerRig = newFab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
+            Vector3 frontRigPosition;
+            if( frontCouplerRig )
+            {
+                frontRigPosition = frontCouplerRig.position;
+                Object.Destroy(frontCouplerRig.gameObject);
+            }
+            else
+            {
+                frontRigPosition = new Vector3(0, 1.05f, 8.77f);
+                Main.ModEntry.Logger.Error("Missing front coupler rig from prefab!");
+            }
+
+            Transform rearCouplerRig = newFab.transform.Find(CarPartNames.COUPLER_RIG_REAR);
+            Vector3 rearRigPosition;
+            if( rearCouplerRig )
+            {
+                rearRigPosition = rearCouplerRig.position;
+                Object.Destroy(rearCouplerRig.gameObject);
+            }
+            else
+            {
+                rearRigPosition = new Vector3(0, 1.05f, -8.77f);
+                Main.ModEntry.Logger.Error("Missing rear coupler rig from prefab!");
+            }
+
             // copy main buffer part cohort
             GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
             bufferRoot = Object.Instantiate(bufferRoot, newFab.transform);
@@ -76,105 +85,64 @@ namespace DVCustomCarLoader
             for( int i = 0; i < bufferRoot.transform.childCount; i++ )
             {
                 Transform child = bufferRoot.transform.GetChild(i);
-                if( CarPartNames.BUFFER_CHAIN_RIG.Equals(child.name) )
+                string childName = child.name.Trim();
+
+                if( CarPartNames.BUFFER_CHAIN_RIG.Equals(childName) )
                 {
                     // front or rear chain rig
                     // determine whether front or rear chain rig: +z is front
-                    child.localPosition = (child.localPosition.z > 0) ? FrontCouplerPosition : RearCouplerPosition;
+                    child.localPosition = (child.localPosition.z > 0) ? frontRigPosition : rearRigPosition;
                 }
-                else if( CarPartNames.BUFFER_PLATE_FRONT.Equals(child.name) )
+                else if( CarPartNames.BUFFER_PLATE_FRONT.Equals(childName) )
                 {
                     // front hook plate
-                    child.localPosition = FrontCouplerPosition + CarPartOffset.HOOK_PLATE_F;
+                    child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
                 }
-                else if( CarPartNames.BUFFER_PLATE_REAR.Equals(child.name) )
+                else if( CarPartNames.BUFFER_PLATE_REAR.Equals(childName) )
                 {
                     // rear hook plate
-                    child.localPosition = RearCouplerPosition + CarPartOffset.HOOK_PLATE_R;
+                    child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
                 }
-                else if( CarPartNames.BUFFER_FRONT_PADS.Contains(child.name) )
+                else if( CarPartNames.BUFFER_FRONT_PADS.Contains(childName) )
                 {
                     // front buffer pads
-                    Vector3 xShiftBase = new Vector3(child.localPosition.x, FrontCouplerPosition.y, FrontCouplerPosition.z);
+                    Vector3 xShiftBase = new Vector3(child.localPosition.x, frontRigPosition.y, frontRigPosition.z);
                     child.localPosition = xShiftBase + CarPartOffset.BUFFER_PAD_F;
                 }
-                else if( CarPartNames.BUFFER_REAR_PADS.Contains(child.name) )
+                else if( CarPartNames.BUFFER_REAR_PADS.Contains(childName) )
                 {
                     // rear buffer pads
-                    Vector3 xShiftBase = new Vector3(child.localPosition.x, RearCouplerPosition.y, RearCouplerPosition.z);
+                    Vector3 xShiftBase = new Vector3(child.localPosition.x, rearRigPosition.y, rearRigPosition.z);
                     child.localPosition = xShiftBase + CarPartOffset.BUFFER_PAD_R;
                 }
-            }
-
-            // Couplers
-            GameObject frontCoupler = basePrefab.transform.Find(CarPartNames.COUPLER_FRONT).gameObject;
-            copiedObject = Object.Instantiate(frontCoupler, newFab.transform);
-            copiedObject.name = CarPartNames.COUPLER_FRONT;
-            copiedObject.transform.localPosition = FrontCouplerPosition + CarPartOffset.COUPLER_FRONT;
-
-            GameObject rearCoupler = basePrefab.transform.Find(CarPartNames.COUPLER_REAR).gameObject;
-            copiedObject = Object.Instantiate(rearCoupler, newFab.transform);
-            copiedObject.name = CarPartNames.COUPLER_REAR;
-            copiedObject.transform.localPosition = RearCouplerPosition + CarPartOffset.COUPLER_REAR;
-
-            // Name Plates
-            // These should be found when the traincar script initializes them
-
-            #region Bogies
-
-            Bogie frontBogie, rearBogie;
-
-            // Front bogie
-            if( FrontBogieReplacement == null )
-            {
-                // need to steal the original bogie
-                GameObject origBogie = baseCar.Bogies[0].gameObject;
-                copiedObject = Object.Instantiate(origBogie, newFab.transform);
-                copiedObject.transform.localPosition = FrontBogiePosition;
-
-                frontBogie = copiedObject.GetComponent<Bogie>();
-            }
-            else
-            {
-                // replacing the original bogie, only steal the script
-                Transform newBogieTransform = newFab.transform.Find(FrontBogieReplacement);
-                //Bogie origbogie = baseCar.Bogies[0];
-                //frontBogie = Object.Instantiate(origbogie, newBogieTransform);
-                frontBogie = newBogieTransform.gameObject.AddComponent<Bogie>();
-            }
-
-            if( FrontBogieConfig != null )
-            {
-                FrontBogieConfig.ApplyToBogie(frontBogie);
-            }
-
-            // Rear bogie
-            if( RearBogieReplacement == null )
-            {
-                // steal original bogie
-                GameObject origBogie = baseCar.Bogies.Last().gameObject;
-                copiedObject = Object.Instantiate(origBogie, newFab.transform);
-                copiedObject.transform.localPosition = RearBogiePosition;
-
-                rearBogie = copiedObject.GetComponent<Bogie>();
-            }
-            else
-            {
-                // use bogie from new prefab
-                Transform newBogieTransform = newFab.transform.Find(RearBogieReplacement);
-                //Bogie origBogie = baseCar.Bogies.Last();
-                //rearBogie = Object.Instantiate(origBogie, newBogieTransform);
-                rearBogie = newBogieTransform.gameObject.AddComponent<Bogie>();
-            }
-
-            if( RearBogieConfig != null )
-            {
-                RearBogieConfig.ApplyToBogie(rearBogie);
+                else
+                {
+                    Main.ModEntry.Logger.Log($"Unknown buffer child {childName}");
+                }
             }
 
             #endregion
 
-            // Colliders
+            //==============================================================================================================
+            #region Extra Coupler Transforms
+
+            GameObject frontCoupler = basePrefab.transform.Find(CarPartNames.COUPLER_FRONT).gameObject;
+            copiedObject = Object.Instantiate(frontCoupler, newFab.transform);
+            copiedObject.name = CarPartNames.COUPLER_FRONT;
+            FrontCouplerPosition = frontRigPosition + CarPartOffset.COUPLER_FRONT;
+            copiedObject.transform.localPosition = FrontCouplerPosition;
+
+            GameObject rearCoupler = basePrefab.transform.Find(CarPartNames.COUPLER_REAR).gameObject;
+            copiedObject = Object.Instantiate(rearCoupler, newFab.transform);
+            copiedObject.name = CarPartNames.COUPLER_REAR;
+            RearCouplerPosition = rearRigPosition + CarPartOffset.COUPLER_REAR;
+            copiedObject.transform.localPosition = RearCouplerPosition;
+
+            #endregion
+
+            //==============================================================================================================
+            #region Colliders
+
             // [colliders]
             Transform colliderRoot = newFab.transform.Find(CarPartNames.COLLIDERS_ROOT);
             if( !colliderRoot )
@@ -234,23 +202,124 @@ namespace DVCustomCarLoader
             Transform bogieColliderTform = colliderRoot.transform.Find(CarPartNames.BOGIE_COLLIDERS);
             if( !bogieColliderTform )
             {
-                Main.ModEntry.Logger.Log($"Adding default bogie colliders to {identifier}");
+                Main.ModEntry.Logger.Log("Adding bogie collider root");
 
                 GameObject bogiesRoot = new GameObject(CarPartNames.BOGIE_COLLIDERS);
-                bogiesRoot.transform.parent = colliderRoot.transform;
-
-                CapsuleCollider bogie1Collider = bogiesRoot.AddComponent<CapsuleCollider>();
-                bogie1Collider.center = frontBogie.transform.localPosition;
-                bogie1Collider.radius = 0.45f;
-                bogie1Collider.height = 2.34f;
-                bogie1Collider.direction = 0; // x-axis
-
-                CapsuleCollider bogie2Collider = bogiesRoot.AddComponent<CapsuleCollider>();
-                bogie2Collider.center = rearBogie.transform.localPosition;
-                bogie2Collider.radius = 0.45f;
-                bogie2Collider.height = 2.34f;
-                bogie2Collider.direction = 0; // x-axis
+                bogieColliderTform = bogiesRoot.transform;
+                bogieColliderTform.parent = colliderRoot.transform;
             }
+
+            Transform baseBogieColliderRoot = baseCar.transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
+            var baseBogieColliders = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>();
+
+            #endregion
+
+            //==============================================================================================================
+            #region Bogies
+
+            Bogie frontBogie, rearBogie;
+
+            // Find existing bogie transforms
+            Transform newFrontBogieTransform = newFab.transform.Find(CarPartNames.BOGIE_FRONT);
+            if( !newFrontBogieTransform )
+            {
+                Main.ModEntry.Logger.Error("Front bogie transform is missing from prefab!");
+            }
+
+            Transform newRearBogieTransform = newFab.transform.Find(CarPartNames.BOGIE_REAR);
+            if( !newRearBogieTransform )
+            {
+                Main.ModEntry.Logger.Error("Rear bogie transform is missing from prefab!");
+            }
+
+            // Front bogie
+            if( this.HasCustomFrontBogie && newFrontBogieTransform )
+            {
+                // replacing the original bogie, only steal the script
+                frontBogie = newFrontBogieTransform.gameObject.AddComponent<Bogie>();
+            }
+            else
+            {
+                // need to steal the original bogie
+                Vector3 bogiePosition = newFrontBogieTransform.localPosition;
+                Object.Destroy(newFrontBogieTransform.gameObject);
+
+                GameObject origBogie = baseCar.Bogies[0].gameObject;
+                copiedObject = Object.Instantiate(origBogie, newFab.transform);
+                copiedObject.name = CarPartNames.BOGIE_FRONT;
+                copiedObject.transform.localPosition = bogiePosition;
+
+                frontBogie = copiedObject.GetComponent<Bogie>();
+
+                // grab collider as well
+                CapsuleCollider toCopy = (baseBogieColliders[0].center.z > 0) ? baseBogieColliders[0] : baseBogieColliders[1];
+                CapsuleCollider newCollider = bogieColliderTform.gameObject.AddComponent<CapsuleCollider>();
+
+                newCollider.center = new Vector3(0, toCopy.center.y, bogiePosition.z);
+                newCollider.direction = toCopy.direction;
+                newCollider.radius = toCopy.radius;
+                newCollider.height = toCopy.height;
+            }
+
+            if( FrontBogieConfig != null )
+            {
+                FrontBogieConfig.ApplyToBogie(frontBogie);
+            }
+
+            // Rear bogie
+            if( this.HasCustomRearBogie && newRearBogieTransform )
+            {
+                // use bogie from new prefab
+                rearBogie = newRearBogieTransform.gameObject.AddComponent<Bogie>();
+            }
+            else
+            {
+                // steal original bogie
+                Vector3 bogiePosition = newRearBogieTransform.localPosition;
+                Object.Destroy(newRearBogieTransform.gameObject);
+
+                GameObject origBogie = baseCar.Bogies.Last().gameObject;
+                copiedObject = Object.Instantiate(origBogie, newFab.transform);
+                copiedObject.name = CarPartNames.BOGIE_REAR;
+                copiedObject.transform.localPosition = bogiePosition;
+
+                rearBogie = copiedObject.GetComponent<Bogie>();
+
+                // grab collider as well
+                CapsuleCollider toCopy = (baseBogieColliders[0].center.z < 0) ? baseBogieColliders[0] : baseBogieColliders[1];
+                CapsuleCollider newCollider = bogieColliderTform.gameObject.AddComponent<CapsuleCollider>();
+
+                newCollider.center = new Vector3(0, toCopy.center.y, bogiePosition.z);
+                newCollider.direction = toCopy.direction;
+                newCollider.radius = toCopy.radius;
+                newCollider.height = toCopy.height;
+            }
+
+            if( RearBogieConfig != null )
+            {
+                RearBogieConfig.ApplyToBogie(rearBogie);
+            }
+
+            #endregion
+
+            //==============================================================================================================
+            #region Info Plates
+
+            // transforms should be found when the traincar script initializes them,
+            // but chuck out the placeholder plates
+            foreach( string plateName in CarPartNames.INFO_PLATES )
+            {
+                Transform plateRoot = newFab.transform.Find(plateName);
+                if( plateRoot )
+                {
+                    foreach( Transform child in plateRoot )
+                    {
+                        Object.Destroy(child.gameObject);
+                    }
+                }
+            }
+
+            #endregion
 
             // Setup new car script
             TrainCar newCar = newFab.AddComponent<TrainCar>();

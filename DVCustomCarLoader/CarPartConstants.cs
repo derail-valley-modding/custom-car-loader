@@ -21,8 +21,18 @@ namespace DVCustomCarLoader
         public const string BOGIE_COLLIDERS = "[bogies]";
         public const string CAMERA_DAMP_COLLIDERS = "[camera dampening]";
 
+        // Couplers
+        public const string COUPLER_RIG_FRONT = "[coupler_rig_front]";
+        public const string COUPLER_RIG_REAR = "[coupler_rig_rear]";
         public const string COUPLER_FRONT = "[coupler front]";
         public const string COUPLER_REAR = "[coupler rear]";
+
+        // Bogies
+        public const string BOGIE_FRONT = "BogieF";
+        public const string BOGIE_REAR = "BogieR";
+
+        // Info Plates
+        public static readonly string[] INFO_PLATES = { "[car plate anchor1]", "[car plate anchor2]" };
     }
 
     public static class CarPartOffset
@@ -30,10 +40,10 @@ namespace DVCustomCarLoader
         public static readonly Vector3 HOOK_PLATE_F = new Vector3(0, -0.07841396f, -0.3319998f);
         public static readonly Vector3 HOOK_PLATE_R = new Vector3(0, -0.07841396f, 0.3319998f);
 
-        public static readonly Vector3 BUFFER_PAD_F = new Vector3(0, 0, 0.2150002f);
-        public static readonly Vector3 BUFFER_PAD_R = new Vector3(0, 0, -0.2150002f);
+        public static readonly Vector3 BUFFER_PAD_F = new Vector3(0, 0, 0.2145f);
+        public static readonly Vector3 BUFFER_PAD_R = new Vector3(0, 0, -0.2145f);
 
-        public static readonly Vector3 COUPLER_FRONT = new Vector3(0, 0, 0.2495f);
-        public static readonly Vector3 COUPLER_REAR = new Vector3(0, 0, -0.2495f);
+        public static readonly Vector3 COUPLER_FRONT = new Vector3(0, 0, 0.249f);
+        public static readonly Vector3 COUPLER_REAR = new Vector3(0, 0, -0.249f);
     }
 }

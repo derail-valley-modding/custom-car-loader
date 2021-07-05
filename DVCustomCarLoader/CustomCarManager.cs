@@ -107,54 +107,25 @@ namespace DVCustomCarLoader
                                         };
 
                                         //Bogies
-                                        newCar.FrontBogiePosition = JSONTemplates.ToVector3(jsonFile["frontBogiePos"]);
-                                        newCar.RearBogiePosition = JSONTemplates.ToVector3(jsonFile["rearBogiePos"]);
-
                                         // Custom Front Bogie
-                                        if( jsonFile.GetField(out string customFrontBogieName, "frontBogieReplacement", null) )
+                                        jsonFile.GetField(out newCar.HasCustomFrontBogie, CarJSONKeys.REPLACE_FRONT_BOGIE, false);
+                                        if( newCar.HasCustomFrontBogie )
                                         {
-                                            newCar.FrontBogieReplacement = customFrontBogieName;
-
-                                            if( jsonFile.GetField("frontBogieParams") is JSONObject fbs )
+                                            if( jsonFile.GetField(CarJSONKeys.FRONT_BOGIE_PARAMS) is JSONObject fbs )
                                             {
                                                 newCar.FrontBogieConfig = CustomBogieParams.FromJSON(fbs);
                                             }
                                         }
 
                                         // Custom Rear Bogie
-                                        if( jsonFile.GetField(out string customRearBogieName, "rearBogieReplacement", null) )
+                                        jsonFile.GetField(out newCar.HasCustomRearBogie, CarJSONKeys.REPLACE_REAR_BOGIE, false);
+                                        if( newCar.HasCustomRearBogie )
                                         {
-                                            newCar.RearBogieReplacement = customRearBogieName;
-
-                                            if( jsonFile.GetField("rearBogieParams") is JSONObject rbs )
+                                            if( jsonFile.GetField(CarJSONKeys.REAR_BOGIE_PARAMS) is JSONObject rbs )
                                             {
                                                 newCar.RearBogieConfig = CustomBogieParams.FromJSON(rbs);
                                             }
                                         }
-
-                                        // Couplers
-                                        // must have x = 0, y = 1.05 for proper lineup
-                                        newCar.FrontCouplerPosition = JSONTemplates.ToVector3(jsonFile["frontCouplerPos"]);
-                                        newCar.FrontCouplerPosition = new Vector3(0f, 1.05f, newCar.FrontCouplerPosition.z);
-
-                                        newCar.RearCouplerPosition = JSONTemplates.ToVector3(jsonFile["rearCouplerPos"]);
-                                        newCar.RearCouplerPosition = new Vector3(0f, 1.05f, newCar.RearCouplerPosition.z);
-
-                                        ////Chains
-                                        //newCar.FrontChainPosition =JSONTemplates.ToVector3(jsonFile["frontChainPos"]);
-                                        //newCar.RearChainPosition = JSONTemplates.ToVector3(jsonFile["rearChainPos"]);
-
-                                        ////Hoses
-                                        //newCar.FrontHosePosition = JSONTemplates.ToVector3(jsonFile["frontHosePos"]);
-                                        //newCar.RearHosePosition =JSONTemplates.ToVector3(jsonFile["rearHosePos"]);
-
-                                        ////Buffers
-                                        //newCar.FrontBufferPosition = JSONTemplates.ToVector3(jsonFile["frontBufferPos"]);
-                                        //newCar.RearBufferPosition = JSONTemplates.ToVector3(jsonFile["rearBufferPos"]);
-
-                                        //Name Plates
-                                        newCar.SidePlate1Position = JSONTemplates.ToVector3(jsonFile["sidePlate1Pos"]);
-                                        newCar.SidePlate2Position = JSONTemplates.ToVector3(jsonFile["sidePlate2Pos"]);
 
                                         newCar.FinalizePrefab();
 
