@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using HarmonyLib;
 using Object = UnityEngine.Object;
+using CLL_GameScripts;
 
 namespace DVCustomCarLoader
 {
@@ -17,6 +18,11 @@ namespace DVCustomCarLoader
         ///     The underlying type of this car.
         /// </summary>
         public TrainCarType BaseCarType = TrainCarType.FlatbedEmpty;
+
+        /// <summary>
+        ///     The locomotive type of this car
+        /// </summary>
+        public LocoSimType SimType = LocoSimType.None;
 
         /// <summary>
         ///     The base prefab that will be duplicated from.

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DVCustomCarLoader
+namespace CLL_GameScripts
 {
     public class CarJSONKeys
     {
@@ -12,6 +10,7 @@ namespace DVCustomCarLoader
         public const string PREFAB_NAME = "carPrefabName";
         public const string IDENTIFIER = "identifier";
         public const string CAR_TYPE = "carType";
+        public const string SIM_TYPE = "simType";
 
         public const string REPLACE_FRONT_BOGIE = "frontBogieReplacement";
         public const string FRONT_BOGIE_PARAMS = "frontBogieParams";

@@ -71,7 +71,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CarJSONKeys.cs" />
     <Compile Include="CommsRadioCarSpawner_Awake_Patch.cs" />
     <Compile Include="CommsRadioController_Awake_Patch.cs" />
     <Compile Include="CommsRadioCustomCarManager.cs" />
@@ -83,6 +82,12 @@
     <Compile Include="CarPartConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoadPatches.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CLL_GameScripts\CLL_GameScripts.csproj">
+      <Project>{c191c5ac-990e-4ca6-9847-342b9cd92465}</Project>
+      <Name>CLL_GameScripts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
