@@ -35,9 +35,17 @@ namespace DVCustomCarLoader
 		public static CommsRadioCustomCarManager CommsRadioCustomCarManager;
 		public static UnityModManager.ModEntry ModEntry;
 		public static bool Enabled;
-	}
 
-	internal static class AppQuitWatcher
+		#region Logging
+
+		public static void Log( string msg ) => ModEntry.Logger.Log(msg);
+		public static void Warning( string msg ) => ModEntry.Logger.Warning(msg);
+		public static void Error( string msg ) => ModEntry.Logger.Error(msg);
+
+        #endregion
+    }
+
+    internal static class AppQuitWatcher
     {
 		public static bool isQuitting { get; private set; } = false;
 

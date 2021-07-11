@@ -37,6 +37,7 @@
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="DV.BrakeSystem, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="DV.PointSet, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="DV.Utils, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.Utils.dll</HintPath>
@@ -76,17 +77,28 @@
     <Compile Include="CommsRadioCustomCarManager.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="LocoComponents\CustomLocoController.cs" />
+    <Compile Include="LocoComponents\CustomLocoPitStopParams.cs" />
+    <Compile Include="LocoComponents\CustomLocoSimulation.cs" />
+    <Compile Include="LocoComponents\DamageControllerCustomDiesel.cs" />
+    <Compile Include="LocoComponents\DamageControllerCustomLoco.cs" />
+    <Compile Include="LocoComponents\IServicePenaltyProvider.cs" />
+    <Compile Include="LocoComponents\CustomLocoControllerDiesel.cs" />
+    <Compile Include="LocoComponents\CustomLocoSimDiesel.cs" />
     <Compile Include="JSONObject\JSONObject.cs" />
     <Compile Include="JSONObject\VectorTemplates.cs" />
+    <Compile Include="LocoComponentManager.cs" />
+    <Compile Include="LocoComponents\DebtTrackerCustomLoco.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="CarPartConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoadPatches.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CLL_GameScripts\CLL_GameScripts.csproj">
+    <ProjectReference Include="..\CCL_GameScripts\CCL_GameScripts.csproj">
       <Project>{c191c5ac-990e-4ca6-9847-342b9cd92465}</Project>
-      <Name>CLL_GameScripts</Name>
+      <Name>CCL_GameScripts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
