@@ -10,7 +10,6 @@ namespace CCL_GameScripts
         public const string PREFAB_NAME = "carPrefabName";
         public const string IDENTIFIER = "identifier";
         public const string CAR_TYPE = "carType";
-        public const string SIM_TYPE = "simType";
 
         public const string REPLACE_FRONT_BOGIE = "frontBogieReplacement";
         public const string FRONT_BOGIE_PARAMS = "frontBogieParams";

@@ -51,10 +51,10 @@ namespace CCL_GameScripts
     /// <summary>
     /// The loco simulation type to use with the car.
     /// </summary>
-    public enum LocoSimType
-    {
-        None = 0,
-        DieselElectric = 1,
-        Steam = 2
-    }
+    //public enum LocoSimType
+    //{
+    //    None = 0,
+    //    DieselElectric = 1,
+    //    Steam = 2
+    //}
 }

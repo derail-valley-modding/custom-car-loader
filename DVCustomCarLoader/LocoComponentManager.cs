@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DV.MultipleUnit;
 using UnityEngine;
+using DVCustomCarLoader.LocoComponents;
 
 namespace DVCustomCarLoader
 {
@@ -19,12 +20,12 @@ namespace DVCustomCarLoader
         {
             GameObject basePrefab = CarTypes.GetCarPrefab(TrainCarType.LocoDiesel);
 
-            prefab.AddComponent<DieselLocoSimulation>();
-            prefab.AddComponent<DieselLocoSimulationEvents>();
-            prefab.AddComponent<DamageControllerDiesel>();
+            prefab.AddComponent<CustomLocoSimDiesel>();
+            prefab.AddComponent<CustomDieselSimEvents>();
+            prefab.AddComponent<DamageControllerCustomDiesel>();
             //prefab.AddComponent<MultipleUnitModule>();
 
-            var controller = prefab.AddComponent<LocoControllerDiesel>();
+            var controller = prefab.AddComponent<CustomLocoControllerDiesel>();
             var baseController = basePrefab.GetComponent<LocoControllerDiesel>();
             controller.tractionTorqueCurve = baseController.tractionTorqueCurve;
             controller.brakePowerCurve = baseController.brakePowerCurve;

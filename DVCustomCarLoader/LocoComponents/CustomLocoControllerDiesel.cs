@@ -15,7 +15,7 @@ namespace DVCustomCarLoader.LocoComponents
 		public bool FanOn { get; set; }
 
 		private DamageControllerCustomDiesel damageController;
-		private DieselLocoSimulationEvents eventController;
+		private CustomDieselSimEvents eventController;
 
 		public AnimationCurve tractionTorqueCurve;
 
@@ -97,7 +97,7 @@ namespace DVCustomCarLoader.LocoComponents
 			base.Awake();
 			sim = GetComponent<CustomLocoSimDiesel>();
 			damageController = GetComponent<DamageControllerCustomDiesel>();
-			eventController = GetComponent<DieselLocoSimulationEvents>();
+			eventController = GetComponent<CustomDieselSimEvents>();
 			CarVisitChecker carVisitChecker = gameObject.AddComponent<CarVisitChecker>();
 			carVisitChecker.Initialize(train);
 			
@@ -179,8 +179,8 @@ namespace DVCustomCarLoader.LocoComponents
 
 		private void SetupListeners( bool on )
 		{
-			eventController.FuelChanged.Manage(new Action<LocoSimulationEvents.Amount>(OnFuelChanged), on);
-			eventController.EngineTempChanged.Manage(new Action<LocoSimulationEvents.Amount>(OnEngineTempChanged), on);
+			eventController.FuelChanged.Manage(OnFuelChanged, on);
+			eventController.EngineTempChanged.Manage(OnEngineTempChanged, on);
 		}
 
 		//protected override bool ShouldSwitchToTrainBrakeOnStart()

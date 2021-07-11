@@ -78,8 +78,10 @@
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="LocoComponents\CustomDieselSimEvents.cs" />
     <Compile Include="LocoComponents\CustomLocoController.cs" />
     <Compile Include="LocoComponents\CustomLocoPitStopParams.cs" />
+    <Compile Include="LocoComponents\CustomLocoSimEvents.cs" />
     <Compile Include="LocoComponents\CustomLocoSimulation.cs" />
     <Compile Include="LocoComponents\DamageControllerCustomDiesel.cs" />
     <Compile Include="LocoComponents\DamageControllerCustomLoco.cs" />

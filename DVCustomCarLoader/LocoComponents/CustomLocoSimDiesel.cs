@@ -18,6 +18,11 @@ namespace DVCustomCarLoader.LocoComponents
 		//public SimParamsDiesel simParams;
 		private DamageControllerDiesel dmgController;
 
+		// Sanders
+		public bool sandOn;
+		public SimComponent sand;
+		public SimComponent sandFlow = new SimComponent("SandFlow", 0f, 1f, 0.1f, 0f);
+
 		// Engine
 		public bool engineOn;
 		public bool goingForward;
@@ -36,70 +41,6 @@ namespace DVCustomCarLoader.LocoComponents
 
 		private const string TOTAL_FUEL_CONSUMED_SAVE_KEY = "fuelConsumed";
 
-		public override IEnumerable<DebtTrackingInfo> GetDebtComponents()
-        {
-			return base.GetDebtComponents()
-				.Concat(new[] 
-				{
-					new DebtTrackingInfo(this, new DebtComponent(0, ResourceType.EnvironmentDamageFuel)),
-					new DebtTrackingInfo(this, new DebtComponent(fuel.value, ResourceType.Fuel)),
-					new DebtTrackingInfo(this, new DebtComponent(oil.value, ResourceType.Oil))
-				});
-        }
-
-        public override void ResetDebt( DebtComponent debt )
-        {
-			switch( debt.type )
-			{
-				case ResourceType.Fuel:
-					debt.ResetComponent(fuel.value);
-					break;
-
-				case ResourceType.Oil:
-					debt.ResetComponent(oil.value);
-					break;
-
-				case ResourceType.EnvironmentDamageFuel:
-					debt.ResetComponent(TotalFuelConsumed);
-					break;
-
-				default:
-					base.ResetDebt(debt);
-					break;
-			}
-        }
-
-        public override void UpdateDebtValue( DebtComponent debt )
-        {
-			switch( debt.type )
-			{
-				case ResourceType.Fuel:
-					debt.UpdateEndValue(fuel.value);
-					break;
-
-				case ResourceType.Oil:
-					debt.UpdateEndValue(oil.value);
-					break;
-
-				case ResourceType.EnvironmentDamageFuel:
-					debt.UpdateStartValue(TotalFuelConsumed);
-					break;
-
-				default:
-					base.UpdateDebtValue(debt);
-					break;
-			}
-		}
-
-        public override IEnumerable<PitStopRefillable> GetPitStopParameters()
-        {
-			return base.GetPitStopParameters()
-				.Concat(new[]
-				{
-					new PitStopRefillable(this, ResourceType.Oil, oil),
-					new PitStopRefillable(this, ResourceType.Fuel, fuel)
-				});
-        }
 
         public override JObject GetComponentsSaveData()
 		{
@@ -117,6 +58,7 @@ namespace DVCustomCarLoader.LocoComponents
 			base.InitComponents();
 			dmgController = GetComponent<DamageControllerDiesel>();
 
+			sand = new SimComponent("Sand", 0f, simParams.SandCapacity, 40f, simParams.SandCapacity);
 			speed = new SimComponent("Speed", 0f, simParams.MaxSpeed, 1f, 0f);
 			fuel = new SimComponent("Fuel", 0f, simParams.FuelCapacity, 1200f, simParams.FuelCapacity);
 			oil = new SimComponent("Oil", 0f, simParams.OilCapacity, 100f, simParams.OilCapacity);
@@ -196,13 +138,23 @@ namespace DVCustomCarLoader.LocoComponents
 			{
 				engineTemp.AddNextValue(engineRPM.value * simParams.TempGainPerRpm * delta);
 			}
-			if( engineOn && engineTemp.value < 52f )
+			if( engineOn && engineTemp.value < simParams.IdleMaxTemp )
 			{
 				engineTemp.AddNextValue(simParams.IdleTempGain * delta);
 			}
 			if( engineTemp.value > engineTemp.min )
 			{
 				engineTemp.AddNextValue(simParams.PassiveTempLoss * delta);
+
+				// check forward radiator
+				if( simParams.HasForwardRadiator && goingForward )
+                {
+					if( !engineOn || (engineTemp.value > simParams.IdleMaxTemp) )
+                    {
+						// reduce to idle temp (engine On) or 0 (off)
+						engineTemp.AddNextValue((speed.value / speed.max) * simParams.ForwardMovementTempLoss * delta);
+                    }
+                }
 			}
 		}
 
@@ -252,5 +204,123 @@ namespace DVCustomCarLoader.LocoComponents
 			SimulateEngineTemp(delta);
 			SetValuesToNextValues();
 		}
+
+        #region IServicePenaltyProvider
+
+        public override IEnumerable<DebtTrackingInfo> GetDebtComponents()
+		{
+			return new[]
+			{
+				new DebtTrackingInfo(this, new DebtComponent(0, ResourceType.EnvironmentDamageFuel)),
+				new DebtTrackingInfo(this, new DebtComponent(fuel.value, ResourceType.Fuel)),
+				new DebtTrackingInfo(this, new DebtComponent(sand.value, ResourceType.Sand)),
+				new DebtTrackingInfo(this, new DebtComponent(oil.value, ResourceType.Oil))
+			};
+		}
+
+		public override void ResetDebt( DebtComponent debt )
+		{
+			switch( debt.type )
+			{
+				case ResourceType.Sand:
+					debt.ResetComponent(sand.value);
+					break;
+
+				case ResourceType.Fuel:
+					debt.ResetComponent(fuel.value);
+					break;
+
+				case ResourceType.Oil:
+					debt.ResetComponent(oil.value);
+					break;
+
+				case ResourceType.EnvironmentDamageFuel:
+					debt.ResetComponent(TotalFuelConsumed);
+					break;
+
+				default:
+					Main.Warning("Tried to reset debt value this loco sim doesn't have");
+					break;
+			}
+		}
+
+		public override void UpdateDebtValue( DebtComponent debt )
+		{
+			switch( debt.type )
+			{
+				case ResourceType.Sand:
+					debt.UpdateEndValue(sand.value);
+					break;
+
+				case ResourceType.Fuel:
+					debt.UpdateEndValue(fuel.value);
+					break;
+
+				case ResourceType.Oil:
+					debt.UpdateEndValue(oil.value);
+					break;
+
+				case ResourceType.EnvironmentDamageFuel:
+					debt.UpdateStartValue(TotalFuelConsumed);
+					break;
+
+				default:
+					Main.Warning("Tried to update debt value this loco sim doesn't have");
+					break;
+			}
+		}
+
+		public override IEnumerable<PitStopRefillable> GetPitStopParameters()
+		{
+			return new[]
+			{
+				new PitStopRefillable(this, ResourceType.Oil, oil),
+				new PitStopRefillable(this, ResourceType.Fuel, fuel),
+				new PitStopRefillable(this, ResourceType.Sand, sand)
+			};
+		}
+
+		public override float GetPitStopLevel( ResourceType type )
+		{
+			switch( type )
+			{
+				case ResourceType.Sand:
+					return sand.value;
+
+				case ResourceType.Fuel:
+					return fuel.value;
+
+				case ResourceType.Oil:
+					return oil.value;
+
+				default:
+					Main.Warning("Tried to get pit stop value this loco sim doesn't have");
+					return 0;
+			}
+		}
+
+		public override void ChangePitStopLevel( ResourceType type, float changeAmount )
+		{
+			switch( type )
+			{
+				case ResourceType.Sand:
+					sand.AddValue(changeAmount);
+					break;
+
+				case ResourceType.Fuel:
+					fuel.AddValue(changeAmount);
+					break;
+
+				case ResourceType.Oil:
+					oil.AddValue(changeAmount);
+					break;
+
+				default:
+					Main.Warning("Trying to refill/repair something that is not part of this loco");
+					break;
+			}
+		}
+
+		#endregion
 	}
 }

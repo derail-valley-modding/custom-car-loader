@@ -127,7 +127,6 @@ namespace DVCustomCarLoader
                             CarPrefab = carPrefab,
                             identifier = jsonFile[CarJSONKeys.IDENTIFIER].str,
                             BaseCarType = (TrainCarType)jsonFile[CarJSONKeys.CAR_TYPE].i,
-                            SimType = (LocoSimType)jsonFile[CarJSONKeys.SIM_TYPE].i
                         };
 
                         //Bogies

@@ -20,11 +20,6 @@ namespace DVCustomCarLoader
         public TrainCarType BaseCarType = TrainCarType.FlatbedEmpty;
 
         /// <summary>
-        ///     The locomotive type of this car
-        /// </summary>
-        public LocoSimType SimType = LocoSimType.None;
-
-        /// <summary>
         ///     The base prefab that will be duplicated from.
         /// </summary>
         public GameObject CarPrefab;
