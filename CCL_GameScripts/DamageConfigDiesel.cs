@@ -73,7 +73,7 @@ namespace CCL_GameScripts
             WheelHitpoints = 1000f;
 
             // diesel
-            EngineHitpoints = 4000f;
+            EngineHitpoints = 1000f;
             ColdEngineDPS = 0.1f;
             ColdEngineRPMThreshold = 0.5f;
             ColdEngineTempThreshold = 45f;

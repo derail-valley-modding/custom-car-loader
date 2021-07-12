@@ -47,6 +47,9 @@
   <ItemGroup>
     <Compile Include="CarJSONKeys.cs" />
     <Compile Include="CustomCarEnums.cs" />
+    <Compile Include="DamageConfigBasic.cs" />
+    <Compile Include="DamageConfigDiesel.cs" />
+    <Compile Include="DamageConfigEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimParamsBase.cs" />
     <Compile Include="SimParamsDiesel.cs" />
