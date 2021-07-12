@@ -333,10 +333,13 @@ namespace DVCustomCarLoader
             newCar.wheelRadius = baseCar.wheelRadius;
             newCar.carType = BaseCarType;
 
-            CarPrefab = newFab;
+            var simParams = newFab.GetComponent<SimParamsBase>();
+            if( simParams )
+            {
+                LocoComponentManager.AddLocoSimulation(newFab, simParams);
+            }
 
-            string pn = CarPrefab == null ? "null" : "notnull";
-            Main.ModEntry.Logger.Log($"New prefab for {identifier} is {pn}");
+            CarPrefab = newFab;
 
             Main.ModEntry.Logger.Log($"Finalized prefab for {identifier}");
         }

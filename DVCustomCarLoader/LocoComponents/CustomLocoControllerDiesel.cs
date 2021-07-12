@@ -9,15 +9,14 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public class CustomLocoControllerDiesel : CustomLocoController<CustomLocoSimDiesel>
+    public class CustomLocoControllerDiesel : 
+		CustomLocoController<
+			CustomLocoSimDiesel,
+			DamageControllerCustomDiesel,
+			CustomDieselSimEvents>
     {
 		public bool Backlight { get; set; }
 		public bool FanOn { get; set; }
-
-		private DamageControllerCustomDiesel damageController;
-		private CustomDieselSimEvents eventController;
-
-		public AnimationCurve tractionTorqueCurve;
 
 		public float EngineRPM => sim.engineRPM.value;
 		public float EngineRPMGauge => (sim.engineOn) ? (12.5f + sim.engineRPM.value * 100f) : 0f;
@@ -92,21 +91,14 @@ namespace DVCustomCarLoader.LocoComponents
 		}
 
 
-		protected override void Awake()
-		{
-			base.Awake();
-			sim = GetComponent<CustomLocoSimDiesel>();
-			damageController = GetComponent<DamageControllerCustomDiesel>();
-			eventController = GetComponent<CustomDieselSimEvents>();
-			CarVisitChecker carVisitChecker = gameObject.AddComponent<CarVisitChecker>();
-			carVisitChecker.Initialize(train);
+		//protected override void Awake()
+		//{
+		//	base.Awake();
 			
-			// TODO: MU, save state
-			//MultipleUnitModule component = base.GetComponent<MultipleUnitModule>();
-			//base.gameObject.AddComponent<LocoStateSaveDiesel>().Initialize(sim, damageController, this, carVisitChecker, component);
-
-			train.LogicCarInitialized += OnLogicCarInitialized;
-		}
+		//	// TODO: MU, save state
+		//	//MultipleUnitModule component = base.GetComponent<MultipleUnitModule>();
+		//	//base.gameObject.AddComponent<LocoStateSaveDiesel>().Initialize(sim, damageController, this, carVisitChecker, component);
+		//}
 
 
 		public override float GetTractionForce()
@@ -140,29 +132,6 @@ namespace DVCustomCarLoader.LocoComponents
 			{
 				EngineRunning = false;
 			}
-		}
-
-		private void OnLocoDestroyed( TrainCar train )
-		{
-			train.OnDestroyCar -= OnLocoDestroyed;
-			if( !train.playerSpawnedCar )
-			{
-				SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(locoDebt);
-			}
-		}
-
-		private void OnLogicCarInitialized()
-		{
-			train.LogicCarInitialized -= OnLogicCarInitialized;
-
-			if( !train.playerSpawnedCar )
-			{
-				locoDebt = new DebtTrackerCustomLoco(train.ID, train.carType, this, damageController, sim);
-				SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(locoDebt);
-			}
-
-			train.OnDestroyCar += OnLocoDestroyed;
-            gameObject.AddComponent<CustomLocoPitStopParams>().Initialize(sim, damageController);
 		}
 
 		public override void SetNeutralState()

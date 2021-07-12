@@ -3,9 +3,14 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public abstract class CustomLocoSimEvents<TDmg,TSim> : LocoSimulationEvents
-        where TDmg : DamageControllerCustomLoco
+    public abstract class CustomLocoSimEvents : LocoSimulationEvents
+    {
+
+    }
+
+    public abstract class CustomLocoSimEvents<TSim,TDmg> : CustomLocoSimEvents
         where TSim : CustomLocoSimulation
+        where TDmg : DamageControllerCustomLoco
     {
         protected TDmg dmgController;
         protected TSim sim;

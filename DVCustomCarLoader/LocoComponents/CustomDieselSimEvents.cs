@@ -4,7 +4,7 @@ using UnityEngine;
 namespace DVCustomCarLoader.LocoComponents
 {
     public class CustomDieselSimEvents :
-        CustomLocoSimEvents<DamageControllerCustomDiesel, CustomLocoSimDiesel>
+        CustomLocoSimEvents<CustomLocoSimDiesel, DamageControllerCustomDiesel>
     {
         protected const float ENGINE_OVERHEAT_CHECK_PERIOD = 1f;
         protected const float ENGINE_TEMP_CHECK_PERIOD = 3f;

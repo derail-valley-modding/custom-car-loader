@@ -6,6 +6,8 @@ namespace CCL_GameScripts
 {
     public class SimParamsDiesel : SimParamsBase
     {
+        public override LocoParamsType SimType => LocoParamsType.DieselElectric;
+
         [Header("Throttle")]
         public float ThrottleUpRate = 2f;
         public float ThrottleDownRate = 2f;
@@ -37,6 +39,7 @@ namespace CCL_GameScripts
         public float OilConsumptionEngineRpm = 1;
         //public float OilConsumptionWheels = 0.12f;
 
+
         public void ApplyDE6Defaults()
         {
             ThrottleUpRate = 2;
@@ -57,6 +60,26 @@ namespace CCL_GameScripts
             PerformanceDropDamageLevel = 0.5f;
             OilCapacity = 500;
             OilConsumptionEngineRpm = 1;
+
+            BrakePowerCurve =
+                new AnimationCurve(
+                    new Keyframe(0, 0, 0.3512f, 0.3512f, 0.3333f, 0.1033f),
+                    new Keyframe(1, 1, 1.7677f, 1.7677f, 0.0627f, 0.3333f))
+                {
+                    preWrapMode = WrapMode.ClampForever,
+                    postWrapMode = WrapMode.ClampForever
+                };
+
+            TractionTorqueCurve = 
+                new AnimationCurve(
+                    new Keyframe(0, 1, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(15, 1, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(98.8f, 0.4813f, -0.0087f, -0.0087f, 0.1278f, 0.3589f),
+                    new Keyframe(120, 0, -0.0247f, -0.0247f, 0.2221f, 0.3333f))
+                {
+                    preWrapMode = WrapMode.ClampForever,
+                    postWrapMode = WrapMode.ClampForever
+                };
         }
 
         public void ApplyShunterDefaults()
@@ -79,6 +102,25 @@ namespace CCL_GameScripts
             PerformanceDropDamageLevel = 0.5f;
             OilCapacity = 100;
             OilConsumptionEngineRpm = 0.3f;
+
+            BrakePowerCurve =
+                new AnimationCurve(
+                    new Keyframe(0, 0, 0.2744f, 0.2744f, 0.3333f, 0.0561f),
+                    new Keyframe(1, 1, 1.6481f, 1.6481f, 0.0607f, 0.3333f))
+                {
+                    preWrapMode = WrapMode.ClampForever,
+                    postWrapMode = WrapMode.ClampForever
+                };
+
+            TractionTorqueCurve =
+                new AnimationCurve(
+                    new Keyframe(0, 1, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(35, 1, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(80, 0, 0, 0, 0.3333f, 0.3333f))
+                {
+                    preWrapMode = WrapMode.ClampForever,
+                    postWrapMode = WrapMode.ClampForever
+                };
         }
     }
 }

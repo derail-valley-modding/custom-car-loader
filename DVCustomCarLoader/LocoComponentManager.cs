@@ -4,11 +4,25 @@ using System.Linq;
 using DV.MultipleUnit;
 using UnityEngine;
 using DVCustomCarLoader.LocoComponents;
+using CCL_GameScripts;
 
 namespace DVCustomCarLoader
 {
     public static class LocoComponentManager
     {
+        public static void AddLocoSimulation( GameObject prefab, SimParamsBase simParams )
+        {
+            switch( simParams.SimType )
+            {
+                case LocoParamsType.DieselElectric:
+                    AddDieselSimulation(prefab);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
         // Order to add components:
         // - Simulation
         // - SimulationEvents
