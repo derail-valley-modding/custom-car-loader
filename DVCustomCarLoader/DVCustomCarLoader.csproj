@@ -72,7 +72,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioPatches.cs" />
+    <Compile Include="ModPatches.cs" />
     <Compile Include="CommsRadioCarSpawner_Awake_Patch.cs" />
     <Compile Include="CommsRadioController_Awake_Patch.cs" />
     <Compile Include="CommsRadioCustomCarManager.cs" />
@@ -89,8 +89,6 @@
     <Compile Include="LocoComponents\IServicePenaltyProvider.cs" />
     <Compile Include="LocoComponents\CustomLocoControllerDiesel.cs" />
     <Compile Include="LocoComponents\CustomLocoSimDiesel.cs" />
-    <Compile Include="JSONObject\JSONObject.cs" />
-    <Compile Include="JSONObject\VectorTemplates.cs" />
     <Compile Include="LocoComponentManager.cs" />
     <Compile Include="LocoComponents\DebtTrackerCustomLoco.cs" />
     <Compile Include="Main.cs" />
