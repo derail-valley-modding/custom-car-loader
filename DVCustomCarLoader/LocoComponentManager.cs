@@ -15,7 +15,7 @@ namespace DVCustomCarLoader
             switch( simParams.SimType )
             {
                 case LocoParamsType.DieselElectric:
-                    AddDieselSimulation(prefab);
+                    AddDieselSimulation(prefab, (SimParamsDiesel)simParams);
                     break;
 
                 default:
@@ -30,19 +30,35 @@ namespace DVCustomCarLoader
         // - MultipleUnitModule
         // - LocoController
 
-        public static void AddDieselSimulation( GameObject prefab )
+        public static void AddDieselSimulation( GameObject prefab, SimParamsDiesel simParams )
         {
-            GameObject basePrefab = CarTypes.GetCarPrefab(TrainCarType.LocoDiesel);
+            var dmgConfig = prefab.GetComponent<DamageConfigDiesel>();
+            if( !dmgConfig )
+            {
+                Main.Error($"Loco prefab {prefab.name} is missing diesel damage config, skipping sim setup");
+                return;
+            }
+
+            var drivingForce = prefab.AddComponent<DrivingForce>();
+            ApplyDrivingForceParams(drivingForce, simParams);
 
             prefab.AddComponent<CustomLocoSimDiesel>();
             prefab.AddComponent<CustomDieselSimEvents>();
             prefab.AddComponent<DamageControllerCustomDiesel>();
             //prefab.AddComponent<MultipleUnitModule>();
+            var locoController = prefab.AddComponent<CustomLocoControllerDiesel>();
+            locoController.drivingForce = drivingForce;
 
-            var controller = prefab.AddComponent<CustomLocoControllerDiesel>();
-            var baseController = basePrefab.GetComponent<LocoControllerDiesel>();
-            controller.tractionTorqueCurve = baseController.tractionTorqueCurve;
-            controller.brakePowerCurve = baseController.brakePowerCurve;
+            Main.Log($"Added diesel electric simulation to {prefab.name}");
+        }
+
+        private static void ApplyDrivingForceParams( DrivingForce driver, SimParamsBase simParams )
+        {
+            driver.frictionCoeficient = simParams.FrictionCoefficient;
+            driver.preventWheelslip = simParams.PreventWheelslip;
+            driver.sandCoefMax = simParams.SandCoefficient;
+            driver.slopeCoeficientMultiplier = simParams.SlopeCoefficientMultiplier;
+            driver.wheelslipToFrictionModifierCurve = simParams.WheelslipToFrictionModifier;
         }
     }
 }

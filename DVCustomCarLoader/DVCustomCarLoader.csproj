@@ -72,6 +72,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioPatches.cs" />
     <Compile Include="CommsRadioCarSpawner_Awake_Patch.cs" />
     <Compile Include="CommsRadioController_Awake_Patch.cs" />
     <Compile Include="CommsRadioCustomCarManager.cs" />

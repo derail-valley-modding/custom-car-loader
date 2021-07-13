@@ -16,14 +16,20 @@ namespace DVCustomCarLoader.LocoComponents
         public abstract float GetPitStopLevel( ResourceType type );
     }
 
-    public abstract class CustomLocoSimulation<TParams> : CustomLocoSimulation
+    public abstract class CustomLocoSimulation<TParams, TDmg> : CustomLocoSimulation
         where TParams : SimParamsBase
+        where TDmg : DamageControllerCustomLoco
     {
         public TParams simParams;
+        public TDmg dmgController;
 
         protected override void InitComponents()
         {
             simParams = GetComponent<TParams>();
+            if( !simParams ) Main.Error($"Missing {typeof(TParams).Name} on {gameObject.name}");
+
+            dmgController = GetComponent<TDmg>();
+            if( !dmgController ) Main.Error($"Missing DamageControllerDiesel on {gameObject.name}");
         }
     }
 }

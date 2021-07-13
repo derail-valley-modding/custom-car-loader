@@ -152,13 +152,20 @@ namespace DVCustomCarLoader.LocoComponents
         {
             base.InitializeTrainDamages();
 
-            engine.fullHitPoints = config.EngineHitpoints;
-            if( engine.fullHitPoints == 0f )
+            if( engine == null )
             {
-                Main.Error("TrainDamage[engine].fullHitPoints is set to invalid value 0! Overriding to 1000");
-                engine.fullHitPoints = 1000f;
+                engine = new TrainDamage(config.EngineHitpoints);
             }
-            engine.SetCurrentHitPoints(engine.fullHitPoints);
+            else
+            {
+                engine.fullHitPoints = config.EngineHitpoints;
+                if( engine.fullHitPoints == 0f )
+                {
+                    Main.Error("TrainDamage[engine].fullHitPoints is set to invalid value 0! Overriding to 1000");
+                    engine.fullHitPoints = 1000f;
+                }
+                engine.SetCurrentHitPoints(engine.fullHitPoints);
+            }
         }
 
         public override JObject GetDamageSaveData()

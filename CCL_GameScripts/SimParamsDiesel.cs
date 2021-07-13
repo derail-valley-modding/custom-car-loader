@@ -39,6 +39,10 @@ namespace CCL_GameScripts
         public float OilConsumptionEngineRpm = 1;
         //public float OilConsumptionWheels = 0.12f;
 
+        public SimParamsDiesel()
+        {
+            ApplyDE6Defaults();
+        }
 
         public void ApplyDE6Defaults()
         {
@@ -80,6 +84,16 @@ namespace CCL_GameScripts
                     preWrapMode = WrapMode.ClampForever,
                     postWrapMode = WrapMode.ClampForever
                 };
+
+            WheelslipToFrictionModifier =
+                new AnimationCurve(
+                    new Keyframe(0, 0.4f, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(0.802f, 0.271f, -0.516f, -0.516f, 0.105f, 0.267f),
+                    new Keyframe(1, 0.005f, -0.008f, -0.008f, 0.3333f, 0.3333f))
+                {
+                    preWrapMode = WrapMode.ClampForever,
+                    postWrapMode = WrapMode.ClampForever
+                };
         }
 
         public void ApplyShunterDefaults()
@@ -117,6 +131,16 @@ namespace CCL_GameScripts
                     new Keyframe(0, 1, 0, 0, 0.3333f, 0.3333f),
                     new Keyframe(35, 1, 0, 0, 0.3333f, 0.3333f),
                     new Keyframe(80, 0, 0, 0, 0.3333f, 0.3333f))
+                {
+                    preWrapMode = WrapMode.ClampForever,
+                    postWrapMode = WrapMode.ClampForever
+                };
+
+            WheelslipToFrictionModifier =
+                new AnimationCurve(
+                    new Keyframe(0, 0.4f, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(0.565f, 0.262f, -0.516f, -0.516f, 0.105f, 0.267f),
+                    new Keyframe(1, 0.005f, -0.008f, -0.008f, 0.3333f, 0.3333f))
                 {
                     preWrapMode = WrapMode.ClampForever,
                     postWrapMode = WrapMode.ClampForever

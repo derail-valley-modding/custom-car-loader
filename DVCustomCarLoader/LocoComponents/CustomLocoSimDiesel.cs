@@ -11,12 +11,13 @@ using DV.ServicePenalty;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public class CustomLocoSimDiesel : CustomLocoSimulation<SimParamsDiesel>, IServicePenaltyProvider
+    public class CustomLocoSimDiesel : 
+		CustomLocoSimulation<SimParamsDiesel, DamageControllerCustomDiesel>
     {
 		public float TotalFuelConsumed { get; private set; }
 
 		//public SimParamsDiesel simParams;
-		private DamageControllerDiesel dmgController;
+		//private DamageControllerCustomDiesel dmgController;
 
 		// Sanders
 		public bool sandOn;
@@ -56,7 +57,6 @@ namespace DVCustomCarLoader.LocoComponents
 		protected override void InitComponents()
 		{
 			base.InitComponents();
-			dmgController = GetComponent<DamageControllerDiesel>();
 
 			sand = new SimComponent("Sand", 0f, simParams.SandCapacity, 40f, simParams.SandCapacity);
 			speed = new SimComponent("Speed", 0f, simParams.MaxSpeed, 1f, 0f);

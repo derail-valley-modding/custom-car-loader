@@ -15,7 +15,6 @@ namespace DVCustomCarLoader.LocoComponents
         public abstract float GetPitStopLevel( ResourceType type );
         public abstract void ChangePitStopLevel( ResourceType type, float changeAmount );
 
-
         private static readonly FieldInfo carDamagePropsField =
             AccessTools.Field(typeof(CarDamageModel), "carDamageProperties");
 
@@ -37,8 +36,14 @@ namespace DVCustomCarLoader.LocoComponents
         protected override void Awake()
         {
             controller = locoController = GetComponent<TCtrl>();
+            if( !locoController ) Main.Error($"Missing {typeof(TCtrl).Name} on {gameObject.name}");
+
             eventController = GetComponent<TEvents>();
+            if( !eventController ) Main.Error($"Missing {typeof(TEvents).Name} on {gameObject.name}");
+
             config = GetComponent<TConfig>();
+            if( !config ) Main.Error($"Missing {typeof(TConfig).Name} on {gameObject.name}");
+
             InitializeTrainDamages();
         }
 
@@ -50,13 +55,20 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected override void InitializeTrainDamages()
         {
-            wheels.fullHitPoints = config.WheelHitpoints;
-            if( wheels.fullHitPoints == 0f )
+            if( wheels == null )
             {
-                Main.Error("TrainDamage[wheels].fullHitPoints is set to invalid value 0! Overriding to 1000");
-                wheels.fullHitPoints = 1000f;
+                wheels = new TrainDamage(config.WheelHitpoints);
             }
-            wheels.SetCurrentHitPoints(wheels.fullHitPoints);
+            else
+            {
+                wheels.fullHitPoints = config.WheelHitpoints;
+                if( wheels.fullHitPoints == 0f )
+                {
+                    Main.Error("TrainDamage[wheels].fullHitPoints is set to invalid value 0! Overriding to 1000");
+                    wheels.fullHitPoints = 1000f;
+                }
+                wheels.SetCurrentHitPoints(wheels.fullHitPoints);
+            }
         }
 
         protected void ApplyBodyParameters()
