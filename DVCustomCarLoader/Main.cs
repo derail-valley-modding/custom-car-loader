@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using DVCustomCarLoader.LocoComponents;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
@@ -9,13 +10,19 @@ namespace DVCustomCarLoader
 {
 	public static class Main
 	{
-		private static bool Load(UnityModManager.ModEntry modEntry)
+		public static CustomCarManager CustomCarManagerInstance;
+		public static CommsRadioCustomCarManager CommsRadioCustomCarManager;
+		public static UnityModManager.ModEntry ModEntry;
+		public static bool Enabled;
+
+		public static bool Load(UnityModManager.ModEntry modEntry)
 		{
 			var harmony = new Harmony(modEntry.Info.Id);
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
+			LocoLights_Patch.TryCreatePatch(harmony);
 
-			Main.Enabled = modEntry.Enabled;
-			Main.ModEntry = modEntry;
+			Enabled = modEntry.Enabled;
+			ModEntry = modEntry;
 			
 			//Create sky manager instance.
 			ModEntry.Logger.Log("Creating CustomCarManager");
@@ -28,13 +35,23 @@ namespace DVCustomCarLoader
 			CustomCarManagerInstance = nsmgr.AddComponent<CustomCarManager>();
 			CustomCarManagerInstance.Setup();
 
+			PlayerManager.CarChanged += OnCarChanged;
+
 			return true;
 		}
 
-		public static CustomCarManager CustomCarManagerInstance;
-		public static CommsRadioCustomCarManager CommsRadioCustomCarManager;
-		public static UnityModManager.ModEntry ModEntry;
-		public static bool Enabled;
+		private static void OnCarChanged( TrainCar newCar )
+        {
+			if( newCar && CustomCarManagerInstance.IsRegisteredCustomCar(newCar) )
+            {
+				// diesel autostart
+				var locoController = newCar.gameObject.GetComponent<CustomLocoControllerDiesel>();
+				if( locoController && !locoController.EngineRunning )
+                {
+					locoController.EngineRunning = true;
+                }
+            }
+        }
 
 		#region Logging
 

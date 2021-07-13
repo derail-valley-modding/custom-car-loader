@@ -85,16 +85,10 @@ namespace DVCustomCarLoader.LocoComponents
 			base.SetReverser(position);
 		}
 
-		public override void SetThrottle( float throttleLever )
-		{
-			base.SetThrottle(throttleLever);
-		}
-
-
 		//protected override void Awake()
 		//{
 		//	base.Awake();
-			
+
 		//	// TODO: MU, save state
 		//	//MultipleUnitModule component = base.GetComponent<MultipleUnitModule>();
 		//	//base.gameObject.AddComponent<LocoStateSaveDiesel>().Initialize(sim, damageController, this, carVisitChecker, component);
@@ -162,7 +156,9 @@ namespace DVCustomCarLoader.LocoComponents
 			base.Start();
 			if( !VRManager.IsVREnabled() )
 			{
-				gameObject.AddComponent<LocoKeyboardInputDiesel>().control = this;
+				var keyboardCtrl = gameObject.AddComponent<LocoKeyboardInputDiesel>();
+				keyboardCtrl.control = this;
+				Main.Log("Added keyboard input to car");
 			}
 		}
 

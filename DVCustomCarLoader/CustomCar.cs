@@ -88,7 +88,7 @@ namespace DVCustomCarLoader
                 Transform child = bufferRoot.transform.GetChild(i);
                 string childName = child.name.Trim();
 
-                if( CarPartNames.BUFFER_CHAIN_RIG.Equals(childName) )
+                if( CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName) )
                 {
                     // front or rear chain rig
                     // determine whether front or rear chain rig: +z is front
@@ -340,6 +340,7 @@ namespace DVCustomCarLoader
             }
 
             CarPrefab = newFab;
+            CarPrefab.name = identifier;
 
             Main.ModEntry.Logger.Log($"Finalized prefab for {identifier}");
         }

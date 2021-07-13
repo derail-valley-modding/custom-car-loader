@@ -19,17 +19,32 @@ namespace DVCustomCarLoader
         }
     }
 
-    [HarmonyPatch]
     public static class LocoLights_Patch
     {
-        static MethodBase TargetMethod()
+        public static void TryCreatePatch( Harmony harmony )
         {
-            Type trainCarPatch = AccessTools.TypeByName("TrainCar_Start_Patch");
-            if( trainCarPatch != null )
+            try
             {
-                return AccessTools.Method(trainCarPatch, "DoCreate", new[] { typeof(TrainCar) });
+                Type trainCarPatch = AccessTools.TypeByName("LocoLightsMod.TrainCar_Start_Patch");
+                if( trainCarPatch != null )
+                {
+                    var target = AccessTools.Method(trainCarPatch, "DoCreate", new[] { typeof(TrainCar) });
+                    var prefix = AccessTools.Method(typeof(LocoLights_Patch), "Prefix");
+
+                    harmony.Patch(target, new HarmonyMethod(prefix));
+                }
+                else
+                {
+                    Main.Log("Loco Lights traincar patch not found, skipping");
+                }
             }
-            return null;
+            catch( Exception ex )
+            {
+                Main.Log("Not creating Loco Lights patch");
+#if DEBUG
+                Main.ModEntry.Logger.LogException(ex);
+#endif
+            }
         }
 
         static bool Prefix( TrainCar car )

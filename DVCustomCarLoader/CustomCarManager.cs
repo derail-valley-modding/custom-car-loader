@@ -12,6 +12,11 @@ namespace DVCustomCarLoader
 
         private readonly Dictionary<TrainCar, string> SpawnedCustomCarIds = new Dictionary<TrainCar, string>();
 
+        public bool IsRegisteredCustomCar( TrainCar trainCar )
+        {
+            return SpawnedCustomCarIds.ContainsKey(trainCar);
+        }
+
         public bool TryGetCustomCarId( TrainCar trainCar, out string id )
         {
             return SpawnedCustomCarIds.TryGetValue(trainCar, out id);
