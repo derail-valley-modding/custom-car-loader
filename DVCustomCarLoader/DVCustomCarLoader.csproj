@@ -72,6 +72,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LocoComponents\CustomCabInput.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CommsRadioCarSpawner_Awake_Patch.cs" />
     <Compile Include="CommsRadioController_Awake_Patch.cs" />

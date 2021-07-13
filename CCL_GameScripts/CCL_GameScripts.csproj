@@ -52,6 +52,7 @@
     <Compile Include="Attributes\MethodButtonAttribute.cs" />
     <Compile Include="Attributes\ReadOnlyAttribute.cs" />
     <Compile Include="BogieSetup.cs" />
+    <Compile Include="CabInputSetup.cs" />
     <Compile Include="CarJSONKeys.cs" />
     <Compile Include="CustomCarEnums.cs" />
     <Compile Include="DamageConfigBasic.cs" />

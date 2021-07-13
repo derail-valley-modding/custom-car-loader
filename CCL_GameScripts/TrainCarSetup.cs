@@ -32,7 +32,6 @@ namespace CCL_GameScripts
         #endregion
 
 
-        [Header("Bogies")]
         public Transform FrontBogie;
         public Transform RearBogie;
         public bool ReplaceFrontBogie;
@@ -40,61 +39,60 @@ namespace CCL_GameScripts
         public CapsuleCollider FrontBogieCollider;
         public CapsuleCollider RearBogieCollider;
 
-        //[Header("Couplers")] 
-        //public Transform FrontCouplerRig;
-        //public Transform RearCouplerRig;
+        public GameObject InteriorPrefab;
 
 #if UNITY_EDITOR
     
         #region Helpers
-    [MethodButton(nameof(CreateAssetBundleForTrainCar), nameof(AlignBogieColliders))]
-    [SerializeField] private bool editorFoldout;
 
-    public void CreateAssetBundleForTrainCar()
-    {
-        string assetPath = AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(gameObject));
+        [MethodButton(nameof(CreateAssetBundleForTrainCar), nameof(AlignBogieColliders))]
+        [SerializeField] private bool editorFoldout;
 
-        if (string.IsNullOrEmpty(assetPath))
+        public void CreateAssetBundleForTrainCar()
         {
-            Debug.LogError("Asset path is null! Make sure the TrainCar is a prefab!");
-            return;
-        }
-        
-        //Change name of asset bundle to this GameObject.
-        AssetImporter.GetAtPath(assetPath).SetAssetBundleNameAndVariant(name, "");
-        
-        //Remove unused assetBundle names.
-        AssetDatabase.RemoveUnusedAssetBundleNames();
-        
-        EditorUtility.DisplayDialog("Created AssetBundle",
-            $"An AssetBundle with the name {name} was created successfully.", "OK");
-    }
+            string assetPath = AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(gameObject));
 
-    /// <summary>
-    /// This will properly align the bogie colliders to the bogie along the x and z axes.
-    /// </summary>
-    public void AlignBogieColliders()
-    {
-        List<Object> objectsToUndo = new List<Object>();
-
-        if( FrontBogieCollider )
-        {
-            var frontCenter = FrontBogieCollider.center;
-            frontCenter = new Vector3(0, frontCenter.y, FrontBogie.localPosition.z);
-            FrontBogieCollider.center = frontCenter;
-            objectsToUndo.Add(FrontBogieCollider.transform);
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                Debug.LogError("Asset path is null! Make sure the TrainCar is a prefab!");
+                return;
+            }
+        
+            //Change name of asset bundle to this GameObject.
+            AssetImporter.GetAtPath(assetPath).SetAssetBundleNameAndVariant(name, "");
+        
+            //Remove unused assetBundle names.
+            AssetDatabase.RemoveUnusedAssetBundleNames();
+        
+            EditorUtility.DisplayDialog("Created AssetBundle",
+                $"An AssetBundle with the name {name} was created successfully.", "OK");
         }
 
-        if( RearBogieCollider )
+        /// <summary>
+        /// This will properly align the bogie colliders to the bogie along the x and z axes.
+        /// </summary>
+        public void AlignBogieColliders()
         {
-            var rearCenter = RearBogieCollider.center;
-            rearCenter = new Vector3(0, rearCenter.y, RearBogie.localPosition.z);
-            RearBogieCollider.center = rearCenter;
-            objectsToUndo.Add(RearBogieCollider.transform);
-        }
+            List<Object> objectsToUndo = new List<Object>();
 
-        Undo.RecordObjects(objectsToUndo.ToArray(), "Undo Align Bogies");
-    }
+            if( FrontBogieCollider )
+            {
+                var frontCenter = FrontBogieCollider.center;
+                frontCenter = new Vector3(0, frontCenter.y, FrontBogie.localPosition.z);
+                FrontBogieCollider.center = frontCenter;
+                objectsToUndo.Add(FrontBogieCollider.transform);
+            }
+
+            if( RearBogieCollider )
+            {
+                var rearCenter = RearBogieCollider.center;
+                rearCenter = new Vector3(0, rearCenter.y, RearBogie.localPosition.z);
+                RearBogieCollider.center = rearCenter;
+                objectsToUndo.Add(RearBogieCollider.transform);
+            }
+
+            Undo.RecordObjects(objectsToUndo.ToArray(), "Undo Align Bogies");
+        }
 
         #endregion
 

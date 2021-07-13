@@ -24,6 +24,8 @@ namespace DVCustomCarLoader
         /// </summary>
         public GameObject CarPrefab;
 
+        public GameObject InteriorPrefab;
+
         //Bogies
         public bool HasCustomFrontBogie = false;
         public bool HasCustomRearBogie = false;
@@ -337,6 +339,26 @@ namespace DVCustomCarLoader
             if( simParams )
             {
                 LocoComponentManager.AddLocoSimulation(newFab, simParams);
+
+                var carSetup = newFab.GetComponent<TrainCarSetup>();
+                if( carSetup )
+                {
+                    if( carSetup.InteriorPrefab )
+                    {
+                        GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
+                        interiorFab.SetActive(false);
+                        Object.DontDestroyOnLoad(interiorFab);
+
+                        LocoComponentManager.SetupCabInput(interiorFab);
+                        newCar.interiorPrefab = interiorFab;
+
+                        InteriorPrefab = interiorFab;
+                    }
+                }
+                else
+                {
+                    Main.Warning("TrainCarSetup not found");
+                }
             }
 
             CarPrefab = newFab;

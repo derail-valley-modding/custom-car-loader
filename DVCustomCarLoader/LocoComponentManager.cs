@@ -5,6 +5,7 @@ using DV.MultipleUnit;
 using UnityEngine;
 using DVCustomCarLoader.LocoComponents;
 using CCL_GameScripts;
+using HarmonyLib;
 
 namespace DVCustomCarLoader
 {
@@ -59,6 +60,32 @@ namespace DVCustomCarLoader
             driver.sandCoefMax = simParams.SandCoefficient;
             driver.slopeCoeficientMultiplier = simParams.SlopeCoefficientMultiplier;
             driver.wheelslipToFrictionModifierCurve = simParams.WheelslipToFrictionModifier;
+        }
+
+        public static void SetupCabInput( GameObject interior )
+        {
+            var cabParams = interior.GetComponent<CabInputSetup>();
+            if( cabParams )
+            {
+                interior.AddComponent<CustomCabInput>();
+            }
+            else
+            {
+                Main.Warning("Loco has an interior prefab, but no cab input setup");
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(TrainCar), "LoadInterior")]
+    public static class TrainCar_LoadInterior_Patch
+    {
+        public static void Postfix( GameObject ___loadedInterior )
+        {
+            if( !___loadedInterior.activeSelf )
+            {
+                ___loadedInterior.gameObject.SetActive(true);
+                Main.Log($"Activating interior on {___loadedInterior.gameObject.name}");
+            }
         }
     }
 }
