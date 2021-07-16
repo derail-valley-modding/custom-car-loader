@@ -16,7 +16,7 @@ public class AddLocoParams : EditorWindow
         TrainCarSetup.LaunchLocoSetupWindow = ShowWindow;
     }
 
-    static void ShowWindow( TrainCarSetup trainCarSetup )
+    public static void ShowWindow( TrainCarSetup trainCarSetup )
     {
         window = GetWindow<AddLocoParams>();
         window.trainScript = trainCarSetup;

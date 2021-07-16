@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 [CustomPropertyDrawer(typeof(MethodButtonAttribute))]
 public class MethodButtonAttributeDrawer : PropertyDrawer
 {
     private int buttonCount;
-    private readonly float buttonHeight = EditorGUIUtility.singleLineHeight * 2;
+    private readonly float buttonHeight = EditorGUIUtility.singleLineHeight * 1.2f;
     private MethodButtonAttribute attr;
     
     public override void OnGUI(Rect position, SerializedProperty editorFoldout, GUIContent label)
@@ -27,19 +28,34 @@ public class MethodButtonAttributeDrawer : PropertyDrawer
         {
             buttonCount++;
 
-            attr = (MethodButtonAttribute)base.attribute;
+            attr = (MethodButtonAttribute)attribute;
 
             foreach (var name in attr.MethodNames)
             {
                 buttonCount++;
 
                 Rect buttonRect = new Rect(position.x, position.y + ((1 + buttonHeight) * (buttonCount - 1)), position.width, buttonHeight - 1);
-                if (GUI.Button(buttonRect, name))
+
+                string buttonText = SplitCamelCase(name);
+                if (GUI.Button(buttonRect, buttonText))
                 {
                     InvokeMethod(editorFoldout, name);
                 }
             }
         }
+    }
+
+    private static string SplitCamelCase( string str )
+    {
+        return Regex.Replace(
+            Regex.Replace(
+                str,
+                @"(\P{Ll})(\P{Ll}\p{Ll})",
+                "$1 $2"
+            ),
+            @"(\p{Ll})(\P{Ll})",
+            "$1 $2"
+        );
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

@@ -27,7 +27,7 @@ public class ExportTrainCar : EditorWindow
 	
 	private enum state
     {
-        Main,
+        //Main,
         Settings,
         Export
     }
@@ -35,16 +35,16 @@ public class ExportTrainCar : EditorWindow
     /// <summary>
     /// The current state of the menu.
     /// </summary>
-    private state State = state.Main;
+    private state State = state.Settings;
     
     #region Exported Train Car Data
 
-    private bool loadedCar = false;
+    //private bool loadedCar = false;
     
     /// <summary>
     /// The identifier for this car.
     /// </summary>
-    private string identifier = "Custom Car";
+    private string Identifier = "Custom Car";
     
     /// <summary>
     /// The underlying type of this car.
@@ -87,7 +87,7 @@ public class ExportTrainCar : EditorWindow
 	    TrainCarSetup.LaunchExportWindow = ShowWindow;
     }
     
-    static void ShowWindow(TrainCarSetup trainCarSetup)
+    public static void ShowWindow(TrainCarSetup trainCarSetup)
     {
 	    // Get existing open window or if none, make a new one:
 	    window = GetWindow<ExportTrainCar>();
@@ -114,8 +114,8 @@ public class ExportTrainCar : EditorWindow
     {
 	    switch (State)
 	    {
-		    #region State.Main
-
+			#region State.Main
+			/*
 		    case state.Main:
 			    GUILayout.BeginVertical("box");
 			    GUILayout.Box("Train Car Tools", BoxStyle);
@@ -145,12 +145,12 @@ public class ExportTrainCar : EditorWindow
 			    GUILayout.EndHorizontal();
 			    GUILayout.EndVertical();
 			    break;
+			*/
+			#endregion
 
-		    #endregion
+			#region State.Settings
 
-		    #region State.Settings
-
-		    case state.Settings:
+			case state.Settings:
 
 			    GUILayout.BeginVertical("box");
 			    GUILayout.Box("Prepare TrainCar for Export", BoxStyle);
@@ -163,41 +163,8 @@ public class ExportTrainCar : EditorWindow
 
 			    GUILayout.BeginVertical();
 
-			    identifier = EditorGUILayout.TextField("Identifier:", identifier);
-
+			    Identifier = EditorGUILayout.TextField("Identifier:", Identifier);
 			    TrainCarType = (BaseTrainCarType) EditorGUILayout.EnumPopup("Type of Car:", TrainCarType);
-
-				#region Positions
-
-				//EditorStyles.label.wordWrap = true;
-			 //   EditorGUILayout.LabelField(
-				//    "The values below are not editable because they are retrieved directly from the TrainCar script. They are only shown to you for evaluation." +
-				//    "If you believe these values are not correct, you should check to make sure everything is correctly in position.");
-
-			 //   GUILayout.Space(30);
-
-			 //   GUI.enabled = false;
-
-			 //   //Couplers
-			 //   FrontCouplerPosition = EditorGUILayout.Vector3Field("Front Coupler Position:", FrontCouplerPosition);
-			 //   RearCouplerPosition = EditorGUILayout.Vector3Field("Rear Coupler Position:", RearCouplerPosition);
-
-			 //   //Chains
-			 //   FrontChainPosition = EditorGUILayout.Vector3Field("Front Chain Position:", FrontChainPosition);
-			 //   RearChainPosition = EditorGUILayout.Vector3Field("Rear Chain Position:", RearChainPosition);
-
-			 //   FrontHosePosition = EditorGUILayout.Vector3Field("Front Hose Position:", FrontHosePosition);
-			 //   RearHosePosition = EditorGUILayout.Vector3Field("Rear Hose Position:", RearHosePosition);
-
-			 //   //Buffers
-			 //   FrontBufferPosition = EditorGUILayout.Vector3Field("Front Buffer Position:", FrontBufferPosition);
-			 //   RearBufferPosition = EditorGUILayout.Vector3Field("Rear Buffer Position:", RearBufferPosition);
-
-			 //   //Bogies
-			 //   FrontBogiePosition = EditorGUILayout.Vector3Field("Front Bogie Position:", FrontBogiePosition);
-			 //   RearBogiePosition = EditorGUILayout.Vector3Field("Rear Bogie Position:", RearBogiePosition);
-
-			    #endregion
 
 			    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -234,9 +201,9 @@ public class ExportTrainCar : EditorWindow
 
 		    #endregion
 
-		    #region State.Export
+			#region State.Export
 
-		    case state.Export:
+			case state.Export:
 			    GUILayout.BeginVertical("box"); // +1
 			    GUILayout.Box("Export Train Car", BoxStyle);
 			    GUILayout.BeginHorizontal("box"); // +2
@@ -252,7 +219,7 @@ public class ExportTrainCar : EditorWindow
 				    }
 
 				    if (EditorUtility.DisplayDialog("Confirmation",
-					    $"You are about to export your TrainCar named {identifier}, are you sure you want to proceed?",
+					    $"You are about to export your TrainCar named {Identifier}, are you sure you want to proceed?",
 					    "Yes", "No"))
 				    {
 
@@ -266,7 +233,7 @@ public class ExportTrainCar : EditorWindow
 					    var assetBundleFullpath = EditorUtility.SaveFolderPanel(
 						    "Export Car",
 						    ExistAtC ? cPath : (ExistAtX ? xPath : System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop)),
-						    identifier);
+						    Identifier);
 
 					    if (assetBundleFullpath.Length != 0)
 					    {
@@ -319,7 +286,7 @@ public class ExportTrainCar : EditorWindow
 						    BuildPipeline.BuildAssetBundles(assetBundleFullpath, trainCarBundleBuild,
 							    BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
 
-						    Debug.Log($"Finished AssetBundle build for car: {identifier}.");
+						    Debug.Log($"Finished AssetBundle build for car: {Identifier}.");
 
 							#endregion
 
@@ -330,15 +297,13 @@ public class ExportTrainCar : EditorWindow
 						    #endregion
 
 						    //Goto folder when finished building.
-						    if(EditorUtility.DisplayDialog("Finished Build", $"Finished building car {identifier} to path ({assetBundleFullpath}). Would you like to open the build folder?", "Yes", "No"))
+						    if(EditorUtility.DisplayDialog("Finished Build", $"Finished building car {Identifier} to path ({assetBundleFullpath}). Would you like to open the build folder?", "Yes", "No"))
 						    {
 							    EditorUtility.RevealInFinder(assetBundleFullpath);
 						    }
 						    
 						    //Close the window when we are done building.
-						    //Disable because people might potentially want to export again due to an error or something.
-						    //Close();
-						    
+						    Close();
 					    }
 				    }
 				    else
@@ -388,35 +353,23 @@ public class ExportTrainCar : EditorWindow
 	    }
 
 
-	    if (State != state.Main)
-	    {
-		    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+		EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
-		    switch (State)
-		    {
-			    case state.Main:
-				    if (GUILayout.Button("Close"))
-				    {
-					    ResetWindow();
-					    Close();
-				    }
-				    break;
-
-			    case state.Settings:
-				    if (GUILayout.Button("Back"))
-				    {
-					    ResetWindow();
-				    }
-				    break;
-
-			    case state.Export:
-				    if (GUILayout.Button("Back"))
-				    {
-					    State = state.Settings;
-				    }
-				    break;
-		    }
-	    }
+		if( State == state.Settings )
+        {
+			if( GUILayout.Button("Close") )
+			{
+				ResetWindow();
+				Close();
+			}
+		}
+		else
+		{
+			if (GUILayout.Button("Back"))
+			{
+				State = state.Settings;
+			}
+		}
 	}
 
 	private void ExportCarSettings( string assetBundleName, string outFilePath )
@@ -426,7 +379,7 @@ public class ExportTrainCar : EditorWindow
 
 		jsonfile.AddField(CarJSONKeys.BUNDLE_NAME, assetBundleName);
 		jsonfile.AddField(CarJSONKeys.PREFAB_NAME, _trainCarSetup.gameObject.name);
-		jsonfile.AddField(CarJSONKeys.IDENTIFIER, identifier);
+		jsonfile.AddField(CarJSONKeys.IDENTIFIER, Identifier);
 		jsonfile.AddField(CarJSONKeys.CAR_TYPE, (int)TrainCarType);
 
 		//Bogies
@@ -461,50 +414,14 @@ public class ExportTrainCar : EditorWindow
 	private void ResetWindow()
     {
 	    //Set state to main when
-	    State = state.Main;
+	    State = state.Settings;
 
 	    //Reset internal data
 	    _trainCarSetup = null;
 
-	    //Reset loaded car so we can get data from it again.
-	    loadedCar = false;
-	    
-	    #region Reset Exported Train Car Data
-
 	    //Reset identifier
-	    identifier = "Custom Car";
-	    
-	    //Reset TrainCar type.
+	    Identifier = "Custom Car";
 	    TrainCarType = BaseTrainCarType.FlatbedEmpty;
-
-	    #region Positions
-	    
-	    ////Couplers
-	    //FrontCouplerPosition = Vector3.zero;
-	    //RearCouplerPosition = Vector3.zero;
-
-	    ////Chains
-	    //FrontChainPosition = Vector3.zero;
-	    //RearChainPosition = Vector3.zero;
-
-	    //FrontHosePosition =  Vector3.zero;
-	    //RearHosePosition =  Vector3.zero;
-	    
-	    ////Buffers
-	    //FrontBufferPosition = Vector3.zero;
-	    //RearBufferPosition = Vector3.zero;
-
-	    ////Bogies
-	    //FrontBogiePosition = Vector3.zero;
-	    //RearBogiePosition = Vector3.zero;
-	    
-	    ////Name plates
-	    //SidePlate1Position = Vector3.zero;
-	    //SidePlate2Position = Vector3.zero;
-	    
-	    #endregion
-
-	    #endregion
     }
 }
 

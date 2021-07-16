@@ -45,8 +45,13 @@ namespace CCL_GameScripts
     
         #region Helpers
 
-        [MethodButton(nameof(CreateAssetBundleForTrainCar), nameof(AlignBogieColliders))]
-        [SerializeField] private bool editorFoldout;
+        [MethodButton(
+            nameof(CreateAssetBundleForTrainCar),
+            nameof(AlignBogieColliders),
+            nameof(AddLocoSimulation),
+            nameof(ExportCar))]
+        [SerializeField]
+        private bool editorFoldout = true;
 
         public void CreateAssetBundleForTrainCar()
         {
@@ -92,6 +97,16 @@ namespace CCL_GameScripts
             }
 
             Undo.RecordObjects(objectsToUndo.ToArray(), "Undo Align Bogies");
+        }
+
+        private void ExportCar()
+        {
+            ExportTrainCar.ShowWindow(this);
+        }
+
+        private void AddLocoSimulation()
+        {
+            AddLocoParams.ShowWindow(this);
         }
 
         #endregion
