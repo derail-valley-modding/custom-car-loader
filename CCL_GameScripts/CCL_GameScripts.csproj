@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;UNITY_EDITOR</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -53,9 +53,12 @@
     <Compile Include="Attributes\ReadOnlyAttribute.cs" />
     <Compile Include="BogieSetup.cs" />
     <Compile Include="CabControls\ControlSetupBase.cs" />
+    <Compile Include="CabControls\GaugeSetup.cs" />
+    <Compile Include="CabControls\IndicatorSetupBase.cs" />
     <Compile Include="CabControls\LeverSetup.cs" />
     <Compile Include="CabInputSetup.cs" />
     <Compile Include="CarJSONKeys.cs" />
+    <Compile Include="ComponentInitSpec.cs" />
     <Compile Include="CustomCarEnums.cs" />
     <Compile Include="DamageConfigBasic.cs" />
     <Compile Include="DamageConfigDiesel.cs" />

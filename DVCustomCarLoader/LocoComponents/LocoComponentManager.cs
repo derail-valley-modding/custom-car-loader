@@ -68,16 +68,21 @@ namespace DVCustomCarLoader
             var cabParams = interior.GetComponent<CabInputSetup>();
             if( cabParams )
             {
-                foreach( var control in interior.GetComponentsInChildren<ControlSetupBase>() )
-                {
-                    CabControlCreator.Create(control);
-                }
-
+                CreateComponentsFromProxies(interior);
                 interior.AddComponent<CustomCabInput>();
             }
             else
             {
                 Main.Warning("Loco has an interior prefab, but no cab input setup");
+            }
+        }
+
+        public static void CreateComponentsFromProxies( GameObject root )
+        {
+            var allInitSpecs = root.GetComponentsInChildren<ComponentInitSpec>();
+            foreach( var compSpec in allInitSpecs )
+            {
+                compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
             }
         }
     }

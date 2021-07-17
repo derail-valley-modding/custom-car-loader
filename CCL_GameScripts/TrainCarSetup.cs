@@ -41,7 +41,6 @@ namespace CCL_GameScripts
 
         public GameObject InteriorPrefab;
 
-#if UNITY_EDITOR
     
         #region Helpers
 
@@ -138,7 +137,5 @@ namespace CCL_GameScripts
     //}
 
         #endregion
-
-#endif
     }
 }
