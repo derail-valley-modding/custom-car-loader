@@ -59,25 +59,25 @@ namespace DVCustomCarLoader.LocoComponents
 			if( config.Brake )
 			{
 				brakeControl = config.Brake.GetComponent<ControlImplBase>();
-				brakeControl.SetValue(locoController.targetBrake);
+				if( brakeControl ) brakeControl.SetValue(locoController.targetBrake);
 			}
 
 			if( config.IndependentBrake )
 			{
 				independentBrakeControl = config.IndependentBrake.GetComponent<ControlImplBase>();
-				independentBrakeControl.SetValue(locoController.targetIndependentBrake);
+				if( independentBrakeControl ) independentBrakeControl.SetValue(locoController.targetIndependentBrake);
 			}
 
 			if( config.Throttle )
 			{
 				throttleControl = config.Throttle.GetComponent<ControlImplBase>();
-				throttleControl.SetValue(locoController.targetThrottle);
+				if( throttleControl ) throttleControl.SetValue(locoController.targetThrottle);
 			}
 
 			if( config.Reverser ) 
 			{
                 reverserControl = config.Reverser.GetComponent<ControlImplBase>();
-				reverserControl.SetValue((locoController.reverser + 1f) / 2f);
+				if( reverserControl ) reverserControl.SetValue((locoController.reverser + 1f) / 2f);
 			}
 
 			yield return WaitFor.SecondsRealtime(1f);

@@ -6,6 +6,7 @@ using UnityEngine;
 using DVCustomCarLoader.LocoComponents;
 using CCL_GameScripts;
 using HarmonyLib;
+using CCL_GameScripts.CabControls;
 
 namespace DVCustomCarLoader
 {
@@ -67,6 +68,11 @@ namespace DVCustomCarLoader
             var cabParams = interior.GetComponent<CabInputSetup>();
             if( cabParams )
             {
+                foreach( var control in interior.GetComponentsInChildren<ControlSetupBase>() )
+                {
+                    CabControlCreator.Create(control);
+                }
+
                 interior.AddComponent<CustomCabInput>();
             }
             else

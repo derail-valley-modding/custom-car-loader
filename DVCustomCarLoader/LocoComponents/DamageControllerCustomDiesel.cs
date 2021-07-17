@@ -245,6 +245,16 @@ namespace DVCustomCarLoader.LocoComponents
 
         public override IEnumerable<PitStopRefillable> GetPitStopParameters()
         {
+            if( (engine == null) || (wheels == null) || (bodyDamage == null) || !bodyDamage )
+            {
+                bool eng = (engine != null);
+                bool whl = (wheels != null);
+                bool body = (bodyDamage != null) && bodyDamage;
+
+                Main.Error($"DamageControllerCustomDiesel: engine={eng}, wheels={whl}, body={body}");
+                return Enumerable.Empty<PitStopRefillable>();
+            }
+
             return new[]
             {
                 new PitStopRefillable(this, ResourceType.Engine_DMG, engine.HealthPercentage100Notation, 100),

@@ -38,6 +38,7 @@
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="DV.BrakeSystem, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="DV.Interaction, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="DV.PointSet, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="DV.Utils, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.Utils.dll</HintPath>
@@ -72,6 +73,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LocoComponents\CabControlCreator.cs" />
     <Compile Include="LocoComponents\CustomCabInput.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CommsRadioCarSpawner_Awake_Patch.cs" />
