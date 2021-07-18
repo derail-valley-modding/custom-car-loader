@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using CCL_GameScripts;
+using CCL_GameScripts.CabControls;
 using DV.CabControls;
 using UnityEngine;
 

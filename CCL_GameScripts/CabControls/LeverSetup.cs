@@ -64,7 +64,7 @@ namespace CCL_GameScripts.CabControls
 
 		protected const float GIZMO_RADIUS = 0.1f;
 		protected const int GIZMO_SEGMENTS = 40;
-		protected static readonly Color START_COLOR = new Color(0, 0, 0.65f);
+		protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
 		protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
 
 		private void OnDrawGizmosSelected()
@@ -77,13 +77,13 @@ namespace CCL_GameScripts.CabControls
 				// draw ray segments
 				for( int i = 0; i <= Notches; i++ )
 				{
-					Color segmentColor = Color.Lerp(startColor, endColor, (float)i / Notches);
+					Gizmos.color = Color.Lerp(startColor, endColor, (float)i / Notches);
 					Vector3 rayVector = Quaternion.AngleAxis(
 						Mathf.Lerp(JointLimitMin, JointLimitMax, (float)i / Notches), JointAxis)
 						* Vector3.forward * GIZMO_RADIUS;
 					rayVector = transform.TransformPoint(rayVector);
 
-					Debug.DrawLine(transform.position, rayVector, segmentColor, 0, false);
+					Gizmos.DrawLine(transform.position, rayVector);
 				}
 			}
 			else
@@ -92,7 +92,7 @@ namespace CCL_GameScripts.CabControls
 				Vector3 lastVector = transform.parent.position;
 				for( int i = 0; i <= GIZMO_SEGMENTS; i++ )
 				{
-					Color segmentColor = Color.Lerp(startColor, endColor, (float)i / Notches);
+					Gizmos.color = Color.Lerp(startColor, endColor, (float)i / Notches);
 					Vector3 nextVector = Quaternion.AngleAxis(
 						Mathf.Lerp(JointLimitMin, JointLimitMax, (float)i / GIZMO_SEGMENTS), JointAxis)
 						* Vector3.forward * GIZMO_RADIUS;
@@ -100,11 +100,11 @@ namespace CCL_GameScripts.CabControls
 
 					if( i == 0 || i == GIZMO_SEGMENTS )
                     {
-						Debug.DrawLine(transform.position, nextVector, segmentColor, 0, false);
+						Gizmos.DrawLine(transform.position, nextVector);
 					}
 					else if( i != 0 )
                     {
-						Debug.DrawLine(lastVector, nextVector, segmentColor, 0f, false);
+						Gizmos.DrawLine(lastVector, nextVector);
 					}
 
 					lastVector = nextVector;

@@ -25,6 +25,9 @@ namespace DVCustomCarLoader
             }
         }
 
+        private static Dictionary<TrainCarType, GameObject> InteriorPrefabCache =
+            new Dictionary<TrainCarType, GameObject>();
+
         // Order to add components:
         // - Simulation
         // - SimulationEvents
@@ -69,7 +72,8 @@ namespace DVCustomCarLoader
             if( cabParams )
             {
                 CreateComponentsFromProxies(interior);
-                interior.AddComponent<CustomCabInput>();
+                CreateCopiedControls(interior, cabParams);
+                var cabInput = interior.AddComponent<CustomCabInput>();
             }
             else
             {
@@ -84,6 +88,59 @@ namespace DVCustomCarLoader
             {
                 compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
             }
+        }
+
+        public static void CreateCopiedControls( GameObject root, CabInputSetup cabSetup )
+        {
+            var allCopySpecs = root.GetComponentsInChildren<CopiedCabControl>();
+            foreach( var copySpec in allCopySpecs )
+            {
+                GameObject parent = copySpec.gameObject;
+                (BaseTrainCarType carType, string sourceObjName) = copySpec.GetSourceObject();
+
+                GameObject sourceInterior = GetTrainCarInterior((TrainCarType)carType);
+                if( !sourceInterior ) continue;
+
+                Transform sourceChild = sourceInterior.transform.Find(sourceObjName);
+                if( sourceChild )
+                {
+                    GameObject newControl = UnityEngine.Object.Instantiate(sourceChild.gameObject, parent.transform);
+                    newControl.transform.localPosition = Vector3.zero;
+                    newControl.transform.localRotation = Quaternion.identity;
+                    cabSetup.SetInputObject(copySpec.InputBinding, newControl);
+                }
+            }
+        }
+
+        public static GameObject GetTrainCarInterior( TrainCarType carType )
+        {
+            if( !InteriorPrefabCache.TryGetValue(carType, out GameObject interior) )
+            {
+                var prefab = CarTypes.GetCarPrefab(carType);
+                if( !prefab )
+                {
+                    Main.Error($"CarType {carType} has missing prefab");
+                    return null;
+                }
+
+                TrainCar car = prefab.GetComponent<TrainCar>();
+                if( !car )
+                {
+                    Main.Warning($"Couldn't find TrainCar on carType {prefab.name}");
+                    return null;
+                }
+
+                if( car.interiorPrefab == null || !car.interiorPrefab )
+                {
+                    Main.Warning($"TrainCar on carType {prefab.name} doesn't have an interiorPrefab assigned");
+                    return null;
+                }
+
+                interior = car.interiorPrefab;
+                InteriorPrefabCache.Add(carType, interior);
+            }
+
+            return interior;
         }
     }
 
