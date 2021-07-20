@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
-    public class CopiedLever : CopiedCabControl
+    public class CopiedLever : CopiedCabInput
     {
         protected static readonly (BaseTrainCarType, string)[] TargetObjects =
             new []

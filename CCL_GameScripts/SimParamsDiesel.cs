@@ -39,6 +39,9 @@ namespace CCL_GameScripts
         public float OilConsumptionEngineRpm = 1;
         //public float OilConsumptionWheels = 0.12f;
 
+        [Header("Other Equipment")]
+        public float AirCompressorRate = 0.8f;
+
         public SimParamsDiesel()
         {
             ApplyDE6Defaults();

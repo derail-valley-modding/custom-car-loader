@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
 using UnityEngine;
@@ -11,6 +13,27 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected DebtTrackerCustomLoco locoDebt;
         protected CarVisitChecker carVisitChecker;
+
+        public float GetBrakePipePressure() => train.brakeSystem.brakePipePressure;
+        public float GetBrakeResPressure() => train.brakeSystem.mainReservoirPressure;
+
+        public virtual Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
+        {
+            switch( indicatedType )
+            {
+                case CabIndicatorType.BrakePipe:
+                    return GetBrakePipePressure;
+                    
+                case CabIndicatorType.BrakeReservoir:
+                    return GetBrakeResPressure;
+
+                case CabIndicatorType.Speed:
+                    return GetSpeedKmH;
+
+                default:
+                    return () => 0;
+            }
+        }
     }
 
     public abstract class CustomLocoController<TSim,TDmg,TEvents> : CustomLocoController

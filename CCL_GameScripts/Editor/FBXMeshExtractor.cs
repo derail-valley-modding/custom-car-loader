@@ -38,17 +38,10 @@ public class FBXMeshExtractor
         string parentfolderPath = selectedObjectPath.Substring(0, selectedObjectPath.Length - (selectedObject.name.Length + 5));
         string objectFolderName = selectedObject.name;
         string objectFolderPath = parentfolderPath + "/" + objectFolderName;
-        string meshFolderName = "Meshes";
-        string meshFolderPath = objectFolderPath + "/" + meshFolderName;
 
         if( !AssetDatabase.IsValidFolder(objectFolderPath) )
         {
             AssetDatabase.CreateFolder(parentfolderPath, objectFolderName);
-
-            if( !AssetDatabase.IsValidFolder(meshFolderPath) )
-            {
-                AssetDatabase.CreateFolder(objectFolderPath, meshFolderName);
-            }
         }
 
         //Create Meshes
@@ -62,7 +55,7 @@ public class FBXMeshExtractor
 
                 Mesh mesh = Object.Instantiate(objects[i]) as Mesh;
 
-                AssetDatabase.CreateAsset(mesh, meshFolderPath + "/" + objects[i].name + _targetExtension);
+                AssetDatabase.CreateAsset(mesh, objectFolderPath + "/" + objects[i].name + _targetExtension);
             }
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
 using UnityEngine;
@@ -44,7 +45,28 @@ namespace DVCustomCarLoader.LocoComponents
 		public float SandLevel => sim.sand.value;
 		public bool SandersOn => sim.sandOn;
 
-		public override float GetSandersFlow()
+        public override Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
+        {
+			switch( indicatedType )
+            {
+				case CabIndicatorType.Fuel:
+					return () => FuelLevel;
+
+				case CabIndicatorType.Oil:
+					return () => OilLevel;
+
+				case CabIndicatorType.Sand:
+					return () => SandLevel;
+
+				case CabIndicatorType.EngineTemp:
+					return () => EngineTemp;
+
+				default:
+					return base.GetIndicatorFunc(indicatedType);
+			}
+        }
+
+        public override float GetSandersFlow()
 		{
 			if( sim.sand.value <= 0f )
 			{
@@ -85,16 +107,6 @@ namespace DVCustomCarLoader.LocoComponents
 			base.SetReverser(position);
 		}
 
-		//protected override void Awake()
-		//{
-		//	base.Awake();
-
-		//	// TODO: MU, save state
-		//	//MultipleUnitModule component = base.GetComponent<MultipleUnitModule>();
-		//	//base.gameObject.AddComponent<LocoStateSaveDiesel>().Initialize(sim, damageController, this, carVisitChecker, component);
-		//}
-
-
 		public override float GetTractionForce()
 		{
 			float num = (sim.engineRPM.value > 0f) ? tractionTorqueCurve.Evaluate(GetSpeedKmH() / sim.engineRPM.value) : 0f;
@@ -102,7 +114,18 @@ namespace DVCustomCarLoader.LocoComponents
 			return sim.engineRPM.value * num2 * tractionTorqueMult;
 		}
 
-		private void OnDisable()
+        #region Events
+
+        //protected override void Awake()
+        //{
+        //	base.Awake();
+
+        //	// TODO: MU, save state
+        //	//MultipleUnitModule component = base.GetComponent<MultipleUnitModule>();
+        //	//base.gameObject.AddComponent<LocoStateSaveDiesel>().Initialize(sim, damageController, this, carVisitChecker, component);
+        //}
+
+        private void OnDisable()
 		{
 			SetupListeners(false);
 		}
@@ -146,12 +169,12 @@ namespace DVCustomCarLoader.LocoComponents
 			eventController.EngineTempChanged.Manage(OnEngineTempChanged, on);
 		}
 
-		//protected override bool ShouldSwitchToTrainBrakeOnStart()
-		//{
-		//	return LicenseManager.IsGeneralLicenseAcquired(GeneralLicenseType.DE6) && base.ShouldSwitchToTrainBrakeOnStart();
-		//}
+        //protected override bool ShouldSwitchToTrainBrakeOnStart()
+        //{
+        //	return LicenseManager.IsGeneralLicenseAcquired(GeneralLicenseType.DE6) && base.ShouldSwitchToTrainBrakeOnStart();
+        //}
 
-		protected override void Start()
+        protected override void Start()
 		{
 			base.Start();
 			if( !VRManager.IsVREnabled() )
@@ -160,9 +183,15 @@ namespace DVCustomCarLoader.LocoComponents
 				keyboardCtrl.control = this;
 				Main.Log("Added keyboard input to car");
 			}
+
+			train.brakeSystem.compressorProductionRate = sim.simParams.AirCompressorRate;
 		}
 
-		public override void Update()
+        #endregion
+
+        #region Update Loop
+
+        public override void Update()
 		{
 			base.Update();
 			UpdateSimSpeed();
@@ -180,5 +209,7 @@ namespace DVCustomCarLoader.LocoComponents
 			sim.throttle.SetValue(sim.engineOn ? throttle : 0f);
 			sim.throttleToTargetDiff.SetValue(sim.engineOn ? (throttle - targetThrottle) : 0f);
 		}
-	}
+
+        #endregion
+    }
 }

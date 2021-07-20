@@ -89,7 +89,7 @@ namespace CCL_GameScripts.CabControls
 			else
             {
 				// draw semi-circle
-				Vector3 lastVector = transform.parent.position;
+				Vector3 lastVector = transform.position;
 				for( int i = 0; i <= GIZMO_SEGMENTS; i++ )
 				{
 					Gizmos.color = Color.Lerp(startColor, endColor, (float)i / Notches);

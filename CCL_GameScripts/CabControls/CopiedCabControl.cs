@@ -5,17 +5,18 @@ namespace CCL_GameScripts.CabControls
 {
     public abstract class CopiedCabControl : MonoBehaviour
     {
-        public CabInputType InputBinding;
+        public bool ReplaceThisObject = false;
 
         public abstract (BaseTrainCarType, string) GetSourceObject();
     }
 
-    public enum CabInputType
+    public abstract class CopiedCabInput : CopiedCabControl
     {
-        IndependentBrake,
-        TrainBrake,
-        Throttle,
-        Reverser,
-        Horn
+        public CabInputType InputBinding;
+    }
+
+    public abstract class CopiedCabIndicator : CopiedCabControl
+    {
+        public CabIndicatorType OutputBinding;
     }
 }

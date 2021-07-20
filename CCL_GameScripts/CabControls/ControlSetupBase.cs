@@ -8,6 +8,8 @@ namespace CCL_GameScripts.CabControls
     {
         public abstract CabControlType ControlType { get; }
 
+        public CabInputType InputBinding;
+
         [ProxyField("colliderGameObjects")]
         public GameObject[] InteractionColliders;
     }

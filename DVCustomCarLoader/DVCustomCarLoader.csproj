@@ -73,6 +73,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LocoComponents\CustomCabIndicators.cs" />
     <Compile Include="LocoComponents\CustomCabInput.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
     <Compile Include="ModPatches.cs" />

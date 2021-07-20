@@ -10,11 +10,6 @@ namespace DVCustomCarLoader.LocoComponents
 		protected CustomLocoController locoController;
 		protected CabInputSetup config;
 
-		//public GameObject brake;
-		//public GameObject independentBrake;
-		//public GameObject reverser;
-		//public GameObject throttle;
-
 		public bool reverserSnap;
 
 		protected ControlImplBase brakeControl;

@@ -25,7 +25,7 @@ namespace DVCustomCarLoader
             }
         }
 
-        private static Dictionary<TrainCarType, GameObject> InteriorPrefabCache =
+        private static readonly Dictionary<TrainCarType, GameObject> InteriorPrefabCache =
             new Dictionary<TrainCarType, GameObject>();
 
         // Order to add components:
@@ -43,6 +43,10 @@ namespace DVCustomCarLoader
                 Main.Error($"Loco prefab {prefab.name} is missing diesel damage config, skipping sim setup");
                 return;
             }
+
+            // add brake compressor, rate is set in controller start
+            var train = prefab.GetComponent<TrainCar>();
+            train.hasCompressor = simParams.AirCompressorRate > 0;
 
             var drivingForce = prefab.AddComponent<DrivingForce>();
             ApplyDrivingForceParams(drivingForce, simParams);
@@ -66,12 +70,25 @@ namespace DVCustomCarLoader
             driver.wheelslipToFrictionModifierCurve = simParams.WheelslipToFrictionModifier;
         }
 
-        public static void SetupCabInput( GameObject interior )
+        public static void SetupCabComponents( GameObject interior )
         {
             var cabParams = interior.GetComponent<CabInputSetup>();
+            if( !cabParams )
+            {
+                Main.Log("Added Cab Input Setup");
+                cabParams = interior.AddComponent<CabInputSetup>();
+            }
+
+            var indicatorControl = interior.GetComponent<CustomCabIndicators>();
+            if( !indicatorControl )
+            {
+                Main.Log("Added Cab Indicator Controller");
+                indicatorControl = interior.AddComponent<CustomCabIndicators>();
+            }
+
             if( cabParams )
             {
-                CreateComponentsFromProxies(interior);
+                CreateComponentsFromProxies(interior, cabParams);
                 CreateCopiedControls(interior, cabParams);
                 var cabInput = interior.AddComponent<CustomCabInput>();
             }
@@ -81,21 +98,37 @@ namespace DVCustomCarLoader
             }
         }
 
-        public static void CreateComponentsFromProxies( GameObject root )
+        public static void CreateComponentsFromProxies( GameObject root, CabInputSetup inputSetup )
         {
             var allInitSpecs = root.GetComponentsInChildren<ComponentInitSpec>();
+
             foreach( var compSpec in allInitSpecs )
             {
-                compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
+                GameObject controlObject = compSpec.gameObject;
+                if( compSpec is ControlSetupBase control )
+                {
+                    inputSetup.SetInputObject(control.InputBinding, controlObject);
+                }
+                
+                object realComp = compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
+
+                if( (compSpec is IndicatorSetupBase indicatorSpec) && (realComp is GameObject spawnedObj) )
+                {
+                    var realIndicator = spawnedObj.GetComponent<Indicator>();
+                    var indicatorInfo = spawnedObj.AddComponent<IndicatorInfo>();
+                    indicatorInfo.Type = indicatorSpec.OutputBinding;
+                    indicatorInfo.Indicator = realIndicator;
+                }
             }
         }
 
         public static void CreateCopiedControls( GameObject root, CabInputSetup cabSetup )
         {
             var allCopySpecs = root.GetComponentsInChildren<CopiedCabControl>();
+
             foreach( var copySpec in allCopySpecs )
             {
-                GameObject parent = copySpec.gameObject;
+                GameObject copierAttachedObject = copySpec.gameObject;
                 (BaseTrainCarType carType, string sourceObjName) = copySpec.GetSourceObject();
 
                 GameObject sourceInterior = GetTrainCarInterior((TrainCarType)carType);
@@ -104,10 +137,36 @@ namespace DVCustomCarLoader
                 Transform sourceChild = sourceInterior.transform.Find(sourceObjName);
                 if( sourceChild )
                 {
-                    GameObject newControl = UnityEngine.Object.Instantiate(sourceChild.gameObject, parent.transform);
-                    newControl.transform.localPosition = Vector3.zero;
-                    newControl.transform.localRotation = Quaternion.identity;
-                    cabSetup.SetInputObject(copySpec.InputBinding, newControl);
+                    GameObject newControl;
+                    if( copySpec.ReplaceThisObject )
+                    {
+                        newControl = UnityEngine.Object.Instantiate(sourceChild.gameObject, copierAttachedObject.transform.parent);
+                        newControl.transform.localPosition = copierAttachedObject.transform.localPosition;
+                        newControl.transform.localRotation = copierAttachedObject.transform.localRotation;
+                    }
+                    else
+                    {
+                        newControl = UnityEngine.Object.Instantiate(sourceChild.gameObject, copierAttachedObject.transform);
+                        newControl.transform.localPosition = Vector3.zero;
+                        newControl.transform.localRotation = Quaternion.identity;
+                    }
+
+                    if( copySpec is CopiedCabInput input )
+                    {
+                        cabSetup.SetInputObject(input.InputBinding, newControl);
+                    }
+                    else if( copySpec is CopiedCabIndicator indicator )
+                    {
+                        var realIndicator = newControl.GetComponentInChildren<Indicator>(true);
+                        var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorInfo>();
+                        indicatorInfo.Type = indicator.OutputBinding;
+                        indicatorInfo.Indicator = realIndicator;
+                    }
+
+                    if( copySpec.ReplaceThisObject )
+                    {
+                        UnityEngine.Object.Destroy(copierAttachedObject);
+                    }
                 }
             }
         }
