@@ -7,7 +7,7 @@ namespace CCL_GameScripts
     /// <summary>
     ///     Holds all the references for setup of a TrainCar.
     /// </summary>
-    public class TrainCarSetup : MonoBehaviour
+    public class TrainCarSetup : ComponentInitSpec
     {
 
         #region Internal
@@ -31,7 +31,13 @@ namespace CCL_GameScripts
 
         #endregion
 
+        #region TrainCar Init Spec
 
+        protected override string TargetTypeName => "TrainCar";
+
+        protected override bool DestroyAfterCreation => false;
+
+        [Header("Bogie Replacement")]
         public Transform FrontBogie;
         public Transform RearBogie;
         public bool ReplaceFrontBogie;
@@ -39,9 +45,26 @@ namespace CCL_GameScripts
         public CapsuleCollider FrontBogieCollider;
         public CapsuleCollider RearBogieCollider;
 
+        [Header("Bogie Physics")]
+        public bool OverridePhysics = false;
+
+        [ProxyField("wheelRadius")]
+        public float WheelRadius = 0.459f;
+
+        [Range(0, 1)]
+        [ProxyField("bogieMassRatio")]
+        public float MassRatioPerBogie = 0.5f;
+
+        [ProxyField("bogieSpring")]
+        public float BogieSpring = 200;
+
+        [ProxyField("bogieDamping")]
+        public float BogieDamping = 5;
+
         public GameObject InteriorPrefab;
 
-    
+        #endregion
+
         #region Helpers
 
         [MethodButton(

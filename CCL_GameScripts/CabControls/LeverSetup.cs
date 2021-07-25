@@ -72,14 +72,16 @@ namespace CCL_GameScripts.CabControls
 			Color startColor = InvertDirection ? END_COLOR : START_COLOR;
 			Color endColor = InvertDirection ? START_COLOR : END_COLOR;
 
-			if( UseNotches )
+			if( UseNotches && (Notches > 0) )
 			{
+				float rayCount = Notches - 1;
+
 				// draw ray segments
-				for( int i = 0; i <= Notches; i++ )
+				for( int i = 0; i <= rayCount; i++ )
 				{
-					Gizmos.color = Color.Lerp(startColor, endColor, (float)i / Notches);
+					Gizmos.color = Color.Lerp(startColor, endColor, i / rayCount);
 					Vector3 rayVector = Quaternion.AngleAxis(
-						Mathf.Lerp(JointLimitMin, JointLimitMax, (float)i / Notches), JointAxis)
+						Mathf.Lerp(JointLimitMin, JointLimitMax, i / rayCount), JointAxis)
 						* Vector3.forward * GIZMO_RADIUS;
 					rayVector = transform.TransformPoint(rayVector);
 
@@ -92,7 +94,7 @@ namespace CCL_GameScripts.CabControls
 				Vector3 lastVector = transform.position;
 				for( int i = 0; i <= GIZMO_SEGMENTS; i++ )
 				{
-					Gizmos.color = Color.Lerp(startColor, endColor, (float)i / Notches);
+					Gizmos.color = Color.Lerp(startColor, endColor, (float)i / GIZMO_SEGMENTS);
 					Vector3 nextVector = Quaternion.AngleAxis(
 						Mathf.Lerp(JointLimitMin, JointLimitMax, (float)i / GIZMO_SEGMENTS), JointAxis)
 						* Vector3.forward * GIZMO_RADIUS;

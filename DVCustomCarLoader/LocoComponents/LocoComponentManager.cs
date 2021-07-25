@@ -7,6 +7,7 @@ using DVCustomCarLoader.LocoComponents;
 using CCL_GameScripts;
 using HarmonyLib;
 using CCL_GameScripts.CabControls;
+using DV.CabControls.Spec;
 
 namespace DVCustomCarLoader
 {
@@ -153,6 +154,23 @@ namespace DVCustomCarLoader
 
                     if( copySpec is CopiedCabInput input )
                     {
+                        // copy interaction area
+                        var realControlSpec = newControl.GetComponentInChildren<ControlSpec>(true);
+
+                        // try to find interaction area parent
+                        var iAreaField = AccessTools.Field(realControlSpec.GetType(), "nonVrStaticInteractionArea");
+                        if( iAreaField != null )
+                        {
+                            var iArea = iAreaField.GetValue(realControlSpec) as StaticInteractionArea;
+                            if( iArea )
+                            {
+                                GameObject newIAObj = UnityEngine.Object.Instantiate(iArea.gameObject, newControl.transform.parent);
+                                iArea = newIAObj.GetComponent<StaticInteractionArea>();
+                                iAreaField.SetValue(realControlSpec, iArea);
+                                Main.Log("Instantiated static interaction area");
+                            }
+                        }
+
                         cabSetup.SetInputObject(input.InputBinding, newControl);
                     }
                     else if( copySpec is CopiedCabIndicator indicator )
@@ -161,6 +179,18 @@ namespace DVCustomCarLoader
                         var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorInfo>();
                         indicatorInfo.Type = indicator.OutputBinding;
                         indicatorInfo.Indicator = realIndicator;
+                    }
+                    else if( copySpec is CopiedLamp lamp )
+                    {
+                        var realLamp = newControl.GetComponentInChildren<LampControl>(true);
+                        var lampRelay = newControl.gameObject.AddComponent<DashboardLampRelay>();
+                        lampRelay.SimBinding = lamp.SimBinding;
+                        lampRelay.Lamp = realLamp;
+
+                        lampRelay.ThresholdDirection = lamp.ThresholdDirection;
+                        lampRelay.SolidThreshold = (LocoSimulationEvents.Amount)lamp.SolidThreshold;
+                        lampRelay.UseBlinkMode = lamp.UseBlinkMode;
+                        lampRelay.BlinkThreshold = (LocoSimulationEvents.Amount)lamp.BlinkThreshold;
                     }
 
                     if( copySpec.ReplaceThisObject )

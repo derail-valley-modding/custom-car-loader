@@ -60,12 +60,13 @@ namespace CCL_GameScripts.CabControls
             Color startColor = gizmo.Inverted ? END_COLOR : START_COLOR;
             Color endColor = gizmo.Inverted ? START_COLOR : END_COLOR;
 
+            float rayCount = gizmo.Notches - 1;
             // draw ray segments
-            for( int i = 0; i <= gizmo.Notches; i++ )
+            for( int i = 0; i <= rayCount; i++ )
             {
-                Color segmentColor = Color.Lerp(startColor, endColor, (float)i / gizmo.Notches);
+                Color segmentColor = Color.Lerp(startColor, endColor, i / rayCount);
                 Vector3 rayVector = Quaternion.AngleAxis(
-                    Mathf.Lerp(gizmo.LimitMin, gizmo.LimitMax, (float)i / gizmo.Notches), Vector3.up)
+                    Mathf.Lerp(gizmo.LimitMin, gizmo.LimitMax, i / rayCount), Vector3.up)
                     * Vector3.forward * GIZMO_RADIUS;
                 rayVector = transform.TransformPoint(rayVector);
 

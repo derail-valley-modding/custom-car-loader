@@ -57,6 +57,7 @@
     <Compile Include="CabControls\ControlSetupBase.cs" />
     <Compile Include="CabControls\CopiedCabControl.cs" />
     <Compile Include="CabControls\CopiedGauge.cs" />
+    <Compile Include="CabControls\CopiedLamp.cs" />
     <Compile Include="CabControls\CopiedLever.cs" />
     <Compile Include="CabControls\GaugeSetup.cs" />
     <Compile Include="CabControls\IndicatorSetupBase.cs" />

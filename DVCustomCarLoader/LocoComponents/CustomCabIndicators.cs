@@ -12,13 +12,6 @@ namespace DVCustomCarLoader.LocoComponents
 
         public IndicatorInfo[] Indicators;
 
-        //public void AddIndicators( IEnumerable<(CabIndicatorType, Indicator)> comps )
-        //{
-        //    if( Indicators == null ) Indicators = new List<IndicatorInfo>();
-
-        //    Indicators.AddRange(comps.Select(c => new IndicatorInfo(c.Item1, c.Item2)));
-        //}
-
         protected virtual void Start()
         {
             locoController = TrainCar.Resolve(gameObject).GetComponent<CustomLocoController>();

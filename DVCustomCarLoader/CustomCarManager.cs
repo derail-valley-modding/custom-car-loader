@@ -155,8 +155,11 @@ namespace DVCustomCarLoader
                             }
                         }
 
-                        newCar.FinalizePrefab();
-                        return newCar;
+                        if( newCar.FinalizePrefab() )
+                        {
+                            return newCar;
+                        }
+                        else return null;
                     }
                 }
             }

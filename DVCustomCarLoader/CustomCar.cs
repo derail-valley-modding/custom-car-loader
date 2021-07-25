@@ -36,13 +36,20 @@ namespace DVCustomCarLoader
         public Vector3 FrontCouplerPosition;
         public Vector3 RearCouplerPosition;
 
-        public void FinalizePrefab()
+        public bool FinalizePrefab()
         {
             Main.ModEntry.Logger.Log($"Augmenting prefab for {identifier}");
 
             GameObject newFab = Object.Instantiate(CarPrefab, null);
             newFab.SetActive(false);
             Object.DontDestroyOnLoad(newFab);
+
+            TrainCarSetup carSetup = newFab.GetComponent<TrainCarSetup>();
+            if( !carSetup )
+            {
+                Main.Error($"Prefab {CarPrefab.name} for {identifier} has no TrainCarSetup!");
+                return false;
+            }
 
             GameObject basePrefab = CarTypes.GetCarPrefab(BaseCarType);
             TrainCar baseCar = basePrefab.GetComponent<TrainCar>();
@@ -325,14 +332,24 @@ namespace DVCustomCarLoader
             #endregion
 
             // Setup new car script
-            TrainCar newCar = newFab.AddComponent<TrainCar>();
+            var newCar = carSetup.CreateRealComponent(AccessTools.TypeByName, Main.Warning) as TrainCar;
+            if( !newCar )
+            {
+                Main.Warning("Couldn't create TrainCar component");
+                Object.Destroy(newFab);
+                return false;
+            }
 
             // setup traincar properties
-            newCar.bogieDamping = baseCar.bogieDamping;
-            newCar.bogieMassRatio = baseCar.bogieMassRatio;
-            newCar.bogieSpring = baseCar.bogieSpring;
-            newCar.totalMass = baseCar.totalMass;
-            newCar.wheelRadius = baseCar.wheelRadius;
+            if( !carSetup.OverridePhysics )
+            {
+                newCar.bogieDamping = baseCar.bogieDamping;
+                newCar.bogieMassRatio = baseCar.bogieMassRatio;
+                newCar.bogieSpring = baseCar.bogieSpring;
+                newCar.totalMass = baseCar.totalMass;
+                newCar.wheelRadius = baseCar.wheelRadius;
+            }
+
             newCar.carType = BaseCarType;
 
             var simParams = newFab.GetComponent<SimParamsBase>();
@@ -340,26 +357,18 @@ namespace DVCustomCarLoader
             {
                 LocoComponentManager.AddLocoSimulation(newFab, simParams);
 
-                var carSetup = newFab.GetComponent<TrainCarSetup>();
-                if( carSetup )
+                if( carSetup.InteriorPrefab )
                 {
-                    if( carSetup.InteriorPrefab )
-                    {
-                        GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
-                        interiorFab.SetActive(false);
-                        Object.DontDestroyOnLoad(interiorFab);
+                    GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
+                    interiorFab.SetActive(false);
+                    Object.DontDestroyOnLoad(interiorFab);
 
-                        LocoComponentManager.SetupCabComponents(interiorFab);
-                        interiorFab.SetLayersRecursive("Interactable");
+                    LocoComponentManager.SetupCabComponents(interiorFab);
+                    interiorFab.SetLayersRecursive("Interactable");
 
-                        newCar.interiorPrefab = interiorFab;
+                    newCar.interiorPrefab = interiorFab;
 
-                        InteriorPrefab = interiorFab;
-                    }
-                }
-                else
-                {
-                    Main.Warning("TrainCarSetup not found");
+                    InteriorPrefab = interiorFab;
                 }
             }
 
@@ -367,6 +376,7 @@ namespace DVCustomCarLoader
             CarPrefab.name = identifier;
 
             Main.ModEntry.Logger.Log($"Finalized prefab for {identifier}");
+            return true;
         }
 
         private static Delegate[] carSpawnedDelegates = null;
