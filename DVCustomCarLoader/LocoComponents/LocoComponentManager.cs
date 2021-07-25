@@ -55,8 +55,32 @@ namespace DVCustomCarLoader
             prefab.AddComponent<CustomLocoSimDiesel>();
             prefab.AddComponent<CustomDieselSimEvents>();
             prefab.AddComponent<DamageControllerCustomDiesel>();
-            //prefab.AddComponent<MultipleUnitModule>();
             var locoController = prefab.AddComponent<CustomLocoControllerDiesel>();
+
+            // setup multiple unit module
+            var muHoses = prefab.GetComponentsInChildren<CouplingHoseMultipleUnitAdapter>();
+            if( muHoses.Length == 0 )
+            {
+                Main.Warning($"Could not find MU hose adapters for diesel engine");
+            }
+            else
+            {
+                var muModule = prefab.AddComponent<MultipleUnitModule>();
+                foreach( var muHoseAdapter in muHoses )
+                {
+                    Vector3 hoseOffset = prefab.transform.InverseTransformPoint(muHoseAdapter.transform.position);
+                    if( hoseOffset.z > 0 )
+                    {
+                        // front coupling
+                        muModule.frontCableAdapter = muHoseAdapter;
+                    }
+                    else
+                    {
+                        muModule.rearCableAdapter = muHoseAdapter;
+                    }
+                }
+            }
+
             locoController.drivingForce = drivingForce;
 
             Main.Log($"Added diesel electric simulation to {prefab.name}");
