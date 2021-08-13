@@ -10,6 +10,14 @@ namespace CCL_GameScripts
         Steam = 2
     }
 
+    public enum LocoRequiredLicense
+    {
+        None = 0,
+        DE2 = 1,
+        DE6 = 2,
+        Steam = 3,
+    }
+
     public abstract class SimParamsBase : MonoBehaviour
     {
         [HideInInspector]
@@ -17,6 +25,7 @@ namespace CCL_GameScripts
 
         // default values from diesel
         [Header("Basic")]
+        public LocoRequiredLicense RequiredLicense = LocoRequiredLicense.None;
         public float MaxSpeed = 120f;
         public float SandCapacity = 200f;
         public float SandValveSpeed = 10f;

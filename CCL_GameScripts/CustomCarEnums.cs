@@ -47,4 +47,23 @@ namespace CCL_GameScripts
         HandCar = 700,
         NuclearFlask = 800
     }
+
+    public enum BaseCargoContainerType
+    {
+        None,
+        Hopper,
+        TankerOil,
+        TankerGas,
+        TankerChem,
+        Flatcar,
+        FlatcarStakes,
+        Boxcar,
+        Gondola,
+        Refrigerator,
+        Cars,
+        Passengers,
+        MilitaryBoxcar,
+        NuclearFlask,
+        MilitaryFlatcar
+    }
 }

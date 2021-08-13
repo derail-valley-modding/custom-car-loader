@@ -157,7 +157,15 @@ namespace DVCustomCarLoader
 
                         if( newCar.FinalizePrefab() )
                         {
-                            return newCar;
+                            if( CarTypeInjector.RegisterCustomCarType(newCar) != TrainCarType.NotSet )
+                            {
+                                return newCar;
+                            }
+                            else
+                            {
+                                // TODO: Destroy failed car?
+                                return null;
+                            }
                         }
                         else return null;
                     }

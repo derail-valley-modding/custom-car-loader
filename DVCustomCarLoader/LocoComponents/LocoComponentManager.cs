@@ -58,7 +58,7 @@ namespace DVCustomCarLoader
             var locoController = prefab.AddComponent<CustomLocoControllerDiesel>();
 
             // setup multiple unit module
-            var muHoses = prefab.GetComponentsInChildren<CouplingHoseMultipleUnitAdapter>();
+            var muHoses = prefab.GetComponentsInChildren<CouplingHoseMultipleUnitAdapter>(true);
             if( muHoses.Length == 0 )
             {
                 Main.Warning($"Could not find MU hose adapters for diesel engine");
@@ -79,6 +79,8 @@ namespace DVCustomCarLoader
                         muModule.rearCableAdapter = muHoseAdapter;
                     }
                 }
+
+                Main.Log("Added multiple unit module");
             }
 
             locoController.drivingForce = drivingForce;
@@ -192,6 +194,23 @@ namespace DVCustomCarLoader
                                 iArea = newIAObj.GetComponent<StaticInteractionArea>();
                                 iAreaField.SetValue(realControlSpec, iArea);
                                 Main.Log("Instantiated static interaction area");
+                            }
+                        }
+
+                        // handle special case of reverser limiter (if copied directly, causes errors)
+                        if( copySpec is CopiedLever lever )
+                        {
+                            if( lever.LeverType == CopiedLeverType.ReverserShunter )
+                            {
+                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiter>();
+                                if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
+                                newControl.AddComponent<CustomDieselReverserLock>();
+                            }
+                            else if( lever.LeverType == CopiedLeverType.ReverserDE6 )
+                            {
+                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiterDiesel>();
+                                if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
+                                newControl.AddComponent<CustomDieselReverserLock>();
                             }
                         }
 

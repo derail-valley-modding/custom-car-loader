@@ -28,7 +28,7 @@ namespace DVCustomCarLoader
             }
         }
     }
-
+	
     [HarmonyPatch(typeof(CarsSaveManager), "InstantiateCar")]
     public static class CarsSaveManager_InstantiateCar_Patch
     {
@@ -46,8 +46,7 @@ namespace DVCustomCarLoader
 				return true;
 			}
 
-			CustomCar customCarType = Main.CustomCarManagerInstance.CustomCarsToSpawn.Find(cc => cc.identifier == customType);
-			if( customCarType == null )
+			if( !CarTypeInjector.TryGetCustomCarById(customType, out CustomCar customCarType) )
             {
 				Main.ModEntry.Logger.Warning($"Found a saved custom car of unknown type ({customType}), skipping this car");
 				__result = null;
@@ -132,23 +131,5 @@ namespace DVCustomCarLoader
 			__result = trainCar;
 			return false;
 		}
-
-        //public static void Postfix( JObject carData, TrainCar __result )
-        //{
-        //    string customType = carData.GetString(SaveConstants.CUSTOM_CAR_KEY);
-        //    if( customType != null )
-        //    {
-        //        CustomCar match = Main.CustomCarManagerInstance.CustomCarsToSpawn.Find(cc => cc.identifier == customType);
-        //        if( match != null )
-        //        {
-        //            //match.Spawn(__result);
-        //            Main.ModEntry.Logger.Warning($"Reverting {match.identifier} to its base type");
-        //        }
-        //        else
-        //        {
-        //            Main.ModEntry.Logger.Warning("Tried to instantiate a custom car of unknown type, reverting to its base type");
-        //        }
-        //    }
-        //}
     }
 }

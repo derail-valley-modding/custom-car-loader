@@ -37,49 +37,6 @@ public class ExportTrainCar : EditorWindow
     /// </summary>
     private state State = state.Settings;
     
-    #region Exported Train Car Data
-
-    //private bool loadedCar = false;
-    
-    /// <summary>
-    /// The identifier for this car.
-    /// </summary>
-    private string Identifier = "Custom Car";
-    
-    /// <summary>
-    /// The underlying type of this car.
-    /// </summary>
-    private BaseTrainCarType TrainCarType = BaseTrainCarType.FlatbedEmpty;
-
-	#region Positions
-
-    ////Couplers
-    //private Vector3 FrontCouplerPosition;
-    //private Vector3 RearCouplerPosition;
-
-    ////Chains
-    //private Vector3 FrontChainPosition;
-    //private Vector3 RearChainPosition;
-
-    ////Hoses
-    //private Vector3 FrontHosePosition;
-    //private Vector3 RearHosePosition;
-    
-    ////Buffers
-    //private Vector3 FrontBufferPosition;
-    //private Vector3 RearBufferPosition;
-
-    ////Bogies
-    //private Vector3 FrontBogiePosition;
-    //private Vector3 RearBogiePosition;
-
-    ////Name plates
-    //private Vector3 SidePlate1Position;
-    //private Vector3 SidePlate2Position;
-    
-    #endregion
-    
-    #endregion
 
     [InitializeOnLoadMethod]
     static void Init()
@@ -157,14 +114,14 @@ public class ExportTrainCar : EditorWindow
 
 			    EditorStyles.label.wordWrap = true;
 			    EditorGUILayout.LabelField(
-				    "Select your TrainCar prefab. It will be shown in the list below. ONLY ONE TRAIN CAR IS SUPPORTED AT THIS TIME. Selecting more than one prefab will cause unwanted results.");
+				    "Confirm the settings for your train car before proceeding");
 
 			    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
 			    GUILayout.BeginVertical();
 
-			    Identifier = EditorGUILayout.TextField("Identifier:", Identifier);
-			    TrainCarType = (BaseTrainCarType) EditorGUILayout.EnumPopup("Type of Car:", TrainCarType);
+			    EditorGUILayout.LabelField("Identifier:", _trainCarSetup.Identifier);
+			    EditorGUILayout.LabelField("Car Underlying Type:", _trainCarSetup.BaseCarType.ToString());
 
 			    EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
 
@@ -219,7 +176,7 @@ public class ExportTrainCar : EditorWindow
 				    }
 
 				    if (EditorUtility.DisplayDialog("Confirmation",
-					    $"You are about to export your TrainCar named {Identifier}, are you sure you want to proceed?",
+					    $"You are about to export your TrainCar named {_trainCarSetup.Identifier}, are you sure you want to proceed?",
 					    "Yes", "No"))
 				    {
 
@@ -233,7 +190,7 @@ public class ExportTrainCar : EditorWindow
 					    var assetBundleFullpath = EditorUtility.SaveFolderPanel(
 						    "Export Car",
 						    ExistAtC ? cPath : (ExistAtX ? xPath : System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop)),
-						    Identifier);
+						    _trainCarSetup.Identifier);
 
 					    if (assetBundleFullpath.Length != 0)
 					    {
@@ -286,18 +243,15 @@ public class ExportTrainCar : EditorWindow
 						    BuildPipeline.BuildAssetBundles(assetBundleFullpath, trainCarBundleBuild,
 							    BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
 
-						    Debug.Log($"Finished AssetBundle build for car: {Identifier}.");
+						    Debug.Log($"Finished AssetBundle build for car: {_trainCarSetup.Identifier}.");
 
 							#endregion
 
-							#region Create car.json file.
-
+							// Create car.json file.
 							ExportCarSettings(trainCarAssetBundleName, carFullPath);
 
-						    #endregion
-
 						    //Goto folder when finished building.
-						    if(EditorUtility.DisplayDialog("Finished Build", $"Finished building car {Identifier} to path ({assetBundleFullpath}). Would you like to open the build folder?", "Yes", "No"))
+						    if(EditorUtility.DisplayDialog("Finished Build", $"Finished building car {_trainCarSetup.Identifier} to path ({assetBundleFullpath}). Would you like to open the build folder?", "Yes", "No"))
 						    {
 							    EditorUtility.RevealInFinder(assetBundleFullpath);
 						    }
@@ -379,8 +333,8 @@ public class ExportTrainCar : EditorWindow
 
 		jsonfile.AddField(CarJSONKeys.BUNDLE_NAME, assetBundleName);
 		jsonfile.AddField(CarJSONKeys.PREFAB_NAME, _trainCarSetup.gameObject.name);
-		jsonfile.AddField(CarJSONKeys.IDENTIFIER, Identifier);
-		jsonfile.AddField(CarJSONKeys.CAR_TYPE, (int)TrainCarType);
+		jsonfile.AddField(CarJSONKeys.IDENTIFIER, _trainCarSetup.Identifier);
+		jsonfile.AddField(CarJSONKeys.CAR_TYPE, (int)_trainCarSetup.BaseCarType);
 
 		//Bogies
 		jsonfile.AddField(CarJSONKeys.REPLACE_FRONT_BOGIE, _trainCarSetup.ReplaceFrontBogie);
@@ -418,10 +372,6 @@ public class ExportTrainCar : EditorWindow
 
 	    //Reset internal data
 	    _trainCarSetup = null;
-
-	    //Reset identifier
-	    Identifier = "Custom Car";
-	    TrainCarType = BaseTrainCarType.FlatbedEmpty;
     }
 }
 

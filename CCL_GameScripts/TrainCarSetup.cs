@@ -37,6 +37,11 @@ namespace CCL_GameScripts
 
         protected override bool DestroyAfterCreation => false;
 
+        [Header("Basic")]
+        public string Identifier = "My New Car";
+        public BaseTrainCarType BaseCarType;
+        public BaseCargoContainerType CargoClass = BaseCargoContainerType.None;
+
         [Header("Bogie Replacement")]
         public Transform FrontBogie;
         public Transform RearBogie;

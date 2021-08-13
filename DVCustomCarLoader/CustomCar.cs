@@ -4,6 +4,7 @@ using UnityEngine;
 using HarmonyLib;
 using Object = UnityEngine.Object;
 using CCL_GameScripts;
+using DV.Logic.Job;
 
 namespace DVCustomCarLoader
 {
@@ -13,6 +14,11 @@ namespace DVCustomCarLoader
         ///     Identifier of this car.
         /// </summary>
         public string identifier = "Custom Car";
+
+        /// <summary>
+        ///     Generated type enum for this car.
+        /// </summary>
+        public TrainCarType CarType = TrainCarType.NotSet;
 
         /// <summary>
         ///     The underlying type of this car.
@@ -35,6 +41,10 @@ namespace DVCustomCarLoader
         //Couplers
         public Vector3 FrontCouplerPosition;
         public Vector3 RearCouplerPosition;
+        
+        public LocoParamsType LocoType { get; protected set; }
+        public LocoRequiredLicense RequiredLicense { get; protected set; }
+        public CargoContainerType CargoClass { get; protected set; }
 
         public bool FinalizePrefab()
         {
@@ -341,6 +351,8 @@ namespace DVCustomCarLoader
             }
 
             // setup traincar properties
+            CargoClass = (CargoContainerType)carSetup.CargoClass;
+
             if( !carSetup.OverridePhysics )
             {
                 newCar.bogieDamping = baseCar.bogieDamping;
@@ -356,6 +368,8 @@ namespace DVCustomCarLoader
             if( simParams )
             {
                 LocoComponentManager.AddLocoSimulation(newFab, simParams);
+                LocoType = simParams.SimType;
+                RequiredLicense = simParams.RequiredLicense;
 
                 if( carSetup.InteriorPrefab )
                 {
