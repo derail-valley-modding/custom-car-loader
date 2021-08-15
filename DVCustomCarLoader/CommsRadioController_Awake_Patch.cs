@@ -19,7 +19,7 @@ namespace DVCustomCarLoader
             try
             {
 
-                if (Main.CustomCarManagerInstance.CustomCarsToSpawn.Count <= 0)
+                if( CustomCarManager.CustomCarTypes.Count <= 0 )
                     return;
                 
                 //Add our spawner to the comms radio

@@ -10,7 +10,6 @@ namespace DVCustomCarLoader
 {
 	public static class Main
 	{
-		public static CustomCarManager CustomCarManagerInstance;
 		public static CommsRadioCustomCarManager CommsRadioCustomCarManager;
 		public static UnityModManager.ModEntry ModEntry;
 		public static bool Enabled;
@@ -28,12 +27,7 @@ namespace DVCustomCarLoader
 			ModEntry.Logger.Log("Creating CustomCarManager");
 
 			Application.quitting += AppQuitWatcher.OnAppQuit;
-
-			var nsmgr = new GameObject("[CustomCarManagerInstance]");
-			Object.DontDestroyOnLoad(nsmgr);
-			nsmgr.transform.SetSiblingIndex(0);
-			CustomCarManagerInstance = nsmgr.AddComponent<CustomCarManager>();
-			CustomCarManagerInstance.Setup();
+			CustomCarManager.Setup();
 
 			PlayerManager.CarChanged += OnCarChanged;
 
@@ -42,7 +36,7 @@ namespace DVCustomCarLoader
 
 		private static void OnCarChanged( TrainCar newCar )
         {
-			if( newCar && CustomCarManagerInstance.IsRegisteredCustomCar(newCar) )
+			if( newCar && CustomCarManager.IsRegisteredCustomCar(newCar) )
             {
 				// diesel autostart
 				var locoController = newCar.gameObject.GetComponent<CustomLocoControllerDiesel>();

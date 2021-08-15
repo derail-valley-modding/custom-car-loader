@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Linq;
 using UnityEngine;
+using CCL_GameScripts;
 
 namespace DVCustomCarLoader.LocoComponents
 {
@@ -10,33 +12,51 @@ namespace DVCustomCarLoader.LocoComponents
             DamageControllerCustomDiesel>
     {
 		// Engine/Traction Sounds
+		[ProxyField]
 		public Transform playEngineAt;
 
+		[ProxyField]
 		public LayeredAudio engineAudio;
+		[ProxyField]
 		public LayeredAudio enginePistonAudio;
+		[ProxyField]
 		public LayeredAudio electricMotorAudio;
 
+		[ProxyField]
 		public LayeredAudio engineDamageAudio;
+		[ProxyField]
 		public AnimationCurve engineDamageToMasterVolumeCurve;
 
+		[ProxyField]
 		public AudioClip engineOnClip;
+		[ProxyField]
 		public AudioClip engineOffClip;
 
+		[ProxyField]
 		public float prevLocoEngineRpm;
+		[ProxyField]
 		public float enginePistonTargetVolume;
+		[ProxyField]
 		public float neutralEnginePistonVolume = 0.4f;
 
 		// Reverser Lever
+		[ProxyField]
 		public AudioClip[] reverserClips;
+		[ProxyField]
 		public Transform playReverserAt;
+		[ProxyField]
 		public float reverserVolume = 1f;
+		[ProxyField]
 		public float reverserPitch = 1f;
 
 		// Sanders
+		[ProxyField]
 		public Transform playSandAt;
+		[ProxyField]
 		public LayeredAudio sandAudio;
 
 		// Horn
+		[ProxyField]
 		public LayeredAudio hornAudio;
 
 		// Engine loop
@@ -50,6 +70,7 @@ namespace DVCustomCarLoader.LocoComponents
             base.SetupLocoLogic(car);
 
             simEvents.EngineRunningChanged.Register(OnEngineStateChanged);
+			customLocoController.OnReverserChanged += PlayReverser;
         }
 
         protected override void UnsetLocoLogic()
@@ -69,7 +90,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         public override void SetupForCar( TrainCar car )
         {
-            base.SetupForCar(car);
+			base.SetupForCar(car);
 
 			// Setup Horn
         }
@@ -85,31 +106,31 @@ namespace DVCustomCarLoader.LocoComponents
 			base.ResetAllAudio();
 			float newVolume = customLocoController.EngineRunning ? 1 : 0;
 
-			if( engineAudio != null )
+			if( engineAudio )
 			{
 				engineAudio.Reset();
 				engineAudio.masterVolume = newVolume;
 			}
-			if( enginePistonAudio != null )
+			if( enginePistonAudio )
 			{
 				enginePistonAudio.Reset();
 				enginePistonAudio.masterVolume = newVolume;
 			}
-			if( electricMotorAudio != null )
+			if( electricMotorAudio )
 			{
 				electricMotorAudio.Reset();
 				electricMotorAudio.masterVolume = newVolume;
 			}
-			if( engineDamageAudio != null )
+			if( engineDamageAudio )
 			{
 				engineDamageAudio.Reset();
 				engineDamageAudio.masterVolume = 0f;
 			}
-			if( sandAudio != null )
+			if( sandAudio )
 			{
 				sandAudio.Reset();
 			}
-			if( hornAudio != null )
+			if( hornAudio )
 			{
 				hornAudio.Reset();
 			}

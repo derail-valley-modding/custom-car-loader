@@ -41,10 +41,11 @@ namespace DVCustomCarLoader
         //Couplers
         public Vector3 FrontCouplerPosition;
         public Vector3 RearCouplerPosition;
-        
-        public LocoParamsType LocoType { get; protected set; }
-        public LocoRequiredLicense RequiredLicense { get; protected set; }
-        public CargoContainerType CargoClass { get; protected set; }
+
+        public LocoParamsType LocoType { get; protected set; } = LocoParamsType.None;
+        public LocoAudioBasis LocoAudioType { get; protected set; } = LocoAudioBasis.None;
+        public LocoRequiredLicense RequiredLicense { get; protected set; } = LocoRequiredLicense.None;
+        public CargoContainerType CargoClass { get; protected set; } = CargoContainerType.None;
 
         public bool FinalizePrefab()
         {
@@ -362,13 +363,14 @@ namespace DVCustomCarLoader
                 newCar.wheelRadius = baseCar.wheelRadius;
             }
 
-            newCar.carType = BaseCarType;
+            newCar.carType = CarType;
 
             var simParams = newFab.GetComponent<SimParamsBase>();
             if( simParams )
             {
                 LocoComponentManager.AddLocoSimulation(newFab, simParams);
                 LocoType = simParams.SimType;
+                LocoAudioType = simParams.AudioType;
                 RequiredLicense = simParams.RequiredLicense;
 
                 if( carSetup.InteriorPrefab )
@@ -428,8 +430,8 @@ namespace DVCustomCarLoader
             spawnedCar.InitializeNewLogicCar();
             spawnedCar.SetTrack(track, position, forward);
             
-            spawnedCar.OnDestroyCar += Main.CustomCarManagerInstance.DeregisterCar;
-            Main.CustomCarManagerInstance.RegisterSpawnedCar(spawnedCar, identifier);
+            spawnedCar.OnDestroyCar += CustomCarManager.DeregisterCar;
+            CustomCarManager.RegisterSpawnedCar(spawnedCar, identifier);
 
             RaiseCarSpawned(spawnedCar);
             return spawnedCar;
@@ -474,8 +476,8 @@ namespace DVCustomCarLoader
             spawnedCar.rearCoupler.forceCoupleStateOnLoad = true;
             spawnedCar.rearCoupler.loadedCoupledState = couplerRCoupled;
 
-            spawnedCar.OnDestroyCar += Main.CustomCarManagerInstance.DeregisterCar;
-            Main.CustomCarManagerInstance.RegisterSpawnedCar(spawnedCar, identifier);
+            spawnedCar.OnDestroyCar += CustomCarManager.DeregisterCar;
+            CustomCarManager.RegisterSpawnedCar(spawnedCar, identifier);
 
             RaiseCarSpawned(spawnedCar);
             return spawnedCar;

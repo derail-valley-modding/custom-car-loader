@@ -21,7 +21,7 @@ namespace DVCustomCarLoader
     {
         public static void Postfix( TrainCar car, ref JObject __result )
         {
-            if( Main.CustomCarManagerInstance.TryGetCustomCarId(car, out string id) )
+            if( CustomCarManager.TryGetCustomCarId(car, out string id) )
             {
                 // custom car detected, save its type
                 __result.SetString(SaveConstants.CUSTOM_CAR_KEY, id);

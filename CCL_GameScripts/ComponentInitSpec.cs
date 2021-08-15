@@ -37,7 +37,9 @@ namespace CCL_GameScripts
                 var proxies = sourceField.GetCustomAttributes().OfType<ProxyFieldAttribute>();
                 foreach( var proxy in proxies )
                 {
-                    FieldInfo targetField = targetType.GetField(proxy.TargetName);
+                    string targetName = proxy.TargetName ?? sourceField.Name;
+                    FieldInfo targetField = targetType.GetField(targetName);
+
                     if( targetField != null )
                     {
                         Type assignValueType;
@@ -86,12 +88,12 @@ namespace CCL_GameScripts
                         }
                         else
                         {
-                            logAction($"Proxy {targetType.Name}.{proxy.TargetName} is not assignable from {sourceType.Name}.{sourceField.Name}");
+                            logAction($"Proxy {targetType.Name}.{targetName} is not assignable from {sourceType.Name}.{sourceField.Name}");
                         }
                     }
                     else
                     {
-                        logAction($"From spec type {sourceType.Name} - target {proxy.TargetName} not found on {targetType.Name}");
+                        logAction($"From spec type {sourceType.Name} - target {targetName} not found on {targetType.Name}");
                     }
                 }
             }
@@ -110,7 +112,7 @@ namespace CCL_GameScripts
     {
         public string TargetName;
 
-        public ProxyFieldAttribute( string proxyField )
+        public ProxyFieldAttribute( string proxyField = null )
         {
             TargetName = proxyField;
         }

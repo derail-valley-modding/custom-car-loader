@@ -134,7 +134,7 @@ namespace DVCustomCarLoader
             switch (state)
             {
                 case State.EnterSpawnMode:
-                    SetCarToSpawn(Main.CustomCarManagerInstance.CustomCarsToSpawn[selectedCarTypeIndex]);
+                    SetCarToSpawn(CustomCarManager.CustomCarTypes[selectedCarTypeIndex]);
                     SetState(State.PickCar);
                     break;
                 case State.PickCar:
@@ -240,9 +240,9 @@ namespace DVCustomCarLoader
             {
                 case State.PickCar:
                     selectedCarTypeIndex = selectedCarTypeIndex <= 0
-                        ? Main.CustomCarManagerInstance.CustomCarsToSpawn.Count - 1
+                        ? CustomCarManager.CustomCarTypes.Count - 1
                         : selectedCarTypeIndex - 1;
-                    SetCarToSpawn(Main.CustomCarManagerInstance.CustomCarsToSpawn[selectedCarTypeIndex]);
+                    SetCarToSpawn(CustomCarManager.CustomCarTypes[selectedCarTypeIndex]);
                     return true;
                 case State.PickDestination:
                     if (!canSpawnAtPoint) return false;
@@ -260,8 +260,8 @@ namespace DVCustomCarLoader
             switch (state)
             {
                 case State.PickCar:
-                    selectedCarTypeIndex = (selectedCarTypeIndex + 1) % Main.CustomCarManagerInstance.CustomCarsToSpawn.Count;
-                    SetCarToSpawn(Main.CustomCarManagerInstance.CustomCarsToSpawn[selectedCarTypeIndex]);
+                    selectedCarTypeIndex = (selectedCarTypeIndex + 1) % CustomCarManager.CustomCarTypes.Count;
+                    SetCarToSpawn(CustomCarManager.CustomCarTypes[selectedCarTypeIndex]);
                     return true;
                 case State.PickDestination:
                     if (!canSpawnAtPoint) return false;

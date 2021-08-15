@@ -8,6 +8,10 @@ namespace CCL_GameScripts
     {
         public override LocoParamsType SimType => LocoParamsType.DieselElectric;
 
+        [Header("Audio")]
+        public bool UseBigDieselAudio = false;
+        public override LocoAudioBasis AudioType => UseBigDieselAudio ? LocoAudioBasis.DE6 : LocoAudioBasis.DE2;
+
         [Header("Throttle")]
         public float ThrottleUpRate = 2f;
         public float ThrottleDownRate = 2f;

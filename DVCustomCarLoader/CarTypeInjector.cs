@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CCL_GameScripts;
 using DV.Logic.Job;
+using DVCustomCarLoader.LocoComponents;
 using HarmonyLib;
 using UnityEngine;
 
@@ -114,6 +115,102 @@ namespace DVCustomCarLoader
 
             CarTypeToContainerType.Add(car.CarType, car.CargoClass);
         }
+
+        #region Audio Pooling
+
+        private static GameObject GetPooledAudioPrefab( TrainComponentPool componentPool, TrainCarType carType )
+        {
+            foreach( var poolData in componentPool.audioPoolReferences.poolData )
+            {
+                if( poolData.trainCarType == carType )
+                {
+                    return poolData.audioPrefab;
+                }
+            }
+
+            return null;
+        }
+
+        private static GameObject CopyAudioPrefab<TAudio>( GameObject sourcePrefab )
+            where TAudio : CustomLocoAudio
+        {
+            GameObject newFab = UnityEngine.Object.Instantiate(sourcePrefab, null);
+            newFab.SetActive(false);
+            UnityEngine.Object.DontDestroyOnLoad(newFab);
+
+            var origAudio = newFab.GetComponentInChildren<LocoTrainAudio>();
+            if( origAudio )
+            {
+                Main.Log($"Adding audio {typeof(TAudio).Name}");
+                TAudio newAudio = origAudio.gameObject.AddComponent<TAudio>();
+                newAudio.PullSettingsFromOtherAudio(origAudio);
+                UnityEngine.Object.DestroyImmediate(origAudio);
+
+                // grab extra components
+                newAudio.carFrictionSound = newFab.GetComponentInChildren<CarFrictionSound>(true);
+                newAudio.carCollisionSounds = newFab.GetComponentInChildren<CarCollisionSounds>(true);
+                newAudio.trainDerailAudio = newFab.GetComponentInChildren<TrainDerailAudio>(true);
+            }
+            else
+            {
+                Main.Warning($"Couldn't find LocoTrainAudio on prefab {sourcePrefab.name}");
+            }
+
+            return newFab;
+        }
+
+        public static void InjectLocoAudioToPool( CustomCar car, TrainComponentPool componentPool )
+        {
+            const int LOCO_POOL_SIZE = 10;
+            
+            GameObject sourcePrefab;
+            GameObject newPrefab;
+
+            switch( car.LocoAudioType )
+            {
+                case LocoAudioBasis.DE2:
+                    sourcePrefab = GetPooledAudioPrefab(componentPool, TrainCarType.LocoShunter);
+                    if( sourcePrefab )
+                    {
+                        newPrefab = CopyAudioPrefab<CustomLocoAudioDiesel>(sourcePrefab);
+
+                        var newPoolData = new AudioPoolReferences.AudioPoolData()
+                        {
+                            trainCarType = car.CarType,
+                            audioPrefab = newPrefab,
+                            poolSize = LOCO_POOL_SIZE
+                        };
+
+                        componentPool.audioPoolReferences.poolData.Add(newPoolData);
+                    }
+                    else Main.Warning("Couldn't find shunter pooled audio");
+                    break;
+
+                case LocoAudioBasis.DE6:
+                    sourcePrefab = GetPooledAudioPrefab(componentPool, TrainCarType.LocoDiesel);
+                    if( sourcePrefab )
+                    {
+                        newPrefab = CopyAudioPrefab<CustomLocoAudioDiesel>(sourcePrefab);
+
+                        var newPoolData = new AudioPoolReferences.AudioPoolData()
+                        {
+                            trainCarType = car.CarType,
+                            audioPrefab = newPrefab,
+                            poolSize = LOCO_POOL_SIZE
+                        };
+
+                        componentPool.audioPoolReferences.poolData.Add(newPoolData);
+                    }
+                    else Main.Warning("Couldn't find DE6 pooled audio");
+                    break;
+
+                case LocoAudioBasis.Steam:
+                default:
+                    break;
+            }
+        }
+
+        #endregion
     }
 
     [HarmonyPatch(typeof(CarTypes), nameof(CarTypes.GetCarPrefab))]
@@ -206,6 +303,20 @@ namespace DVCustomCarLoader
                 return false;
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(TrainComponentPool), "Awake")]
+    public static class TrainComponentPool_Awake_Patch
+    {
+        public static void Prefix( TrainComponentPool __instance )
+        {
+            Main.Log("Injecting custom cars into component pool");
+
+            foreach( CustomCar car in CustomCarManager.CustomCarTypes )
+            {
+                CarTypeInjector.InjectLocoAudioToPool(car, __instance);
+            }
         }
     }
 }

@@ -6,37 +6,34 @@ using CCL_GameScripts;
 
 namespace DVCustomCarLoader
 {
-    public class CustomCarManager : MonoBehaviour
+    public static class CustomCarManager
     {
-        public List<CustomCar> CustomCarsToSpawn;
+        public static List<CustomCar> CustomCarTypes = new List<CustomCar>();
 
-        private readonly Dictionary<TrainCar, string> SpawnedCustomCarIds = new Dictionary<TrainCar, string>();
+        private static readonly Dictionary<TrainCar, string> SpawnedCustomCarIds = new Dictionary<TrainCar, string>();
 
-        public bool IsRegisteredCustomCar( TrainCar trainCar )
+        public static bool IsRegisteredCustomCar( TrainCar trainCar )
         {
             return SpawnedCustomCarIds.ContainsKey(trainCar);
         }
 
-        public bool TryGetCustomCarId( TrainCar trainCar, out string id )
+        public static bool TryGetCustomCarId( TrainCar trainCar, out string id )
         {
             return SpawnedCustomCarIds.TryGetValue(trainCar, out id);
         }
 
-        public void RegisterSpawnedCar( TrainCar car, string identifier )
+        public static void RegisterSpawnedCar( TrainCar car, string identifier )
         {
             SpawnedCustomCarIds[car] = identifier;
         }
 
-        public void DeregisterCar( TrainCar car )
+        public static void DeregisterCar( TrainCar car )
         {
             SpawnedCustomCarIds.Remove(car);
         }
         
-        public void Setup()
+        public static void Setup()
         {
-            
-            CustomCarsToSpawn = new List<CustomCar>();
-            
             //Load all json files
             string bundlePath = Path.Combine(Main.ModEntry.Path, "Cars");
             
@@ -75,7 +72,7 @@ namespace DVCustomCarLoader
 
                             if( newCar != null )
                             {
-                                CustomCarsToSpawn.Add(newCar);
+                                CustomCarTypes.Add(newCar);
                                 Main.ModEntry.Logger.Log($"Successfully added new car to spawn list: {newCar.identifier}");
                             }
                             else

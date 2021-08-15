@@ -18,10 +18,21 @@ namespace CCL_GameScripts
         Steam = 3,
     }
 
+    public enum LocoAudioBasis
+    {
+        None = 0,
+        DE2 = 1,
+        DE6 = 2,
+        Steam = 3,
+    }
+
     public abstract class SimParamsBase : MonoBehaviour
     {
         [HideInInspector]
         public abstract LocoParamsType SimType { get; }
+
+        [HideInInspector]
+        public abstract LocoAudioBasis AudioType { get; }
 
         // default values from diesel
         [Header("Basic")]
