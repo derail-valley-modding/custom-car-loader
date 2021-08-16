@@ -37,10 +37,13 @@
     <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="DV.BrakeSystem, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="DV.Interaction, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="DV.PointSet, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="DV.Utils, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="net.smkd.vector3d, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=12.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -71,18 +74,40 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CarJSONKeys.cs" />
-    <Compile Include="CommsRadioCarSpawner_Awake_Patch.cs" />
-    <Compile Include="CommsRadioController_Awake_Patch.cs" />
-    <Compile Include="CommsRadioCustomCarManager.cs" />
+    <Compile Include="CarSpawner_Patches.cs" />
+    <Compile Include="CarTypeInjector.cs" />
+    <Compile Include="LocoComponents\CustomCabIndicators.cs" />
+    <Compile Include="LocoComponents\CustomCabInput.cs" />
+    <Compile Include="LocoComponents\CustomDieselReverserLock.cs" />
+    <Compile Include="LocoComponents\CustomLampController.cs" />
+    <Compile Include="LocoComponents\CustomLocoAudio.cs" />
+    <Compile Include="LocoComponents\CustomLocoAudioDiesel.cs" />
+    <Compile Include="LocoComponents\LocoComponentManager.cs" />
+    <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />
-    <Compile Include="JSONObject\JSONObject.cs" />
-    <Compile Include="JSONObject\VectorTemplates.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="LocoComponents\CustomDieselSimEvents.cs" />
+    <Compile Include="LocoComponents\CustomLocoController.cs" />
+    <Compile Include="LocoComponents\CustomLocoPitStopParams.cs" />
+    <Compile Include="LocoComponents\CustomLocoSimEvents.cs" />
+    <Compile Include="LocoComponents\CustomLocoSimulation.cs" />
+    <Compile Include="LocoComponents\DamageControllerCustomDiesel.cs" />
+    <Compile Include="LocoComponents\DamageControllerCustomLoco.cs" />
+    <Compile Include="LocoComponents\IServicePenaltyProvider.cs" />
+    <Compile Include="LocoComponents\CustomLocoControllerDiesel.cs" />
+    <Compile Include="LocoComponents\CustomLocoSimDiesel.cs" />
+    <Compile Include="LocoComponents\DebtTrackerCustomLoco.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="CarPartConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoadPatches.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CCL_GameScripts\CCL_GameScripts.csproj">
+      <Project>{c191c5ac-990e-4ca6-9847-342b9cd92465}</Project>
+      <Name>CCL_GameScripts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

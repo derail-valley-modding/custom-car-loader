@@ -3,6 +3,8 @@ using System.Linq;
 using UnityEngine;
 using HarmonyLib;
 using Object = UnityEngine.Object;
+using CCL_GameScripts;
+using DV.Logic.Job;
 
 namespace DVCustomCarLoader
 {
@@ -14,6 +16,11 @@ namespace DVCustomCarLoader
         public string identifier = "Custom Car";
 
         /// <summary>
+        ///     Generated type enum for this car.
+        /// </summary>
+        public TrainCarType CarType = TrainCarType.NotSet;
+
+        /// <summary>
         ///     The underlying type of this car.
         /// </summary>
         public TrainCarType BaseCarType = TrainCarType.FlatbedEmpty;
@@ -22,6 +29,8 @@ namespace DVCustomCarLoader
         ///     The base prefab that will be duplicated from.
         /// </summary>
         public GameObject CarPrefab;
+
+        public GameObject InteriorPrefab;
 
         //Bogies
         public bool HasCustomFrontBogie = false;
@@ -33,13 +42,25 @@ namespace DVCustomCarLoader
         public Vector3 FrontCouplerPosition;
         public Vector3 RearCouplerPosition;
 
-        public void FinalizePrefab()
+        public LocoParamsType LocoType { get; protected set; } = LocoParamsType.None;
+        public LocoAudioBasis LocoAudioType { get; protected set; } = LocoAudioBasis.None;
+        public LocoRequiredLicense RequiredLicense { get; protected set; } = LocoRequiredLicense.None;
+        public CargoContainerType CargoClass { get; protected set; } = CargoContainerType.None;
+
+        public bool FinalizePrefab()
         {
             Main.ModEntry.Logger.Log($"Augmenting prefab for {identifier}");
 
             GameObject newFab = Object.Instantiate(CarPrefab, null);
             newFab.SetActive(false);
             Object.DontDestroyOnLoad(newFab);
+
+            TrainCarSetup carSetup = newFab.GetComponent<TrainCarSetup>();
+            if( !carSetup )
+            {
+                Main.Error($"Prefab {CarPrefab.name} for {identifier} has no TrainCarSetup!");
+                return false;
+            }
 
             GameObject basePrefab = CarTypes.GetCarPrefab(BaseCarType);
             TrainCar baseCar = basePrefab.GetComponent<TrainCar>();
@@ -87,7 +108,7 @@ namespace DVCustomCarLoader
                 Transform child = bufferRoot.transform.GetChild(i);
                 string childName = child.name.Trim();
 
-                if( CarPartNames.BUFFER_CHAIN_RIG.Equals(childName) )
+                if( CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName) )
                 {
                     // front or rear chain rig
                     // determine whether front or rear chain rig: +z is front
@@ -322,110 +343,56 @@ namespace DVCustomCarLoader
             #endregion
 
             // Setup new car script
-            TrainCar newCar = newFab.AddComponent<TrainCar>();
+            var newCar = carSetup.CreateRealComponent(AccessTools.TypeByName, Main.Warning) as TrainCar;
+            if( !newCar )
+            {
+                Main.Warning("Couldn't create TrainCar component");
+                Object.Destroy(newFab);
+                return false;
+            }
 
             // setup traincar properties
-            newCar.bogieDamping = baseCar.bogieDamping;
-            newCar.bogieMassRatio = baseCar.bogieMassRatio;
-            newCar.bogieSpring = baseCar.bogieSpring;
-            newCar.totalMass = baseCar.totalMass;
-            newCar.wheelRadius = baseCar.wheelRadius;
-            newCar.carType = BaseCarType;
+            CargoClass = (CargoContainerType)carSetup.CargoClass;
+
+            if( !carSetup.OverridePhysics )
+            {
+                newCar.bogieDamping = baseCar.bogieDamping;
+                newCar.bogieMassRatio = baseCar.bogieMassRatio;
+                newCar.bogieSpring = baseCar.bogieSpring;
+                newCar.totalMass = baseCar.totalMass;
+                newCar.wheelRadius = baseCar.wheelRadius;
+            }
+
+            newCar.carType = CarType;
+
+            var simParams = newFab.GetComponent<SimParamsBase>();
+            if( simParams )
+            {
+                LocoComponentManager.AddLocoSimulation(newFab, simParams);
+                LocoType = simParams.SimType;
+                LocoAudioType = simParams.AudioType;
+                RequiredLicense = simParams.RequiredLicense;
+
+                if( carSetup.InteriorPrefab )
+                {
+                    GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
+                    interiorFab.SetActive(false);
+                    Object.DontDestroyOnLoad(interiorFab);
+
+                    LocoComponentManager.SetupCabComponents(interiorFab);
+                    interiorFab.SetLayersRecursive("Interactable");
+
+                    newCar.interiorPrefab = interiorFab;
+
+                    InteriorPrefab = interiorFab;
+                }
+            }
 
             CarPrefab = newFab;
-
-            string pn = CarPrefab == null ? "null" : "notnull";
-            Main.ModEntry.Logger.Log($"New prefab for {identifier} is {pn}");
+            CarPrefab.name = identifier;
 
             Main.ModEntry.Logger.Log($"Finalized prefab for {identifier}");
-        }
-
-        private static Delegate[] carSpawnedDelegates = null;
-
-        private static void RaiseCarSpawned( TrainCar car )
-        {
-            if( carSpawnedDelegates == null )
-            {
-                if( !(AccessTools.Field(typeof(CarSpawner), nameof(CarSpawner.CarSpawned)).GetValue(null) is MulticastDelegate mcd) )
-                {
-                    Main.ModEntry.Logger.Error("Couldn't get CarSpawner.CarSpawned delegate");
-                    return;
-                }
-
-                carSpawnedDelegates = mcd.GetInvocationList();
-            }
-
-            var args = new object[] { car };
-            foreach( Delegate d in carSpawnedDelegates )
-            {
-                d.Method.Invoke(d.Target, args);
-            }
-        }
-
-        public TrainCar SpawnCar( RailTrack track, Vector3 position, Vector3 forward, bool playerSpawnedCar = false )
-        {
-            GameObject carObj = Object.Instantiate(CarPrefab);
-            if( !carObj.activeSelf )
-            {
-                carObj.SetActive(true);
-            }
-            TrainCar spawnedCar = carObj.GetComponentInChildren<TrainCar>();
-
-            spawnedCar.playerSpawnedCar = playerSpawnedCar;
-            spawnedCar.InitializeNewLogicCar();
-            spawnedCar.SetTrack(track, position, forward);
-            
-            spawnedCar.OnDestroyCar += Main.CustomCarManagerInstance.DeregisterCar;
-            Main.CustomCarManagerInstance.RegisterSpawnedCar(spawnedCar, identifier);
-
-            RaiseCarSpawned(spawnedCar);
-            return spawnedCar;
-        }
-
-        public TrainCar SpawnLoadedCar(
-            string carId, string carGuid, bool playerSpawnedCar, Vector3 position, Quaternion rotation,
-            bool bogie1Derailed, RailTrack bogie1Track, double bogie1PositionAlongTrack,
-            bool bogie2Derailed, RailTrack bogie2Track, double bogie2PositionAlongTrack,
-            bool couplerFCoupled, bool couplerRCoupled )
-        {
-            GameObject carObj = Object.Instantiate(CarPrefab, position, rotation);
-            if( !carObj.activeSelf )
-            {
-                carObj.SetActive(true);
-            }
-
-            TrainCar spawnedCar = carObj.GetComponentInChildren<TrainCar>();
-            spawnedCar.playerSpawnedCar = playerSpawnedCar;
-            spawnedCar.InitializeExistingLogicCar(carId, carGuid);
-
-            if( !bogie1Derailed )
-            {
-                spawnedCar.Bogies[0].SetTrack(bogie1Track, bogie1PositionAlongTrack);
-            }
-            else
-            {
-                spawnedCar.Bogies[0].SetDerailedOnLoadFlag(true);
-            }
-
-            if( !bogie2Derailed )
-            {
-                spawnedCar.Bogies[1].SetTrack(bogie2Track, bogie2PositionAlongTrack);
-            }
-            else
-            {
-                spawnedCar.Bogies[1].SetDerailedOnLoadFlag(true);
-            }
-
-            spawnedCar.frontCoupler.forceCoupleStateOnLoad = true;
-            spawnedCar.frontCoupler.loadedCoupledState = couplerFCoupled;
-            spawnedCar.rearCoupler.forceCoupleStateOnLoad = true;
-            spawnedCar.rearCoupler.loadedCoupledState = couplerRCoupled;
-
-            spawnedCar.OnDestroyCar += Main.CustomCarManagerInstance.DeregisterCar;
-            Main.CustomCarManagerInstance.RegisterSpawnedCar(spawnedCar, identifier);
-
-            RaiseCarSpawned(spawnedCar);
-            return spawnedCar;
+            return true;
         }
 
         private float _interCouplerDistance;

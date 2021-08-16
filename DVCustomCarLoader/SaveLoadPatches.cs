@@ -21,14 +21,14 @@ namespace DVCustomCarLoader
     {
         public static void Postfix( TrainCar car, ref JObject __result )
         {
-            if( Main.CustomCarManagerInstance.TryGetCustomCarId(car, out string id) )
+            if( CarTypeInjector.TryGetCustomCarByType(car.carType, out CustomCar customCar) )
             {
                 // custom car detected, save its type
-                __result.SetString(SaveConstants.CUSTOM_CAR_KEY, id);
+                __result.SetString(SaveConstants.CUSTOM_CAR_KEY, customCar.identifier);
             }
         }
     }
-
+	
     [HarmonyPatch(typeof(CarsSaveManager), "InstantiateCar")]
     public static class CarsSaveManager_InstantiateCar_Patch
     {
@@ -46,13 +46,14 @@ namespace DVCustomCarLoader
 				return true;
 			}
 
-			CustomCar customCarType = Main.CustomCarManagerInstance.CustomCarsToSpawn.Find(cc => cc.identifier == customType);
-			if( customCarType == null )
+			if( !CarTypeInjector.TryGetCustomCarById(customType, out CustomCar customCarType) )
             {
 				Main.ModEntry.Logger.Warning($"Found a saved custom car of unknown type ({customType}), skipping this car");
 				__result = null;
 				return false;
 			}
+			
+			// proper custom type, proceed with the spawning
 
 			// car info
 			string carId = carData.GetString("id");
@@ -98,8 +99,9 @@ namespace DVCustomCarLoader
 			RailTrack bogie2Track = (!bogie2Derailed) ? tracks[bogie2TrackChildIdx.Value] : null;
 			double bogie2PositionAlongTrack = (!bogie2Derailed) ? bogie2TrackPosition.Value : 0.0;
 
-			TrainCar trainCar = customCarType.SpawnLoadedCar(
-				carId, carGuid, playerSpawnedCar, position.Value + WorldMover.currentMove, Quaternion.Euler(rotation.Value),
+			TrainCar trainCar = CarSpawner.SpawnLoadedCar(
+				customCarType.CarPrefab, carId, carGuid, playerSpawnedCar,
+				position.Value + WorldMover.currentMove, Quaternion.Euler(rotation.Value),
 				bogie1Derailed, bogie1Track, bogie1PositionAlongTrack,
 				bogie2Derailed, bogie2Track, bogie2PositionAlongTrack,
 				coupledFront.Value, coupledRear.Value);
@@ -132,23 +134,5 @@ namespace DVCustomCarLoader
 			__result = trainCar;
 			return false;
 		}
-
-        //public static void Postfix( JObject carData, TrainCar __result )
-        //{
-        //    string customType = carData.GetString(SaveConstants.CUSTOM_CAR_KEY);
-        //    if( customType != null )
-        //    {
-        //        CustomCar match = Main.CustomCarManagerInstance.CustomCarsToSpawn.Find(cc => cc.identifier == customType);
-        //        if( match != null )
-        //        {
-        //            //match.Spawn(__result);
-        //            Main.ModEntry.Logger.Warning($"Reverting {match.identifier} to its base type");
-        //        }
-        //        else
-        //        {
-        //            Main.ModEntry.Logger.Warning("Tried to instantiate a custom car of unknown type, reverting to its base type");
-        //        }
-        //    }
-        //}
     }
 }
