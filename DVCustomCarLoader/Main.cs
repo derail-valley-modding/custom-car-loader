@@ -4,7 +4,6 @@ using DVCustomCarLoader.LocoComponents;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
-using Object = UnityEngine.Object;
 
 namespace DVCustomCarLoader
 {
@@ -15,20 +14,36 @@ namespace DVCustomCarLoader
 
 		public static bool Load(UnityModManager.ModEntry modEntry)
 		{
-			var harmony = new Harmony(modEntry.Info.Id);
-			harmony.PatchAll(Assembly.GetExecutingAssembly());
-			LocoLights_Patch.TryCreatePatch(harmony);
-
 			Enabled = modEntry.Enabled;
 			ModEntry = modEntry;
-			
-			//Create sky manager instance.
-			ModEntry.Logger.Log("Creating CustomCarManager");
 
-			Application.quitting += AppQuitWatcher.OnAppQuit;
-			CustomCarManager.Setup();
+			Harmony harmony = null;
 
-			PlayerManager.CarChanged += OnCarChanged;
+			try
+			{
+				//Create sky manager instance.
+				ModEntry.Logger.Log("Creating CustomCarManager");
+
+				Application.quitting += AppQuitWatcher.OnAppQuit;
+				CustomCarManager.Setup();
+
+				PlayerManager.CarChanged += OnCarChanged;
+
+				harmony = new Harmony(modEntry.Info.Id);
+				harmony.PatchAll(Assembly.GetExecutingAssembly());
+				LocoLights_Patch.TryCreatePatch(harmony);
+			}
+			catch( Exception ex )
+            {
+				if( harmony != null )
+                {
+					harmony.UnpatchAll();
+                }
+
+				modEntry.Logger.LogException("Failed to load CustomCarLoader:", ex);
+
+				return false;
+            }
 
 			return true;
 		}
