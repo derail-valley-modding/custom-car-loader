@@ -74,6 +74,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
     <Compile Include="LocoComponents\CustomCabIndicators.cs" />
     <Compile Include="LocoComponents\CustomCabInput.cs" />
@@ -83,9 +84,6 @@
     <Compile Include="LocoComponents\CustomLocoAudioDiesel.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
     <Compile Include="ModPatches.cs" />
-    <Compile Include="CommsRadioCarSpawner_Awake_Patch.cs" />
-    <Compile Include="CommsRadioController_Awake_Patch.cs" />
-    <Compile Include="CommsRadioCustomCarManager.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />
     <Compile Include="Extensions.cs" />

@@ -10,7 +10,6 @@ namespace DVCustomCarLoader
 {
 	public static class Main
 	{
-		public static CommsRadioCustomCarManager CommsRadioCustomCarManager;
 		public static UnityModManager.ModEntry ModEntry;
 		public static bool Enabled;
 
@@ -36,7 +35,8 @@ namespace DVCustomCarLoader
 
 		private static void OnCarChanged( TrainCar newCar )
         {
-			if( newCar && CustomCarManager.IsRegisteredCustomCar(newCar) )
+#if DEBUG
+			if( newCar && CarTypeInjector.IsCustomTypeRegistered(newCar.carType) )
             {
 				// diesel autostart
 				var locoController = newCar.gameObject.GetComponent<CustomLocoControllerDiesel>();
@@ -45,7 +45,8 @@ namespace DVCustomCarLoader
 					locoController.EngineRunning = true;
                 }
             }
-        }
+#endif
+		}
 
 		#region Logging
 

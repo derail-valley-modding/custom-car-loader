@@ -21,10 +21,10 @@ namespace DVCustomCarLoader
     {
         public static void Postfix( TrainCar car, ref JObject __result )
         {
-            if( CustomCarManager.TryGetCustomCarId(car, out string id) )
+            if( CarTypeInjector.TryGetCustomCarByType(car.carType, out CustomCar customCar) )
             {
                 // custom car detected, save its type
-                __result.SetString(SaveConstants.CUSTOM_CAR_KEY, id);
+                __result.SetString(SaveConstants.CUSTOM_CAR_KEY, customCar.identifier);
             }
         }
     }
@@ -52,6 +52,8 @@ namespace DVCustomCarLoader
 				__result = null;
 				return false;
 			}
+			
+			// proper custom type, proceed with the spawning
 
 			// car info
 			string carId = carData.GetString("id");
@@ -97,8 +99,9 @@ namespace DVCustomCarLoader
 			RailTrack bogie2Track = (!bogie2Derailed) ? tracks[bogie2TrackChildIdx.Value] : null;
 			double bogie2PositionAlongTrack = (!bogie2Derailed) ? bogie2TrackPosition.Value : 0.0;
 
-			TrainCar trainCar = customCarType.SpawnLoadedCar(
-				carId, carGuid, playerSpawnedCar, position.Value + WorldMover.currentMove, Quaternion.Euler(rotation.Value),
+			TrainCar trainCar = CarSpawner.SpawnLoadedCar(
+				customCarType.CarPrefab, carId, carGuid, playerSpawnedCar,
+				position.Value + WorldMover.currentMove, Quaternion.Euler(rotation.Value),
 				bogie1Derailed, bogie1Track, bogie1PositionAlongTrack,
 				bogie2Derailed, bogie2Track, bogie2PositionAlongTrack,
 				coupledFront.Value, coupledRear.Value);

@@ -23,9 +23,9 @@ namespace DVCustomCarLoader
         private static readonly Dictionary<string, CustomCar> idToCustomCar = new Dictionary<string, CustomCar>(StringComparer.CurrentCultureIgnoreCase);
         private static readonly Dictionary<TrainCarType, CustomCar> carTypeToCustomCar = new Dictionary<TrainCarType, CustomCar>();
 
-        public static bool TryGetCarTypeById( string id, out TrainCarType type ) => idToCarType.TryGetValue(id, out type);
+        public static bool TryGetCarTypeById( string id, out TrainCarType type ) => idToCarType.TryGetValue(id.ToLower(), out type);
         public static bool TryGetCustomCarByType( TrainCarType carType, out CustomCar car ) => carTypeToCustomCar.TryGetValue(carType, out car);
-        public static bool TryGetCustomCarById( string id, out CustomCar car ) => idToCustomCar.TryGetValue(id, out car);
+        public static bool TryGetCustomCarById( string id, out CustomCar car ) => idToCustomCar.TryGetValue(id.ToLower(), out car);
 
         public static bool IsCustomTypeRegistered( TrainCarType carType ) => carTypeToCustomCar.ContainsKey(carType);
         public static bool IsCustomTypeRegistered( string identifier ) => idToCarType.ContainsKey(identifier);
