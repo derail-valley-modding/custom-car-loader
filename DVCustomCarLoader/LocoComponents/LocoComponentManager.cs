@@ -99,33 +99,16 @@ namespace DVCustomCarLoader
 
         public static void SetupCabComponents( GameObject interior )
         {
-            var cabParams = interior.GetComponent<CabInputSetup>();
-            if( !cabParams )
-            {
-                Main.Log("Added Cab Input Setup");
-                cabParams = interior.AddComponent<CabInputSetup>();
-            }
+            CreateComponentsFromProxies(interior);
+            CreateCopiedControls(interior);
 
-            var indicatorControl = interior.GetComponent<CustomCabIndicators>();
-            if( !indicatorControl )
-            {
-                Main.Log("Added Cab Indicator Controller");
-                indicatorControl = interior.AddComponent<CustomCabIndicators>();
-            }
-
-            if( cabParams )
-            {
-                CreateComponentsFromProxies(interior, cabParams);
-                CreateCopiedControls(interior, cabParams);
-                var cabInput = interior.AddComponent<CustomCabInput>();
-            }
-            else
-            {
-                Main.Warning("Loco has an interior prefab, but no cab input setup");
-            }
+            // add controller/"brain" components
+            interior.AddComponent<CustomCabInputController>();
+            interior.AddComponent<CustomCabIndicators>();
+            interior.AddComponent<CustomLampController>();
         }
 
-        public static void CreateComponentsFromProxies( GameObject root, CabInputSetup inputSetup )
+        public static void CreateComponentsFromProxies( GameObject root )
         {
             var allInitSpecs = root.GetComponentsInChildren<ComponentInitSpec>();
 
@@ -134,7 +117,11 @@ namespace DVCustomCarLoader
                 GameObject controlObject = compSpec.gameObject;
                 if( compSpec is ControlSetupBase control )
                 {
-                    inputSetup.SetInputObject(control.InputBinding, controlObject);
+#if DEBUG
+                    Main.Log($"Add input relay to {controlObject.name}");
+#endif
+                    var inputRelay = controlObject.AddComponent<CabInputRelay>();
+                    inputRelay.InputBinding = control.InputBinding;
                 }
                 
                 object realComp = compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
@@ -149,7 +136,7 @@ namespace DVCustomCarLoader
             }
         }
 
-        public static void CreateCopiedControls( GameObject root, CabInputSetup cabSetup )
+        public static void CreateCopiedControls( GameObject root )
         {
             var allCopySpecs = root.GetComponentsInChildren<CopiedCabControl>();
 
@@ -202,19 +189,21 @@ namespace DVCustomCarLoader
                         {
                             if( lever.LeverType == CopiedLeverType.ReverserShunter )
                             {
-                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiter>();
+                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiter>(true);
                                 if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
                                 newControl.AddComponent<CustomDieselReverserLock>();
                             }
                             else if( lever.LeverType == CopiedLeverType.ReverserDE6 )
                             {
-                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiterDiesel>();
+                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiterDiesel>(true);
                                 if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
                                 newControl.AddComponent<CustomDieselReverserLock>();
                             }
                         }
 
-                        cabSetup.SetInputObject(input.InputBinding, newControl);
+                        // Add wrapper to connect the control to the loco brain
+                        var inputRelay = newControl.gameObject.AddComponent<CabInputRelay>();
+                        inputRelay.InputBinding = input.InputBinding;
                     }
                     else if( copySpec is CopiedCabIndicator indicator )
                     {

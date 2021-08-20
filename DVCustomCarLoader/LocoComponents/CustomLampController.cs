@@ -11,9 +11,21 @@ namespace DVCustomCarLoader.LocoComponents
         protected CustomLocoSimEvents simEvents;
         public DashboardLampRelay[] Relays;
 
-        protected virtual void Start()
+        protected virtual void OnEnable()
         {
-            simEvents = TrainCar.Resolve(gameObject).GetComponent<CustomLocoSimEvents>();
+            var car = TrainCar.Resolve(gameObject);
+            if( car == null || !car )
+            {
+                Main.Error($"Couldn't find TrainCar for interior {gameObject.name}");
+                return;
+            }
+
+            simEvents = car.gameObject.GetComponent<CustomLocoSimEvents>();
+            if( !simEvents )
+            {
+                Main.Error("Couldn't find custom simEvents for lamp controller");
+                return;
+            }
 
             Relays = GetComponentsInChildren<DashboardLampRelay>();
 
@@ -110,12 +122,6 @@ namespace DVCustomCarLoader.LocoComponents
             }
 
             Lamp.SetLampState(state);
-        }
-
-        public void Initialize( SimEventType type, LampControl lamp )
-        {
-            SimBinding = type;
-            Lamp = lamp;
         }
 
         public void SetupListener( object toAttach )

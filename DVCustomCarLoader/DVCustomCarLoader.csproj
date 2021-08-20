@@ -77,7 +77,7 @@
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
     <Compile Include="LocoComponents\CustomCabIndicators.cs" />
-    <Compile Include="LocoComponents\CustomCabInput.cs" />
+    <Compile Include="LocoComponents\CustomCabInputController.cs" />
     <Compile Include="LocoComponents\CustomDieselReverserLock.cs" />
     <Compile Include="LocoComponents\CustomLampController.cs" />
     <Compile Include="LocoComponents\CustomLocoAudio.cs" />

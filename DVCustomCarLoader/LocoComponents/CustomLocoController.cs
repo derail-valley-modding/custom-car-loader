@@ -17,6 +17,12 @@ namespace DVCustomCarLoader.LocoComponents
         public float GetBrakePipePressure() => train.brakeSystem.brakePipePressure;
         public float GetBrakeResPressure() => train.brakeSystem.mainReservoirPressure;
 
+        public void SetReverserFromCab( float position )
+        {
+            reverser = (position * 2f) - 1f;
+        }
+        public float GetReverserCabPosition() => (reverser + 1f) / 2f;
+
         public virtual Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
         {
             switch( indicatedType )
@@ -32,6 +38,27 @@ namespace DVCustomCarLoader.LocoComponents
 
                 default:
                     return () => 0;
+            }
+        }
+
+        public virtual (Action<float>, Func<float>) GetCabControlActions( CabInputType inputType )
+        {
+            switch( inputType )
+            {
+                case CabInputType.TrainBrake:
+                    return (SetBrake, GetTargetBrake);
+
+                case CabInputType.IndependentBrake:
+                    return (SetIndependentBrake, GetTargetIndependentBrake);
+
+                case CabInputType.Throttle:
+                    return (SetThrottle, GetTargetThrottle);
+
+                case CabInputType.Reverser:
+                    return (SetReverserFromCab, GetReverserCabPosition);
+
+                default:
+                    return (null, null);
             }
         }
     }

@@ -52,7 +52,6 @@
     <Compile Include="Attributes\MethodButtonAttribute.cs" />
     <Compile Include="Attributes\ReadOnlyAttribute.cs" />
     <Compile Include="BogieSetup.cs" />
-    <Compile Include="CabControls\CabInputSetup.cs" />
     <Compile Include="CabControls\CabIOTypes.cs" />
     <Compile Include="CabControls\ControlSetupBase.cs" />
     <Compile Include="CabControls\CopiedCabControl.cs" />
