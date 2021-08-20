@@ -72,6 +72,37 @@ namespace CCL_GameScripts.CabControls
 			Color startColor = InvertDirection ? END_COLOR : START_COLOR;
 			Color endColor = InvertDirection ? START_COLOR : END_COLOR;
 
+			Vector3 massZeroVector = Vector3.forward;
+			Vector3 gizmoZeroVector = Vector3.forward;
+
+			var renderers = gameObject.GetComponentsInChildren<Renderer>();
+			if( renderers.Length > 0 )
+            {
+				massZeroVector = Vector3.zero;
+
+				foreach( Renderer r in renderers )
+                {
+					Vector3 center = transform.InverseTransformPoint(r.bounds.center);
+					massZeroVector += center;
+                }
+
+				gizmoZeroVector = Vector3.ProjectOnPlane(massZeroVector, JointAxis);
+
+				if( gizmoZeroVector == Vector3.zero )
+				{
+					gizmoZeroVector = Vector3.forward;
+				}
+            }
+
+			gizmoZeroVector = gizmoZeroVector.normalized;
+
+			float massLength = massZeroVector.magnitude;
+			Vector3 massCenterOfRotation = transform.TransformPoint(Vector3.Project(massZeroVector, JointAxis));
+			massZeroVector = massZeroVector.normalized;
+
+			Gizmos.color = Color.blue;
+			Gizmos.DrawLine(transform.position, massCenterOfRotation);
+
 			if( UseNotches && (Notches > 0) )
 			{
 				float rayCount = Notches - 1;
@@ -80,36 +111,49 @@ namespace CCL_GameScripts.CabControls
 				for( int i = 0; i <= rayCount; i++ )
 				{
 					Gizmos.color = Color.Lerp(startColor, endColor, i / rayCount);
-					Vector3 rayVector = Quaternion.AngleAxis(
-						Mathf.Lerp(JointLimitMin, JointLimitMax, i / rayCount), JointAxis)
-						* Vector3.forward * GIZMO_RADIUS;
-					rayVector = transform.TransformPoint(rayVector);
 
+					float rotateAngle = Mathf.Lerp(JointLimitMin, JointLimitMax, i / rayCount);
+					Quaternion rotation = Quaternion.AngleAxis(rotateAngle, JointAxis);
+
+					// projected sweep
+                    Vector3 rayVector = transform.TransformPoint((rotation * gizmoZeroVector) * GIZMO_RADIUS);
 					Gizmos.DrawLine(transform.position, rayVector);
+
+					// center of mass sweep
+					rayVector = transform.TransformPoint((rotation * massZeroVector) * massLength);
+					Gizmos.DrawLine(massCenterOfRotation, rayVector);
 				}
 			}
 			else
             {
 				// draw semi-circle
 				Vector3 lastVector = transform.position;
+				Vector3 lastMassVector = massCenterOfRotation;
+
 				for( int i = 0; i <= GIZMO_SEGMENTS; i++ )
 				{
 					Gizmos.color = Color.Lerp(startColor, endColor, (float)i / GIZMO_SEGMENTS);
-					Vector3 nextVector = Quaternion.AngleAxis(
-						Mathf.Lerp(JointLimitMin, JointLimitMax, (float)i / GIZMO_SEGMENTS), JointAxis)
-						* Vector3.forward * GIZMO_RADIUS;
-					nextVector = transform.TransformPoint(nextVector);
+
+					float rotateAngle = Mathf.Lerp(JointLimitMin, JointLimitMax, (float)i / GIZMO_SEGMENTS);
+					Quaternion rotation = Quaternion.AngleAxis(rotateAngle, JointAxis);
+
+					// projected sweep
+					Vector3 nextVector = transform.TransformPoint((rotation * gizmoZeroVector) * GIZMO_RADIUS);
+					Vector3 nextMassVector = transform.TransformPoint((rotation * massZeroVector) * massLength);
 
 					if( i == 0 || i == GIZMO_SEGMENTS )
                     {
 						Gizmos.DrawLine(transform.position, nextVector);
+						Gizmos.DrawLine(massCenterOfRotation, nextMassVector);
 					}
 					else if( i != 0 )
                     {
 						Gizmos.DrawLine(lastVector, nextVector);
+						Gizmos.DrawLine(lastMassVector, nextMassVector);
 					}
 
 					lastVector = nextVector;
+					lastMassVector = nextMassVector;
 				}
 			}
         }
