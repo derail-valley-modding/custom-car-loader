@@ -4,10 +4,24 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public abstract class CustomLocoSimEvents : LocoSimulationEvents
+    public abstract class CustomLocoSimEvents : LocoSimulationEvents, ILocoEventProvider
     {
+        protected const float FUEL_OIL_DMG_CHECK_PERIOD = 5f;
+
+        protected virtual void Start()
+        {
+            InitThresholds();
+        }
+
+        protected abstract void InitThresholds();
+
+        protected virtual void OnEnable()
+        {
+            StartCoroutine(CheckTankDamageStateRoutine());
+        }
+
         /// <summary>Gets an event_&lt;T&gt; from the controller</summary>
-        public virtual object GetEvent( SimEventType indicatorType )
+        public virtual SimEventWrapper GetEvent( SimEventType indicatorType )
         {
             switch( indicatorType )
             {
@@ -20,12 +34,6 @@ namespace DVCustomCarLoader.LocoComponents
                 case SimEventType.Sand:
                     return SandChanged;
 
-                case SimEventType.EngineTemp:
-                    return EngineTempChanged;
-
-                case SimEventType.EngineDamage:
-                    return EngineDamageChanged;
-
                 case SimEventType.Wheelslip:
                     return WheelslipChanged;
 
@@ -33,9 +41,22 @@ namespace DVCustomCarLoader.LocoComponents
                     return CouplingIntegrityChanged;
 
                 default:
-                    return null;
+                    return SimEventWrapper.Empty;
             }
         }
+
+        private IEnumerator CheckTankDamageStateRoutine()
+        {
+            WaitForSeconds waitTimeout = WaitFor.Seconds(FUEL_OIL_DMG_CHECK_PERIOD);
+
+            while( true )
+            {
+                yield return waitTimeout;
+                CheckTankAndDamageLevels();
+            }
+        }
+
+        protected abstract void CheckTankAndDamageLevels();
     }
 
     public abstract class CustomLocoSimEvents<TSim,TDmg> : CustomLocoSimEvents
@@ -51,12 +72,5 @@ namespace DVCustomCarLoader.LocoComponents
             sim = GetComponent<TSim>();
             dmgController = GetComponent<TDmg>();
         }
-
-        protected virtual void Start()
-        {
-            InitThresholds();
-        }
-
-        protected abstract void InitThresholds();
     }
 }

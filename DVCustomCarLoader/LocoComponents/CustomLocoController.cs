@@ -3,11 +3,12 @@ using System.Collections;
 using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
+using DV.Util.EventWrapper;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public abstract class CustomLocoController : LocoControllerBase
+    public abstract class CustomLocoController : LocoControllerBase, ILocoEventProvider, ICabControlAcceptor
     {
         public AnimationCurve tractionTorqueCurve;
 
@@ -23,13 +24,35 @@ namespace DVCustomCarLoader.LocoComponents
         }
         public float GetReverserCabPosition() => (reverser + 1f) / 2f;
 
+        // Headlights
+        public bool HeadlightsOn { get; protected set; } = false;
+        public void SetHeadlight( float value )
+        {
+            bool lastState = HeadlightsOn;
+            HeadlightsOn = value > 0.5f;
+            if( lastState ^ HeadlightsOn )
+            {
+                //headlights.SetActive(HeadlightsOn);
+                HeadlightsChanged.Invoke(HeadlightsOn);
+            }
+        }
+
+        // Cab Lights
+        public bool CabLightsOn { get; protected set; } = false;
+        public void SetCabLight( float value )
+        {
+            bool lastState = CabLightsOn;
+            CabLightsOn = value > 0.5f;
+            if( lastState ^ CabLightsOn ) CabLightsChanged.Invoke(CabLightsOn);
+        }
+
         public virtual Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
         {
             switch( indicatedType )
             {
                 case CabIndicatorType.BrakePipe:
                     return GetBrakePipePressure;
-                    
+
                 case CabIndicatorType.BrakeReservoir:
                     return GetBrakeResPressure;
 
@@ -41,26 +64,76 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-        public virtual (Action<float>, Func<float>) GetCabControlActions( CabInputType inputType )
+        #region ICabControlAcceptor
+
+        public virtual void RegisterControl( CabInputRelay inputRelay )
         {
-            switch( inputType )
+            switch( inputRelay.Binding )
             {
                 case CabInputType.TrainBrake:
-                    return (SetBrake, GetTargetBrake);
+                    inputRelay.SetIOHandlers(SetBrake, GetTargetBrake);
+                    break;
 
                 case CabInputType.IndependentBrake:
-                    return (SetIndependentBrake, GetTargetIndependentBrake);
+                    inputRelay.SetIOHandlers(SetIndependentBrake, GetTargetIndependentBrake);
+                    break;
 
                 case CabInputType.Throttle:
-                    return (SetThrottle, GetTargetThrottle);
+                    inputRelay.SetIOHandlers(SetThrottle, GetTargetThrottle);
+                    break;
 
                 case CabInputType.Reverser:
-                    return (SetReverserFromCab, GetReverserCabPosition);
+                    inputRelay.SetIOHandlers(SetReverserFromCab, GetReverserCabPosition);
+                    break;
+
+                case CabInputType.Headlights:
+                    inputRelay.SetIOHandlers(SetHeadlight, null);
+                    break;
+
+                case CabInputType.CabLights:
+                    inputRelay.SetIOHandlers(SetCabLight, null);
+                    break;
 
                 default:
-                    return (null, null);
+                    break;
             }
         }
+
+        public virtual bool AcceptsControlOfType( CabInputType inputType )
+        {
+            return inputType.EqualsOneOf(
+                CabInputType.TrainBrake,
+                CabInputType.IndependentBrake,
+                CabInputType.Throttle,
+                CabInputType.Reverser,
+                CabInputType.Headlights,
+                CabInputType.CabLights
+            );
+        }
+
+        #endregion
+
+        #region Events
+
+        public event_<bool> HeadlightsChanged;
+        public event_<bool> CabLightsChanged;
+
+        public virtual SimEventWrapper GetEvent( SimEventType eventType )
+        {
+            switch( eventType )
+            {
+                case SimEventType.Headlights:
+                    return HeadlightsChanged;
+
+                case SimEventType.CabLights:
+                    return CabLightsChanged;
+
+                default:
+                    return SimEventWrapper.Empty;
+            }
+        }
+
+        #endregion
     }
 
     public abstract class CustomLocoController<TSim,TDmg,TEvents> : CustomLocoController

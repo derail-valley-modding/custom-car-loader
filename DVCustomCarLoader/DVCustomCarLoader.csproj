@@ -76,6 +76,7 @@
     <Compile Include="LocoComponents\CustomCabIndicators.cs" />
     <Compile Include="LocoComponents\CustomCabInputController.cs" />
     <Compile Include="LocoComponents\CustomDieselReverserLock.cs" />
+    <Compile Include="LocoComponents\CustomFuseController.cs" />
     <Compile Include="LocoComponents\CustomLampController.cs" />
     <Compile Include="LocoComponents\CustomLocoAudio.cs" />
     <Compile Include="LocoComponents\CustomLocoAudioDiesel.cs" />

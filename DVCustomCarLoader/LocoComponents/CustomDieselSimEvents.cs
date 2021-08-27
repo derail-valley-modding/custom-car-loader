@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using CCL_GameScripts.CabControls;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
@@ -8,7 +9,6 @@ namespace DVCustomCarLoader.LocoComponents
     {
         protected const float ENGINE_OVERHEAT_CHECK_PERIOD = 1f;
         protected const float ENGINE_TEMP_CHECK_PERIOD = 3f;
-        protected const float FUEL_OIL_DMG_CHECK_PERIOD = 5f;
 
         protected const float OVERHEAT_TIME_LIMIT_MAX = 25f;
         protected const float OVERHEAT_TIME_LIMIT_MIN = 15f;
@@ -26,6 +26,24 @@ namespace DVCustomCarLoader.LocoComponents
         protected float EngineDamageThreshold;
 
         private Coroutine OverheatCheckCoroutine;
+
+        public override SimEventWrapper GetEvent( SimEventType indicatorType )
+        {
+            switch( indicatorType )
+            {
+                case SimEventType.EngineOn:
+                    return EngineRunningChanged;
+
+                case SimEventType.EngineTemp:
+                    return EngineTempChanged;
+
+                case SimEventType.EngineDamage:
+                    return EngineDamageChanged;
+
+                default:
+                    return base.GetEvent(indicatorType);
+            }
+        }
 
         protected override void InitThresholds()
         {
@@ -55,9 +73,10 @@ namespace DVCustomCarLoader.LocoComponents
             StopAllCoroutines();
         }
 
-        protected void OnEnable()
+        protected override void OnEnable()
         {
-            StartCoroutine(CheckFuelOilDmgState());
+            base.OnEnable();
+
             StartCoroutine(CheckEngineTemp());
             StartCoroutine(CheckWheelslip(0.5f));
             StartCoroutine(CheckCouplingIntegrity(2f));
@@ -110,47 +129,38 @@ namespace DVCustomCarLoader.LocoComponents
             yield break;
         }
 
-        private IEnumerator CheckFuelOilDmgState()
+        protected override void CheckTankAndDamageLevels()
         {
-            WaitForSeconds waitTimeout = WaitFor.Seconds(FUEL_OIL_DMG_CHECK_PERIOD);
-
-            while( true )
+            Amount newFuelLevel = GetAmount(sim.fuel.value, LowFuelThreshold);
+            if( Fuel != newFuelLevel )
             {
-                yield return waitTimeout;
-
-                Amount newFuelLevel = GetAmount(sim.fuel.value, LowFuelThreshold);
-                if( Fuel != newFuelLevel )
+                Fuel = newFuelLevel;
+                if( (newFuelLevel == Amount.Depleted && sim.engineOn) || newFuelLevel != Amount.Depleted )
                 {
-                    Fuel = newFuelLevel;
-                    if( (newFuelLevel == Amount.Depleted && sim.engineOn) || newFuelLevel != Amount.Depleted )
-                    {
-                        FuelChanged.Invoke(newFuelLevel);
-                    }
-                }
-
-                Amount newOilLevel = GetAmount(sim.oil.value, LowOilThreshold, MidOilThreshold);
-                if( Oil != newOilLevel )
-                {
-                    Oil = newOilLevel;
-                    OilChanged.Invoke(newOilLevel);
-                }
-
-                Amount newSandLevel = GetAmount(sim.sand.value, LowSandThreshold);
-                if( Sand != newSandLevel )
-                {
-                    Sand = newSandLevel;
-                    SandChanged.Invoke(newSandLevel);
-                }
-
-                Amount newDamageLevel = GetAmount(dmgController.engine.DamagePercentage, EngineDamageThreshold);
-                if( EngineDamage != newDamageLevel )
-                {
-                    EngineDamage = newDamageLevel;
-                    EngineDamageChanged.Invoke(newDamageLevel);
+                    FuelChanged.Invoke(newFuelLevel);
                 }
             }
 
-            //yield break;
+            Amount newOilLevel = GetAmount(sim.oil.value, LowOilThreshold, MidOilThreshold);
+            if( Oil != newOilLevel )
+            {
+                Oil = newOilLevel;
+                OilChanged.Invoke(newOilLevel);
+            }
+
+            Amount newSandLevel = GetAmount(sim.sand.value, LowSandThreshold);
+            if( Sand != newSandLevel )
+            {
+                Sand = newSandLevel;
+                SandChanged.Invoke(newSandLevel);
+            }
+
+            Amount newDamageLevel = GetAmount(dmgController.engine.DamagePercentage, EngineDamageThreshold);
+            if( EngineDamage != newDamageLevel )
+            {
+                EngineDamage = newDamageLevel;
+                EngineDamageChanged.Invoke(newDamageLevel);
+            }
         }
     }
 }

@@ -121,7 +121,7 @@ namespace DVCustomCarLoader
                     Main.Log($"Add input relay to {controlObject.name}");
 #endif
                     var inputRelay = controlObject.AddComponent<CabInputRelay>();
-                    inputRelay.InputBinding = control.InputBinding;
+                    inputRelay.Binding = control.InputBinding;
                 }
                 
                 object realComp = compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
@@ -129,7 +129,7 @@ namespace DVCustomCarLoader
                 if( (compSpec is IndicatorSetupBase indicatorSpec) && (realComp is GameObject spawnedObj) )
                 {
                     var realIndicator = spawnedObj.GetComponent<Indicator>();
-                    var indicatorInfo = spawnedObj.AddComponent<IndicatorInfo>();
+                    var indicatorInfo = spawnedObj.AddComponent<IndicatorRelay>();
                     indicatorInfo.Type = indicatorSpec.OutputBinding;
                     indicatorInfo.Indicator = realIndicator;
                 }
@@ -203,12 +203,12 @@ namespace DVCustomCarLoader
 
                         // Add wrapper to connect the control to the loco brain
                         var inputRelay = newControl.gameObject.AddComponent<CabInputRelay>();
-                        inputRelay.InputBinding = input.InputBinding;
+                        inputRelay.Binding = input.InputBinding;
                     }
                     else if( copySpec is CopiedCabIndicator indicator )
                     {
                         var realIndicator = newControl.GetComponentInChildren<Indicator>(true);
-                        var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorInfo>();
+                        var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorRelay>();
                         indicatorInfo.Type = indicator.OutputBinding;
                         indicatorInfo.Indicator = realIndicator;
                     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
+using DV.Util.EventWrapper;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
@@ -14,10 +15,17 @@ namespace DVCustomCarLoader.LocoComponents
 		CustomLocoController<
 			CustomLocoSimDiesel,
 			DamageControllerCustomDiesel,
-			CustomDieselSimEvents>
+			CustomDieselSimEvents>,
+		IFusedLocoController
     {
-		public bool Backlight { get; set; }
-		public bool FanOn { get; set; }
+		public bool FanOn { get; protected set; }
+
+		public void SetFan( float value )
+        {
+			bool lastState = FanOn;
+			FanOn = value > 0.5f;
+			if( lastState ^ FanOn ) FanChanged.Invoke(FanOn);
+        }
 
 		public float EngineRPM => sim.engineRPM.value;
 		public float EngineRPMGauge => (sim.engineOn) ? (12.5f + sim.engineRPM.value * 100f) : 0f;
@@ -39,11 +47,29 @@ namespace DVCustomCarLoader.LocoComponents
 				}
 			}
 		}
+		public bool CanEngineStart => !EngineRunning && (FuelLevel > 0);
+		public bool AutoStart => autostart;
 
 		public float FuelLevel => sim.fuel.value;
 		public float OilLevel => sim.oil.value;
 		public float SandLevel => sim.sand.value;
 		public bool SandersOn => sim.sandOn;
+
+		public event_<bool> SandersChanged;
+		public event_<bool> FanChanged;
+
+        public override SimEventWrapper GetEvent( SimEventType eventType )
+        {
+			switch( eventType )
+			{
+				case SimEventType.SandDeploy:
+					return SandersChanged;
+
+				case SimEventType.Fan:
+					return FanChanged;
+			}
+            return base.GetEvent(eventType);
+        }
 
         public override Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
         {
@@ -66,6 +92,36 @@ namespace DVCustomCarLoader.LocoComponents
 			}
         }
 
+        public override void RegisterControl( CabInputRelay inputRelay )
+        {
+			switch( inputRelay.Binding )
+            {
+				case CabInputType.Horn:
+					break;
+
+				case CabInputType.Sand:
+					inputRelay.SetIOHandlers(SetSanders);
+					break;
+
+				case CabInputType.Fan:
+					inputRelay.SetIOHandlers(SetFan);
+					break;
+
+				default:
+					base.RegisterControl(inputRelay);
+					break;
+			}
+        }
+
+        public override bool AcceptsControlOfType( CabInputType inputType )
+        {
+            return inputType.EqualsOneOf(
+				CabInputType.Horn,
+				CabInputType.Sand,
+				CabInputType.Fan
+			) || base.AcceptsControlOfType(inputType);
+        }
+
         public override float GetSandersFlow()
 		{
 			if( sim.sand.value <= 0f )
@@ -83,6 +139,7 @@ namespace DVCustomCarLoader.LocoComponents
 		public override void SetSanders( float value )
 		{
 			sim.sandOn = (value > 0f);
+			SandersChanged.Invoke(sim.sandOn);
 			base.SetSanders(value);
 		}
 

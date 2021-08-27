@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using CCL_GameScripts.CabControls;
 using DV.CabControls;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public class CustomCabInputController : CabInput
     {
-		protected CustomLocoController locoController;
+		protected ICabControlAcceptor[] controlAcceptors;
 		public CabInputRelay[] Relays;
 
 		protected virtual void OnEnable()
@@ -20,10 +21,14 @@ namespace DVCustomCarLoader.LocoComponents
 				return;
 			}
 
-			locoController = car.gameObject.GetComponent<CustomLocoController>();
-			if( !locoController )
+			controlAcceptors = 
+				car.gameObject.GetComponentsByInterface<ICabControlAcceptor>()
+				.Concat(gameObject.GetComponentsByInterface<ICabControlAcceptor>())
+				.ToArray();
+
+			if( controlAcceptors.Length == 0 )
 			{
-				Main.Error("Couldn't find custom lococontroller for cab input");
+				Main.Error("Couldn't find any components accepting cab input");
 				return;
 			}
 
@@ -31,14 +36,20 @@ namespace DVCustomCarLoader.LocoComponents
 			Main.Log($"CustomCabInput Start - {Relays.Length} controls");
 			foreach( CabInputRelay relay in Relays )
 			{
-				relay.ConnectToController(locoController);
+				foreach( var receiver in controlAcceptors )
+                {
+					if( receiver.AcceptsControlOfType(relay.Binding) )
+					{
+						receiver.RegisterControl(relay);
+					}
+                }
 			}
 		}
 	}
 
 	public class CabInputRelay : MonoBehaviour
     {
-		public CabInputType InputBinding;
+		public CabInputType Binding;
 
 		private ControlImplBase __control;
 		public ControlImplBase Control
@@ -55,24 +66,26 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-		public bool Initialized = false;
+		public bool Initialized { get; protected set; } = false;
 		protected Action<float> SetNewValue = null;
 		protected Func<float> GetTargetValue = null;
 		private float lastValue;
 
-		public void ConnectToController( CustomLocoController locoController )
+		public float Value
         {
-			(SetNewValue, GetTargetValue) = locoController.GetCabControlActions(InputBinding);
+			get => Control ? Control.Value : 0;
+			set
+			{
+				if( Control ) Control.SetValue(value);
+			}
+        }
 
-			if( SetNewValue == null || GetTargetValue == null )
-			{
-				// can't run if not connected to anything
-				enabled = false;
-			}
-			else
-			{
-				Initialized = true;
-			}
+		public void SetIOHandlers( Action<float> onUserInput, Func<float> getFeedback = null )
+        {
+			SetNewValue = onUserInput;
+			GetTargetValue = getFeedback;
+
+			Initialized = true;
         }
 
 		private void OnValueChanged( ValueChangedEventArgs e )
@@ -86,14 +99,23 @@ namespace DVCustomCarLoader.LocoComponents
 			if( !Control )
             {
 				Control = gameObject.GetComponentInChildren<ControlImplBase>();
+				if( !Control )
+                {
+					enabled = false;
+					Main.Warning($"Input relay {name} is missing ControlImplBase");
+					return;
+                }
             }
 
 			// handle feedback from the loco controller (eg keyboard controls)
-			float target = GetTargetValue();
-			if( (target != lastValue) && !Control.IsGrabbedOrHoverScrolled() )
+			if( GetTargetValue != null )
 			{
-				Control.SetValue(target);
-				lastValue = target;
+				float target = GetTargetValue();
+				if( (target != lastValue) && !Control.IsGrabbedOrHoverScrolled() )
+				{
+					Control.SetValue(target);
+					lastValue = target;
+				}
 			}
 		}
     }
