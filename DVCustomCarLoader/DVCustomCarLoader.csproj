@@ -45,10 +45,7 @@
     </Reference>
     <Reference Include="NAudio, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="net.smkd.vector3d, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Newtonsoft.Json, Version=12.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SteamLibrary\steamapps\common\Derail Valley\DerailValley_Data\Managed\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.dll</HintPath>
@@ -82,6 +79,9 @@
     <Compile Include="LocoComponents\CustomLampController.cs" />
     <Compile Include="LocoComponents\CustomLocoAudio.cs" />
     <Compile Include="LocoComponents\CustomLocoAudioDiesel.cs" />
+    <Compile Include="LocoComponents\ICabControlAcceptor.cs" />
+    <Compile Include="LocoComponents\IFusedLocoController.cs" />
+    <Compile Include="LocoComponents\ILocoEventProvider.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />

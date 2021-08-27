@@ -6,7 +6,17 @@
         TrainBrake,
         Throttle,
         Reverser,
-        Horn
+        Horn,
+        
+        Fuse,
+        MainFuse,
+        Starter,
+        EngineStop,
+
+        Sand,
+        Fan,
+        Headlights,
+        CabLights
     }
 
     public enum CabIndicatorType
@@ -22,6 +32,7 @@
 
     public enum SimEventType
     {
+        None,
         Couplers,
         EngineDamage,
         EngineTemp,
@@ -29,6 +40,13 @@
         Oil,
         Sand,
         Wheelslip,
+
+        PowerOn,
+        EngineOn,
+        SandDeploy,
+        Fan,
+        Headlights,
+        CabLights
     }
 
     public enum SimThresholdDirection
