@@ -97,7 +97,7 @@ namespace DVCustomCarLoader
             driver.wheelslipToFrictionModifierCurve = simParams.WheelslipToFrictionModifier;
         }
 
-        public static void SetupCabComponents( GameObject interior )
+        public static void SetupCabComponents( GameObject interior, LocoParamsType locoType )
         {
             CreateComponentsFromProxies(interior);
             CreateCopiedControls(interior);
@@ -106,6 +106,11 @@ namespace DVCustomCarLoader
             interior.AddComponent<CustomCabInputController>();
             interior.AddComponent<CustomCabIndicators>();
             interior.AddComponent<CustomLampController>();
+
+            if( locoType == LocoParamsType.DieselElectric )
+            {
+                interior.AddComponent<CustomFuseController>();
+            }
         }
 
         public static void CreateComponentsFromProxies( GameObject root )

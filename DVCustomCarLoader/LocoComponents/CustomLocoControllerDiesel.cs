@@ -18,14 +18,16 @@ namespace DVCustomCarLoader.LocoComponents
 			CustomDieselSimEvents>,
 		IFusedLocoController
     {
-		public bool FanOn { get; protected set; }
+		private bool fanOn;
 
 		public void SetFan( float value )
         {
-			bool lastState = FanOn;
-			FanOn = value > 0.5f;
-			if( lastState ^ FanOn ) FanChanged.Invoke(FanOn);
+			bool lastState = fanOn;
+			fanOn = value > 0.5f;
+			if( lastState ^ fanOn ) FanChanged.Invoke(fanOn);
         }
+
+		public float GetFan() => fanOn ? 1 : 0;
 
 		public float EngineRPM => sim.engineRPM.value;
 		public float EngineRPMGauge => (sim.engineOn) ? (12.5f + sim.engineRPM.value * 100f) : 0f;
@@ -97,14 +99,15 @@ namespace DVCustomCarLoader.LocoComponents
 			switch( inputRelay.Binding )
             {
 				case CabInputType.Horn:
+					inputRelay.SetIOHandlers(SetHorn);
 					break;
 
 				case CabInputType.Sand:
-					inputRelay.SetIOHandlers(SetSanders);
+					inputRelay.SetIOHandlers(SetSanders, GetSanders);
 					break;
 
 				case CabInputType.Fan:
-					inputRelay.SetIOHandlers(SetFan);
+					inputRelay.SetIOHandlers(SetFan, GetFan);
 					break;
 
 				default:
@@ -138,10 +141,18 @@ namespace DVCustomCarLoader.LocoComponents
 
 		public override void SetSanders( float value )
 		{
-			sim.sandOn = (value > 0f);
-			SandersChanged.Invoke(sim.sandOn);
-			base.SetSanders(value);
+			if( sim.sandOn ^ (value > 0.5f) )
+			{
+				sim.sandOn = (value > 0.5f);
+				SandersChanged.Invoke(sim.sandOn);
+				base.SetSanders(value);
+			}
 		}
+
+		public float GetSanders()
+        {
+			return sim.sandOn ? 1 : 0;
+        }
 
 		public override void SetReverser( float position )
 		{
@@ -163,6 +174,18 @@ namespace DVCustomCarLoader.LocoComponents
 			}
 			base.SetReverser(position);
 		}
+
+		private float hornValue = 0;
+
+		public void SetHorn( float newVal )
+        {
+			hornValue = newVal;
+        }
+
+		public float GetHorn()
+        {
+			return hornValue;
+        }
 
 		public override float GetTractionForce()
 		{
@@ -253,6 +276,7 @@ namespace DVCustomCarLoader.LocoComponents
 			base.Update();
 			UpdateSimSpeed();
 			UpdateSimThrottle();
+			UpdateControls();
 		}
 
 		private void UpdateSimSpeed()
@@ -266,6 +290,25 @@ namespace DVCustomCarLoader.LocoComponents
 			sim.throttle.SetValue(sim.engineOn ? throttle : 0f);
 			sim.throttleToTargetDiff.SetValue(sim.engineOn ? (throttle - targetThrottle) : 0f);
 		}
+
+		private void UpdateControls()
+        {
+			if( isAcceptingKeyboardInput )
+            {
+				if( KeyBindings.increaseSandKeys.IsDown() && !SandersOn )
+                {
+					SetSanders(1);
+                }
+				if( KeyBindings.decreaseSandKeys.IsDown() && SandersOn )
+                {
+					SetSanders(0);
+                }
+				if( KeyBindings.increaseHornKeys.IsPressed() )
+                {
+					SetHorn(1);
+                }
+            }
+        }
 
         #endregion
     }

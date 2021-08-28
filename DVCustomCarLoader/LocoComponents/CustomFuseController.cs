@@ -103,7 +103,8 @@ namespace DVCustomCarLoader.LocoComponents
             yield break;
         }
 
-        // ILocoEventProvider
+        //-------------------------------------------------------------------------------------
+        #region ILocoEventProvider
 
         public SimEventWrapper GetEvent( SimEventType eventType )
         {
@@ -114,39 +115,64 @@ namespace DVCustomCarLoader.LocoComponents
             return SimEventWrapper.Empty;
         }
 
+        #endregion
+
+        //-------------------------------------------------------------------------------------
         #region ICabControlAcceptor
 
         protected void OnSideFuseChanged( float newVal )
         {
-            if( newVal == 0 )
+            if( newVal <= SWITCH_THRESHOLD )
             {
-                locoController.EngineRunning = false;
-                mainFuseValue = 0;
+                if( locoController.EngineRunning ) KillEngine();
+                StartCoroutine(DelayedMainFuseOff());
             }
         }
 
         protected void OnMainFuseChanged( float newVal )
         {
-            if( newVal > SWITCH_THRESHOLD )
+            bool wasOn = (mainFuseValue > SWITCH_THRESHOLD);
+            bool nowOn = (newVal > SWITCH_THRESHOLD);
+
+            if( nowOn && !wasOn )
             {
                 if( !AreAllSideFusesOn() )
                 {
                     StartCoroutine(DelayedMainFuseOff());
                     return;
                 }
+                MasterPowerChanged.Invoke(nowOn);
             }
-
-            MasterPowerChanged.Invoke(newVal > SWITCH_THRESHOLD);
+            if( !nowOn && wasOn )
+            {
+                MasterPowerChanged.Invoke(nowOn);
+            }
         }
 
         protected void OnStarterChanged( float newVal )
         {
-            // TODO starter switch handling
+            if( (newVal > SWITCH_THRESHOLD) && !locoController.EngineRunning )
+            {
+                TryStarter();
+            }
+        }
+
+        protected void OnEStopChanged( float newVal )
+        {
+            if( (newVal > SWITCH_THRESHOLD) && locoController.EngineRunning )
+            {
+                KillEngine();
+            }
         }
 
         public bool AcceptsControlOfType( CabInputType inputType )
         {
-            return inputType.EqualsOneOf(CabInputType.Fuse, CabInputType.MainFuse, CabInputType.Starter);
+            return inputType.EqualsOneOf(
+                CabInputType.Fuse,
+                CabInputType.MainFuse,
+                CabInputType.Starter,
+                CabInputType.EngineStop
+            );
         }
 
         public void RegisterControl( CabInputRelay inputRelay )
@@ -164,6 +190,10 @@ namespace DVCustomCarLoader.LocoComponents
 
                 case CabInputType.Starter:
                     inputRelay.SetIOHandlers(OnStarterChanged, GetStarterPosition);
+                    break;
+
+                case CabInputType.EngineStop:
+                    inputRelay.SetIOHandlers(OnEStopChanged, null);
                     break;
             }
         }
