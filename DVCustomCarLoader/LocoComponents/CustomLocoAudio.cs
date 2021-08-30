@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using CCL_GameScripts;
+using CCL_GameScripts.Attributes;
 using HarmonyLib;
 
 namespace DVCustomCarLoader.LocoComponents

@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using CCL_GameScripts;
+using CCL_GameScripts.Attributes;
 
 namespace DVCustomCarLoader.LocoComponents
 {

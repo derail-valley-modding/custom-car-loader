@@ -354,14 +354,14 @@ namespace DVCustomCarLoader
             // setup traincar properties
             CargoClass = (CargoContainerType)carSetup.CargoClass;
 
-            if( !carSetup.OverridePhysics )
-            {
-                newCar.bogieDamping = baseCar.bogieDamping;
-                newCar.bogieMassRatio = baseCar.bogieMassRatio;
-                newCar.bogieSpring = baseCar.bogieSpring;
-                newCar.totalMass = baseCar.totalMass;
-                newCar.wheelRadius = baseCar.wheelRadius;
-            }
+            //if( !carSetup.OverridePhysics )
+            //{
+            //    newCar.bogieDamping = baseCar.bogieDamping;
+            //    newCar.bogieMassRatio = baseCar.bogieMassRatio;
+            //    newCar.bogieSpring = baseCar.bogieSpring;
+            //    newCar.totalMass = baseCar.totalMass;
+            //    newCar.wheelRadius = baseCar.wheelRadius;
+            //}
 
             newCar.carType = CarType;
 

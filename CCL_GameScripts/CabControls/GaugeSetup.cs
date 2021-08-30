@@ -1,11 +1,13 @@
 ﻿using System.Collections;
+using CCL_GameScripts.Attributes;
 using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
     public class GaugeSetup : IndicatorSetupBase
     {
-        protected override string TargetTypeName => "IndicatorGauge";
+        public override string TargetTypeName => "IndicatorGauge";
+		public override bool IsOverrideSet( int index ) => false;
         public override IndicatorType IndicatorType => IndicatorType.Gauge;
 
 		[ProxyField("unclamped")]

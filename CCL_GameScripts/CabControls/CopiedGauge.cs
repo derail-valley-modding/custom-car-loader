@@ -1,10 +1,38 @@
 ﻿using System.Collections;
 using UnityEngine;
+using CCL_GameScripts.Attributes;
 
 namespace CCL_GameScripts.CabControls
 {
-    public class CopiedGauge : CopiedCabIndicator
+    public enum CopiedGaugeType
     {
+        DE2BrakePipeMeter,
+        DE2BrakeAuxResMeter,
+        DE2Speedometer,
+        DE2EngineTempMeter,
+        DE2SandMeter,
+        DE2FuelMeter,
+        DE2OilMeter,
+
+        DE6BrakePipeMeter,
+        DE6BrakeResMeter,
+        DE6IndBrakeMeter,
+        DE6IndBrakeResMeter,
+        DE6EngineRPMMeter,
+        DE6EngineTempMeter,
+        DE6Ammeter,
+        DE6Speedometer,
+        DE6SandMeter,
+        DE6FuelMeter,
+        DE6OilMeter,
+    }
+
+    public class CopiedGauge : CopiedCabIndicator, IProxyScript
+    {
+        public string TargetTypeName => "IndicatorGauge";
+
+        public bool IsOverrideSet( int index ) => (index == 1) && OverrideScaleLimits;
+
         protected static readonly (BaseTrainCarType, string)[] TargetObjects =
             new[]
             {
@@ -15,22 +43,55 @@ namespace CCL_GameScripts.CabControls
                 (BaseTrainCarType.LocoShunter, "C dashboard indicators controller/I sand_meter"),
                 (BaseTrainCarType.LocoShunter, "C dashboard indicators controller/I fuel_meter"),
                 (BaseTrainCarType.LocoShunter, "C dashboard indicators controller/I oil_meter"),
+
+                (BaseTrainCarType.LocoDiesel, "I brake_aux_meter"),
+                (BaseTrainCarType.LocoDiesel, "I brake_aux_res_meter"),
+                (BaseTrainCarType.LocoDiesel, "I ind_brake_aux_meter"),
+                (BaseTrainCarType.LocoDiesel, "I ind_brake_res_meter"),
+                (BaseTrainCarType.LocoDiesel, "I rpm_meter"),
+                (BaseTrainCarType.LocoDiesel, "I temperature_meter"),
+                (BaseTrainCarType.LocoDiesel, "I voltage_meter"),
+                (BaseTrainCarType.LocoDiesel, "I speedometer"),
+                (BaseTrainCarType.LocoDiesel, "I sand_meter"),
+                (BaseTrainCarType.LocoDiesel, "I fuel_meter"),
+                (BaseTrainCarType.LocoDiesel, "I oil_meter"),
             };
 
         protected static readonly GaugeGizmoInfo[] GizmoData =
             new[]
             {
-                new GaugeGizmoInfo(-200, 20, 0.025f),
-                new GaugeGizmoInfo(-200, 20, 0.025f),
-                new GaugeGizmoInfo(-226, 46, 0.05f),
+                // shunter
+                new GaugeGizmoInfo(-200, 20, 0.025f),   // brake pipe
+                new GaugeGizmoInfo(-200, 20, 0.025f),   // brake res
+                new GaugeGizmoInfo(-226, 46, 0.05f),    // speedometer
 
-                new GaugeGizmoInfo(-225, 45, 0.045f),
-                new GaugeGizmoInfo(-225, 45, 0.025f),
-                new GaugeGizmoInfo(-225, 45, 0.025f),
-                new GaugeGizmoInfo(-225, 45, 0.025f),
+                new GaugeGizmoInfo(-225, 45, 0.045f),   // temp
+                new GaugeGizmoInfo(-225, 45, 0.025f),   // sand
+                new GaugeGizmoInfo(-225, 45, 0.025f),   // fuel
+                new GaugeGizmoInfo(-225, 45, 0.025f),   // oil
+
+                // DE6
+                new GaugeGizmoInfo(-205, 25, 0.025f),   // brake pipe
+                new GaugeGizmoInfo(-205, 25, 0.025f),   // brake res
+                new GaugeGizmoInfo(-205, 25, 0.025f),   // ind pipe
+                new GaugeGizmoInfo(-205, 25, 0.025f),   // ind res
+
+                new GaugeGizmoInfo(-225, 43, 0.04f),    // rpm
+                new GaugeGizmoInfo(-225, 43, 0.04f),    // temp
+                new GaugeGizmoInfo(-225, 43, 0.04f),    // ammeter
+                new GaugeGizmoInfo(-226, 46, 0.05f),    // speedometer
+
+                new GaugeGizmoInfo(-15, 115, 0.025f),   // sand
+                new GaugeGizmoInfo(-15, 115, 0.025f),   // fuel
+                new GaugeGizmoInfo(-15, 115, 0.025f),   // oil
             };
 
         public CopiedGaugeType GaugeType;
+
+        public bool OverrideScaleLimits = false;
+
+        public float MinValue = 0;
+        public float MaxValue = 4;
 
         public override (BaseTrainCarType, string) GetSourceObject()
         {
@@ -82,16 +143,5 @@ namespace CCL_GameScripts.CabControls
                 Radius = radius;
             }
         }
-    }
-
-    public enum CopiedGaugeType
-    {
-        DE2BrakePipeMeter,
-        DE2BrakeAuxResMeter,
-        DE2Speedometer,
-        DE2EngineTempMeter,
-        DE2SandMeter,
-        DE2FuelMeter,
-        DE2OilMeter
     }
 }

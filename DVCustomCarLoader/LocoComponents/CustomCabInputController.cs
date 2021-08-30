@@ -40,6 +40,9 @@ namespace DVCustomCarLoader.LocoComponents
                 {
 					if( receiver.AcceptsControlOfType(relay.Binding) )
 					{
+#if DEBUG
+						Main.Log($"Add {relay.GetType().Name} {relay.name} to {receiver.GetType().Name}");
+#endif
 						receiver.RegisterControl(relay);
 					}
                 }

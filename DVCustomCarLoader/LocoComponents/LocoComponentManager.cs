@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using DV.MultipleUnit;
-using UnityEngine;
-using DVCustomCarLoader.LocoComponents;
 using CCL_GameScripts;
-using HarmonyLib;
+using CCL_GameScripts.Attributes;
 using CCL_GameScripts.CabControls;
 using DV.CabControls.Spec;
+using DV.MultipleUnit;
+using DVCustomCarLoader.LocoComponents;
+using HarmonyLib;
+using UnityEngine;
 
 namespace DVCustomCarLoader
 {
@@ -168,6 +168,24 @@ namespace DVCustomCarLoader
                         newControl = UnityEngine.Object.Instantiate(sourceChild.gameObject, copierAttachedObject.transform);
                         newControl.transform.localPosition = Vector3.zero;
                         newControl.transform.localRotation = Quaternion.identity;
+                    }
+
+                    // copy over any proxied fields
+                    if( copySpec is IProxyScript proxyScript )
+                    {
+                        Type targetType = AccessTools.TypeByName(proxyScript.TargetTypeName);
+                        if( targetType != null )
+                        {
+                            object proxyTarget = newControl.GetComponent(targetType);
+                            if( proxyTarget != null )
+                            {
+                                proxyScript.ApplyProxyFields(proxyTarget, AccessTools.TypeByName, Main.Warning);
+                            }
+                        }
+                        else
+                        {
+                            Main.Error($"Failed to find proxy target {proxyScript.TargetTypeName} for copy script {copySpec.GetType().Name}");
+                        }
                     }
 
                     if( copySpec is CopiedCabInput input )

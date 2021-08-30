@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CCL_GameScripts.Attributes;
 using UnityEngine;
 
 namespace CCL_GameScripts.CabControls

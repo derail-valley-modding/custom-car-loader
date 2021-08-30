@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using CCL_GameScripts.Attributes;
 
 namespace CCL_GameScripts.CabControls
 {

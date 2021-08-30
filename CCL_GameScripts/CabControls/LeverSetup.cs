@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CCL_GameScripts.Attributes;
 using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
     public class LeverSetup : ControlSetupBase
     {
-        protected override string TargetTypeName => "DV.CabControls.Spec.Lever";
+        public override string TargetTypeName => "DV.CabControls.Spec.Lever";
+		public override bool IsOverrideSet( int index ) => false;
         protected override bool DestroyAfterCreation => true;
         public override CabControlType ControlType => CabControlType.Lever;
 
@@ -72,29 +74,7 @@ namespace CCL_GameScripts.CabControls
 			Color startColor = InvertDirection ? END_COLOR : START_COLOR;
 			Color endColor = InvertDirection ? START_COLOR : END_COLOR;
 
-			Vector3 massZeroVector = Vector3.forward;
-			Vector3 gizmoZeroVector = Vector3.forward;
-
-			var renderers = gameObject.GetComponentsInChildren<Renderer>();
-			if( renderers.Length > 0 )
-            {
-				massZeroVector = Vector3.zero;
-
-				foreach( Renderer r in renderers )
-                {
-					Vector3 center = transform.InverseTransformPoint(r.bounds.center);
-					massZeroVector += center;
-                }
-
-				gizmoZeroVector = Vector3.ProjectOnPlane(massZeroVector, JointAxis);
-
-				if( gizmoZeroVector == Vector3.zero )
-				{
-					gizmoZeroVector = Vector3.forward;
-				}
-            }
-
-			gizmoZeroVector = gizmoZeroVector.normalized;
+			(Vector3 gizmoZeroVector, Vector3 massZeroVector) = ModelUtil.GetModelCenterHingeProjection(gameObject, JointAxis);
 
 			float massLength = massZeroVector.magnitude;
 			Vector3 massCenterOfRotation = transform.TransformPoint(Vector3.Project(massZeroVector, JointAxis));
@@ -146,7 +126,7 @@ namespace CCL_GameScripts.CabControls
 						Gizmos.DrawLine(transform.position, nextVector);
 						Gizmos.DrawLine(massCenterOfRotation, nextMassVector);
 					}
-					else if( i != 0 )
+					if( i != 0 )
                     {
 						Gizmos.DrawLine(lastVector, nextVector);
 						Gizmos.DrawLine(lastMassVector, nextMassVector);
