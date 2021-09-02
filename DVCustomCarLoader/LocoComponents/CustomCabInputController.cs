@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
 using CCL_GameScripts.CabControls;
 using DV.CabControls;
+using HarmonyLib;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
@@ -61,9 +63,12 @@ namespace DVCustomCarLoader.LocoComponents
 			set
             {
 				if( __control ) __control.ValueChanged -= OnValueChanged;
+
 				__control = value;
+
 				if( __control )
 				{
+					initializedField = AccessTools.Field(__control.GetType(), "isInitialized");
 					__control.ValueChanged += OnValueChanged;
 				}
             }
@@ -73,6 +78,29 @@ namespace DVCustomCarLoader.LocoComponents
 		protected Action<float> SetNewValue = null;
 		protected Func<float> GetTargetValue = null;
 		private float lastValue;
+
+		private FieldInfo initializedField = null;
+		protected bool IsControlInitialized
+        {
+			get
+            {
+				if( __control )
+                {
+					if( initializedField != null )
+					{
+						if( initializedField.GetValue(__control) is bool b )
+						{
+							return b;
+						}
+						else
+						{
+							Main.Warning($"Failed to get initialized field from control {__control.GetType()}");
+						}
+					}
+                }
+				return true;
+            }
+        }
 
 		public float Value
         {
@@ -111,7 +139,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
 
 			// handle feedback from the loco controller (eg keyboard controls)
-			if( GetTargetValue != null )
+			if( (GetTargetValue != null) && IsControlInitialized )
 			{
 				float target = GetTargetValue();
 				if( (target != lastValue) && !Control.IsGrabbedOrHoverScrolled() )
@@ -120,6 +148,6 @@ namespace DVCustomCarLoader.LocoComponents
 					lastValue = target;
 				}
 			}
-		}
+        }
     }
 }

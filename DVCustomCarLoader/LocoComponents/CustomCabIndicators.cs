@@ -12,11 +12,11 @@ namespace DVCustomCarLoader.LocoComponents
 
         public IndicatorRelay[] Indicators;
 
-        protected virtual void Start()
+        protected virtual void OnEnable()
         {
             locoController = TrainCar.Resolve(gameObject).GetComponent<CustomLocoController>();
 
-            Indicators = GetComponentsInChildren<IndicatorRelay>();
+            Indicators = GetComponentsInChildren<IndicatorRelay>(true);
 
             Main.Log($"CustomCabIndicators Start - {Indicators.Length} indicators");
             foreach( var indicator in Indicators )

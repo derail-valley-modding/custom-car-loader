@@ -31,7 +31,7 @@ namespace DVCustomCarLoader.LocoComponents
                 return;
             }
 
-            Relays = GetComponentsInChildren<DashboardLampRelay>();
+            Relays = GetComponentsInChildren<DashboardLampRelay>(true);
 
             Main.Log($"CustomDashboardLamps Start - {Relays.Length} lamps");
             foreach( var lampController in Relays )

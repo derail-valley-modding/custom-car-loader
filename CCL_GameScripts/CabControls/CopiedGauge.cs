@@ -6,13 +6,13 @@ namespace CCL_GameScripts.CabControls
 {
     public enum CopiedGaugeType
     {
-        DE2BrakePipeMeter,
-        DE2BrakeAuxResMeter,
-        DE2Speedometer,
-        DE2EngineTempMeter,
-        DE2SandMeter,
-        DE2FuelMeter,
-        DE2OilMeter,
+        ShunterBrakePipeMeter,
+        ShunterBrakeAuxResMeter,
+        ShunterSpeedometer,
+        ShunterEngineTempMeter,
+        ShunterSandMeter,
+        ShunterFuelMeter,
+        ShunterOilMeter,
 
         DE6BrakePipeMeter,
         DE6BrakeResMeter,
@@ -44,17 +44,17 @@ namespace CCL_GameScripts.CabControls
                 (BaseTrainCarType.LocoShunter, "C dashboard indicators controller/I fuel_meter"),
                 (BaseTrainCarType.LocoShunter, "C dashboard indicators controller/I oil_meter"),
 
-                (BaseTrainCarType.LocoDiesel, "I brake_aux_meter"),
-                (BaseTrainCarType.LocoDiesel, "I brake_aux_res_meter"),
-                (BaseTrainCarType.LocoDiesel, "I ind_brake_aux_meter"),
-                (BaseTrainCarType.LocoDiesel, "I ind_brake_res_meter"),
-                (BaseTrainCarType.LocoDiesel, "I rpm_meter"),
-                (BaseTrainCarType.LocoDiesel, "I temperature_meter"),
-                (BaseTrainCarType.LocoDiesel, "I voltage_meter"),
-                (BaseTrainCarType.LocoDiesel, "I speedometer"),
-                (BaseTrainCarType.LocoDiesel, "I sand_meter"),
-                (BaseTrainCarType.LocoDiesel, "I fuel_meter"),
-                (BaseTrainCarType.LocoDiesel, "I oil_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I brake_aux_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I brake_res_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I ind_brake_aux_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I ind_brake_res_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I rpm_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I temperature_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I voltage_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I speedometer"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I sand_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I fuel_meter"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I oil_meter"),
             };
 
         protected static readonly GaugeGizmoInfo[] GizmoData =
@@ -88,9 +88,12 @@ namespace CCL_GameScripts.CabControls
 
         public CopiedGaugeType GaugeType;
 
-        public bool OverrideScaleLimits = false;
+        [Header("Dial Limits")]
+        public bool OverrideScaleLimits = false; // override 1
 
+        [ProxyField("minValue", 1)]
         public float MinValue = 0;
+        [ProxyField("maxValue", 1)]
         public float MaxValue = 4;
 
         public override (BaseTrainCarType, string) GetSourceObject()

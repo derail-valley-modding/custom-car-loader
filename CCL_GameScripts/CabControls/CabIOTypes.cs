@@ -2,6 +2,7 @@
 {
     public enum CabInputType
     {
+        None,
         IndependentBrake,
         TrainBrake,
         Throttle,
@@ -21,6 +22,7 @@
 
     public enum CabIndicatorType
     {
+        None,
         BrakePipe,
         BrakeReservoir,
         EngineTemp,
@@ -28,6 +30,10 @@
         Oil,
         Sand,
         Speed,
+        EngineRPM,
+        Amperage,
+        IndependentPipe,
+        IndependentReservoir,
     }
 
     public enum SimEventType

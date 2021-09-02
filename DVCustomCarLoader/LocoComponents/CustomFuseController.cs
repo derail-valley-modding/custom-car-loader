@@ -146,6 +146,7 @@ namespace DVCustomCarLoader.LocoComponents
             if( !nowOn && wasOn )
             {
                 MasterPowerChanged.Invoke(nowOn);
+                KillEngine();
             }
         }
 

@@ -102,20 +102,20 @@ namespace DVCustomCarLoader
             CreateComponentsFromProxies(interior);
             CreateCopiedControls(interior);
 
-            // add controller/"brain" components
-            interior.AddComponent<CustomCabInputController>();
-            interior.AddComponent<CustomCabIndicators>();
-            interior.AddComponent<CustomLampController>();
-
             if( locoType == LocoParamsType.DieselElectric )
             {
                 interior.AddComponent<CustomFuseController>();
             }
+
+            // add controller/"brain" components
+            interior.AddComponent<CustomCabInputController>();
+            interior.AddComponent<CustomCabIndicators>();
+            interior.AddComponent<CustomLampController>();
         }
 
         public static void CreateComponentsFromProxies( GameObject root )
         {
-            var allInitSpecs = root.GetComponentsInChildren<ComponentInitSpec>();
+            var allInitSpecs = root.GetComponentsInChildren<ComponentInitSpec>(true);
 
             foreach( var compSpec in allInitSpecs )
             {
@@ -143,7 +143,7 @@ namespace DVCustomCarLoader
 
         public static void CreateCopiedControls( GameObject root )
         {
-            var allCopySpecs = root.GetComponentsInChildren<CopiedCabControl>();
+            var allCopySpecs = root.GetComponentsInChildren<CopiedCabControl>(true);
 
             foreach( var copySpec in allCopySpecs )
             {
@@ -225,6 +225,9 @@ namespace DVCustomCarLoader
                         }
 
                         // Add wrapper to connect the control to the loco brain
+#if DEBUG
+                        Main.Log($"Add input relay to {newControl.name}");
+#endif
                         var inputRelay = newControl.gameObject.AddComponent<CabInputRelay>();
                         inputRelay.Binding = input.InputBinding;
                     }

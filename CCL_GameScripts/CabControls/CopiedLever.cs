@@ -18,11 +18,11 @@ namespace CCL_GameScripts.CabControls
                 (BaseTrainCarType.LocoShunter, "C reverser"),
                 (BaseTrainCarType.LocoShunter, "C horn"),
 
-                (BaseTrainCarType.LocoDiesel, "C independent_brake_lever"),
-                (BaseTrainCarType.LocoDiesel, "C train_brake_lever"),
-                (BaseTrainCarType.LocoDiesel, "C throttle"),
-                (BaseTrainCarType.LocoDiesel, "C reverser"),
-                (BaseTrainCarType.LocoDiesel, "C horn"),
+                (BaseTrainCarType.LocoDiesel, "offset/C independent_brake_lever"),
+                (BaseTrainCarType.LocoDiesel, "offset/C train_brake_lever"),
+                (BaseTrainCarType.LocoDiesel, "offset/C throttle"),
+                (BaseTrainCarType.LocoDiesel, "offset/C reverser"),
+                (BaseTrainCarType.LocoDiesel, "offset/C horn"),
             };
 
         protected static readonly LeverGizmoInfo[] GizmoData =
