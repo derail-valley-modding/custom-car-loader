@@ -170,6 +170,9 @@ namespace DVCustomCarLoader
                         newControl.transform.localRotation = Quaternion.identity;
                     }
 
+                    // copy over existing name for clarity
+                    newControl.name = copierAttachedObject.name;
+
                     // copy over any proxied fields
                     if( copySpec is IProxyScript proxyScript )
                     {

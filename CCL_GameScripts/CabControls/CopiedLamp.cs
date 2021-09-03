@@ -7,11 +7,17 @@ namespace CCL_GameScripts.CabControls
     {
         public enum CopiedLampType
         {
-            DE2SmallRed,
-            DE2SmallBlue,
-            DE2SmallYellow,
-            DE2LargeRed,
-            DE2LargeGreen
+            SmallRed,
+            SmallBlue,
+            SmallYellow,
+            LargeRed,
+            LargeGreen,
+
+            SmallFlatRed,
+            SmallFlatBlue,
+            SmallFlatYellow,
+            LargeFlatRed,
+            TinyBlue,
         }
 
         protected static readonly (BaseTrainCarType, string)[] TargetObjects =
@@ -22,16 +28,30 @@ namespace CCL_GameScripts.CabControls
                 (BaseTrainCarType.LocoShunter, "C dashboard buttons controller/I deploy_sand_lamp"),
                 (BaseTrainCarType.LocoShunter, "C dashboard indicators controller/I service_engine_lamp"),
                 (BaseTrainCarType.LocoShunter, "C dashboard buttons controller/I power_fuse_lamp"),
+
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I brake_aux_lamp"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I bell_lamp"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I button_sand_lamp"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I service_engine_lamp"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I fan_lamp"),
             };
 
-        protected static readonly (float, Color)[] GizmoData =
+        protected static readonly (float, float, Color)[] GizmoData =
             new[]
             {
-                (0.011f, new Color(0.6f, 0, 0)),
-                (0.01f, new Color(0, 0, 0.6f)),
-                (0.009f, new Color(0.6f, 0.6f, 0)),
-                (0.02f, new Color(0.6f, 0, 0)),
-                (0.02f, new Color(0, 0.6f, 0)),
+                // DE2
+                (0.011f, 0.01f, new Color(0.6f, 0, 0)),    // s red
+                (0.01f, 0.01f, new Color(0, 0.5f, 0.6f)),  // s blue
+                (0.009f, 0.01f, new Color(0.6f, 0.6f, 0)), // s yellow
+                (0.02f, 0.02f, new Color(0.6f, 0, 0)),     // L red
+                (0.02f, 0.02f, new Color(0, 0.6f, 0)),     // L green
+
+                // DE6
+                (0.0095f, 0.002f, new Color(0.6f, 0, 0)),       // s red
+                (0.0095f, 0.002f, new Color(0, 0.5f, 0.6f)),    // s blue
+                (0.0095f, 0.002f, new Color(0.6f, 0.6f, 0)),    // s yellow
+                (0.0175f, 0.012f, new Color(0.6f, 0, 0)),       // L red
+                (0.0073f, 0.009f, new Color(0, 0.5f, 0.6f)),    // t blue
             };
 
 
@@ -55,20 +75,38 @@ namespace CCL_GameScripts.CabControls
         }
 
         protected const int GIZMO_SEGMENTS = 40;
-        //protected static readonly Color GIZMO_COLOR = new Color(0.65f, 0, 0);
+        protected const int GIZMO_RADIAL_DIVISOR = 2;
 
         private void OnDrawGizmosSelected()
         {
-            (float radius, Color color) = GizmoData[(int)LampType];
+            (float radius, float depth, Color color) = GizmoData[(int)LampType];
+
+            Vector3 peak = transform.TransformPoint(Vector3.forward * depth);
+            float avgRadius = (radius + depth) / 2f;
 
             Vector3 lastVector = transform.position;
             for( int i = 0; i <= GIZMO_SEGMENTS; i++ )
             {
                 Gizmos.color = color;
-                Vector3 nextVector = Quaternion.AngleAxis(
+                Vector3 radialVector = (Quaternion.AngleAxis(
                     Mathf.Lerp(0, 360, (float)i / GIZMO_SEGMENTS), Vector3.forward)
-                    * Vector3.right * radius;
-                nextVector = transform.TransformPoint(nextVector);
+                    * Vector3.right).normalized;
+                Vector3 nextVector = transform.TransformPoint(radialVector * radius);
+
+                if( (i % GIZMO_RADIAL_DIVISOR) == 0 )
+                {
+                    Vector3 midPt1 = transform.TransformPoint(
+                        radialVector * Mathf.Cos(Mathf.PI / 6f) * radius +
+                        Vector3.forward * Mathf.Sin(Mathf.PI / 6f) * depth);
+
+                    Vector3 midPt2 = transform.TransformPoint(
+                        radialVector * Mathf.Cos(Mathf.PI / 3f) * radius +
+                        Vector3.forward * Mathf.Sin(Mathf.PI / 3f) * depth);
+
+                    Gizmos.DrawLine(peak, midPt2);
+                    Gizmos.DrawLine(midPt2, midPt1);
+                    Gizmos.DrawLine(midPt1, nextVector);
+                }
 
                 if( i != 0 )
                 {

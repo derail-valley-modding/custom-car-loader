@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections;
+using System.Reflection;
 using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
 using DV.Util.EventWrapper;
+using HarmonyLib;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
@@ -17,6 +18,16 @@ namespace DVCustomCarLoader.LocoComponents
 
         public float GetBrakePipePressure() => train.brakeSystem.brakePipePressure;
         public float GetBrakeResPressure() => train.brakeSystem.mainReservoirPressure;
+
+        private static readonly FieldInfo independentPipeField = AccessTools.Field(typeof(DV.Simulation.Brake.BrakeSystem), "independentPipePressure");
+        public float GetIndependentPressure()
+        {
+            if( independentPipeField != null )
+            {
+                return (float)independentPipeField.GetValue(train.brakeSystem);
+            }
+            return 0;
+        }
 
         public void SetReverserFromCab( float position )
         {
@@ -58,6 +69,9 @@ namespace DVCustomCarLoader.LocoComponents
 
                 case CabIndicatorType.Speed:
                     return GetSpeedKmH;
+
+                case CabIndicatorType.IndependentPipe:
+                    return GetTargetIndependentBrake;
 
                 default:
                     return () => 0;
@@ -118,18 +132,20 @@ namespace DVCustomCarLoader.LocoComponents
         public event_<bool> HeadlightsChanged;
         public event_<bool> CabLightsChanged;
 
-        public virtual SimEventWrapper GetEvent( SimEventType eventType )
+        public virtual bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
         {
             switch( eventType )
             {
                 case SimEventType.Headlights:
-                    return HeadlightsChanged;
+                    HeadlightsChanged.Register(listener.BoolHandler);
+                    return true;
 
                 case SimEventType.CabLights:
-                    return CabLightsChanged;
+                    CabLightsChanged.Register(listener.BoolHandler);
+                    return true;
 
                 default:
-                    return SimEventWrapper.Empty;
+                    return false;
             }
         }
 

@@ -27,21 +27,24 @@ namespace DVCustomCarLoader.LocoComponents
 
         private Coroutine OverheatCheckCoroutine;
 
-        public override SimEventWrapper GetEvent( SimEventType indicatorType )
+        public override bool Bind( SimEventType indicatorType, ILocoEventAcceptor listener )
         {
             switch( indicatorType )
             {
                 case SimEventType.EngineOn:
-                    return EngineRunningChanged;
+                    EngineRunningChanged.Register(listener.BoolHandler);
+                    return true;
 
                 case SimEventType.EngineTemp:
-                    return EngineTempChanged;
+                    EngineTempChanged.Register(listener.AmountHandler);
+                    return true;
 
                 case SimEventType.EngineDamage:
-                    return EngineDamageChanged;
+                    EngineDamageChanged.Register(listener.AmountHandler);
+                    return true;
 
                 default:
-                    return base.GetEvent(indicatorType);
+                    return base.Bind(indicatorType, listener);
             }
         }
 
@@ -78,8 +81,6 @@ namespace DVCustomCarLoader.LocoComponents
             base.OnEnable();
 
             StartCoroutine(CheckEngineTemp());
-            StartCoroutine(CheckWheelslip(0.5f));
-            StartCoroutine(CheckCouplingIntegrity(2f));
         }
 
         private IEnumerator CheckEngineTemp()

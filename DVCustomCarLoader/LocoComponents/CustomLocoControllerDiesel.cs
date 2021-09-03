@@ -52,6 +52,12 @@ namespace DVCustomCarLoader.LocoComponents
 		public bool CanEngineStart => !EngineRunning && (FuelLevel > 0);
 		public bool AutoStart => autostart;
 
+		public float GetAmperage()
+        {
+			float traction = (reverser == 0) ? 0 : GetTractionForce();
+			return 0.00387571f * traction;
+		}
+
 		public float FuelLevel => sim.fuel.value;
 		public float OilLevel => sim.oil.value;
 		public float SandLevel => sim.sand.value;
@@ -60,17 +66,19 @@ namespace DVCustomCarLoader.LocoComponents
 		public event_<bool> SandersChanged;
 		public event_<bool> FanChanged;
 
-        public override SimEventWrapper GetEvent( SimEventType eventType )
+        public override bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
         {
 			switch( eventType )
 			{
 				case SimEventType.SandDeploy:
-					return SandersChanged;
+					SandersChanged.Register(listener.BoolHandler);
+					return true;
 
 				case SimEventType.Fan:
-					return FanChanged;
+					FanChanged.Register(listener.BoolHandler);
+					return true;
 			}
-            return base.GetEvent(eventType);
+            return base.Bind(eventType, listener);
         }
 
         public override Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
@@ -88,6 +96,12 @@ namespace DVCustomCarLoader.LocoComponents
 
 				case CabIndicatorType.EngineTemp:
 					return () => EngineTemp;
+
+				case CabIndicatorType.EngineRPM:
+					return () => EngineRPMGauge;
+
+				case CabIndicatorType.Amperage:
+					return GetAmperage;
 
 				default:
 					return base.GetIndicatorFunc(indicatedType);

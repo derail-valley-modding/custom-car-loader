@@ -18,30 +18,37 @@ namespace DVCustomCarLoader.LocoComponents
         protected virtual void OnEnable()
         {
             StartCoroutine(CheckTankDamageStateRoutine());
+            StartCoroutine(CheckWheelslip(WHEELSLIP_CHECK_PERIOD));
+            StartCoroutine(CheckCouplingIntegrity(COUPLING_INTEGRITY_CHECK_PERIOD));
         }
 
         /// <summary>Gets an event_&lt;T&gt; from the controller</summary>
-        public virtual SimEventWrapper GetEvent( SimEventType indicatorType )
+        public virtual bool Bind( SimEventType indicatorType, ILocoEventAcceptor listener )
         {
             switch( indicatorType )
             {
                 case SimEventType.Fuel:
-                    return FuelChanged;
+                    FuelChanged.Register(listener.AmountHandler);
+                    return true;
 
                 case SimEventType.Oil:
-                    return OilChanged;
+                    OilChanged.Register(listener.AmountHandler);
+                    return true;
 
                 case SimEventType.Sand:
-                    return SandChanged;
+                    SandChanged.Register(listener.AmountHandler);
+                    return true;
 
                 case SimEventType.Wheelslip:
-                    return WheelslipChanged;
+                    WheelslipChanged.Register(listener.BoolHandler);
+                    return true;
 
                 case SimEventType.Couplers:
-                    return CouplingIntegrityChanged;
+                    CouplingIntegrityChanged.Register(listener.CouplingHandler);
+                    return true;
 
                 default:
-                    return SimEventWrapper.Empty;
+                    return false;
             }
         }
 

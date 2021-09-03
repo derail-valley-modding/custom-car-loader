@@ -37,13 +37,13 @@ namespace DVCustomCarLoader.LocoComponents
             foreach( var lampController in Relays )
             {
                 // search for a loco component/event to bind to
-                SimEventWrapper changeEvent;
                 foreach( var provider in eventProviders )
                 {
-                    changeEvent = provider.GetEvent(lampController.SimBinding);
-                    if( changeEvent )
+                    if( provider.Bind(lampController.SimBinding, lampController) )
                     {
-                        lampController.SetupListener(changeEvent);
+#if DEBUG
+                        Main.Log($"Bind {lampController.name} to {((MonoBehaviour)provider).name}");
+#endif
                         break;
                     }
                 }
@@ -51,7 +51,7 @@ namespace DVCustomCarLoader.LocoComponents
         }
     }
 
-    public class DashboardLampRelay : MonoBehaviour
+    public class DashboardLampRelay : MonoBehaviour, ILocoEventAcceptor
     {
         protected static AudioClip WarningSound;
 
@@ -63,6 +63,7 @@ namespace DVCustomCarLoader.LocoComponents
         public bool UseBlinkMode;
         public LocoSimulationEvents.Amount BlinkThreshold;
 
+        public Action<LocoSimulationEvents.Amount> AmountHandler => OnAmountChanged;
         private void OnAmountChanged( LocoSimulationEvents.Amount amount )
         {
             if( ThresholdDirection == SimThresholdDirection.Above )
@@ -98,6 +99,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
+        public Action<bool> BoolHandler => OnBoolChanged;
         private void OnBoolChanged( bool newValue )
         {
             // below, true -> false
@@ -115,6 +117,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
+        public Action<LocoSimulationEvents.CouplingIntegrityInfo> CouplingHandler => OnCouplingChanged;
         private void OnCouplingChanged( LocoSimulationEvents.CouplingIntegrityInfo integrityInfo )
         {
             LampControl.LampState state = (integrityInfo == LocoSimulationEvents.CouplingIntegrityInfo.OK) ? 
@@ -135,11 +138,6 @@ namespace DVCustomCarLoader.LocoComponents
             }
 
             Lamp.SetLampState(state);
-        }
-
-        public void SetupListener( SimEventWrapper toAttach )
-        {
-            toAttach.Bind(OnBoolChanged, OnAmountChanged, OnCouplingChanged);
         }
     }
 }
