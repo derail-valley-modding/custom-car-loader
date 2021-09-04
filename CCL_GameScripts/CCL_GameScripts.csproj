@@ -55,6 +55,7 @@
     <Compile Include="BogieSetup.cs" />
     <Compile Include="CabControls\CabIOTypes.cs" />
     <Compile Include="CabControls\ControlSetupBase.cs" />
+    <Compile Include="CabControls\CopiedButton.cs" />
     <Compile Include="CabControls\CopiedCabControl.cs" />
     <Compile Include="CabControls\CopiedGauge.cs" />
     <Compile Include="CabControls\CopiedLamp.cs" />

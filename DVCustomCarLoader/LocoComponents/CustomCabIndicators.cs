@@ -12,7 +12,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         public IndicatorRelay[] Indicators;
 
-        protected virtual void OnEnable()
+        protected virtual void Start()
         {
             locoController = TrainCar.Resolve(gameObject).GetComponent<CustomLocoController>();
 

@@ -82,7 +82,6 @@ namespace CCL_GameScripts.CabControls
             (float radius, float depth, Color color) = GizmoData[(int)LampType];
 
             Vector3 peak = transform.TransformPoint(Vector3.forward * depth);
-            float avgRadius = (radius + depth) / 2f;
 
             Vector3 lastVector = transform.position;
             for( int i = 0; i <= GIZMO_SEGMENTS; i++ )

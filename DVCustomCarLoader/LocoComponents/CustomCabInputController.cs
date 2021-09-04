@@ -14,7 +14,7 @@ namespace DVCustomCarLoader.LocoComponents
 		protected ICabControlAcceptor[] controlAcceptors;
 		public CabInputRelay[] Relays;
 
-		protected virtual void OnEnable()
+		protected virtual void Start()
 		{
 			var car = TrainCar.Resolve(gameObject);
 			if( car == null || !car )
@@ -62,7 +62,11 @@ namespace DVCustomCarLoader.LocoComponents
 			get => __control;
 			set
             {
-				if( __control ) __control.ValueChanged -= OnValueChanged;
+				if( __control )
+				{
+					__control.ValueChanged -= OnValueChanged;
+					__control.Used -= OnUsed;
+				}
 
 				__control = value;
 
@@ -70,6 +74,7 @@ namespace DVCustomCarLoader.LocoComponents
 				{
 					initializedField = AccessTools.Field(__control.GetType(), "isInitialized");
 					__control.ValueChanged += OnValueChanged;
+					__control.Used += OnUsed;
 				}
             }
         }
@@ -122,6 +127,14 @@ namespace DVCustomCarLoader.LocoComponents
 		private void OnValueChanged( ValueChangedEventArgs e )
         {
             SetNewValue?.Invoke(e.newValue);
+        }
+
+		private void OnUsed()
+        {
+			if( __control is ButtonBase button )
+            {
+				SetNewValue?.Invoke(button.IsOn ? 0 : 1);
+            }
         }
 
 		public void Update()

@@ -11,7 +11,7 @@ namespace DVCustomCarLoader.LocoComponents
         protected ILocoEventProvider[] eventProviders;
         public DashboardLampRelay[] Relays;
 
-        protected virtual void OnEnable()
+        protected virtual void Start()
         {
             var car = TrainCar.Resolve(gameObject);
             if( car == null || !car )

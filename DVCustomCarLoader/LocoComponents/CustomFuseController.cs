@@ -12,6 +12,7 @@ namespace DVCustomCarLoader.LocoComponents
         protected IFusedLocoController locoController;
 
         public List<CabInputRelay> SideFuses { get; protected set; } = new List<CabInputRelay>();
+        public CabInputRelay MainFuse { get; protected set; } = null;
 
         protected float mainFuseValue = 0f;
         public float GetMainFusePostion() => mainFuseValue;
@@ -29,6 +30,8 @@ namespace DVCustomCarLoader.LocoComponents
         {
             return SideFuses.TrueForAll(fuse => fuse.Value > SWITCH_THRESHOLD);
         }
+
+        protected bool IsMainFuseOn() => MainFuse.Value > SWITCH_THRESHOLD;
 
         public void SetMasterPower( bool on )
         {
@@ -54,6 +57,8 @@ namespace DVCustomCarLoader.LocoComponents
 
         public void TryStarter()
         {
+            if( !(AreAllSideFusesOn() && IsMainFuseOn()) ) return;
+
             if( locoController.CanEngineStart )
             {
                 locoController.EngineRunning = true;
@@ -66,7 +71,7 @@ namespace DVCustomCarLoader.LocoComponents
             locoController.EngineRunning = false;
         }
 
-        public void OnEnable()
+        public void Start()
         {
             var car = TrainCar.Resolve(gameObject);
             if( car == null || !car )
@@ -153,6 +158,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected void OnStarterChanged( float newVal )
         {
+            Main.Log($"Fuse controller Starter: {newVal}");
             if( (newVal > SWITCH_THRESHOLD) && !locoController.EngineRunning )
             {
                 TryStarter();
@@ -161,6 +167,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected void OnEStopChanged( float newVal )
         {
+            Main.Log($"Fuse controller Kill: {newVal}");
             if( (newVal > SWITCH_THRESHOLD) && locoController.EngineRunning )
             {
                 KillEngine();
@@ -187,15 +194,16 @@ namespace DVCustomCarLoader.LocoComponents
                     break;
 
                 case CabInputType.MainFuse:
-                    inputRelay.SetIOHandlers(OnMainFuseChanged, GetMainFusePostion);
+                    MainFuse = inputRelay;
+                    inputRelay.SetIOHandlers(OnMainFuseChanged);
                     break;
 
                 case CabInputType.Starter:
-                    inputRelay.SetIOHandlers(OnStarterChanged, GetStarterPosition);
+                    inputRelay.SetIOHandlers(OnStarterChanged);
                     break;
 
                 case CabInputType.EngineStop:
-                    inputRelay.SetIOHandlers(OnEStopChanged, null);
+                    inputRelay.SetIOHandlers(OnEStopChanged);
                     break;
             }
         }
