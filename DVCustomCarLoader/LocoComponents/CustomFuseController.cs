@@ -14,11 +14,7 @@ namespace DVCustomCarLoader.LocoComponents
         public List<CabInputRelay> SideFuses { get; protected set; } = new List<CabInputRelay>();
         public CabInputRelay MainFuse { get; protected set; } = null;
 
-        protected float mainFuseValue = 0f;
-        public float GetMainFusePostion() => mainFuseValue;
-
-        protected float starterValue = 0f;
-        public float GetStarterPosition() => starterValue;
+        protected Coroutine MainFuseOffRoutine = null;
 
         protected const float SWITCH_THRESHOLD = 0.5f;
         protected const float LATE_INIT_DELAY = 0.5f;
@@ -42,7 +38,7 @@ namespace DVCustomCarLoader.LocoComponents
                 sideFuse.Value = relayPos;
             }
 
-            mainFuseValue = relayPos;
+            MainFuse.Value = relayPos;
 
             MasterPowerChanged.Invoke(on);
             if( on )
@@ -102,9 +98,11 @@ namespace DVCustomCarLoader.LocoComponents
             yield return WaitFor.SecondsRealtime(MAIN_BREAKER_DELAY);
             if( !AreAllSideFusesOn() )
             {
-                mainFuseValue = 0;
                 MasterPowerChanged.Invoke(false);
+                MainFuse.Value = 0;
             }
+
+            MainFuseOffRoutine = null;
             yield break;
         }
 
@@ -131,26 +129,32 @@ namespace DVCustomCarLoader.LocoComponents
             if( newVal <= SWITCH_THRESHOLD )
             {
                 if( locoController.EngineRunning ) KillEngine();
-                StartCoroutine(DelayedMainFuseOff());
+                if( MainFuseOffRoutine == null )
+                {
+                    MainFuseOffRoutine = StartCoroutine(DelayedMainFuseOff());
+                }
             }
         }
 
         protected void OnMainFuseChanged( float newVal )
         {
-            bool wasOn = (mainFuseValue > SWITCH_THRESHOLD);
             bool nowOn = (newVal > SWITCH_THRESHOLD);
 
-            if( nowOn && !wasOn )
+            if( nowOn )
             {
                 if( !AreAllSideFusesOn() )
                 {
-                    StartCoroutine(DelayedMainFuseOff());
+                    if( MainFuseOffRoutine == null )
+                    {
+                        MainFuseOffRoutine = StartCoroutine(DelayedMainFuseOff());
+                    }
                     return;
                 }
                 MasterPowerChanged.Invoke(nowOn);
             }
-            if( !nowOn && wasOn )
+            else
             {
+                // turned off
                 MasterPowerChanged.Invoke(nowOn);
                 KillEngine();
             }
@@ -158,16 +162,19 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected void OnStarterChanged( float newVal )
         {
-            Main.Log($"Fuse controller Starter: {newVal}");
             if( (newVal > SWITCH_THRESHOLD) && !locoController.EngineRunning )
             {
                 TryStarter();
+            }
+            else if( (newVal < -SWITCH_THRESHOLD) && locoController.EngineRunning )
+            {
+                // handle control that is mapped into negative values as shutoff switch
+                KillEngine();
             }
         }
 
         protected void OnEStopChanged( float newVal )
         {
-            Main.Log($"Fuse controller Kill: {newVal}");
             if( (newVal > SWITCH_THRESHOLD) && locoController.EngineRunning )
             {
                 KillEngine();

@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
+    <Compile Include="LocoComponents\CabInputRelay.cs" />
     <Compile Include="LocoComponents\CustomCabIndicators.cs" />
     <Compile Include="LocoComponents\CustomCabInputController.cs" />
     <Compile Include="LocoComponents\CustomDieselReverserLock.cs" />

@@ -143,7 +143,7 @@ namespace DVCustomCarLoader
 
         public static void CreateCopiedControls( GameObject root )
         {
-            var allCopySpecs = root.GetComponentsInChildren<CopiedCabControl>(true);
+            var allCopySpecs = root.GetComponentsInChildren<CopiedCabDevice>(true);
 
             foreach( var copySpec in allCopySpecs )
             {
@@ -233,6 +233,8 @@ namespace DVCustomCarLoader
 #endif
                         var inputRelay = newControl.gameObject.AddComponent<CabInputRelay>();
                         inputRelay.Binding = input.InputBinding;
+                        inputRelay.MapMin = input.MappedMinimum;
+                        inputRelay.MapMax = input.MappedMaximum;
                     }
                     else if( copySpec is CopiedCabIndicator indicator )
                     {

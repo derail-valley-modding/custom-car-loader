@@ -3,6 +3,16 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
+    public enum CopiedSwitchType
+    {
+        RedFuseShunter,
+        BlackFuseShunter,
+        RockerSwitchShunter,
+
+        FanSwitchDE6,
+        BlackFuseDE6,
+    }
+
     public class CopiedToggle : CopiedCabInput
     {
         protected static readonly (BaseTrainCarType, string)[] TargetObjects =
@@ -10,6 +20,10 @@ namespace CCL_GameScripts.CabControls
             {
                 (BaseTrainCarType.LocoShunter, "C fuse switches/fuse 1 main"),
                 (BaseTrainCarType.LocoShunter, "C fuse switches/fuse 3 main"),
+                (BaseTrainCarType.LocoShunter, "C dashboard buttons controller/C fan switch"),
+
+                (BaseTrainCarType.LocoDiesel, "offset/C fan switch"),
+                (BaseTrainCarType.LocoDiesel, "offset/C fusebox controls/C fuse_1_switch"),
             };
 
         public CopiedSwitchType SwitchType;
@@ -24,6 +38,10 @@ namespace CCL_GameScripts.CabControls
             {
                 new ToggleGizmoInfo(-52, 32, Vector3.down),
                 new ToggleGizmoInfo(-52, 32, Vector3.down),
+                new ToggleGizmoInfo(-10, 20, Vector3.up),
+
+                new ToggleGizmoInfo(-10, 20, Vector3.up),
+                new ToggleGizmoInfo(-52, 32, Vector3.down),
             };
 
         protected const float GIZMO_RADIUS = 0.05f;
@@ -31,7 +49,7 @@ namespace CCL_GameScripts.CabControls
         protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
         protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             var gizmo = GizmoData[(int)SwitchType];
             Vector3 lastVector = transform.position;
@@ -73,11 +91,5 @@ namespace CCL_GameScripts.CabControls
                 Axis = axis;
             }
         }
-    }
-
-    public enum CopiedSwitchType
-    {
-        RedFuseShunter,
-        BlackFuseShunter,
     }
 }

@@ -56,10 +56,11 @@
     <Compile Include="CabControls\CabIOTypes.cs" />
     <Compile Include="CabControls\ControlSetupBase.cs" />
     <Compile Include="CabControls\CopiedButton.cs" />
-    <Compile Include="CabControls\CopiedCabControl.cs" />
+    <Compile Include="CabControls\CopiedCabDevice.cs" />
     <Compile Include="CabControls\CopiedGauge.cs" />
     <Compile Include="CabControls\CopiedLamp.cs" />
     <Compile Include="CabControls\CopiedLever.cs" />
+    <Compile Include="CabControls\CopiedRotary.cs" />
     <Compile Include="CabControls\CopiedToggle.cs" />
     <Compile Include="CabControls\GaugeSetup.cs" />
     <Compile Include="CabControls\IndicatorSetupBase.cs" />

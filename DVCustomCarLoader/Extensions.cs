@@ -76,5 +76,12 @@ namespace DVCustomCarLoader
             }
             return false;
         }
+
+        public static float Mapf( float fromMin, float fromMax, float toMin, float toMax, float value )
+        {
+            float fromRange = fromMax - fromMin;
+            float toRange = toMax - toMin;
+            return (value - fromMin) * (toRange / fromRange) + toMin;
+        }
     }
 }

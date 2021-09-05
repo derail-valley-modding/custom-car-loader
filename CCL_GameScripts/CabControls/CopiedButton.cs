@@ -53,9 +53,9 @@ namespace CCL_GameScripts.CabControls
                 (0.015f, 0.006f, new Color(0, 0.5f, 0.6f)),  // flat blue
 
                 // DE6
-                (0.0095f, 0.002f, new Color(0.6f, 0, 0)),       // shroom
-                (0.0095f, 0.002f, new Color(0, 0.5f, 0.6f)),    // recess yellow
-                (0.0095f, 0.002f, new Color(0.6f, 0.6f, 0)),    // recess blue
+                (0.023f, 0.017f, new Color(0.6f, 0, 0)),       // shroom
+                (0.013f, 0.009f, new Color(0.6f, 0.6f, 0)),    // recess yellow
+                (0.013f, 0.009f, new Color(0, 0.4f, 0.6f)),    // recess blue
             };
 
         public string TargetTypeName => "DV.CabControls.Spec.Button";
@@ -65,7 +65,7 @@ namespace CCL_GameScripts.CabControls
         [ProxyField("isToggle")]
         public bool IsToggle = false;
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             (float radius, float depth, Color color) = GizmoData[(int)ButtonType];
 

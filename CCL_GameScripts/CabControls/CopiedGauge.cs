@@ -110,7 +110,7 @@ namespace CCL_GameScripts.CabControls
         protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
         protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             var gizmo = GizmoData[(int)GaugeType];
 

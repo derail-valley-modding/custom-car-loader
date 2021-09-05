@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
-    public class CopiedLamp : CopiedCabControl
+    public class CopiedLamp : CopiedCabDevice
     {
         public enum CopiedLampType
         {
@@ -77,7 +77,7 @@ namespace CCL_GameScripts.CabControls
         protected const int GIZMO_SEGMENTS = 40;
         protected const int GIZMO_RADIAL_DIVISOR = 2;
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             (float radius, float depth, Color color) = GizmoData[(int)LampType];
 
