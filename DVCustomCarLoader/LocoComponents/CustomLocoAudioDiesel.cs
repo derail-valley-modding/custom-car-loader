@@ -94,7 +94,12 @@ namespace DVCustomCarLoader.LocoComponents
 			base.SetupForCar(car);
 
 			// Setup Horn
-        }
+			Horn horn = GetComponentInParent<Horn>();
+			if( horn )
+			{
+				horn.InitializeAudio(hornAudio);
+			}
+		}
 
         protected override void ReturnToPool()
         {

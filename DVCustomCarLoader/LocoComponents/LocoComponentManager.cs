@@ -52,6 +52,8 @@ namespace DVCustomCarLoader
             var drivingForce = prefab.AddComponent<DrivingForce>();
             ApplyDrivingForceParams(drivingForce, simParams);
 
+            SetupHorn(prefab);
+
             prefab.AddComponent<CustomLocoSimDiesel>();
             prefab.AddComponent<CustomDieselSimEvents>();
             prefab.AddComponent<DamageControllerCustomDiesel>();
@@ -127,6 +129,9 @@ namespace DVCustomCarLoader
 #endif
                     var inputRelay = controlObject.AddComponent<CabInputRelay>();
                     inputRelay.Binding = control.InputBinding;
+                    inputRelay.MapMin = control.MappedMinimum;
+                    inputRelay.MapMax = control.MappedMaximum;
+                    inputRelay.AbsPosition = control.UseAbsoluteMappedValue;
                 }
                 
                 object realComp = compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
@@ -235,6 +240,7 @@ namespace DVCustomCarLoader
                         inputRelay.Binding = input.InputBinding;
                         inputRelay.MapMin = input.MappedMinimum;
                         inputRelay.MapMax = input.MappedMaximum;
+                        inputRelay.AbsPosition = input.UseAbsoluteMappedValue;
                     }
                     else if( copySpec is CopiedCabIndicator indicator )
                     {
@@ -293,6 +299,12 @@ namespace DVCustomCarLoader
             }
 
             return interior;
+        }
+
+        public static void SetupHorn( GameObject prefab )
+        {
+            Horn newHorn = prefab.AddComponent<Horn>();
+            newHorn.playHornAt = prefab.transform;
         }
     }
 

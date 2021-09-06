@@ -18,6 +18,8 @@ namespace DVCustomCarLoader.LocoComponents
 			CustomDieselSimEvents>,
 		IFusedLocoController
     {
+		protected Horn Horn;
+
 		private bool fanOn;
 
 		public void SetFan( float value )
@@ -189,16 +191,9 @@ namespace DVCustomCarLoader.LocoComponents
 			base.SetReverser(position);
 		}
 
-		private float hornValue = 0;
-
 		public void SetHorn( float newVal )
         {
-			hornValue = newVal;
-        }
-
-		public float GetHorn()
-        {
-			return hornValue;
+			if( Horn ) Horn.SetInput(newVal);
         }
 
 		public override float GetTractionForce()
@@ -277,6 +272,8 @@ namespace DVCustomCarLoader.LocoComponents
 				keyboardCtrl.control = this;
 				Main.Log("Added keyboard input to car");
 			}
+
+			Horn = GetComponent<Horn>();
 
 			train.brakeSystem.compressorProductionRate = sim.simParams.AirCompressorRate;
 		}

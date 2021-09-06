@@ -10,6 +10,9 @@ namespace CCL_GameScripts.CabControls
         public abstract CabControlType ControlType { get; }
 
         public CabInputType InputBinding;
+        public float MappedMinimum = 0;
+        public float MappedMaximum = 1;
+        public bool UseAbsoluteMappedValue = false;
 
         [ProxyField("colliderGameObjects")]
         public GameObject[] InteractionColliders;

@@ -16,6 +16,7 @@ namespace CCL_GameScripts.CabControls
 
         public float MappedMinimum = 0;
         public float MappedMaximum = 1;
+        public bool UseAbsoluteMappedValue = false;
     }
 
     public abstract class CopiedCabIndicator : CopiedCabDevice

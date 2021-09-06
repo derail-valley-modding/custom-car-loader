@@ -12,6 +12,18 @@ namespace DVCustomCarLoader.LocoComponents
 		public CabInputType Binding;
 		public float MapMin = 0;
 		public float MapMax = 1;
+		public bool AbsPosition = false;
+
+		protected float ControlPositionToBoundValue( float pos )
+        {
+			float mapped = Extensions.Mapf(0, 1, MapMin, MapMax, pos);
+			return AbsPosition ? Mathf.Abs(mapped) : mapped;
+		}
+
+		protected float BoundValueToControlPosition( float value )
+		{
+			return Extensions.Mapf(MapMin, MapMax, 0, 1, value);
+		}
 
 		private ControlImplBase __control;
 		public ControlImplBase Control
@@ -70,7 +82,7 @@ namespace DVCustomCarLoader.LocoComponents
 			{
 				if( Control )
 				{
-					return Extensions.Mapf(0, 1, MapMin, MapMax, Control.Value);
+					return ControlPositionToBoundValue(Control.Value);
 				}
 				else return MapMin;
 			}
@@ -78,8 +90,7 @@ namespace DVCustomCarLoader.LocoComponents
 			{
 				if( Control )
 				{
-					float mapped = Extensions.Mapf(MapMin, MapMax, 0, 1, value);
-					Control.SetValue(mapped);
+					Control.SetValue(BoundValueToControlPosition(value));
 				}
 			}
 		}
@@ -94,8 +105,7 @@ namespace DVCustomCarLoader.LocoComponents
 
 		private void OnValueChanged( ValueChangedEventArgs e )
         {
-			float mappedVal = Extensions.Mapf(0, 1, MapMin, MapMax, e.newValue);
-			SetNewValue?.Invoke(mappedVal);
+			SetNewValue?.Invoke(ControlPositionToBoundValue(e.newValue));
         }
 
 		private void OnUsed()
@@ -126,8 +136,7 @@ namespace DVCustomCarLoader.LocoComponents
 				float target = GetTargetValue();
 				if( (target != lastValue) && !Control.IsGrabbedOrHoverScrolled() )
 				{
-					float unMapped = Extensions.Mapf(MapMin, MapMax, 0, 1, target);
-					Control.SetValue(unMapped);
+					Control.SetValue(BoundValueToControlPosition(target));
 					lastValue = target;
 				}
 			}
