@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using DV.MultipleUnit;
-using UnityEngine;
-using DVCustomCarLoader.LocoComponents;
 using CCL_GameScripts;
-using HarmonyLib;
+using CCL_GameScripts.Attributes;
 using CCL_GameScripts.CabControls;
 using DV.CabControls.Spec;
+using DV.MultipleUnit;
+using DVCustomCarLoader.LocoComponents;
+using HarmonyLib;
+using UnityEngine;
 
 namespace DVCustomCarLoader
 {
@@ -51,6 +51,8 @@ namespace DVCustomCarLoader
 
             var drivingForce = prefab.AddComponent<DrivingForce>();
             ApplyDrivingForceParams(drivingForce, simParams);
+
+            SetupHorn(prefab);
 
             prefab.AddComponent<CustomLocoSimDiesel>();
             prefab.AddComponent<CustomDieselSimEvents>();
@@ -97,44 +99,39 @@ namespace DVCustomCarLoader
             driver.wheelslipToFrictionModifierCurve = simParams.WheelslipToFrictionModifier;
         }
 
-        public static void SetupCabComponents( GameObject interior )
+        public static void SetupCabComponents( GameObject interior, LocoParamsType locoType )
         {
-            var cabParams = interior.GetComponent<CabInputSetup>();
-            if( !cabParams )
+            CreateComponentsFromProxies(interior);
+            CreateCopiedControls(interior);
+
+            if( locoType == LocoParamsType.DieselElectric )
             {
-                Main.Log("Added Cab Input Setup");
-                cabParams = interior.AddComponent<CabInputSetup>();
+                interior.AddComponent<CustomFuseController>();
             }
 
-            var indicatorControl = interior.GetComponent<CustomCabIndicators>();
-            if( !indicatorControl )
-            {
-                Main.Log("Added Cab Indicator Controller");
-                indicatorControl = interior.AddComponent<CustomCabIndicators>();
-            }
-
-            if( cabParams )
-            {
-                CreateComponentsFromProxies(interior, cabParams);
-                CreateCopiedControls(interior, cabParams);
-                var cabInput = interior.AddComponent<CustomCabInput>();
-            }
-            else
-            {
-                Main.Warning("Loco has an interior prefab, but no cab input setup");
-            }
+            // add controller/"brain" components
+            interior.AddComponent<CustomCabInputController>();
+            interior.AddComponent<CustomCabIndicators>();
+            interior.AddComponent<CustomLampController>();
         }
 
-        public static void CreateComponentsFromProxies( GameObject root, CabInputSetup inputSetup )
+        public static void CreateComponentsFromProxies( GameObject root )
         {
-            var allInitSpecs = root.GetComponentsInChildren<ComponentInitSpec>();
+            var allInitSpecs = root.GetComponentsInChildren<ComponentInitSpec>(true);
 
             foreach( var compSpec in allInitSpecs )
             {
                 GameObject controlObject = compSpec.gameObject;
                 if( compSpec is ControlSetupBase control )
                 {
-                    inputSetup.SetInputObject(control.InputBinding, controlObject);
+#if DEBUG
+                    Main.Log($"Add input relay to {controlObject.name}");
+#endif
+                    var inputRelay = controlObject.AddComponent<CabInputRelay>();
+                    inputRelay.Binding = control.InputBinding;
+                    inputRelay.MapMin = control.MappedMinimum;
+                    inputRelay.MapMax = control.MappedMaximum;
+                    inputRelay.AbsPosition = control.UseAbsoluteMappedValue;
                 }
                 
                 object realComp = compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
@@ -142,16 +139,16 @@ namespace DVCustomCarLoader
                 if( (compSpec is IndicatorSetupBase indicatorSpec) && (realComp is GameObject spawnedObj) )
                 {
                     var realIndicator = spawnedObj.GetComponent<Indicator>();
-                    var indicatorInfo = spawnedObj.AddComponent<IndicatorInfo>();
+                    var indicatorInfo = spawnedObj.AddComponent<IndicatorRelay>();
                     indicatorInfo.Type = indicatorSpec.OutputBinding;
                     indicatorInfo.Indicator = realIndicator;
                 }
             }
         }
 
-        public static void CreateCopiedControls( GameObject root, CabInputSetup cabSetup )
+        public static void CreateCopiedControls( GameObject root )
         {
-            var allCopySpecs = root.GetComponentsInChildren<CopiedCabControl>();
+            var allCopySpecs = root.GetComponentsInChildren<CopiedCabDevice>(true);
 
             foreach( var copySpec in allCopySpecs )
             {
@@ -178,6 +175,27 @@ namespace DVCustomCarLoader
                         newControl.transform.localRotation = Quaternion.identity;
                     }
 
+                    // copy over existing name for clarity
+                    newControl.name = copierAttachedObject.name;
+
+                    // copy over any proxied fields
+                    if( copySpec is IProxyScript proxyScript )
+                    {
+                        Type targetType = AccessTools.TypeByName(proxyScript.TargetTypeName);
+                        if( targetType != null )
+                        {
+                            object proxyTarget = newControl.GetComponent(targetType);
+                            if( proxyTarget != null )
+                            {
+                                proxyScript.ApplyProxyFields(proxyTarget, AccessTools.TypeByName, Main.Warning);
+                            }
+                        }
+                        else
+                        {
+                            Main.Error($"Failed to find proxy target {proxyScript.TargetTypeName} for copy script {copySpec.GetType().Name}");
+                        }
+                    }
+
                     if( copySpec is CopiedCabInput input )
                     {
                         // copy interaction area
@@ -202,24 +220,32 @@ namespace DVCustomCarLoader
                         {
                             if( lever.LeverType == CopiedLeverType.ReverserShunter )
                             {
-                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiter>();
+                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiter>(true);
                                 if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
                                 newControl.AddComponent<CustomDieselReverserLock>();
                             }
                             else if( lever.LeverType == CopiedLeverType.ReverserDE6 )
                             {
-                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiterDiesel>();
+                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiterDiesel>(true);
                                 if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
                                 newControl.AddComponent<CustomDieselReverserLock>();
                             }
                         }
 
-                        cabSetup.SetInputObject(input.InputBinding, newControl);
+                        // Add wrapper to connect the control to the loco brain
+#if DEBUG
+                        Main.Log($"Add input relay to {newControl.name}");
+#endif
+                        var inputRelay = newControl.gameObject.AddComponent<CabInputRelay>();
+                        inputRelay.Binding = input.InputBinding;
+                        inputRelay.MapMin = input.MappedMinimum;
+                        inputRelay.MapMax = input.MappedMaximum;
+                        inputRelay.AbsPosition = input.UseAbsoluteMappedValue;
                     }
                     else if( copySpec is CopiedCabIndicator indicator )
                     {
                         var realIndicator = newControl.GetComponentInChildren<Indicator>(true);
-                        var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorInfo>();
+                        var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorRelay>();
                         indicatorInfo.Type = indicator.OutputBinding;
                         indicatorInfo.Indicator = realIndicator;
                     }
@@ -273,6 +299,12 @@ namespace DVCustomCarLoader
             }
 
             return interior;
+        }
+
+        public static void SetupHorn( GameObject prefab )
+        {
+            Horn newHorn = prefab.AddComponent<Horn>();
+            newHorn.playHornAt = prefab.transform;
         }
     }
 

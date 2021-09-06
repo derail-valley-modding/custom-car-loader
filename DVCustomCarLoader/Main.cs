@@ -27,8 +27,6 @@ namespace DVCustomCarLoader
 				Application.quitting += AppQuitWatcher.OnAppQuit;
 				CustomCarManager.Setup();
 
-				PlayerManager.CarChanged += OnCarChanged;
-
 				harmony = new Harmony(modEntry.Info.Id);
 				harmony.PatchAll(Assembly.GetExecutingAssembly());
 				LocoLights_Patch.TryCreatePatch(harmony);

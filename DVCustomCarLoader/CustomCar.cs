@@ -379,7 +379,7 @@ namespace DVCustomCarLoader
                     interiorFab.SetActive(false);
                     Object.DontDestroyOnLoad(interiorFab);
 
-                    LocoComponentManager.SetupCabComponents(interiorFab);
+                    LocoComponentManager.SetupCabComponents(interiorFab, simParams.SimType);
                     interiorFab.SetLayersRecursive("Interactable");
 
                     newCar.interiorPrefab = interiorFab;

@@ -29,7 +29,7 @@ namespace DVCustomCarLoader.LocoComponents
             if( !simParams ) Main.Error($"Missing {typeof(TParams).Name} on {gameObject.name}");
 
             dmgController = GetComponent<TDmg>();
-            if( !dmgController ) Main.Error($"Missing DamageControllerDiesel on {gameObject.name}");
+            if( !dmgController ) Main.Error($"Missing {typeof(TDmg).Name} on {gameObject.name}");
         }
     }
 }

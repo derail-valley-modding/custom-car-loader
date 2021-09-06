@@ -1,35 +1,57 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using CCL_GameScripts.CabControls;
-using DV.Util.EventWrapper;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
     public class CustomLampController : MonoBehaviour
     {
-        protected CustomLocoSimEvents simEvents;
+        protected ILocoEventProvider[] eventProviders;
         public DashboardLampRelay[] Relays;
 
         protected virtual void Start()
         {
-            simEvents = TrainCar.Resolve(gameObject).GetComponent<CustomLocoSimEvents>();
+            var car = TrainCar.Resolve(gameObject);
+            if( car == null || !car )
+            {
+                Main.Error($"Couldn't find TrainCar for interior {gameObject.name}");
+                return;
+            }
 
-            Relays = GetComponentsInChildren<DashboardLampRelay>();
+            eventProviders = 
+                car.gameObject.GetComponentsByInterface<ILocoEventProvider>()
+                .Concat(gameObject.GetComponentsByInterface<ILocoEventProvider>())
+                .ToArray();
+
+            if( eventProviders.Length == 0 )
+            {
+                Main.Error("Couldn't find any event providers for lamp controller");
+                return;
+            }
+
+            Relays = GetComponentsInChildren<DashboardLampRelay>(true);
 
             Main.Log($"CustomDashboardLamps Start - {Relays.Length} lamps");
             foreach( var lampController in Relays )
             {
-                object changeEvent = simEvents.GetEvent(lampController.SimBinding);
-                if( changeEvent != null )
+                // search for a loco component/event to bind to
+                foreach( var provider in eventProviders )
                 {
-                    lampController.SetupListener(changeEvent);
+                    if( provider.Bind(lampController.SimBinding, lampController) )
+                    {
+#if DEBUG
+                        Main.Log($"Bind {lampController.name} to {((MonoBehaviour)provider).name}");
+#endif
+                        break;
+                    }
                 }
             }
         }
     }
 
-    public class DashboardLampRelay : MonoBehaviour
+    public class DashboardLampRelay : MonoBehaviour, ILocoEventAcceptor
     {
         protected static AudioClip WarningSound;
 
@@ -41,6 +63,7 @@ namespace DVCustomCarLoader.LocoComponents
         public bool UseBlinkMode;
         public LocoSimulationEvents.Amount BlinkThreshold;
 
+        public Action<LocoSimulationEvents.Amount> AmountHandler => OnAmountChanged;
         private void OnAmountChanged( LocoSimulationEvents.Amount amount )
         {
             if( ThresholdDirection == SimThresholdDirection.Above )
@@ -76,6 +99,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
+        public Action<bool> BoolHandler => OnBoolChanged;
         private void OnBoolChanged( bool newValue )
         {
             // below, true -> false
@@ -93,6 +117,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
+        public Action<LocoSimulationEvents.CouplingIntegrityInfo> CouplingHandler => OnCouplingChanged;
         private void OnCouplingChanged( LocoSimulationEvents.CouplingIntegrityInfo integrityInfo )
         {
             LampControl.LampState state = (integrityInfo == LocoSimulationEvents.CouplingIntegrityInfo.OK) ? 
@@ -106,36 +131,13 @@ namespace DVCustomCarLoader.LocoComponents
         {
             if( playWarningSound && (state == LampControl.LampState.On || state == LampControl.LampState.Blinking) )
             {
-                WarningSound.Play(Lamp.transform.position, 1f, 1f, 0f, 1f, 500f, default(AudioSourceCurves), AudioManager.e.cabGroup, Lamp.transform);
+                if( WarningSound )
+                {
+                    WarningSound.Play(Lamp.transform.position, 1f, 1f, 0f, 1f, 500f, default(AudioSourceCurves), AudioManager.e.cabGroup, Lamp.transform);
+                }
             }
 
             Lamp.SetLampState(state);
-        }
-
-        public void Initialize( SimEventType type, LampControl lamp )
-        {
-            SimBinding = type;
-            Lamp = lamp;
-        }
-
-        public void SetupListener( object toAttach )
-        {
-            if( toAttach is event_<LocoSimulationEvents.Amount> amountEvent )
-            {
-                amountEvent.Manage(OnAmountChanged, true);
-            }
-            else if( toAttach is event_<LocoSimulationEvents.CouplingIntegrityInfo> coupleEvent )
-            {
-                coupleEvent.Manage(OnCouplingChanged, true);
-            }
-            else if( toAttach is event_<bool> boolEvent )
-            {
-                boolEvent.Manage(OnBoolChanged, true);
-            }
-            else
-            {
-                Main.Warning($"DashboardLampRelay - unknown sim event type {toAttach.GetType().Name}");
-            }
         }
     }
 }

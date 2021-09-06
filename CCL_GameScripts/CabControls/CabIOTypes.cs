@@ -2,15 +2,27 @@
 {
     public enum CabInputType
     {
+        None,
         IndependentBrake,
         TrainBrake,
         Throttle,
         Reverser,
-        Horn
+        Horn,
+        
+        Fuse,
+        MainFuse,
+        Starter,
+        EngineStop,
+
+        Sand,
+        Fan,
+        Headlights,
+        CabLights
     }
 
     public enum CabIndicatorType
     {
+        None,
         BrakePipe,
         BrakeReservoir,
         EngineTemp,
@@ -18,10 +30,15 @@
         Oil,
         Sand,
         Speed,
+        EngineRPM,
+        Amperage,
+        IndependentPipe,
+        IndependentReservoir,
     }
 
     public enum SimEventType
     {
+        None,
         Couplers,
         EngineDamage,
         EngineTemp,
@@ -29,6 +46,13 @@
         Oil,
         Sand,
         Wheelslip,
+
+        PowerOn,
+        EngineOn,
+        SandDeploy,
+        Fan,
+        Headlights,
+        CabLights
     }
 
     public enum SimThresholdDirection

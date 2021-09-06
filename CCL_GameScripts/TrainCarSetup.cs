@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CCL_GameScripts.Attributes;
 using UnityEditor;
 using UnityEngine;
 
@@ -33,7 +34,9 @@ namespace CCL_GameScripts
 
         #region TrainCar Init Spec
 
-        protected override string TargetTypeName => "TrainCar";
+        public override string TargetTypeName => "TrainCar";
+
+        public override bool IsOverrideSet( int index ) => (index == 1) && OverridePhysics;
 
         protected override bool DestroyAfterCreation => false;
 
@@ -51,19 +54,19 @@ namespace CCL_GameScripts
         public CapsuleCollider RearBogieCollider;
 
         [Header("Bogie Physics")]
-        public bool OverridePhysics = false;
+        public bool OverridePhysics = false; // override flag 1
 
-        [ProxyField("wheelRadius")]
+        [ProxyField("wheelRadius", 1)]
         public float WheelRadius = 0.459f;
 
         [Range(0, 1)]
-        [ProxyField("bogieMassRatio")]
+        [ProxyField("bogieMassRatio", 1)]
         public float MassRatioPerBogie = 0.5f;
 
-        [ProxyField("bogieSpring")]
+        [ProxyField("bogieSpring", 1)]
         public float BogieSpring = 200;
 
-        [ProxyField("bogieDamping")]
+        [ProxyField("bogieDamping", 1)]
         public float BogieDamping = 5;
 
         public GameObject InteriorPrefab;

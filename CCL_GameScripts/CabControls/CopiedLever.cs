@@ -7,6 +7,23 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
+    public enum CopiedLeverType
+    {
+        IndependentBrakeShunter,
+        TrainBrakeShunter,
+        ThrottleShunter,
+        ReverserShunter,
+        HornShunter,
+
+        IndependentBrakeDE6,
+        TrainBrakeDE6,
+        ThrottleDE6,
+        ReverserDE6,
+        HornDE6,
+        MainBreakerSwitchDE6,
+        EngineThrottleDE6
+    }
+
     public class CopiedLever : CopiedCabInput
     {
         protected static readonly (BaseTrainCarType, string)[] TargetObjects =
@@ -18,11 +35,13 @@ namespace CCL_GameScripts.CabControls
                 (BaseTrainCarType.LocoShunter, "C reverser"),
                 (BaseTrainCarType.LocoShunter, "C horn"),
 
-                (BaseTrainCarType.LocoDiesel, "C independent_brake_lever"),
-                (BaseTrainCarType.LocoDiesel, "C train_brake_lever"),
-                (BaseTrainCarType.LocoDiesel, "C throttle"),
-                (BaseTrainCarType.LocoDiesel, "C reverser"),
-                (BaseTrainCarType.LocoDiesel, "C horn"),
+                (BaseTrainCarType.LocoDiesel, "offset/C independent_brake_lever"),
+                (BaseTrainCarType.LocoDiesel, "offset/C train_brake_lever"),
+                (BaseTrainCarType.LocoDiesel, "offset/C throttle"),
+                (BaseTrainCarType.LocoDiesel, "offset/C reverser"),
+                (BaseTrainCarType.LocoDiesel, "offset/C horn"),
+                (BaseTrainCarType.LocoDiesel, "offset/C fusebox controls/C main_battery_switch"),
+                (BaseTrainCarType.LocoDiesel, "offset/C engine controls/C engine_thottle")
             };
 
         protected static readonly LeverGizmoInfo[] GizmoData =
@@ -39,6 +58,8 @@ namespace CCL_GameScripts.CabControls
                 new LeverGizmoInfo(-78.815f, 0, 8, true),
                 new LeverGizmoInfo(-65.2f, 0, 3, true),
                 new LeverGizmoInfo(-12, 12, 3),
+                new LeverGizmoInfo(0, 180, 2),
+                new LeverGizmoInfo(0, 22, 0),
             };
 
         public CopiedLeverType LeverType;
@@ -53,7 +74,7 @@ namespace CCL_GameScripts.CabControls
         protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
         protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             var gizmo = GizmoData[(int)LeverType];
 
@@ -90,20 +111,5 @@ namespace CCL_GameScripts.CabControls
                 Inverted = invert;
             }
         }
-    }
-
-    public enum CopiedLeverType
-    {
-        IndependentBrakeShunter,
-        TrainBrakeShunter,
-        ThrottleShunter,
-        ReverserShunter,
-        HornShunter,
-
-        IndependentBrakeDE6,
-        TrainBrakeDE6,
-        ThrottleDE6,
-        ReverserDE6,
-        HornDE6,
     }
 }

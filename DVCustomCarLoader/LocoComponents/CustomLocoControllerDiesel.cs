@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
+using DV.Util.EventWrapper;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
@@ -14,10 +15,21 @@ namespace DVCustomCarLoader.LocoComponents
 		CustomLocoController<
 			CustomLocoSimDiesel,
 			DamageControllerCustomDiesel,
-			CustomDieselSimEvents>
+			CustomDieselSimEvents>,
+		IFusedLocoController
     {
-		public bool Backlight { get; set; }
-		public bool FanOn { get; set; }
+		protected Horn Horn;
+
+		private bool fanOn;
+
+		public void SetFan( float value )
+        {
+			bool lastState = fanOn;
+			fanOn = value > 0.5f;
+			if( lastState ^ fanOn ) FanChanged.Invoke(fanOn);
+        }
+
+		public float GetFan() => fanOn ? 1 : 0;
 
 		public float EngineRPM => sim.engineRPM.value;
 		public float EngineRPMGauge => (sim.engineOn) ? (12.5f + sim.engineRPM.value * 100f) : 0f;
@@ -39,11 +51,37 @@ namespace DVCustomCarLoader.LocoComponents
 				}
 			}
 		}
+		public bool CanEngineStart => !EngineRunning && (FuelLevel > 0);
+		public bool AutoStart => autostart;
+
+		public float GetAmperage()
+        {
+			float traction = (reverser == 0) ? 0 : GetTractionForce();
+			return 0.00387571f * traction;
+		}
 
 		public float FuelLevel => sim.fuel.value;
 		public float OilLevel => sim.oil.value;
 		public float SandLevel => sim.sand.value;
 		public bool SandersOn => sim.sandOn;
+
+		public event_<bool> SandersChanged;
+		public event_<bool> FanChanged;
+
+        public override bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
+        {
+			switch( eventType )
+			{
+				case SimEventType.SandDeploy:
+					SandersChanged.Register(listener.BoolHandler);
+					return true;
+
+				case SimEventType.Fan:
+					FanChanged.Register(listener.BoolHandler);
+					return true;
+			}
+            return base.Bind(eventType, listener);
+        }
 
         public override Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
         {
@@ -61,9 +99,46 @@ namespace DVCustomCarLoader.LocoComponents
 				case CabIndicatorType.EngineTemp:
 					return () => EngineTemp;
 
+				case CabIndicatorType.EngineRPM:
+					return () => EngineRPMGauge;
+
+				case CabIndicatorType.Amperage:
+					return GetAmperage;
+
 				default:
 					return base.GetIndicatorFunc(indicatedType);
 			}
+        }
+
+        public override void RegisterControl( CabInputRelay inputRelay )
+        {
+			switch( inputRelay.Binding )
+            {
+				case CabInputType.Horn:
+					inputRelay.SetIOHandlers(SetHorn);
+					break;
+
+				case CabInputType.Sand:
+					inputRelay.SetIOHandlers(SetSanders, GetSanders);
+					break;
+
+				case CabInputType.Fan:
+					inputRelay.SetIOHandlers(SetFan, GetFan);
+					break;
+
+				default:
+					base.RegisterControl(inputRelay);
+					break;
+			}
+        }
+
+        public override bool AcceptsControlOfType( CabInputType inputType )
+        {
+            return inputType.EqualsOneOf(
+				CabInputType.Horn,
+				CabInputType.Sand,
+				CabInputType.Fan
+			) || base.AcceptsControlOfType(inputType);
         }
 
         public override float GetSandersFlow()
@@ -82,9 +157,18 @@ namespace DVCustomCarLoader.LocoComponents
 
 		public override void SetSanders( float value )
 		{
-			sim.sandOn = (value > 0f);
-			base.SetSanders(value);
+			if( sim.sandOn ^ (value > 0.5f) )
+			{
+				sim.sandOn = (value > 0.5f);
+				SandersChanged.Invoke(sim.sandOn);
+				base.SetSanders(value);
+			}
 		}
+
+		public float GetSanders()
+        {
+			return sim.sandOn ? 1 : 0;
+        }
 
 		public override void SetReverser( float position )
 		{
@@ -106,6 +190,11 @@ namespace DVCustomCarLoader.LocoComponents
 			}
 			base.SetReverser(position);
 		}
+
+		public void SetHorn( float newVal )
+        {
+			if( Horn ) Horn.SetInput(newVal);
+        }
 
 		public override float GetTractionForce()
 		{
@@ -184,6 +273,8 @@ namespace DVCustomCarLoader.LocoComponents
 				Main.Log("Added keyboard input to car");
 			}
 
+			Horn = GetComponent<Horn>();
+
 			train.brakeSystem.compressorProductionRate = sim.simParams.AirCompressorRate;
 		}
 
@@ -196,6 +287,7 @@ namespace DVCustomCarLoader.LocoComponents
 			base.Update();
 			UpdateSimSpeed();
 			UpdateSimThrottle();
+			UpdateControls();
 		}
 
 		private void UpdateSimSpeed()
@@ -209,6 +301,25 @@ namespace DVCustomCarLoader.LocoComponents
 			sim.throttle.SetValue(sim.engineOn ? throttle : 0f);
 			sim.throttleToTargetDiff.SetValue(sim.engineOn ? (throttle - targetThrottle) : 0f);
 		}
+
+		private void UpdateControls()
+        {
+			if( isAcceptingKeyboardInput )
+            {
+				if( KeyBindings.increaseSandKeys.IsDown() && !SandersOn )
+                {
+					SetSanders(1);
+                }
+				if( KeyBindings.decreaseSandKeys.IsDown() && SandersOn )
+                {
+					SetSanders(0);
+                }
+				if( KeyBindings.increaseHornKeys.IsPressed() )
+                {
+					SetHorn(1);
+                }
+            }
+        }
 
         #endregion
     }

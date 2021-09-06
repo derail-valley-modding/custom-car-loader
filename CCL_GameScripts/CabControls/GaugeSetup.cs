@@ -1,11 +1,13 @@
 ﻿using System.Collections;
+using CCL_GameScripts.Attributes;
 using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
     public class GaugeSetup : IndicatorSetupBase
     {
-        protected override string TargetTypeName => "IndicatorGauge";
+        public override string TargetTypeName => "IndicatorGauge";
+		public override bool IsOverrideSet( int index ) => false;
         public override IndicatorType IndicatorType => IndicatorType.Gauge;
 
 		[ProxyField("unclamped")]
@@ -25,7 +27,7 @@ namespace CCL_GameScripts.CabControls
 		protected static readonly Color START_COLOR = new Color(0, 0, 0.65f);
 		protected static readonly Color END_COLOR = new Color(0.65f, 0, 0);
 
-		private void OnDrawGizmosSelected()
+		private void OnDrawGizmos()
 		{
 			if( !Needle )
 			{

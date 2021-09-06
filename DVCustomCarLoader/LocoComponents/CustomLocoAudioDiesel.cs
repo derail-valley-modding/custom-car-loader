@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using CCL_GameScripts;
+using CCL_GameScripts.Attributes;
 
 namespace DVCustomCarLoader.LocoComponents
 {
@@ -93,7 +94,12 @@ namespace DVCustomCarLoader.LocoComponents
 			base.SetupForCar(car);
 
 			// Setup Horn
-        }
+			Horn horn = GetComponentInParent<Horn>();
+			if( horn )
+			{
+				horn.InitializeAudio(hornAudio);
+			}
+		}
 
         protected override void ReturnToPool()
         {

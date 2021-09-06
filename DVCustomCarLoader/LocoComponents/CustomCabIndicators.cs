@@ -10,13 +10,13 @@ namespace DVCustomCarLoader.LocoComponents
     {
         protected CustomLocoController locoController;
 
-        public IndicatorInfo[] Indicators;
+        public IndicatorRelay[] Indicators;
 
         protected virtual void Start()
         {
             locoController = TrainCar.Resolve(gameObject).GetComponent<CustomLocoController>();
 
-            Indicators = GetComponentsInChildren<IndicatorInfo>();
+            Indicators = GetComponentsInChildren<IndicatorRelay>(true);
 
             Main.Log($"CustomCabIndicators Start - {Indicators.Length} indicators");
             foreach( var indicator in Indicators )
@@ -34,7 +34,7 @@ namespace DVCustomCarLoader.LocoComponents
         }
     }
 
-    public class IndicatorInfo : MonoBehaviour
+    public class IndicatorRelay : MonoBehaviour
     {
         public CabIndicatorType Type;
         public Indicator Indicator;

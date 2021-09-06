@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using CCL_GameScripts.Attributes;
 
 namespace CCL_GameScripts
 {
-    public abstract class ComponentInitSpec : MonoBehaviour
+    public abstract class ComponentInitSpec : MonoBehaviour, IProxyScript
     {
-        protected abstract string TargetTypeName { get; }
+        public abstract string TargetTypeName { get; }
+        public abstract bool IsOverrideSet( int index );
         protected abstract bool DestroyAfterCreation { get; }
 
         // use dependency injection so that this class can be used in Unity without references to Harmony or car loader
@@ -32,71 +34,7 @@ namespace CCL_GameScripts
                 return null;
             }
 
-            foreach( FieldInfo sourceField in sourceType.GetFields() )
-            {
-                var proxies = sourceField.GetCustomAttributes().OfType<ProxyFieldAttribute>();
-                foreach( var proxy in proxies )
-                {
-                    string targetName = proxy.TargetName ?? sourceField.Name;
-                    FieldInfo targetField = targetType.GetField(targetName);
-
-                    if( targetField != null )
-                    {
-                        Type assignValueType;
-                        object assignValue;
-
-                        if( proxy is ProxyComponentAttribute proxyComp )
-                        {
-                            // create a component on the source field gameobject
-                            if( !typeof(GameObject).Equals(sourceField.FieldType) )
-                            {
-                                // can't create a component on non-gameobject
-                                logAction($"{sourceType.Name}.{sourceField.Name} is not of type GameObject, can't proxy a component on it!");
-                                continue;
-                            }
-
-                            // get the root object from the source field
-                            GameObject componentParent = sourceField.GetValue(this) as GameObject;
-                            if( componentParent == null || !componentParent )
-                            {
-                                logAction($"{sourceType.Name}.{sourceField.Name} is null, can't proxy a component on it!");
-                                continue;
-                            }
-
-                            // create the actual component that will be sent to the target
-                            assignValueType = findTypeFunc(proxyComp.ComponentType);
-                            if( (assignValueType != null) && typeof(Component).IsAssignableFrom(assignValueType) )
-                            {
-                                assignValue = componentParent.AddComponent(assignValueType);
-                            }
-                            else
-                            {
-                                logAction($"{sourceType.Name}.{sourceField.Name} component type {proxyComp.ComponentType} not found, or not a component");
-                                continue;
-                            }
-                        }
-                        else
-                        {
-                            // direct assignment
-                            assignValueType = sourceField.FieldType;
-                            assignValue = sourceField.GetValue(this);
-                        }
-
-                        if( targetField.FieldType.IsAssignableFrom(assignValueType) )
-                        {
-                            targetField.SetValue(realComp, assignValue);
-                        }
-                        else
-                        {
-                            logAction($"Proxy {targetType.Name}.{targetName} is not assignable from {sourceType.Name}.{sourceField.Name}");
-                        }
-                    }
-                    else
-                    {
-                        logAction($"From spec type {sourceType.Name} - target {targetName} not found on {targetType.Name}");
-                    }
-                }
-            }
+            this.ApplyProxyFields(realComp, findTypeFunc, logAction);
 
             if( DestroyAfterCreation )
             {
@@ -104,29 +42,6 @@ namespace CCL_GameScripts
             }
 
             return realComp;
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Field)]
-    public class ProxyFieldAttribute : Attribute
-    {
-        public string TargetName;
-
-        public ProxyFieldAttribute( string proxyField = null )
-        {
-            TargetName = proxyField;
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Field)]
-    public class ProxyComponentAttribute : ProxyFieldAttribute
-    {
-        public string ComponentType;
-
-        public ProxyComponentAttribute( string proxyField, string compName ) :
-            base(proxyField)
-        {
-            ComponentType = compName;
         }
     }
 }
