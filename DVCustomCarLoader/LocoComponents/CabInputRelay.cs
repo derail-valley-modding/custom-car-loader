@@ -141,5 +141,36 @@ namespace DVCustomCarLoader.LocoComponents
 				}
 			}
         }
+
+		private static readonly FieldInfo RotaryHingeField = AccessTools.Field(typeof(RotaryBase), "hj");
+		private static readonly MethodInfo ControlAcceptValue = AccessTools.Method(typeof(ControlImplBase), "AcceptSetValue");
+		private static readonly MethodInfo ControlRequestUpdate = AccessTools.Method(typeof(ControlImplBase), "RequestValueUpdate");
+
+		public void DeflectWithSpring( float value )
+        {
+			if( !Control ) return;
+
+			if( Control is LeverBase lever )
+            {
+				lever.MoveLeverAndReset(value);
+            }
+			else if( (value > 0) && Control is ButtonBase button )
+            {
+				button.Use();
+            }
+			else if( Control is RotaryBase rotary )
+            {
+				HingeJoint hj = RotaryHingeField?.GetValue(rotary) as HingeJoint;
+				if( hj )
+                {
+					JointSpring spring = hj.spring;
+					ControlAcceptValue?.Invoke(rotary, new object[] { value });
+					ControlRequestUpdate?.Invoke(rotary, new object[] { value });
+
+					spring.targetPosition = 0f;
+					hj.spring = spring;
+				}
+			}
+        }
     }
 }

@@ -18,8 +18,6 @@ namespace DVCustomCarLoader.LocoComponents
 			CustomDieselSimEvents>,
 		IFusedLocoController
     {
-		protected Horn Horn;
-
 		private bool fanOn;
 
 		public void SetFan( float value )
@@ -31,7 +29,9 @@ namespace DVCustomCarLoader.LocoComponents
 
 		public float GetFan() => fanOn ? 1 : 0;
 
-		public float EngineRPM => sim.engineRPM.value;
+		protected List<CabInputRelay> HornRelays = new List<CabInputRelay>();
+
+        public float EngineRPM => sim.engineRPM.value;
 		public float EngineRPMGauge => (sim.engineOn) ? (12.5f + sim.engineRPM.value * 100f) : 0f;
 		public float EngineTemp => sim.engineTemp.value;
 
@@ -115,7 +115,8 @@ namespace DVCustomCarLoader.LocoComponents
 			switch( inputRelay.Binding )
             {
 				case CabInputType.Horn:
-					inputRelay.SetIOHandlers(SetHorn);
+					inputRelay.SetIOHandlers(UpdateHorn);
+					HornRelays.Add(inputRelay);
 					break;
 
 				case CabInputType.Sand:
@@ -190,11 +191,6 @@ namespace DVCustomCarLoader.LocoComponents
 			}
 			base.SetReverser(position);
 		}
-
-		public void SetHorn( float newVal )
-        {
-			if( Horn ) Horn.SetInput(newVal);
-        }
 
 		public override float GetTractionForce()
 		{
@@ -273,8 +269,6 @@ namespace DVCustomCarLoader.LocoComponents
 				Main.Log("Added keyboard input to car");
 			}
 
-			Horn = GetComponent<Horn>();
-
 			train.brakeSystem.compressorProductionRate = sim.simParams.AirCompressorRate;
 		}
 
@@ -316,7 +310,10 @@ namespace DVCustomCarLoader.LocoComponents
                 }
 				if( KeyBindings.increaseHornKeys.IsPressed() )
                 {
-					SetHorn(1);
+					foreach( var relay in HornRelays )
+                    {
+						if( relay.Initialized ) relay.DeflectWithSpring(UnityEngine.Random.Range(0.95f, 1f));
+					}
                 }
             }
         }
