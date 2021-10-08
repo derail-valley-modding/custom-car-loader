@@ -21,6 +21,10 @@ namespace CCL_GameScripts.CabControls
     public enum CabControlType
     {
         Lever,
-        Button
+        Button,
+        Puller,
+        Rotary,
+        Toggle,
+        Wheel
     }
 }
