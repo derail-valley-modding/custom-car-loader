@@ -5,6 +5,7 @@ using HarmonyLib;
 using Object = UnityEngine.Object;
 using CCL_GameScripts;
 using DV.Logic.Job;
+using DVCustomCarLoader.LocoComponents;
 
 namespace DVCustomCarLoader
 {
@@ -365,6 +366,9 @@ namespace DVCustomCarLoader
 
             newCar.carType = CarType;
 
+            //==============================================================================================================
+            #region Loco Params
+
             var simParams = newFab.GetComponent<SimParamsBase>();
             if( simParams )
             {
@@ -387,6 +391,43 @@ namespace DVCustomCarLoader
                     InteriorPrefab = interiorFab;
                 }
             }
+            else if( carSetup.InteriorPrefab )
+            {
+                GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
+                interiorFab.SetActive(false);
+                Object.DontDestroyOnLoad(interiorFab);
+
+                LocoComponentManager.CreateComponentsFromProxies(interiorFab);
+                LocoComponentManager.CreateCopiedControls(interiorFab);
+                interiorFab.SetLayersRecursive("Interactable");
+
+                newCar.interiorPrefab = interiorFab;
+                InteriorPrefab = interiorFab;
+            }
+
+            #endregion
+
+            //==============================================================================================================
+            #region Cab
+
+            var cabTform = newFab.transform.Find(CarPartNames.CAB_TELEPORT_ROOT);
+            if( cabTform )
+            {
+                var teleportDest = cabTform.gameObject.AddComponent<CabTeleportDestination>();
+                teleportDest.hoverRenderer = cabTform.GetComponentInChildren<Renderer>();
+
+                if (InteriorPrefab)
+                {
+                    var cabCollider = cabTform.gameObject.GetComponent<BoxCollider>();
+                    if (cabCollider)
+                    {
+                        var snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
+                        snapshotSwitcher.box = cabCollider;
+                    }
+                }
+            }
+
+            #endregion
 
             CarPrefab = newFab;
             CarPrefab.name = identifier;

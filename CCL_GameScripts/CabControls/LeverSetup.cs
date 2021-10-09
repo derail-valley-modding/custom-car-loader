@@ -10,7 +10,7 @@ namespace CCL_GameScripts.CabControls
     {
         public override string TargetTypeName => "DV.CabControls.Spec.Lever";
 		public override bool IsOverrideSet( int index ) => false;
-        protected override bool DestroyAfterCreation => true;
+        protected override bool DestroyAfterCreation => false;
         public override CabControlType ControlType => CabControlType.Lever;
 
 		[Header("Lever")]
@@ -20,6 +20,8 @@ namespace CCL_GameScripts.CabControls
 		public int Notches = 20;
 		[ProxyField("invertDirection")]
 		public bool InvertDirection = false;
+
+		public bool TrackAsDoor = false;
 
 		[Header("Hinge Joint")]
 		[ProxyField("jointAxis")]

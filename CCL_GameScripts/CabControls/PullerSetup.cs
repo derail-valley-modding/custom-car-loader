@@ -8,7 +8,7 @@ namespace CCL_GameScripts.CabControls
     {
         public override string TargetTypeName => "DV.CabControls.Spec.Puller";
         public override bool IsOverrideSet(int index) => false;
-        protected override bool DestroyAfterCreation => true;
+        protected override bool DestroyAfterCreation => false;
         public override CabControlType ControlType => CabControlType.Puller;
 
         [Header("Basic Settings")]
@@ -22,6 +22,8 @@ namespace CCL_GameScripts.CabControls
         public float scrollWheelDelta = 0.025f;
         [ProxyField]
         public float linearLimit = 0.3f;
+
+        public bool TrackAsWindow = false;
 
         [Header("Physics")]
         [ProxyField]
