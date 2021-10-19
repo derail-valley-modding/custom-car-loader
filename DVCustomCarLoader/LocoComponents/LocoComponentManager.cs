@@ -122,7 +122,7 @@ namespace DVCustomCarLoader
             foreach( var compSpec in allInitSpecs )
             {
                 GameObject controlObject = compSpec.gameObject;
-                if( compSpec is ControlSetupBase control )
+                if( compSpec is ControlSetupBase control && !((compSpec is IApertureTrackable a) && a.TrackAsAperture)  )
                 {
 #if DEBUG
                     Main.Log($"Add input relay to {controlObject.name}");

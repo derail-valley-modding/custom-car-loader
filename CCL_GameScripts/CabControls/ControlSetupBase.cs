@@ -27,4 +27,9 @@ namespace CCL_GameScripts.CabControls
         Toggle,
         Wheel
     }
+
+    public interface IApertureTrackable
+    {
+        bool TrackAsAperture { get; }
+    }
 }

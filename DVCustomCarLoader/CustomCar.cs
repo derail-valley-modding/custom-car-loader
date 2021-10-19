@@ -386,8 +386,9 @@ namespace DVCustomCarLoader
                     LocoComponentManager.SetupCabComponents(interiorFab, simParams.SimType);
                     interiorFab.SetLayersRecursive("Interactable");
 
-                    newCar.interiorPrefab = interiorFab;
+                    interiorFab.AddComponent<DoorAndWindowTracker>();
 
+                    newCar.interiorPrefab = interiorFab;
                     InteriorPrefab = interiorFab;
                 }
             }
@@ -400,6 +401,8 @@ namespace DVCustomCarLoader
                 LocoComponentManager.CreateComponentsFromProxies(interiorFab);
                 LocoComponentManager.CreateCopiedControls(interiorFab);
                 interiorFab.SetLayersRecursive("Interactable");
+
+                interiorFab.AddComponent<DoorAndWindowTracker>();
 
                 newCar.interiorPrefab = interiorFab;
                 InteriorPrefab = interiorFab;
@@ -418,7 +421,7 @@ namespace DVCustomCarLoader
 
                 if (InteriorPrefab)
                 {
-                    var cabCollider = cabTform.gameObject.GetComponent<BoxCollider>();
+                    var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
                     if (cabCollider)
                     {
                         var snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();

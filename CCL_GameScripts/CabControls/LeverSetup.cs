@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
-    public class LeverSetup : ControlSetupBase
+    public class LeverSetup : ControlSetupBase, IApertureTrackable
     {
         public override string TargetTypeName => "DV.CabControls.Spec.Lever";
 		public override bool IsOverrideSet( int index ) => false;
@@ -22,6 +22,7 @@ namespace CCL_GameScripts.CabControls
 		public bool InvertDirection = false;
 
 		public bool TrackAsDoor = false;
+		public bool TrackAsAperture => TrackAsDoor;
 
 		[Header("Hinge Joint")]
 		[ProxyField("jointAxis")]

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
-    public class PullerSetup : ControlSetupBase
+    public class PullerSetup : ControlSetupBase, IApertureTrackable
     {
         public override string TargetTypeName => "DV.CabControls.Spec.Puller";
         public override bool IsOverrideSet(int index) => false;
@@ -24,6 +24,7 @@ namespace CCL_GameScripts.CabControls
         public float linearLimit = 0.3f;
 
         public bool TrackAsWindow = false;
+        public bool TrackAsAperture => TrackAsWindow;
 
         [Header("Physics")]
         [ProxyField]
