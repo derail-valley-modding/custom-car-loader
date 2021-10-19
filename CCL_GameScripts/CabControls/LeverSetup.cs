@@ -6,11 +6,11 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
-    public class LeverSetup : ControlSetupBase
+    public class LeverSetup : ControlSetupBase, IApertureTrackable
     {
         public override string TargetTypeName => "DV.CabControls.Spec.Lever";
 		public override bool IsOverrideSet( int index ) => false;
-        protected override bool DestroyAfterCreation => true;
+        protected override bool DestroyAfterCreation => false;
         public override CabControlType ControlType => CabControlType.Lever;
 
 		[Header("Lever")]
@@ -20,6 +20,9 @@ namespace CCL_GameScripts.CabControls
 		public int Notches = 20;
 		[ProxyField("invertDirection")]
 		public bool InvertDirection = false;
+
+		public bool TrackAsDoor = false;
+		public bool TrackAsAperture => TrackAsDoor;
 
 		[Header("Hinge Joint")]
 		[ProxyField("jointAxis")]

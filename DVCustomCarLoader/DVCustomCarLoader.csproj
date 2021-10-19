@@ -74,6 +74,7 @@
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
     <Compile Include="LocoComponents\CabInputRelay.cs" />
+    <Compile Include="LocoComponents\CabinSnapshotSwitcher.cs" />
     <Compile Include="LocoComponents\CustomCabIndicators.cs" />
     <Compile Include="LocoComponents\CustomCabInputController.cs" />
     <Compile Include="LocoComponents\CustomDieselReverserLock.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="LocoComponents\CustomLampController.cs" />
     <Compile Include="LocoComponents\CustomLocoAudio.cs" />
     <Compile Include="LocoComponents\CustomLocoAudioDiesel.cs" />
+    <Compile Include="LocoComponents\DoorAndWindowTracker.cs" />
     <Compile Include="LocoComponents\ICabControlAcceptor.cs" />
     <Compile Include="LocoComponents\IFusedLocoController.cs" />
     <Compile Include="LocoComponents\ILocoEventProvider.cs" />

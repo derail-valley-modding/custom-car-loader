@@ -53,6 +53,7 @@
     <Compile Include="Attributes\ProxyScripts.cs" />
     <Compile Include="Attributes\ReadOnlyAttribute.cs" />
     <Compile Include="BogieSetup.cs" />
+    <Compile Include="CabControls\ButtonSetup.cs" />
     <Compile Include="CabControls\CabIOTypes.cs" />
     <Compile Include="CabControls\ControlSetupBase.cs" />
     <Compile Include="CabControls\CopiedButton.cs" />
@@ -65,6 +66,10 @@
     <Compile Include="CabControls\GaugeSetup.cs" />
     <Compile Include="CabControls\IndicatorSetupBase.cs" />
     <Compile Include="CabControls\LeverSetup.cs" />
+    <Compile Include="CabControls\PullerSetup.cs" />
+    <Compile Include="CabControls\RotarySetup.cs" />
+    <Compile Include="CabControls\ToggleSetup.cs" />
+    <Compile Include="CabControls\WheelSetup.cs" />
     <Compile Include="CarJSONKeys.cs" />
     <Compile Include="ComponentInitSpec.cs" />
     <Compile Include="CustomCarEnums.cs" />

@@ -33,6 +33,8 @@ namespace DVCustomCarLoader
 
         // Info Plates
         public static readonly string[] INFO_PLATES = { "[car plate anchor1]", "[car plate anchor2]" };
+
+        public const string CAB_TELEPORT_ROOT = "[cab]";
     }
 
     public static class CarPartOffset

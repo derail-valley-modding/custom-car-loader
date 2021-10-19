@@ -48,7 +48,9 @@ namespace CCL_GameScripts
         [Header("Bogie Replacement")]
         public Transform FrontBogie;
         public Transform RearBogie;
+        [InspectorName("Use Custom Front Bogie")]
         public bool ReplaceFrontBogie;
+        [InspectorName("Use Custom Rear Bogie")]
         public bool ReplaceRearBogie;
         public CapsuleCollider FrontBogieCollider;
         public CapsuleCollider RearBogieCollider;

@@ -21,6 +21,15 @@ namespace CCL_GameScripts.CabControls
     public enum CabControlType
     {
         Lever,
-        Button
+        Button,
+        Puller,
+        Rotary,
+        Toggle,
+        Wheel
+    }
+
+    public interface IApertureTrackable
+    {
+        bool TrackAsAperture { get; }
     }
 }
