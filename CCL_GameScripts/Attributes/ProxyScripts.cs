@@ -104,6 +104,11 @@ namespace CCL_GameScripts.Attributes
                         {
                             targetField.SetValue(target, assignValue);
                         }
+                        else if (targetField.FieldType.IsEnum && assignValueType.IsEnum)
+                        {
+                            object converted = Convert.ChangeType(assignValue, assignValueType.GetEnumUnderlyingType());
+                            targetField.SetValue(target, converted);
+                        }
                         else
                         {
                             logAction($"Proxy {targetType.Name}.{targetName} is not assignable from {sourceType.Name}.{sourceField.Name}");

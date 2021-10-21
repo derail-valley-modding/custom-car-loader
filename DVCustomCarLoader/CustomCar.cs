@@ -408,6 +408,13 @@ namespace DVCustomCarLoader
                 InteriorPrefab = interiorFab;
             }
 
+            var prefabProxies = newFab.GetComponentsInChildren<ComponentInitSpec>(true);
+            foreach (ComponentInitSpec spec in prefabProxies)
+            {
+                if (spec is TrainCarSetup) continue;
+                spec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
+            }
+
             #endregion
 
             //==============================================================================================================
