@@ -36,7 +36,7 @@ namespace DVCustomCarLoader
             Type finalizerType = typeof(IInitSpecFinalizer<>).MakeGenericType(sourceType);
             if (finalizerType.IsAssignableFrom(targetType))
             {
-                MethodInfo finalizeMethod = finalizerType.GetMethod("FinalizeFromSpec").MakeGenericMethod(sourceType);
+                MethodInfo finalizeMethod = finalizerType.GetMethod("FinalizeFromSpec");
                 finalizeMethod.Invoke(realComp, new object[] { spec });
             }
 

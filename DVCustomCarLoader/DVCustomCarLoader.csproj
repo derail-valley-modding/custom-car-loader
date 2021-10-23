@@ -60,6 +60,7 @@
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
@@ -74,10 +75,12 @@
   <ItemGroup>
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
+    <Compile Include="Effects\EngineSmokeEmitter.cs" />
+    <Compile Include="Effects\ParticleInitializer.cs" />
     <Compile Include="InitSpecManager.cs" />
     <Compile Include="LocoComponents\CabInputRelay.cs" />
     <Compile Include="LocoComponents\CabinSnapshotSwitcher.cs" />
-    <Compile Include="LocoComponents\DrivingAnimation.cs" />
+    <Compile Include="Effects\DrivingAnimation.cs" />
     <Compile Include="LocoComponents\CustomCabIndicators.cs" />
     <Compile Include="LocoComponents\CustomCabInputController.cs" />
     <Compile Include="LocoComponents\CustomDieselReverserLock.cs" />

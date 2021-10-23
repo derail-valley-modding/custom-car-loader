@@ -35,6 +35,14 @@ namespace DVCustomCarLoader
         public static readonly string[] INFO_PLATES = { "[car plate anchor1]", "[car plate anchor2]" };
 
         public const string CAB_TELEPORT_ROOT = "[cab]";
+        
+        // Particle Effects
+        public const string PARTICLE_ROOT = "[particles]";
+        public const string WHEEL_SPARKS = "[wheel sparks]";
+        public const string SMOKE_EMITTER = "[smoke emitter]";
+        public const string EXHAUST_SMOKE = "ExhaustEngineSmoke";
+        public const string HIGH_TEMP_SMOKE = "HighTempEngineSmoke";
+        public const string DAMAGED_SMOKE = "DamagedEngineSmoke";
     }
 
     public static class CarPartOffset
