@@ -25,6 +25,8 @@ namespace DVCustomCarLoader
 				ModEntry.Logger.Log("Creating CustomCarManager");
 
 				Application.quitting += AppQuitWatcher.OnAppQuit;
+
+				Effects.ParticleInitializer.FetchDefaults();
 				CustomCarManager.Setup();
 
 				harmony = new Harmony(modEntry.Info.Id);

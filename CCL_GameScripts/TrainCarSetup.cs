@@ -38,12 +38,14 @@ namespace CCL_GameScripts
 
         public override bool IsOverrideSet( int index ) => (index == 1) && OverridePhysics;
 
-        protected override bool DestroyAfterCreation => false;
+        public override bool DestroyAfterCreation => false;
 
         [Header("Basic")]
         public string Identifier = "My New Car";
         public BaseTrainCarType BaseCarType;
         public BaseCargoContainerType CargoClass = BaseCargoContainerType.None;
+
+        public GameObject InteriorPrefab;
 
         [Header("Bogie Replacement")]
         public Transform FrontBogie;
@@ -55,8 +57,11 @@ namespace CCL_GameScripts
         public CapsuleCollider FrontBogieCollider;
         public CapsuleCollider RearBogieCollider;
 
-        [Header("Bogie Physics")]
+        [Header("Physics")]
         public bool OverridePhysics = false; // override flag 1
+
+        [ProxyField("totalMass", 1)]
+        public float TotalMass = 50000;
 
         [ProxyField("wheelRadius", 1)]
         public float WheelRadius = 0.459f;
@@ -66,12 +71,10 @@ namespace CCL_GameScripts
         public float MassRatioPerBogie = 0.5f;
 
         [ProxyField("bogieSpring", 1)]
-        public float BogieSpring = 200;
+        public float BogieSpring = 2e7f;
 
         [ProxyField("bogieDamping", 1)]
         public float BogieDamping = 5;
-
-        public GameObject InteriorPrefab;
 
         #endregion
 
@@ -114,17 +117,19 @@ namespace CCL_GameScripts
 
             if( FrontBogieCollider )
             {
-                var frontCenter = FrontBogieCollider.center;
-                frontCenter = new Vector3(0, frontCenter.y, FrontBogie.localPosition.z);
+                //var frontCenter = FrontBogieCollider.center;
+                var frontCenter = new Vector3(0, WheelRadius, FrontBogie.localPosition.z);
                 FrontBogieCollider.center = frontCenter;
+                FrontBogieCollider.radius = WheelRadius;
                 objectsToUndo.Add(FrontBogieCollider.transform);
             }
 
             if( RearBogieCollider )
             {
-                var rearCenter = RearBogieCollider.center;
-                rearCenter = new Vector3(0, rearCenter.y, RearBogie.localPosition.z);
+                //var rearCenter = RearBogieCollider.center;
+                var rearCenter = new Vector3(0, WheelRadius, RearBogie.localPosition.z);
                 RearBogieCollider.center = rearCenter;
+                RearBogieCollider.radius = WheelRadius;
                 objectsToUndo.Add(RearBogieCollider.transform);
             }
 

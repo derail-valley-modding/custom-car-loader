@@ -4,7 +4,7 @@ namespace CCL_GameScripts.CabControls
 {
     public abstract class IndicatorSetupBase : ComponentInitSpec
     {
-        protected override bool DestroyAfterCreation => true;
+        public override bool DestroyAfterCreation => true;
         public abstract IndicatorType IndicatorType { get; }
 
         public CabIndicatorType OutputBinding;

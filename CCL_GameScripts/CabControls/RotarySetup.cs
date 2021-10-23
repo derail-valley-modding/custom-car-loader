@@ -7,8 +7,7 @@ namespace CCL_GameScripts.CabControls
     public class RotarySetup : ControlSetupBase
     {
         public override string TargetTypeName => "DV.CabControls.Spec.Rotary";
-        public override bool IsOverrideSet(int index) => false;
-        protected override bool DestroyAfterCreation => true;
+        public override bool DestroyAfterCreation => true;
         public override CabControlType ControlType => CabControlType.Rotary;
 
         [Header("Knob Settings")]

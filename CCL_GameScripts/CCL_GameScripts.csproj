@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="UnityEditor, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
@@ -82,6 +83,8 @@
     <Compile Include="Editor\ExportTrainCar.cs" />
     <Compile Include="Editor\FBXMeshExtractor.cs" />
     <Compile Include="Editor\FindMissingScripts.cs" />
+    <Compile Include="Effects\DrivingAnimationSetup.cs" />
+    <Compile Include="Effects\SmokeEmissionSetup.cs" />
     <Compile Include="JSONObject\JSONObject.cs" />
     <Compile Include="JSONObject\VectorTemplates.cs" />
     <Compile Include="ModelUtil.cs" />

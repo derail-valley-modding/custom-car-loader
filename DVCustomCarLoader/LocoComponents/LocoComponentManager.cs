@@ -134,15 +134,16 @@ namespace DVCustomCarLoader
                     inputRelay.AbsPosition = control.UseAbsoluteMappedValue;
                 }
                 
-                object realComp = compSpec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
+                var realComp = InitSpecManager.CreateRealComponent(compSpec);
 
-                if( (compSpec is IndicatorSetupBase indicatorSpec) && (realComp is GameObject spawnedObj) )
-                {
-                    var realIndicator = spawnedObj.GetComponent<Indicator>();
-                    var indicatorInfo = spawnedObj.AddComponent<IndicatorRelay>();
-                    indicatorInfo.Type = indicatorSpec.OutputBinding;
-                    indicatorInfo.Indicator = realIndicator;
-                }
+                // this code would never run, needs revised... use finalizers maybe?
+                //if( (compSpec is IndicatorSetupBase indicatorSpec) && (realComp is GameObject spawnedObj) )
+                //{
+                //    var realIndicator = spawnedObj.GetComponent<Indicator>();
+                //    var indicatorInfo = spawnedObj.AddComponent<IndicatorRelay>();
+                //    indicatorInfo.Type = indicatorSpec.OutputBinding;
+                //    indicatorInfo.Indicator = realIndicator;
+                //}
             }
         }
 
