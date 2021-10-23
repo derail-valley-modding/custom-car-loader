@@ -8,8 +8,7 @@ namespace CCL_GameScripts.Effects
     public class DrivingAnimationSetup : ComponentInitSpec
     {
         public override string TargetTypeName => "DVCustomCarLoader.LocoComponents.DrivingAnimation";
-        protected override bool DestroyAfterCreation => true;
-        public override bool IsOverrideSet(int index) => false;
+        public override bool DestroyAfterCreation => true;
 
         [ProxyField]
         public float MaxWheelslipMultiplier = 8f;

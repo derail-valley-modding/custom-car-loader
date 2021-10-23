@@ -9,8 +9,7 @@ namespace CCL_GameScripts.CabControls
     public class LeverSetup : ControlSetupBase, IApertureTrackable
     {
         public override string TargetTypeName => "DV.CabControls.Spec.Lever";
-		public override bool IsOverrideSet( int index ) => false;
-        protected override bool DestroyAfterCreation => false;
+        public override bool DestroyAfterCreation => false;
         public override CabControlType ControlType => CabControlType.Lever;
 
 		[Header("Lever")]

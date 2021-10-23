@@ -60,8 +60,6 @@ namespace CCL_GameScripts.CabControls
 
         public string TargetTypeName => "DV.CabControls.Spec.Button";
 
-        public bool IsOverrideSet( int index ) => false;
-
         [ProxyField("isToggle")]
         public bool IsToggle = false;
 

@@ -344,7 +344,7 @@ namespace DVCustomCarLoader
             #endregion
 
             // Setup new car script
-            var newCar = carSetup.CreateRealComponent(AccessTools.TypeByName, Main.Warning) as TrainCar;
+            var newCar = InitSpecManager.CreateRealComponent<TrainCarSetup, TrainCar>(carSetup);
             if( !newCar )
             {
                 Main.Warning("Couldn't create TrainCar component");
@@ -412,7 +412,7 @@ namespace DVCustomCarLoader
             foreach (ComponentInitSpec spec in prefabProxies)
             {
                 if (spec is TrainCarSetup) continue;
-                spec.CreateRealComponent(AccessTools.TypeByName, Main.Warning);
+                InitSpecManager.CreateRealComponent(spec);
             }
 
             #endregion

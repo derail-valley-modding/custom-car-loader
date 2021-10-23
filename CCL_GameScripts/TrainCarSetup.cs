@@ -38,7 +38,7 @@ namespace CCL_GameScripts
 
         public override bool IsOverrideSet( int index ) => (index == 1) && OverridePhysics;
 
-        protected override bool DestroyAfterCreation => false;
+        public override bool DestroyAfterCreation => false;
 
         [Header("Basic")]
         public string Identifier = "My New Car";

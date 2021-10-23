@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
+    <Compile Include="InitSpecManager.cs" />
     <Compile Include="LocoComponents\CabInputRelay.cs" />
     <Compile Include="LocoComponents\CabinSnapshotSwitcher.cs" />
     <Compile Include="LocoComponents\DrivingAnimation.cs" />
