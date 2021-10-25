@@ -314,6 +314,8 @@ namespace DVCustomCarLoader
     {
         public static void Postfix( GameObject ___loadedInterior )
         {
+            if (!___loadedInterior) return;
+
             if( !___loadedInterior.activeSelf )
             {
                 ___loadedInterior.gameObject.SetActive(true);

@@ -6,12 +6,30 @@ namespace DVCustomCarLoader
 {
     public static class CarPartNames
     {
+        // Buffers
         public const string BUFFERS_ROOT = "[buffers]";
         public const string BUFFER_PLATE_FRONT = "HookPlate_F";
         public const string BUFFER_PLATE_REAR = "HookPlate_R";
-        public static readonly string[] BUFFER_FRONT_PADS = { "Buffer_FL", "Buffer_FR" };
-        public static readonly string[] BUFFER_REAR_PADS = { "Buffer_RL", "Buffer_RR" };
-        public static readonly string[] BUFFER_CHAIN_RIGS = { "BuffersAndChainRig", "BuffersAndChainRigMU" }; // same name front and rear
+
+        public const string BUFFER_PAD_FL = "Buffer_FL";
+        public const string BUFFER_PAD_FR = "Buffer_FR";
+        public const string BUFFER_PAD_RL = "Buffer_RL";
+        public const string BUFFER_PAD_RR = "Buffer_RR";
+
+        public static readonly string[] BUFFER_FRONT_PADS = { BUFFER_PAD_FL, BUFFER_PAD_FR };
+        public static readonly string[] BUFFER_REAR_PADS = { BUFFER_PAD_RL, BUFFER_PAD_RR };
+
+        public static readonly string[] BUFFER_ANCHORS = { "buffer anchor left", "buffer anchor right" };
+
+        public const string BUFFER_CHAIN_REGULAR = "BuffersAndChainRig";
+        public const string BUFFER_CHAIN_MU = "BuffersAndChainRigMU";
+        public static readonly string[] BUFFER_CHAIN_RIGS = { BUFFER_CHAIN_REGULAR, BUFFER_CHAIN_MU }; // same name front and rear
+
+        // Chains & Hoses
+        public const string CHAIN_ROOT = "ChainCoupler";
+        public const string HOSES_ROOT = "hoses";
+        public const string AIR_HOSE = "CouplingHoseRig";
+        public const string MU_CONNECTOR = "CouplingHoseRigMU";
 
         // Collider parts
         public const string COLLIDERS_ROOT = "[colliders]";
