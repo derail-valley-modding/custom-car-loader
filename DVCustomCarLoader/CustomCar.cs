@@ -71,76 +71,14 @@ namespace DVCustomCarLoader
             //==============================================================================================================
             #region Buffers/Chains
 
-            // yeet the dummy buffer rigs so they aren't duplicated
-            Transform frontCouplerRig = newFab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
-            Vector3 frontRigPosition;
-            if( frontCouplerRig )
+            Vector3 frontRigPosition, rearRigPosition;
+            if (carSetup.UseCustomBuffers)
             {
-                frontRigPosition = frontCouplerRig.position;
-                Object.Destroy(frontCouplerRig.gameObject);
+                (frontRigPosition, rearRigPosition) = SetupCustomBuffers(newFab, basePrefab, carSetup.UseCustomHosePositions);
             }
             else
             {
-                frontRigPosition = new Vector3(0, 1.05f, 8.77f);
-                Main.ModEntry.Logger.Error("Missing front coupler rig from prefab!");
-            }
-
-            Transform rearCouplerRig = newFab.transform.Find(CarPartNames.COUPLER_RIG_REAR);
-            Vector3 rearRigPosition;
-            if( rearCouplerRig )
-            {
-                rearRigPosition = rearCouplerRig.position;
-                Object.Destroy(rearCouplerRig.gameObject);
-            }
-            else
-            {
-                rearRigPosition = new Vector3(0, 1.05f, -8.77f);
-                Main.ModEntry.Logger.Error("Missing rear coupler rig from prefab!");
-            }
-
-            // copy main buffer part cohort
-            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
-            bufferRoot = Object.Instantiate(bufferRoot, newFab.transform);
-            bufferRoot.name = CarPartNames.BUFFERS_ROOT;
-
-            // adjust transforms of buffer components
-            for( int i = 0; i < bufferRoot.transform.childCount; i++ )
-            {
-                Transform child = bufferRoot.transform.GetChild(i);
-                string childName = child.name.Trim();
-
-                if( CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName) )
-                {
-                    // front or rear chain rig
-                    // determine whether front or rear chain rig: +z is front
-                    child.localPosition = (child.localPosition.z > 0) ? frontRigPosition : rearRigPosition;
-                }
-                else if( CarPartNames.BUFFER_PLATE_FRONT.Equals(childName) )
-                {
-                    // front hook plate
-                    child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
-                }
-                else if( CarPartNames.BUFFER_PLATE_REAR.Equals(childName) )
-                {
-                    // rear hook plate
-                    child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
-                }
-                else if( CarPartNames.BUFFER_FRONT_PADS.Contains(childName) )
-                {
-                    // front buffer pads
-                    Vector3 xShiftBase = new Vector3(child.localPosition.x, frontRigPosition.y, frontRigPosition.z);
-                    child.localPosition = xShiftBase + CarPartOffset.BUFFER_PAD_F;
-                }
-                else if( CarPartNames.BUFFER_REAR_PADS.Contains(childName) )
-                {
-                    // rear buffer pads
-                    Vector3 xShiftBase = new Vector3(child.localPosition.x, rearRigPosition.y, rearRigPosition.z);
-                    child.localPosition = xShiftBase + CarPartOffset.BUFFER_PAD_R;
-                }
-                else
-                {
-                    Main.ModEntry.Logger.Log($"Unknown buffer child {childName}");
-                }
+                (frontRigPosition, rearRigPosition) = SetupDefaultBuffers(newFab, basePrefab);
             }
 
             #endregion
@@ -513,6 +451,225 @@ namespace DVCustomCarLoader
                 return newBounds;
             }
         }
+
+        #region Buffer & Chains Setup
+
+        private (Vector3, Vector3) SetupDefaultBuffers(GameObject newPrefab, GameObject basePrefab)
+        {
+            // yeet the dummy buffer rigs so they aren't duplicated
+            Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
+            Vector3 frontRigPosition;
+            if (frontCouplerRig)
+            {
+                frontRigPosition = frontCouplerRig.position;
+                Object.Destroy(frontCouplerRig.gameObject);
+            }
+            else
+            {
+                frontRigPosition = new Vector3(0, 1.05f, 8.77f);
+                Main.Error("Missing front coupler rig from prefab!");
+            }
+
+            Transform rearCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_REAR);
+            Vector3 rearRigPosition;
+            if (rearCouplerRig)
+            {
+                rearRigPosition = rearCouplerRig.position;
+                Object.Destroy(rearCouplerRig.gameObject);
+            }
+            else
+            {
+                rearRigPosition = new Vector3(0, 1.05f, -8.77f);
+                Main.Error("Missing rear coupler rig from prefab!");
+            }
+
+            // copy main buffer part cohort
+            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
+            bufferRoot = Object.Instantiate(bufferRoot, newPrefab.transform);
+            bufferRoot.name = CarPartNames.BUFFERS_ROOT;
+
+            // adjust transforms of buffer components
+            for (int i = 0; i < bufferRoot.transform.childCount; i++)
+            {
+                Transform child = bufferRoot.transform.GetChild(i);
+                string childName = child.name.Trim();
+
+                if (CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName))
+                {
+                    // front or rear chain rig
+                    // determine whether front or rear chain rig: +z is front
+                    child.localPosition = (child.localPosition.z > 0) ? frontRigPosition : rearRigPosition;
+                }
+                else if (CarPartNames.BUFFER_PLATE_FRONT.Equals(childName))
+                {
+                    // front hook plate
+                    child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
+                }
+                else if (CarPartNames.BUFFER_PLATE_REAR.Equals(childName))
+                {
+                    // rear hook plate
+                    child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
+                }
+                else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName))
+                {
+                    // front buffer pads
+                    Vector3 xShiftBase = new Vector3(child.localPosition.x, frontRigPosition.y, frontRigPosition.z);
+                    child.localPosition = xShiftBase + CarPartOffset.BUFFER_PAD_F;
+                }
+                else if (CarPartNames.BUFFER_REAR_PADS.Contains(childName))
+                {
+                    // rear buffer pads
+                    Vector3 xShiftBase = new Vector3(child.localPosition.x, rearRigPosition.y, rearRigPosition.z);
+                    child.localPosition = xShiftBase + CarPartOffset.BUFFER_PAD_R;
+                }
+                else
+                {
+                    Main.ModEntry.Logger.Log($"Unknown buffer child {childName}");
+                }
+            }
+
+            return (frontRigPosition, rearRigPosition);
+        }
+
+        private (Vector3, Vector3) SetupCustomBuffers(GameObject newPrefab, GameObject basePrefab, bool customHoses)
+        {
+            Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
+            Vector3 frontRigPosition = frontCouplerRig.position;
+
+            Transform rearCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_REAR);
+            Vector3 rearRigPosition = rearCouplerRig.position;
+
+            // copy main buffer part cohort
+            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
+            bufferRoot = Object.Instantiate(bufferRoot, newPrefab.transform);
+            bufferRoot.name = CarPartNames.BUFFERS_ROOT;
+
+            Transform newFrontBufferRig = null;
+            Transform newRearBufferRig = null;
+
+            // adjust transforms of buffer components
+            for (int i = 0; i < bufferRoot.transform.childCount; i++)
+            {
+                Transform child = bufferRoot.transform.GetChild(i);
+                string childName = child.name.Trim();
+
+                if (CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName))
+                {
+                    // front or rear chain rig
+                    // determine whether front or rear chain rig: +z is front
+                    if (child.localPosition.z > 0)
+                    {
+                        child.localPosition = frontRigPosition;
+                        newFrontBufferRig = child;
+                        Main.Log($"Set newFrontBufferRig {newFrontBufferRig.name}");
+                    }
+                    else
+                    {
+                        child.localPosition = rearRigPosition;
+                        newRearBufferRig = child;
+                        Main.Log($"Set newRearBufferRig {newRearBufferRig.name}");
+                    }
+                }
+                else if (CarPartNames.BUFFER_PLATE_FRONT.Equals(childName))
+                {
+                    // front hook plate
+                    child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
+                }
+                else if (CarPartNames.BUFFER_PLATE_REAR.Equals(childName))
+                {
+                    // rear hook plate
+                    child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
+                }
+                else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName) || CarPartNames.BUFFER_REAR_PADS.Contains(childName))
+                {
+                    // destroy template buffer pads since we're overriding
+                    GameObject.Destroy(child.gameObject);
+                }
+                else
+                {
+                    Main.Log($"Unknown buffer child {childName}");
+                }
+            }
+
+            // reparent buffer pads to new root & adjust anchor positions
+            foreach (Transform rig in new []{ frontCouplerRig, rearCouplerRig })
+            {
+                string lPadName, rPadName;
+                Transform newBufferRig;
+
+                if (rig == frontCouplerRig)
+                {
+                    lPadName = CarPartNames.BUFFER_PAD_FL;
+                    rPadName = CarPartNames.BUFFER_PAD_FR;
+                    newBufferRig = newFrontBufferRig;
+                }
+                else
+                {
+                    lPadName = CarPartNames.BUFFER_PAD_RL;
+                    rPadName = CarPartNames.BUFFER_PAD_RR;
+                    newBufferRig = newRearBufferRig;
+                }
+
+                // Reparent buffer pads
+                BufferController bufferController = newBufferRig.gameObject.GetComponentInChildren<BufferController>(true);
+                if (bufferController)
+                {
+                    var lPad = rig.Find(lPadName);
+                    Vector3 position = newPrefab.transform.InverseTransformPoint(lPad.position);
+                    lPad.parent = bufferRoot.transform;
+                    lPad.localPosition = position;
+                    bufferController.bufferModelLeft = lPad;
+
+                    var rPad = rig.Find(rPadName);
+                    position = newPrefab.transform.InverseTransformPoint(rPad.position);
+                    rPad.parent = bufferRoot.transform;
+                    rPad.localPosition = position;
+                    bufferController.bufferModelRight = rPad;
+                }
+                else
+                {
+                    Main.Warning($"No buffer controller, newBufferRig={newBufferRig} {rig.name}");
+                    continue;
+                }
+
+                // Adjust new anchors to match positions in prefab
+                Transform bufferChainRig = rig.Find(CarPartNames.BUFFER_CHAIN_REGULAR);
+
+                foreach (string anchorName in CarPartNames.BUFFER_ANCHORS)
+                {
+                    var anchor = bufferChainRig.Find(anchorName);
+                    var newAnchor = newBufferRig.Find(anchorName);
+
+                    newAnchor.localPosition = anchor.localPosition;
+                }
+
+                // Adjust air hose & MU connector positions
+                if (customHoses)
+                {
+                    var hoseRoot = bufferChainRig.Find(CarPartNames.HOSES_ROOT);
+                    var newHoseRoot = newBufferRig.Find(CarPartNames.HOSES_ROOT);
+
+                    if (hoseRoot.Find(CarPartNames.AIR_HOSE) is Transform airHose)
+                    {
+                        var newAir = newHoseRoot.Find(CarPartNames.AIR_HOSE);
+                        newAir.localPosition = airHose.localPosition;
+                    }
+
+                    if (hoseRoot.Find(CarPartNames.MU_CONNECTOR) is Transform muHose)
+                    {
+                        var newMU = newHoseRoot.Find(CarPartNames.MU_CONNECTOR);
+                        newMU.localPosition = muHose.localPosition;
+                    }
+                }
+            }
+
+            GameObject.Destroy(frontCouplerRig.gameObject);
+            GameObject.Destroy(rearCouplerRig.gameObject);
+
+            return (frontRigPosition, rearRigPosition);
+        }
+
+        #endregion
     }
 
     public class CustomBogieParams

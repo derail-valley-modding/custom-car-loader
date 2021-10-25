@@ -337,8 +337,8 @@ public class ExportTrainCar : EditorWindow
 		jsonfile.AddField(CarJSONKeys.CAR_TYPE, (int)_trainCarSetup.BaseCarType);
 
 		//Bogies
-		jsonfile.AddField(CarJSONKeys.REPLACE_FRONT_BOGIE, _trainCarSetup.ReplaceFrontBogie);
-		if( _trainCarSetup.ReplaceFrontBogie )
+		jsonfile.AddField(CarJSONKeys.REPLACE_FRONT_BOGIE, _trainCarSetup.UseCustomFrontBogie);
+		if( _trainCarSetup.UseCustomFrontBogie )
 		{
 			if( _trainCarSetup.FrontBogie.GetComponent<BogieSetup>() is BogieSetup fbs )
 			{
@@ -346,8 +346,8 @@ public class ExportTrainCar : EditorWindow
 			}
 		}
 
-		jsonfile.AddField(CarJSONKeys.REPLACE_REAR_BOGIE, _trainCarSetup.ReplaceRearBogie);
-		if( _trainCarSetup.ReplaceRearBogie )
+		jsonfile.AddField(CarJSONKeys.REPLACE_REAR_BOGIE, _trainCarSetup.UseCustomRearBogie);
+		if( _trainCarSetup.UseCustomRearBogie )
 		{
 			if( _trainCarSetup.RearBogie.GetComponent<BogieSetup>() is BogieSetup rbs )
 			{

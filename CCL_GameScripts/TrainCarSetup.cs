@@ -50,12 +50,13 @@ namespace CCL_GameScripts
         [Header("Bogie Replacement")]
         public Transform FrontBogie;
         public Transform RearBogie;
-        [InspectorName("Use Custom Front Bogie")]
-        public bool ReplaceFrontBogie;
-        [InspectorName("Use Custom Rear Bogie")]
-        public bool ReplaceRearBogie;
+        public bool UseCustomFrontBogie;
+        public bool UseCustomRearBogie;
         public CapsuleCollider FrontBogieCollider;
         public CapsuleCollider RearBogieCollider;
+
+        public bool UseCustomBuffers = false;
+        public bool UseCustomHosePositions = false;
 
         [Header("Physics")]
         public bool OverridePhysics = false; // override flag 1
