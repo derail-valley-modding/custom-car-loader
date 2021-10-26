@@ -92,6 +92,7 @@
     <Compile Include="LocoComponents\ICabControlAcceptor.cs" />
     <Compile Include="LocoComponents\IFusedLocoController.cs" />
     <Compile Include="LocoComponents\ILocoEventProvider.cs" />
+    <Compile Include="LocoComponents\IndicatorFinalization.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />

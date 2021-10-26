@@ -26,6 +26,7 @@ namespace DVCustomCarLoader
 
 				Application.quitting += AppQuitWatcher.OnAppQuit;
 
+				InitSpecManager.OnStartup();
 				Effects.ParticleInitializer.FetchDefaults();
 				CustomCarManager.Setup();
 

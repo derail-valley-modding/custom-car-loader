@@ -9,8 +9,52 @@ using UnityEngine;
 
 namespace DVCustomCarLoader
 {
+    using SF = KeyValuePair<Type, MethodInfo>;
+
     public static class InitSpecManager
     {
+        public static List<SF> StaticAfterInitMethods =
+            new List<SF>();
+
+        public static void OnStartup()
+        {
+            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                foreach (MethodInfo m in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                {
+                    if (m.GetCustomAttribute<InitSpecAfterInitAttribute>() is InitSpecAfterInitAttribute attribute)
+                    {
+#if DEBUG
+                        Main.Log($"Static After Init Found: {t.Name}.{m.Name}, spec = {attribute.SpecType.Name}");
+#endif
+                        var parameters = m.GetParameters();
+                        if ((parameters.Length == 2) && 
+                            (parameters[0].ParameterType == attribute.SpecType) &&
+                            (typeof(Component).IsAssignableFrom(parameters[1].ParameterType)))
+                        {
+                            // this is not a place of honor
+                            StaticAfterInitMethods.Add(new SF(attribute.SpecType, m));
+                        }
+                        else
+                        {
+                            Main.Error($"Method {t.Name}.{m.Name} has wrong # or type of params for {attribute.SpecType.Name} finalizer");
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void ExecuteStaticAfterInit(ComponentInitSpec spec, Component realComp)
+        {
+            foreach (var sf in StaticAfterInitMethods)
+            {
+                if (sf.Key.IsAssignableFrom(spec.GetType()))
+                {
+                    sf.Value.Invoke(null, new object[] { spec, realComp });
+                }
+            }
+        }
+
         public static Component CreateRealComponent(ComponentInitSpec spec)
         {
             // *All* the reflection
@@ -39,6 +83,8 @@ namespace DVCustomCarLoader
                 MethodInfo finalizeMethod = finalizerType.GetMethod("FinalizeFromSpec");
                 finalizeMethod.Invoke(realComp, new object[] { spec });
             }
+
+            ExecuteStaticAfterInit(spec, realComp);
 
             if (spec.DestroyAfterCreation)
             {
@@ -76,6 +122,8 @@ namespace DVCustomCarLoader
             {
                 finalizer.FinalizeFromSpec(spec);
             }
+
+            ExecuteStaticAfterInit(spec, realComp);
 
             if (spec.DestroyAfterCreation)
             {
@@ -172,5 +220,16 @@ namespace DVCustomCarLoader
     public interface IInitSpecFinalizer<TSpec>
     {
         void FinalizeFromSpec(TSpec spec);
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class InitSpecAfterInitAttribute : Attribute
+    {
+        public Type SpecType;
+
+        public InitSpecAfterInitAttribute(Type specType)
+        {
+            SpecType = specType;
+        }
     }
 }

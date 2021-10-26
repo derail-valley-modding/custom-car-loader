@@ -67,6 +67,7 @@
     <Compile Include="CabControls\GaugeSetup.cs" />
     <Compile Include="CabControls\IndicatorSetupBase.cs" />
     <Compile Include="CabControls\LeverSetup.cs" />
+    <Compile Include="CabControls\LightIndicatorSetup.cs" />
     <Compile Include="CabControls\PullerSetup.cs" />
     <Compile Include="CabControls\RotarySetup.cs" />
     <Compile Include="CabControls\ToggleSetup.cs" />

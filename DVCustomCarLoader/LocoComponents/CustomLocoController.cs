@@ -37,6 +37,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         // Headlights
         public bool HeadlightsOn { get; protected set; } = false;
+        public float GetHeadlightValue() => HeadlightsOn ? 1 : 0;
         public void SetHeadlight( float value )
         {
             bool lastState = HeadlightsOn;
@@ -50,6 +51,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         // Cab Lights
         public bool CabLightsOn { get; protected set; } = false;
+        public float GetCabLightValue() => CabLightsOn ? 1 : 0;
         public void SetCabLight( float value )
         {
             bool lastState = CabLightsOn;
@@ -72,6 +74,12 @@ namespace DVCustomCarLoader.LocoComponents
 
                 case CabIndicatorType.IndependentPipe:
                     return GetTargetIndependentBrake;
+
+                case CabIndicatorType.Headlights:
+                    return GetHeadlightValue;
+
+                case CabIndicatorType.CabLights:
+                    return GetCabLightValue;
 
                 default:
                     return () => 0;

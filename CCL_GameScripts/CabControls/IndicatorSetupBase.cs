@@ -17,6 +17,7 @@ namespace CCL_GameScripts.CabControls
 
     public enum IndicatorType
     {
-        Gauge
+        Gauge,
+        Light
     }
 }

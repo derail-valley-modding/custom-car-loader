@@ -34,6 +34,9 @@
         Amperage,
         IndependentPipe,
         IndependentReservoir,
+
+        Headlights,
+        CabLights,
     }
 
     public enum SimEventType
