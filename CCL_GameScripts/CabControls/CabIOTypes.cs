@@ -37,6 +37,9 @@
 
         Headlights,
         CabLights,
+        LightsForward,
+        LightsReverse,
+        Reverser
     }
 
     public enum SimEventType
@@ -54,8 +57,6 @@
         EngineOn,
         SandDeploy,
         Fan,
-        Headlights,
-        CabLights
     }
 
     public enum SimThresholdDirection

@@ -23,29 +23,24 @@ namespace DVCustomCarLoader.LocoComponents
         }
 
         /// <summary>Gets an event_&lt;T&gt; from the controller</summary>
-        public virtual bool Bind( SimEventType indicatorType, ILocoEventAcceptor listener )
+        public virtual bool TryBind(ILocoEventAcceptor listener)
         {
-            switch( indicatorType )
+            switch (listener.EventType)
             {
                 case SimEventType.Fuel:
-                    FuelChanged.Register(listener.AmountHandler);
-                    return true;
+                    return listener.TryBindGeneric(FuelChanged);
 
                 case SimEventType.Oil:
-                    OilChanged.Register(listener.AmountHandler);
-                    return true;
+                    return listener.TryBindGeneric(OilChanged);
 
                 case SimEventType.Sand:
-                    SandChanged.Register(listener.AmountHandler);
-                    return true;
+                    return listener.TryBindGeneric(SandChanged);
 
                 case SimEventType.Wheelslip:
-                    WheelslipChanged.Register(listener.BoolHandler);
-                    return true;
+                    return listener.TryBindGeneric(WheelslipChanged);
 
                 case SimEventType.Couplers:
-                    CouplingIntegrityChanged.Register(listener.CouplingHandler);
-                    return true;
+                    return listener.TryBindGeneric(CouplingIntegrityChanged);
 
                 default:
                     return false;

@@ -356,6 +356,8 @@ namespace DVCustomCarLoader
                 InitSpecManager.CreateRealComponent(spec);
             }
 
+            newFab.AddComponent<LocoEventManager>();
+
             #endregion
 
             //==============================================================================================================

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public abstract class CustomLocoController : LocoControllerBase, ILocoEventProvider, ICabControlAcceptor
+    public abstract class CustomLocoController : LocoControllerBase, ILocoEventProvider, ICabControlAcceptor, ILocoValueProvider
     {
         public AnimationCurve tractionTorqueCurve;
 
@@ -57,33 +57,6 @@ namespace DVCustomCarLoader.LocoComponents
             bool lastState = CabLightsOn;
             CabLightsOn = value > 0.5f;
             if( lastState ^ CabLightsOn ) CabLightsChanged.Invoke(CabLightsOn);
-        }
-
-        public virtual Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
-        {
-            switch( indicatedType )
-            {
-                case CabIndicatorType.BrakePipe:
-                    return GetBrakePipePressure;
-
-                case CabIndicatorType.BrakeReservoir:
-                    return GetBrakeResPressure;
-
-                case CabIndicatorType.Speed:
-                    return GetSpeedKmH;
-
-                case CabIndicatorType.IndependentPipe:
-                    return GetTargetIndependentBrake;
-
-                case CabIndicatorType.Headlights:
-                    return GetHeadlightValue;
-
-                case CabIndicatorType.CabLights:
-                    return GetCabLightValue;
-
-                default:
-                    return () => 0;
-            }
         }
 
         #region ICabControlAcceptor
@@ -140,16 +113,37 @@ namespace DVCustomCarLoader.LocoComponents
         public event_<bool> HeadlightsChanged;
         public event_<bool> CabLightsChanged;
 
-        public virtual bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
+        public virtual bool TryBind(ILocoEventAcceptor listener)
         {
-            switch( eventType )
+            return false;
+        }
+
+        public virtual bool TryBind(ILocoValueWatcher watcher)
+        {
+            switch (watcher.ValueBinding)
             {
-                case SimEventType.Headlights:
-                    HeadlightsChanged.Register(listener.BoolHandler);
+                case CabIndicatorType.BrakePipe:
+                    watcher.Bind(GetBrakePipePressure);
                     return true;
 
-                case SimEventType.CabLights:
-                    CabLightsChanged.Register(listener.BoolHandler);
+                case CabIndicatorType.BrakeReservoir:
+                    watcher.Bind(GetBrakeResPressure);
+                    return true;
+
+                case CabIndicatorType.Speed:
+                    watcher.Bind(GetSpeedKmH);
+                    return true;
+
+                case CabIndicatorType.IndependentPipe:
+                    watcher.Bind(GetTargetIndependentBrake);
+                    return true;
+
+                case CabIndicatorType.Headlights:
+                    watcher.Bind(GetHeadlightValue);
+                    return true;
+
+                case CabIndicatorType.CabLights:
+                    watcher.Bind(GetCabLightValue);
                     return true;
 
                 default:

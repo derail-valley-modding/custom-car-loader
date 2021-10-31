@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
+using CCL_GameScripts.CabControls;
 using HarmonyLib;
 using UnityEngine;
 
@@ -40,6 +41,24 @@ namespace DVCustomCarLoader
                             Main.Error($"Method {t.Name}.{m.Name} has wrong # or type of params for {attribute.SpecType.Name} finalizer");
                         }
                     }
+                    else if (m.GetCustomAttribute<CopySpecAfterInitAttribute>() is CopySpecAfterInitAttribute copyAfterInit)
+                    {
+#if DEBUG
+                        Main.Log($"Static After Copy Found: {t.Name}.{m.Name}, spec = {copyAfterInit.SpecType.Name}");
+#endif
+                        var parameters = m.GetParameters();
+                        if ((parameters.Length == 2) &&
+                            (parameters[0].ParameterType == copyAfterInit.SpecType) &&
+                            (parameters[1].ParameterType == typeof(GameObject)))
+                        {
+                            // this is not a place of honor
+                            StaticAfterInitMethods.Add(new SF(copyAfterInit.SpecType, m));
+                        }
+                        else
+                        {
+                            Main.Error($"Method {t.Name}.{m.Name} has wrong # or type of params for {copyAfterInit.SpecType.Name} finalizer");
+                        }
+                    }
                 }
             }
         }
@@ -50,7 +69,24 @@ namespace DVCustomCarLoader
             {
                 if (sf.Key.IsAssignableFrom(spec.GetType()))
                 {
+#if DEBUG
+                    Main.Log($"StaticAfterInit {sf.Key.Name} ({spec.GetType().Name}) - {realComp.name}");
+#endif
                     sf.Value.Invoke(null, new object[] { spec, realComp });
+                }
+            }
+        }
+
+        public static void ExecuteStaticAfterCopy(CopiedCabDevice spec, GameObject newObject)
+        {
+            foreach (var sf in StaticAfterInitMethods)
+            {
+                if (sf.Key.IsAssignableFrom(spec.GetType()))
+                {
+#if DEBUG
+                    Main.Log($"StaticAfterCopy {sf.Key.Name} ({spec.GetType().Name}) - {newObject.name}");
+#endif
+                    sf.Value.Invoke(null, new object[] { spec, newObject });
                 }
             }
         }
@@ -228,6 +264,17 @@ namespace DVCustomCarLoader
         public Type SpecType;
 
         public InitSpecAfterInitAttribute(Type specType)
+        {
+            SpecType = specType;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class CopySpecAfterInitAttribute : Attribute
+    {
+        public Type SpecType;
+
+        public CopySpecAfterInitAttribute(Type specType)
         {
             SpecType = specType;
         }

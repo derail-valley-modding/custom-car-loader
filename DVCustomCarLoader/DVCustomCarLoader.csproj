@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL" />
@@ -78,21 +80,21 @@
     <Compile Include="Effects\EngineSmokeEmitter.cs" />
     <Compile Include="Effects\ParticleInitializer.cs" />
     <Compile Include="InitSpecManager.cs" />
+    <Compile Include="LocoComponents\CabControlInitializers.cs" />
     <Compile Include="LocoComponents\CabInputRelay.cs" />
     <Compile Include="LocoComponents\CabinSnapshotSwitcher.cs" />
     <Compile Include="Effects\DrivingAnimation.cs" />
-    <Compile Include="LocoComponents\CustomCabIndicators.cs" />
     <Compile Include="LocoComponents\CustomCabInputController.cs" />
     <Compile Include="LocoComponents\CustomDieselReverserLock.cs" />
     <Compile Include="LocoComponents\CustomFuseController.cs" />
-    <Compile Include="LocoComponents\CustomLampController.cs" />
+    <Compile Include="LocoComponents\DashboardLampRelay.cs" />
     <Compile Include="LocoComponents\CustomLocoAudio.cs" />
     <Compile Include="LocoComponents\CustomLocoAudioDiesel.cs" />
     <Compile Include="LocoComponents\DoorAndWindowTracker.cs" />
     <Compile Include="LocoComponents\ICabControlAcceptor.cs" />
     <Compile Include="LocoComponents\IFusedLocoController.cs" />
-    <Compile Include="LocoComponents\ILocoEventProvider.cs" />
-    <Compile Include="LocoComponents\IndicatorAfterInit.cs" />
+    <Compile Include="LocoComponents\LocoEventManager.cs" />
+    <Compile Include="LocoComponents\IndicatorRelay.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="CarPartConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoadPatches.cs" />
+    <Compile Include="TrainCar_Patches.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CCL_GameScripts\CCL_GameScripts.csproj">

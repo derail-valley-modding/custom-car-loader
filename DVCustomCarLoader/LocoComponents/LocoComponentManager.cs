@@ -111,8 +111,6 @@ namespace DVCustomCarLoader
 
             // add controller/"brain" components
             interior.AddComponent<CustomCabInputController>();
-            interior.AddComponent<CustomCabIndicators>();
-            interior.AddComponent<CustomLampController>();
         }
 
         public static void CreateComponentsFromProxies( GameObject root )
@@ -135,15 +133,6 @@ namespace DVCustomCarLoader
                 }
                 
                 var realComp = InitSpecManager.CreateRealComponent(compSpec);
-
-                // this code would never run, needs revised... use finalizers maybe?
-                //if( (compSpec is IndicatorSetupBase indicatorSpec) && (realComp is GameObject spawnedObj) )
-                //{
-                //    var realIndicator = spawnedObj.GetComponent<Indicator>();
-                //    var indicatorInfo = spawnedObj.AddComponent<IndicatorRelay>();
-                //    indicatorInfo.Type = indicatorSpec.OutputBinding;
-                //    indicatorInfo.Indicator = realIndicator;
-                //}
             }
         }
 
@@ -197,71 +186,7 @@ namespace DVCustomCarLoader
                         }
                     }
 
-                    if( copySpec is CopiedCabInput input )
-                    {
-                        // copy interaction area
-                        var realControlSpec = newControl.GetComponentInChildren<ControlSpec>(true);
-
-                        // try to find interaction area parent
-                        var iAreaField = AccessTools.Field(realControlSpec.GetType(), "nonVrStaticInteractionArea");
-                        if( iAreaField != null )
-                        {
-                            var iArea = iAreaField.GetValue(realControlSpec) as StaticInteractionArea;
-                            if( iArea )
-                            {
-                                GameObject newIAObj = UnityEngine.Object.Instantiate(iArea.gameObject, newControl.transform.parent);
-                                iArea = newIAObj.GetComponent<StaticInteractionArea>();
-                                iAreaField.SetValue(realControlSpec, iArea);
-                                Main.Log("Instantiated static interaction area");
-                            }
-                        }
-
-                        // handle special case of reverser limiter (if copied directly, causes errors)
-                        if( copySpec is CopiedLever lever )
-                        {
-                            if( lever.LeverType == CopiedLeverType.ReverserShunter )
-                            {
-                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiter>(true);
-                                if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
-                                newControl.AddComponent<CustomDieselReverserLock>();
-                            }
-                            else if( lever.LeverType == CopiedLeverType.ReverserDE6 )
-                            {
-                                var reverserLock = newControl.GetComponentInChildren<ReverserLimiterDiesel>(true);
-                                if( reverserLock ) UnityEngine.Object.Destroy(reverserLock);
-                                newControl.AddComponent<CustomDieselReverserLock>();
-                            }
-                        }
-
-                        // Add wrapper to connect the control to the loco brain
-#if DEBUG
-                        Main.Log($"Add input relay to {newControl.name}");
-#endif
-                        var inputRelay = newControl.gameObject.AddComponent<CabInputRelay>();
-                        inputRelay.Binding = input.InputBinding;
-                        inputRelay.MapMin = input.MappedMinimum;
-                        inputRelay.MapMax = input.MappedMaximum;
-                        inputRelay.AbsPosition = input.UseAbsoluteMappedValue;
-                    }
-                    else if( copySpec is CopiedCabIndicator indicator )
-                    {
-                        var realIndicator = newControl.GetComponentInChildren<Indicator>(true);
-                        var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorRelay>();
-                        indicatorInfo.Type = indicator.OutputBinding;
-                        indicatorInfo.Indicator = realIndicator;
-                    }
-                    else if( copySpec is CopiedLamp lamp )
-                    {
-                        var realLamp = newControl.GetComponentInChildren<LampControl>(true);
-                        var lampRelay = newControl.gameObject.AddComponent<DashboardLampRelay>();
-                        lampRelay.SimBinding = lamp.SimBinding;
-                        lampRelay.Lamp = realLamp;
-
-                        lampRelay.ThresholdDirection = lamp.ThresholdDirection;
-                        lampRelay.SolidThreshold = (LocoSimulationEvents.Amount)lamp.SolidThreshold;
-                        lampRelay.UseBlinkMode = lamp.UseBlinkMode;
-                        lampRelay.BlinkThreshold = (LocoSimulationEvents.Amount)lamp.BlinkThreshold;
-                    }
+                    InitSpecManager.ExecuteStaticAfterCopy(copySpec, newControl);
 
                     if( copySpec.ReplaceThisObject )
                     {
@@ -306,21 +231,6 @@ namespace DVCustomCarLoader
         {
             Horn newHorn = prefab.AddComponent<Horn>();
             newHorn.playHornAt = prefab.transform;
-        }
-    }
-
-    [HarmonyPatch(typeof(TrainCar), "LoadInterior")]
-    public static class TrainCar_LoadInterior_Patch
-    {
-        public static void Postfix( GameObject ___loadedInterior )
-        {
-            if (!___loadedInterior) return;
-
-            if( !___loadedInterior.activeSelf )
-            {
-                ___loadedInterior.gameObject.SetActive(true);
-                Main.Log($"Activating interior on {___loadedInterior.gameObject.name}");
-            }
         }
     }
 }

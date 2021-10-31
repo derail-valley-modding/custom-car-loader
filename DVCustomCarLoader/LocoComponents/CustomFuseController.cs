@@ -109,12 +109,11 @@ namespace DVCustomCarLoader.LocoComponents
         //-------------------------------------------------------------------------------------
         #region ILocoEventProvider
 
-        public bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
+        public bool TryBind(ILocoEventAcceptor listener)
         {
-            if( eventType == SimEventType.PowerOn )
+            if( listener.EventType == SimEventType.PowerOn )
             {
-                MasterPowerChanged.Register(listener.BoolHandler);
-                return true;
+                return listener.TryBindGeneric(MasterPowerChanged);
             }
             return false;
         }

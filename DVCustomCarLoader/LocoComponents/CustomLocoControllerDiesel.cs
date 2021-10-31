@@ -68,45 +68,49 @@ namespace DVCustomCarLoader.LocoComponents
 		public event_<bool> SandersChanged;
 		public event_<bool> FanChanged;
 
-        public override bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
+        public override bool TryBind(ILocoEventAcceptor listener)
         {
-			switch( eventType )
+			switch (listener.EventType)
 			{
 				case SimEventType.SandDeploy:
-					SandersChanged.Register(listener.BoolHandler);
-					return true;
+					return listener.TryBindGeneric(SandersChanged);
 
 				case SimEventType.Fan:
-					FanChanged.Register(listener.BoolHandler);
-					return true;
+					return listener.TryBindGeneric(FanChanged);
 			}
-            return base.Bind(eventType, listener);
+            return base.TryBind(listener);
         }
 
-        public override Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
+        public override bool TryBind(ILocoValueWatcher watcher)
         {
-			switch( indicatedType )
+			switch (watcher.ValueBinding)
             {
 				case CabIndicatorType.Fuel:
-					return () => FuelLevel;
+					watcher.Bind(() => FuelLevel);
+					return true;
 
 				case CabIndicatorType.Oil:
-					return () => OilLevel;
+					watcher.Bind(() => OilLevel);
+					return true;
 
 				case CabIndicatorType.Sand:
-					return () => SandLevel;
+					watcher.Bind(() => SandLevel);
+					return true;
 
 				case CabIndicatorType.EngineTemp:
-					return () => EngineTemp;
+					watcher.Bind(() => EngineTemp);
+					return true;
 
 				case CabIndicatorType.EngineRPM:
-					return () => EngineRPMGauge;
+					watcher.Bind(() => EngineRPMGauge);
+					return true;
 
 				case CabIndicatorType.Amperage:
-					return GetAmperage;
+					watcher.Bind(GetAmperage);
+					return true;
 
 				default:
-					return base.GetIndicatorFunc(indicatedType);
+					return base.TryBind(watcher);
 			}
         }
 

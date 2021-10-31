@@ -6,56 +6,16 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public class CustomLampController : MonoBehaviour
-    {
-        protected ILocoEventProvider[] eventProviders;
-        public DashboardLampRelay[] Relays;
-
-        protected virtual void Start()
-        {
-            var car = TrainCar.Resolve(gameObject);
-            if( car == null || !car )
-            {
-                Main.Error($"Couldn't find TrainCar for interior {gameObject.name}");
-                return;
-            }
-
-            eventProviders = 
-                car.gameObject.GetComponentsByInterface<ILocoEventProvider>()
-                .Concat(gameObject.GetComponentsByInterface<ILocoEventProvider>())
-                .ToArray();
-
-            if( eventProviders.Length == 0 )
-            {
-                Main.Error("Couldn't find any event providers for lamp controller");
-                return;
-            }
-
-            Relays = GetComponentsInChildren<DashboardLampRelay>(true);
-
-            Main.Log($"CustomDashboardLamps Start - {Relays.Length} lamps");
-            foreach( var lampController in Relays )
-            {
-                // search for a loco component/event to bind to
-                foreach( var provider in eventProviders )
-                {
-                    if( provider.Bind(lampController.SimBinding, lampController) )
-                    {
-#if DEBUG
-                        Main.Log($"Bind {lampController.name} to {((MonoBehaviour)provider).name}");
-#endif
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    public class DashboardLampRelay : MonoBehaviour, ILocoEventAcceptor
+    public class DashboardLampRelay : MonoBehaviour, 
+        ILocoEventAcceptor<bool>, 
+        ILocoEventAcceptor<LocoSimulationEvents.Amount>,
+        ILocoEventAcceptor<LocoSimulationEvents.CouplingIntegrityInfo>
     {
         protected static AudioClip WarningSound;
 
-        public SimEventType SimBinding;
+        public bool IsBound { get; set; }
+        public bool IsBoundToInterior { get; set; }
+        public SimEventType EventType { get; set; }
         public LampControl Lamp;
 
         public SimThresholdDirection ThresholdDirection;
@@ -63,8 +23,22 @@ namespace DVCustomCarLoader.LocoComponents
         public bool UseBlinkMode;
         public LocoSimulationEvents.Amount BlinkThreshold;
 
-        public Action<LocoSimulationEvents.Amount> AmountHandler => OnAmountChanged;
-        private void OnAmountChanged( LocoSimulationEvents.Amount amount )
+        [CopySpecAfterInit(typeof(CopiedLamp))]
+        public static void FinalizeLampSetup(CopiedLamp spec, GameObject newObject)
+        {
+            var realLamp = newObject.GetComponentInChildren<LampControl>(true);
+            var lampRelay = newObject.AddComponent<DashboardLampRelay>();
+            lampRelay.EventType = spec.SimBinding;
+            lampRelay.Lamp = realLamp;
+
+            lampRelay.ThresholdDirection = spec.ThresholdDirection;
+            lampRelay.SolidThreshold = (LocoSimulationEvents.Amount)spec.SolidThreshold;
+            lampRelay.UseBlinkMode = spec.UseBlinkMode;
+            lampRelay.BlinkThreshold = (LocoSimulationEvents.Amount)spec.BlinkThreshold;
+        }
+
+
+        public void HandleChange(LocoSimulationEvents.Amount amount)
         {
             if( ThresholdDirection == SimThresholdDirection.Above )
             {
@@ -99,8 +73,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-        public Action<bool> BoolHandler => OnBoolChanged;
-        private void OnBoolChanged( bool newValue )
+        public void HandleChange(bool newValue)
         {
             // below, true -> false
             // below, false -> true
@@ -117,8 +90,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-        public Action<LocoSimulationEvents.CouplingIntegrityInfo> CouplingHandler => OnCouplingChanged;
-        private void OnCouplingChanged( LocoSimulationEvents.CouplingIntegrityInfo integrityInfo )
+        public void HandleChange(LocoSimulationEvents.CouplingIntegrityInfo integrityInfo)
         {
             LampControl.LampState state = (integrityInfo == LocoSimulationEvents.CouplingIntegrityInfo.OK) ? 
                 LampControl.LampState.Off : 

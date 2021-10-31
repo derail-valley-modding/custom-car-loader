@@ -49,7 +49,7 @@ namespace DVCustomCarLoader.LocoComponents
         }
 
 		public bool Initialized { get; protected set; } = false;
-		protected Action<float> SetNewValue = null;
+		public event EventHandler<float> ValueChanged;
 		protected Func<float> GetTargetValue = null;
 		private float lastValue;
 
@@ -95,24 +95,38 @@ namespace DVCustomCarLoader.LocoComponents
 			}
 		}
 
-		public void SetIOHandlers( Action<float> onUserInput, Func<float> getFeedback = null )
+		public void SetIOHandlers(Action<float> onUserInput, Func<float> getFeedback = null)
         {
-			SetNewValue = onUserInput;
+			ValueChanged += (s, e) => onUserInput(e);
 			GetTargetValue = getFeedback;
 
 			Initialized = true;
         }
 
+		public void SetIOHandlers(EventHandler<float> onUserInput, Func<float> getFeedback = null)
+        {
+			ValueChanged += onUserInput;
+			GetTargetValue = getFeedback;
+
+			Initialized = true;
+        }
+
+		public void AddListener(EventHandler<float> onUserInput)
+        {
+			ValueChanged += onUserInput;
+			Initialized = true;
+        }
+
 		private void OnValueChanged( ValueChangedEventArgs e )
         {
-			SetNewValue?.Invoke(ControlPositionToBoundValue(e.newValue));
+			ValueChanged?.Invoke(this, ControlPositionToBoundValue(e.newValue));
         }
 
 		private void OnUsed()
         {
 			if( __control is ButtonBase button )
             {
-				SetNewValue?.Invoke(button.IsOn ? MapMin : MapMax);
+				ValueChanged?.Invoke(this, button.IsOn ? MapMin : MapMax);
             }
         }
 
