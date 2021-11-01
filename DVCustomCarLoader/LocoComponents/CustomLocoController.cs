@@ -146,6 +146,10 @@ namespace DVCustomCarLoader.LocoComponents
                     watcher.Bind(GetCabLightValue);
                     return true;
 
+                case CabIndicatorType.Reverser:
+                    watcher.Bind(() => reverser);
+                    return true;
+
                 default:
                     return false;
             }

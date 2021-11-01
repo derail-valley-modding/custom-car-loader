@@ -67,7 +67,7 @@ namespace DVCustomCarLoader.LocoComponents
 
     public static class LocoEventExtensions
     {
-        private static Dictionary<ILocoEventAcceptor, (Type, Delegate)> UnbindActions =
+        private static readonly Dictionary<ILocoEventAcceptor, (Type, Delegate)> UnbindActions =
             new Dictionary<ILocoEventAcceptor, (Type, Delegate)>();
 
         public static void Bind<TVal>(this ILocoEventAcceptor<TVal> acceptor, event_<TVal> e)
@@ -84,14 +84,6 @@ namespace DVCustomCarLoader.LocoComponents
         {
             try
             {
-                //var unbinder = AccessTools.Field(acceptor.GetType(), "UnbindAction");
-                //var handler = AccessTools.Method(acceptor.GetType(), "HandleChange");
-
-                //Type delegateType = unbinder.FieldType.GenericTypeArguments[0];
-                //var handlerDelegate = handler.CreateDelegate(delegateType);
-                //var unbindAction = unbinder.GetValue(acceptor) as Delegate;
-                //unbindAction.DynamicInvoke(handlerDelegate);
-
                 if (UnbindActions.TryGetValue(acceptor, out var unbindInfo))
                 {
                     var handler = AccessTools.Method(acceptor.GetType(), "HandleChange");

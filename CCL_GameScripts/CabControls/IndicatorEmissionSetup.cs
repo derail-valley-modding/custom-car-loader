@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL_GameScripts.CabControls
 {
-    public class LightIndicatorSetup : IndicatorSetupBase
+    public class IndicatorEmissionSetup : IndicatorSetupBase
     {
         public override string TargetTypeName => "IndicatorEmission";
         public override bool DestroyAfterCreation => true;

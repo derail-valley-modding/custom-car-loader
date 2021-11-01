@@ -30,7 +30,7 @@ namespace DVCustomCarLoader
             }
 
             return gameObject.GetComponents<MonoBehaviour>()
-                .Where(comp => comp.GetType().GetInterfaces().Contains(typeof(T)))
+                .Where(comp => comp && comp.GetType().GetInterfaces().Contains(typeof(T)))
                 .Cast<T>();
         }
 
@@ -47,7 +47,7 @@ namespace DVCustomCarLoader
             }
 
             return gameObject.GetComponents<MonoBehaviour>()
-                .FirstOrDefault(comp => comp.GetType().GetInterfaces().Contains(typeof(T)))
+                .FirstOrDefault(comp => comp && comp.GetType().GetInterfaces().Contains(typeof(T)))
                 as T;
         }
 
@@ -64,7 +64,7 @@ namespace DVCustomCarLoader
             }
 
             return gameObject.GetComponentsInChildren<MonoBehaviour>(true)
-                .Where(comp => comp.GetType().GetInterfaces().Contains(typeof(T)))
+                .Where(comp => comp && comp.GetType().GetInterfaces().Contains(typeof(T)))
                 .Cast<T>();
         }
 

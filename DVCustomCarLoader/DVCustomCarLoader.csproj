@@ -77,6 +77,8 @@
   <ItemGroup>
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
+    <Compile Include="Effects\ControllableLight.cs" />
+    <Compile Include="Effects\DirectionalLightController.cs" />
     <Compile Include="Effects\EngineSmokeEmitter.cs" />
     <Compile Include="Effects\ParticleInitializer.cs" />
     <Compile Include="InitSpecManager.cs" />
