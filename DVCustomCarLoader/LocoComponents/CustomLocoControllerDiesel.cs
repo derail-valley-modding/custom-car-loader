@@ -18,22 +18,9 @@ namespace DVCustomCarLoader.LocoComponents
 			CustomDieselSimEvents>,
 		IFusedLocoController
     {
-		private bool fanOn;
-
-		public void SetFan( float value )
-        {
-			bool lastState = fanOn;
-			fanOn = value > 0.5f;
-			if( lastState ^ fanOn ) FanChanged.Invoke(fanOn);
-        }
-
-		public float GetFan() => fanOn ? 1 : 0;
-
 		protected List<CabInputRelay> HornRelays = new List<CabInputRelay>();
 
         public float EngineRPM => sim.engineRPM.value;
-		public float EngineRPMGauge => (sim.engineOn) ? (12.5f + sim.engineRPM.value * 100f) : 0f;
-		public float EngineTemp => sim.engineTemp.value;
 
 		public bool EngineRunning
 		{
@@ -54,64 +41,55 @@ namespace DVCustomCarLoader.LocoComponents
 		public bool CanEngineStart => !EngineRunning && (FuelLevel > 0);
 		public bool AutoStart => autostart;
 
-		public float GetAmperage()
-        {
+
+		private float GetFuel() => sim.fuel.value;
+		private float GetOil() => sim.oil.value;
+		private float GetSandLvl() => sim.sand.value;
+		private bool GetSandersOn() => sim.sandOn;
+		private float GetEngineTemp() => sim.engineTemp.value;
+		private float GetEngineRPMGauge() => sim.engineOn ? (12.5f + sim.engineRPM.value * 100f) : 0f;
+		private float GetAmperage()
+		{
 			float traction = (reverser == 0) ? 0 : GetTractionForce();
 			return 0.00387571f * traction;
 		}
 
-		public float FuelLevel => sim.fuel.value;
-		public float OilLevel => sim.oil.value;
-		public float SandLevel => sim.sand.value;
-		public bool SandersOn => sim.sandOn;
+		protected float _FuelLevel;
+		public float FuelLevel => _FuelLevel;
 
-		public event_<bool> SandersChanged;
-		public event_<bool> FanChanged;
+		protected float _OilLevel;
+		public float OilLevel => _OilLevel;
 
-        public override bool TryBind(ILocoEventAcceptor listener)
+		protected float _SandLevel;
+		public float SandLevel => _SandLevel;
+
+		protected bool _SandersOn;
+		public bool SandersOn => _SandersOn;
+
+		protected float _EngineTemp;
+		public float EngineTemp => _EngineTemp;
+
+		protected float _EngineRPMGauge;
+		public float EngineRPMGauge => _EngineRPMGauge;
+
+		protected float _Amperage;
+		public float Amperage => _Amperage;
+
+
+		protected bool FanOn;
+		public void SetFanControl(float value)
+		{
+			EventManager.UpdateValueDispatchOnChange(this, ref FanOn, value > 0.5f, SimEventType.Fan);
+		}
+
+        private void UpdateWatchables()
         {
-			switch (listener.EventType)
-			{
-				case SimEventType.SandDeploy:
-					return listener.TryBindGeneric(SandersChanged);
-
-				case SimEventType.Fan:
-					return listener.TryBindGeneric(FanChanged);
-			}
-            return base.TryBind(listener);
-        }
-
-        public override bool TryBind(ILocoValueWatcher watcher)
-        {
-			switch (watcher.ValueBinding)
-            {
-				case CabIndicatorType.Fuel:
-					watcher.Bind(() => FuelLevel);
-					return true;
-
-				case CabIndicatorType.Oil:
-					watcher.Bind(() => OilLevel);
-					return true;
-
-				case CabIndicatorType.Sand:
-					watcher.Bind(() => SandLevel);
-					return true;
-
-				case CabIndicatorType.EngineTemp:
-					watcher.Bind(() => EngineTemp);
-					return true;
-
-				case CabIndicatorType.EngineRPM:
-					watcher.Bind(() => EngineRPMGauge);
-					return true;
-
-				case CabIndicatorType.Amperage:
-					watcher.Bind(GetAmperage);
-					return true;
-
-				default:
-					return base.TryBind(watcher);
-			}
+			EventManager.UpdateValueDispatchOnChange(this, ref _FuelLevel, GetFuel(), SimEventType.Fuel);
+			EventManager.UpdateValueDispatchOnChange(this, ref _OilLevel, GetOil(), SimEventType.Oil);
+			EventManager.UpdateValueDispatchOnChange(this, ref _SandLevel, GetSandLvl(), SimEventType.Sand);
+			EventManager.UpdateValueDispatchOnChange(this, ref _EngineTemp, GetEngineTemp(), SimEventType.EngineTemp);
+			EventManager.UpdateValueDispatchOnChange(this, ref _EngineRPMGauge, GetEngineRPMGauge(), SimEventType.EngineRPMGauge);
+			EventManager.UpdateValueDispatchOnChange(this, ref _Amperage, GetAmperage(), SimEventType.Amperage);
         }
 
         public override void RegisterControl( CabInputRelay inputRelay )
@@ -128,7 +106,7 @@ namespace DVCustomCarLoader.LocoComponents
 					break;
 
 				case CabInputType.Fan:
-					inputRelay.SetIOHandlers(SetFan, GetFan);
+					inputRelay.SetIOHandlers(SetFanControl, null);
 					break;
 
 				default:
@@ -165,8 +143,8 @@ namespace DVCustomCarLoader.LocoComponents
 			if( sim.sandOn ^ (value > 0.5f) )
 			{
 				sim.sandOn = (value > 0.5f);
-				SandersChanged.Invoke(sim.sandOn);
 				base.SetSanders(value);
+				EventManager.Dispatch(this, SimEventType.SandDeploy, sim.sandOn);
 			}
 		}
 
@@ -282,6 +260,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         public override void Update()
 		{
+			UpdateWatchables();
 			base.Update();
 			UpdateSimSpeed();
 			UpdateSimThrottle();
@@ -304,11 +283,11 @@ namespace DVCustomCarLoader.LocoComponents
         {
 			if( isAcceptingKeyboardInput )
             {
-				if( KeyBindings.increaseSandKeys.IsDown() && !SandersOn )
+				if( KeyBindings.increaseSandKeys.IsDown() && !sim.sandOn )
                 {
 					SetSanders(1);
                 }
-				if( KeyBindings.decreaseSandKeys.IsDown() && SandersOn )
+				if( KeyBindings.decreaseSandKeys.IsDown() && sim.sandOn )
                 {
 					SetSanders(0);
                 }

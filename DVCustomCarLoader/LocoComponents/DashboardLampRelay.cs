@@ -6,18 +6,15 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public class DashboardLampRelay : MonoBehaviour, 
-        ILocoEventAcceptor<bool>, 
-        ILocoEventAcceptor<LocoSimulationEvents.Amount>,
-        ILocoEventAcceptor<LocoSimulationEvents.CouplingIntegrityInfo>
+    public class DashboardLampRelay : MonoBehaviour, ILocoEventAcceptor
     {
         protected static AudioClip WarningSound;
 
-        public bool IsBound { get; set; }
         public bool IsBoundToInterior { get; set; }
-        public SimEventType EventType { get; set; }
-        public LampControl Lamp;
+        public SimEventType EventType;
+        public SimEventType[] EventTypes => new[] { EventType };
 
+        public LampControl Lamp;
         public SimThresholdDirection ThresholdDirection;
         public LocoSimulationEvents.Amount SolidThreshold;
         public bool UseBlinkMode;
@@ -37,6 +34,21 @@ namespace DVCustomCarLoader.LocoComponents
             lampRelay.BlinkThreshold = (LocoSimulationEvents.Amount)spec.BlinkThreshold;
         }
 
+        public void HandleEvent(LocoEventInfo eventInfo)
+        {
+            if (eventInfo.NewValue is LocoSimulationEvents.Amount newAmount)
+            {
+                HandleChange(newAmount);
+            }
+            else if (eventInfo.NewValue is bool newBool)
+            {
+                HandleChange(newBool);
+            }
+            else if (eventInfo.NewValue is LocoSimulationEvents.CouplingIntegrityInfo newIntegrity)
+            {
+                HandleChange(newIntegrity);
+            }
+        }
 
         public void HandleChange(LocoSimulationEvents.Amount amount)
         {

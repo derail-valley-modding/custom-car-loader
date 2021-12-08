@@ -6,16 +6,8 @@ using System;
 
 namespace DVCustomCarLoader.Effects
 {
-    public class ControllableLight : Indicator, ILocoValueWatcher
+    public class ControllableLight : Indicator
     {
-        public bool IsBound { get; set; }
-        public bool IsBoundToInterior { get; set; }
-
-        [field:SerializeField]
-        public CabIndicatorType ValueBinding { get; set; }
-
-        public Func<float> ValueFunction { get; set; }
-
         public Light[] Lights;
         public float MinLevel = 0;
         public float MaxLevel = 1;
@@ -23,6 +15,7 @@ namespace DVCustomCarLoader.Effects
 
         protected float SmoothedLevel = 0;
         protected float SmoothingVelo = 0;
+        protected float TargetLevel = 0;
 
         public void ApplyNormalizedLevel(float newLevel)
         {
@@ -41,17 +34,6 @@ namespace DVCustomCarLoader.Effects
             ApplyNormalizedLevel(MinLevel);
         }
 
-        protected void Update()
-        {
-            if (Lights.Length == 0)
-            {
-                enabled = false;
-            }
-
-            if (ValueFunction == null) return;
-            value = ValueFunction();
-        }
-
         protected override void OnValueSet()
         {
             if (!Application.isPlaying)
@@ -59,15 +41,19 @@ namespace DVCustomCarLoader.Effects
                 return;
             }
 
-            float newLevel = GetNormalizedValue(true);
+            TargetLevel = GetNormalizedValue(true);
 
             if (Lag == 0)
             {
-                ApplyNormalizedLevel(newLevel);
+                ApplyNormalizedLevel(TargetLevel);
             }
-            else
+        }
+
+        protected void Update()
+        {
+            if (Lag > 0)
             {
-                float smoothedLevel = Mathf.SmoothDamp(SmoothedLevel, newLevel, ref SmoothingVelo, Lag);
+                float smoothedLevel = Mathf.SmoothDamp(SmoothedLevel, TargetLevel, ref SmoothingVelo, Lag);
                 ApplyNormalizedLevel(smoothedLevel);
             }
         }
