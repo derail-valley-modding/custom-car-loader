@@ -6,7 +6,19 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public abstract class CustomLocoSimEvents : LocoSimulationEvents, ILocoEventProvider
     {
+        public LocoEventManager EventManager { get; set; }
         protected const float FUEL_OIL_DMG_CHECK_PERIOD = 5f;
+
+        protected LocoEventWrapper<Amount> SandEvent;
+        protected LocoEventWrapper<bool> WheelslipEvent;
+        protected LocoEventWrapper<CouplingIntegrityInfo> CoupleEvent;
+
+        protected CustomLocoSimEvents()
+        {
+            SandEvent = LocoEventWrapper<Amount>.Create(ref SandChanged, this, SimEventType.Sand);
+            WheelslipEvent = LocoEventWrapper<bool>.Create(ref WheelslipChanged, this, SimEventType.Wheelslip);
+            CoupleEvent = LocoEventWrapper<CouplingIntegrityInfo>.Create(ref CouplingIntegrityChanged, this, SimEventType.Couplers);
+        }
 
         protected virtual void Start()
         {
@@ -20,31 +32,6 @@ namespace DVCustomCarLoader.LocoComponents
             StartCoroutine(CheckTankDamageStateRoutine());
             StartCoroutine(CheckWheelslip(WHEELSLIP_CHECK_PERIOD));
             StartCoroutine(CheckCouplingIntegrity(COUPLING_INTEGRITY_CHECK_PERIOD));
-        }
-
-        /// <summary>Gets an event_&lt;T&gt; from the controller</summary>
-        public virtual bool TryBind(ILocoEventAcceptor listener)
-        {
-            switch (listener.EventType)
-            {
-                case SimEventType.Fuel:
-                    return listener.TryBindGeneric(FuelChanged);
-
-                case SimEventType.Oil:
-                    return listener.TryBindGeneric(OilChanged);
-
-                case SimEventType.Sand:
-                    return listener.TryBindGeneric(SandChanged);
-
-                case SimEventType.Wheelslip:
-                    return listener.TryBindGeneric(WheelslipChanged);
-
-                case SimEventType.Couplers:
-                    return listener.TryBindGeneric(CouplingIntegrityChanged);
-
-                default:
-                    return false;
-            }
         }
 
         private IEnumerator CheckTankDamageStateRoutine()

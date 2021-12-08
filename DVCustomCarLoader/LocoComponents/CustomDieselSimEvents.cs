@@ -27,22 +27,19 @@ namespace DVCustomCarLoader.LocoComponents
 
         private Coroutine OverheatCheckCoroutine;
 
-        public override bool TryBind(ILocoEventAcceptor listener)
+        protected LocoEventWrapper<Amount> FuelEvent;
+        protected LocoEventWrapper<Amount> OilEvent;
+        protected LocoEventWrapper<bool> EngineRunningEvent;
+        protected LocoEventWrapper<Amount> EngineTempEvent;
+        protected LocoEventWrapper<Amount> EngineDamageEvent;
+
+        protected CustomDieselSimEvents()
         {
-            switch (listener.EventType)
-            {
-                case SimEventType.EngineOn:
-                    return listener.TryBindGeneric(EngineRunningChanged);
-
-                case SimEventType.EngineTemp:
-                    return listener.TryBindGeneric(EngineTempChanged);
-
-                case SimEventType.EngineDamage:
-                    return listener.TryBindGeneric(EngineDamageChanged);
-
-                default:
-                    return base.TryBind(listener);
-            }
+            FuelEvent = LocoEventWrapper<Amount>.Create(ref FuelChanged, this, SimEventType.Fuel);
+            OilEvent = LocoEventWrapper<Amount>.Create(ref OilChanged, this, SimEventType.Oil);
+            EngineRunningEvent = LocoEventWrapper<bool>.Create(ref EngineRunningChanged, this, SimEventType.EngineOn);
+            EngineTempEvent = LocoEventWrapper<Amount>.Create(ref EngineTempChanged, this, SimEventType.EngineTemp);
+            EngineDamageEvent = LocoEventWrapper<Amount>.Create(ref EngineDamageChanged, this, SimEventType.EngineDamage);
         }
 
         protected override void InitThresholds()

@@ -8,28 +8,18 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public class IndicatorRelay : MonoBehaviour, ILocoValueWatcher
+    public class IndicatorRelay : MonoBehaviour, ILocoEventAcceptor
     {
-        [field: SerializeField]
-        public CabIndicatorType ValueBinding { get; protected set; }
+        public SimEventType EventType;
+        public SimEventType[] EventTypes => new[] { EventType };
         public Indicator Indicator;
 
-        public bool IsBound { get; set; } = false;
         public bool IsBoundToInterior { get; set; }
-        public Func<float> ValueFunction { get; set; } = null;
 
-        public void Initialize(CabIndicatorType type, Indicator indicator)
+        public void Initialize(SimEventType type, Indicator indicator)
         {
-            ValueBinding = type;
+            EventType = type;
             Indicator = indicator;
-        }
-
-        protected virtual void Update()
-        {
-            if (ValueFunction != null)
-            {
-                Indicator.value = ValueFunction();
-            }
         }
 
         [InitSpecAfterInit(typeof(IndicatorSetupBase))]
@@ -38,6 +28,29 @@ namespace DVCustomCarLoader.LocoComponents
             var spawnedObj = realComp.gameObject;
             var indicatorInfo = spawnedObj.AddComponent<IndicatorRelay>();
             indicatorInfo.Initialize(spec.OutputBinding, realComp);
+        }
+
+        protected float target = 0;
+
+        public void HandleEvent(LocoEventInfo eventInfo)
+        {
+            if (eventInfo.NewValue is float value)
+            {
+                target = value;
+
+                if (Indicator)
+                {
+                    Indicator.value = value;
+                }
+            }
+        }
+
+        protected void Update()
+        {
+            if (Indicator is IndicatorEmission)
+            {
+                Indicator.value = target;
+            }
         }
     }
 }

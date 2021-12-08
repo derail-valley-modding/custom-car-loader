@@ -7,51 +7,49 @@ using System.Collections.Generic;
 
 namespace DVCustomCarLoader.Effects
 {
-    public class DirectionalLightController : MonoBehaviour, ILocoMultiValueWatcher, ILocoValueProvider
+    public class DirectionalLightController : MonoBehaviour, ILocoEventAcceptor, ILocoEventProvider
     {
-        public bool MasterLightState = false;
+        protected CustomLocoController locoController;
+        public LocoEventManager EventManager { get; set; }
+
+        public float MasterLightState = 0;
         public float Direction = 0;
 
-        protected LocoValueBinding[] Bindings = new[]
-        {
-            new LocoValueBinding(CabIndicatorType.Headlights),
-            new LocoValueBinding(CabIndicatorType.Reverser)
-        };
+        public SimEventType[] EventTypes => new[] { SimEventType.Headlights };
 
-        public IEnumerable<ILocoValueWatcher> ValueBindings => Bindings;
+        public float ForwardIntensity { get; private set; }
+        public float ReverseIntensity { get; private set; }
 
-        public float GetForwardLightIntensity()
+        protected void Start()
         {
-            return MasterLightState ? Mathf.InverseLerp(0, 1, Direction) : 0;
-        }
-
-        public float GetReverseLightIntensity()
-        {
-            return MasterLightState ? Mathf.InverseLerp(0, -1, Direction) : 0;
+            locoController = gameObject.GetComponent<CustomLocoController>();
+            if (!locoController) enabled = false;
         }
 
         protected void Update()
         {
-            foreach (var binding in Bindings) binding.GetLatest();
+            Direction = locoController.reverser;
 
-            MasterLightState = Bindings[0].LatestValue > 0.5;
-            Direction = Bindings[1].LatestValue;
+            float fwdLight = Mathf.Lerp(0, MasterLightState, Mathf.InverseLerp(0, 1, Direction));
+            if (fwdLight != ForwardIntensity)
+            {
+                ForwardIntensity = fwdLight;
+                EventManager.Dispatch(this, SimEventType.LightsForward, fwdLight);
+            }
+
+            float revLight = Mathf.Lerp(0, MasterLightState, Mathf.InverseLerp(0, -1, Direction));
+            if (revLight != ReverseIntensity)
+            {
+                ReverseIntensity = revLight;
+                EventManager.Dispatch(this, SimEventType.LightsReverse, revLight);
+            }
         }
 
-        public bool TryBind(ILocoValueWatcher watcher)
+        public void HandleEvent(LocoEventInfo eventInfo)
         {
-            switch (watcher.ValueBinding)
+            if (eventInfo.NewValue is float headlights)
             {
-                case CabIndicatorType.LightsForward:
-                    watcher.Bind(GetForwardLightIntensity);
-                    return true;
-
-                case CabIndicatorType.LightsReverse:
-                    watcher.Bind(GetReverseLightIntensity);
-                    return true;
-
-                default:
-                    return false;
+                MasterLightState = headlights;
             }
         }
     }

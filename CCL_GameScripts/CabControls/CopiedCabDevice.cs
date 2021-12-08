@@ -21,6 +21,6 @@ namespace CCL_GameScripts.CabControls
 
     public abstract class CopiedCabIndicator : CopiedCabDevice
     {
-        public CabIndicatorType OutputBinding;
+        public SimEventType OutputBinding;
     }
 }
