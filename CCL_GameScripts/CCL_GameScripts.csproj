@@ -85,6 +85,7 @@
     <Compile Include="Editor\FBXMeshExtractor.cs" />
     <Compile Include="Editor\FindMissingScripts.cs" />
     <Compile Include="Effects\ControllableLightSetup.cs" />
+    <Compile Include="Effects\AudioConfig.cs" />
     <Compile Include="Effects\DirectionalLightSetup.cs" />
     <Compile Include="Effects\DrivingAnimationSetup.cs" />
     <Compile Include="Effects\SmokeEmissionSetup.cs" />
