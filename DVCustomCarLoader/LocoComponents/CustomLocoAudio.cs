@@ -10,6 +10,13 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public abstract class CustomLocoAudio : LocoTrainAudio
     {
+        private static readonly FieldInfo bogieCountField = AccessTools.Field(typeof(TrainAudio), "usualBogieCount");
+        private int BogieCount
+        {
+            get => (int)bogieCountField.GetValue(this);
+            set => bogieCountField.SetValue(this, value);
+        }
+
         private static readonly FieldInfo bogieAudioField = AccessTools.Field(typeof(TrainAudio), "bogieAudioControllers");
 
         protected override void Awake()
@@ -27,9 +34,15 @@ namespace DVCustomCarLoader.LocoComponents
 
         public override void SetupForCar( TrainCar car )
         {
-            if( !(bogieAudioField?.GetValue(this) is BogieAudioController[] bogieAudios) )
+            if (car.Bogies.Length != BogieCount)
             {
-                Main.Log($"Pre-awaking audio {GetType()}");
+                BogieCount = car.Bogies.Length;
+                Main.Log($"Resetting audio {GetType()} on car {car.ID}");
+                Awake();
+            }
+            else if ( bogieAudioField.GetValue(this) == null )
+            {
+                Main.Log($"Resetting audio {GetType()} on car {car.ID}");
                 Awake();
             }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.LocoComponents.DieselElectric
 {
     public class CustomLocoAudioDiesel : 
         CustomLocoAudio<

@@ -26,6 +26,7 @@ namespace DVCustomCarLoader
 
 				Application.quitting += AppQuitWatcher.OnAppQuit;
 
+				InitSpecManager.OnStartup();
 				Effects.ParticleInitializer.FetchDefaults();
 				CustomCarManager.Setup();
 
@@ -46,21 +47,6 @@ namespace DVCustomCarLoader
             }
 
 			return true;
-		}
-
-		private static void OnCarChanged( TrainCar newCar )
-        {
-#if DEBUG
-			if( newCar && CarTypeInjector.IsCustomTypeRegistered(newCar.carType) )
-            {
-				// diesel autostart
-				var locoController = newCar.gameObject.GetComponent<CustomLocoControllerDiesel>();
-				if( locoController && !locoController.EngineRunning )
-                {
-					locoController.EngineRunning = true;
-                }
-            }
-#endif
 		}
 
 		#region Logging

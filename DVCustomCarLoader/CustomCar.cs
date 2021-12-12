@@ -137,6 +137,9 @@ namespace DVCustomCarLoader
                     newItemsObj.name = CarPartNames.ITEM_COLLIDERS;
                 }
 
+                // set layer
+                walkable.gameObject.SetLayersRecursive("Train_Walkable");
+
                 var boundingColliders = collision.GetComponentsInChildren<BoxCollider>();
                 if( boundingColliders.Length == 0 )
                 {
@@ -352,6 +355,8 @@ namespace DVCustomCarLoader
                 if (spec is TrainCarSetup) continue;
                 InitSpecManager.CreateRealComponent(spec);
             }
+
+            newFab.AddComponent<LocoEventManager>();
 
             #endregion
 

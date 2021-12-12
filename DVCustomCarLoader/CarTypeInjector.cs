@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CCL_GameScripts;
+using CCL_GameScripts.Effects;
 using DV.Logic.Job;
 using DVCustomCarLoader.LocoComponents;
+using DVCustomCarLoader.LocoComponents.DieselElectric;
 using HarmonyLib;
 using UnityEngine;
 
@@ -131,7 +133,7 @@ namespace DVCustomCarLoader
             return null;
         }
 
-        private static GameObject CopyAudioPrefab<TAudio>( GameObject sourcePrefab )
+        private static GameObject CopyAudioPrefab<TAudio>(GameObject sourcePrefab, AudioConfig audioConfig)
             where TAudio : CustomLocoAudio
         {
             GameObject newFab = UnityEngine.Object.Instantiate(sourcePrefab, null);
@@ -150,6 +152,11 @@ namespace DVCustomCarLoader
                 newAudio.carFrictionSound = newFab.GetComponentInChildren<CarFrictionSound>(true);
                 newAudio.carCollisionSounds = newFab.GetComponentInChildren<CarCollisionSounds>(true);
                 newAudio.trainDerailAudio = newFab.GetComponentInChildren<TrainDerailAudio>(true);
+                
+                if (audioConfig)
+                {
+                    InitSpecManager.ApplyProxyFields(audioConfig, newAudio);
+                }
             }
             else
             {
@@ -166,13 +173,15 @@ namespace DVCustomCarLoader
             GameObject sourcePrefab;
             GameObject newPrefab;
 
-            switch( car.LocoAudioType )
+            var audioConfig = car.CarPrefab.GetComponentInChildren<AudioConfig>(true);
+
+            switch (car.LocoAudioType)
             {
                 case LocoAudioBasis.DE2:
                     sourcePrefab = GetPooledAudioPrefab(componentPool, TrainCarType.LocoShunter);
                     if( sourcePrefab )
                     {
-                        newPrefab = CopyAudioPrefab<CustomLocoAudioDiesel>(sourcePrefab);
+                        newPrefab = CopyAudioPrefab<CustomLocoAudioDiesel>(sourcePrefab, audioConfig);
 
                         var newPoolData = new AudioPoolReferences.AudioPoolData()
                         {
@@ -190,7 +199,7 @@ namespace DVCustomCarLoader
                     sourcePrefab = GetPooledAudioPrefab(componentPool, TrainCarType.LocoDiesel);
                     if( sourcePrefab )
                     {
-                        newPrefab = CopyAudioPrefab<CustomLocoAudioDiesel>(sourcePrefab);
+                        newPrefab = CopyAudioPrefab<CustomLocoAudioDiesel>(sourcePrefab, audioConfig);
 
                         var newPoolData = new AudioPoolReferences.AudioPoolData()
                         {

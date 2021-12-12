@@ -7,7 +7,7 @@ namespace CCL_GameScripts.CabControls
         public override bool DestroyAfterCreation => true;
         public abstract IndicatorType IndicatorType { get; }
 
-        public CabIndicatorType OutputBinding;
+        public SimEventType OutputBinding;
 
         [ProxyField("minValue")]
         public float MinValue = 0;
@@ -17,6 +17,7 @@ namespace CCL_GameScripts.CabControls
 
     public enum IndicatorType
     {
-        Gauge
+        Gauge,
+        Light
     }
 }

@@ -12,15 +12,16 @@ namespace DVCustomCarLoader.LocoComponents
     public abstract class CustomLocoController : LocoControllerBase, ILocoEventProvider, ICabControlAcceptor
     {
         public AnimationCurve tractionTorqueCurve;
+        public LocoEventManager EventManager { get; set; }
 
         protected DebtTrackerCustomLoco locoDebt;
         protected CarVisitChecker carVisitChecker;
 
-        public float GetBrakePipePressure() => train.brakeSystem.brakePipePressure;
-        public float GetBrakeResPressure() => train.brakeSystem.mainReservoirPressure;
+        private float GetBrakePipePressure() => train.brakeSystem.brakePipePressure;
+        private float GetBrakeResPressure() => train.brakeSystem.mainReservoirPressure;
 
         private static readonly FieldInfo independentPipeField = AccessTools.Field(typeof(DV.Simulation.Brake.BrakeSystem), "independentPipePressure");
-        public float GetIndependentPressure()
+        private float GetIndependentPressure()
         {
             if( independentPipeField != null )
             {
@@ -36,46 +37,47 @@ namespace DVCustomCarLoader.LocoComponents
         public float GetReverserCabPosition() => (reverser + 1f) / 2f;
 
         // Headlights
-        public bool HeadlightsOn { get; protected set; } = false;
+        protected float _Headlights;
+        public float Headlights => _Headlights;
         public void SetHeadlight( float value )
         {
-            bool lastState = HeadlightsOn;
-            HeadlightsOn = value > 0.5f;
-            if( lastState ^ HeadlightsOn )
+            if( value != Headlights )
             {
                 //headlights.SetActive(HeadlightsOn);
-                HeadlightsChanged.Invoke(HeadlightsOn);
+                EventManager.UpdateValueDispatchOnChange(this, ref _Headlights, value, SimEventType.Headlights);
             }
         }
 
         // Cab Lights
-        public bool CabLightsOn { get; protected set; } = false;
+        protected float _CabLights;
+        public float CabLights => _CabLights;
         public void SetCabLight( float value )
         {
-            bool lastState = CabLightsOn;
-            CabLightsOn = value > 0.5f;
-            if( lastState ^ CabLightsOn ) CabLightsChanged.Invoke(CabLightsOn);
+            if (value != CabLights)
+            {
+                EventManager.UpdateValueDispatchOnChange(this, ref _CabLights, value, SimEventType.CabLights);
+            }
         }
 
-        public virtual Func<float> GetIndicatorFunc( CabIndicatorType indicatedType )
+        protected float _BrakePipePressure;
+        public float BrakePipePressure => _BrakePipePressure;
+
+        protected float _BrakeResPressure;
+        public float BrakeResPressure => _BrakeResPressure;
+
+        protected float _IndependentPressure;
+        public float IndependentPressure => _IndependentPressure;
+
+        protected float Speed;
+
+        public override void Update()
         {
-            switch( indicatedType )
-            {
-                case CabIndicatorType.BrakePipe:
-                    return GetBrakePipePressure;
+            EventManager.UpdateValueDispatchOnChange(this, ref Speed, GetSpeedKmH(), SimEventType.Speed);
+            EventManager.UpdateValueDispatchOnChange(this, ref _BrakePipePressure, GetBrakePipePressure(), SimEventType.BrakePipe);
+            EventManager.UpdateValueDispatchOnChange(this, ref _BrakeResPressure, GetBrakeResPressure(), SimEventType.BrakeReservoir);
+            EventManager.UpdateValueDispatchOnChange(this, ref _IndependentPressure, GetIndependentPressure(), SimEventType.IndependentPipe);
 
-                case CabIndicatorType.BrakeReservoir:
-                    return GetBrakeResPressure;
-
-                case CabIndicatorType.Speed:
-                    return GetSpeedKmH;
-
-                case CabIndicatorType.IndependentPipe:
-                    return GetTargetIndependentBrake;
-
-                default:
-                    return () => 0;
-            }
+            base.Update();
         }
 
         #region ICabControlAcceptor
@@ -123,30 +125,6 @@ namespace DVCustomCarLoader.LocoComponents
                 CabInputType.Headlights,
                 CabInputType.CabLights
             );
-        }
-
-        #endregion
-
-        #region Events
-
-        public event_<bool> HeadlightsChanged;
-        public event_<bool> CabLightsChanged;
-
-        public virtual bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
-        {
-            switch( eventType )
-            {
-                case SimEventType.Headlights:
-                    HeadlightsChanged.Register(listener.BoolHandler);
-                    return true;
-
-                case SimEventType.CabLights:
-                    CabLightsChanged.Register(listener.BoolHandler);
-                    return true;
-
-                default:
-                    return false;
-            }
         }
 
         #endregion

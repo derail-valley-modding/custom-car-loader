@@ -9,6 +9,7 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public class CustomFuseController : MonoBehaviour, ILocoEventProvider, ICabControlAcceptor
     {
+        public LocoEventManager EventManager { get; set; }
         protected IFusedLocoController locoController;
 
         public List<CabInputRelay> SideFuses { get; protected set; } = new List<CabInputRelay>();
@@ -19,8 +20,6 @@ namespace DVCustomCarLoader.LocoComponents
         protected const float SWITCH_THRESHOLD = 0.5f;
         protected const float LATE_INIT_DELAY = 0.5f;
         protected const float MAIN_BREAKER_DELAY = 0.2f;
-
-        public event_<bool> MasterPowerChanged;
 
         protected bool AreAllSideFusesOn()
         {
@@ -40,7 +39,7 @@ namespace DVCustomCarLoader.LocoComponents
 
             MainFuse.Value = relayPos;
 
-            MasterPowerChanged.Invoke(on);
+            EventManager.Dispatch(this, SimEventType.PowerOn, on);
             if( on )
             {
                 TryStarter();
@@ -98,28 +97,13 @@ namespace DVCustomCarLoader.LocoComponents
             yield return WaitFor.SecondsRealtime(MAIN_BREAKER_DELAY);
             if( !AreAllSideFusesOn() )
             {
-                MasterPowerChanged.Invoke(false);
+                EventManager.Dispatch(this, SimEventType.PowerOn, false);
                 MainFuse.Value = 0;
             }
 
             MainFuseOffRoutine = null;
             yield break;
         }
-
-        //-------------------------------------------------------------------------------------
-        #region ILocoEventProvider
-
-        public bool Bind( SimEventType eventType, ILocoEventAcceptor listener )
-        {
-            if( eventType == SimEventType.PowerOn )
-            {
-                MasterPowerChanged.Register(listener.BoolHandler);
-                return true;
-            }
-            return false;
-        }
-
-        #endregion
 
         //-------------------------------------------------------------------------------------
         #region ICabControlAcceptor
@@ -150,12 +134,12 @@ namespace DVCustomCarLoader.LocoComponents
                     }
                     return;
                 }
-                MasterPowerChanged.Invoke(nowOn);
+                EventManager.Dispatch(this, SimEventType.PowerOn, nowOn);
             }
             else
             {
                 // turned off
-                MasterPowerChanged.Invoke(nowOn);
+                EventManager.Dispatch(this, SimEventType.PowerOn, nowOn);
                 KillEngine();
             }
         }

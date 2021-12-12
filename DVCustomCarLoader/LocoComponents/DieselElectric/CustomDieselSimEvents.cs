@@ -2,7 +2,7 @@
 using CCL_GameScripts.CabControls;
 using UnityEngine;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.LocoComponents.DieselElectric
 {
     public class CustomDieselSimEvents :
         CustomLocoSimEvents<CustomLocoSimDiesel, DamageControllerCustomDiesel>
@@ -27,25 +27,19 @@ namespace DVCustomCarLoader.LocoComponents
 
         private Coroutine OverheatCheckCoroutine;
 
-        public override bool Bind( SimEventType indicatorType, ILocoEventAcceptor listener )
+        protected LocoEventWrapper<Amount> FuelEvent;
+        protected LocoEventWrapper<Amount> OilEvent;
+        protected LocoEventWrapper<bool> EngineRunningEvent;
+        protected LocoEventWrapper<Amount> EngineTempEvent;
+        protected LocoEventWrapper<Amount> EngineDamageEvent;
+
+        protected CustomDieselSimEvents()
         {
-            switch( indicatorType )
-            {
-                case SimEventType.EngineOn:
-                    EngineRunningChanged.Register(listener.BoolHandler);
-                    return true;
-
-                case SimEventType.EngineTemp:
-                    EngineTempChanged.Register(listener.AmountHandler);
-                    return true;
-
-                case SimEventType.EngineDamage:
-                    EngineDamageChanged.Register(listener.AmountHandler);
-                    return true;
-
-                default:
-                    return base.Bind(indicatorType, listener);
-            }
+            FuelEvent = LocoEventWrapper<Amount>.Create(ref FuelChanged, this, SimEventType.Fuel);
+            OilEvent = LocoEventWrapper<Amount>.Create(ref OilChanged, this, SimEventType.Oil);
+            EngineRunningEvent = LocoEventWrapper<bool>.Create(ref EngineRunningChanged, this, SimEventType.EngineOn);
+            EngineTempEvent = LocoEventWrapper<Amount>.Create(ref EngineTempChanged, this, SimEventType.EngineTemp);
+            EngineDamageEvent = LocoEventWrapper<Amount>.Create(ref EngineDamageChanged, this, SimEventType.EngineDamage);
         }
 
         protected override void InitThresholds()

@@ -20,22 +20,6 @@
         CabLights
     }
 
-    public enum CabIndicatorType
-    {
-        None,
-        BrakePipe,
-        BrakeReservoir,
-        EngineTemp,
-        Fuel,
-        Oil,
-        Sand,
-        Speed,
-        EngineRPM,
-        Amperage,
-        IndependentPipe,
-        IndependentReservoir,
-    }
-
     public enum SimEventType
     {
         None,
@@ -51,8 +35,20 @@
         EngineOn,
         SandDeploy,
         Fan,
+
+        BrakePipe,
+        BrakeReservoir,
+        IndependentPipe,
+        IndependentReservoir,
+        Speed,
+        EngineRPM,
+        EngineRPMGauge,
+
         Headlights,
-        CabLights
+        CabLights,
+        LightsForward,
+        LightsReverse,
+        Amperage,
     }
 
     public enum SimThresholdDirection

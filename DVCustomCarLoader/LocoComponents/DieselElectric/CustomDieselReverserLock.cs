@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using DV.CabControls.NonVR;
 using UnityEngine;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.LocoComponents.DieselElectric
 {
     public class CustomDieselReverserLock : MonoBehaviour
     {

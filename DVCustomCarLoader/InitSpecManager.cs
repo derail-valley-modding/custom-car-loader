@@ -4,13 +4,93 @@ using System.Linq;
 using System.Reflection;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
+using CCL_GameScripts.CabControls;
 using HarmonyLib;
 using UnityEngine;
 
 namespace DVCustomCarLoader
 {
+    using SF = KeyValuePair<Type, MethodInfo>;
+
     public static class InitSpecManager
     {
+        public static List<SF> StaticAfterInitMethods =
+            new List<SF>();
+
+        public static void OnStartup()
+        {
+            foreach (Type t in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                foreach (MethodInfo m in t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                {
+                    if (m.GetCustomAttribute<InitSpecAfterInitAttribute>() is InitSpecAfterInitAttribute attribute)
+                    {
+#if DEBUG
+                        Main.Log($"Static After Init Found: {t.Name}.{m.Name}, spec = {attribute.SpecType.Name}");
+#endif
+                        var parameters = m.GetParameters();
+                        if ((parameters.Length == 2) && 
+                            (parameters[0].ParameterType == attribute.SpecType) &&
+                            (typeof(Component).IsAssignableFrom(parameters[1].ParameterType)))
+                        {
+                            // this is not a place of honor
+                            StaticAfterInitMethods.Add(new SF(attribute.SpecType, m));
+                        }
+                        else
+                        {
+                            Main.Error($"Method {t.Name}.{m.Name} has wrong # or type of params for {attribute.SpecType.Name} finalizer");
+                        }
+                    }
+                    else if (m.GetCustomAttribute<CopySpecAfterInitAttribute>() is CopySpecAfterInitAttribute copyAfterInit)
+                    {
+#if DEBUG
+                        Main.Log($"Static After Copy Found: {t.Name}.{m.Name}, spec = {copyAfterInit.SpecType.Name}");
+#endif
+                        var parameters = m.GetParameters();
+                        if ((parameters.Length == 2) &&
+                            (parameters[0].ParameterType == copyAfterInit.SpecType) &&
+                            (parameters[1].ParameterType == typeof(GameObject)))
+                        {
+                            // this is not a place of honor
+                            StaticAfterInitMethods.Add(new SF(copyAfterInit.SpecType, m));
+                        }
+                        else
+                        {
+                            Main.Error($"Method {t.Name}.{m.Name} has wrong # or type of params for {copyAfterInit.SpecType.Name} finalizer");
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void ExecuteStaticAfterInit(ComponentInitSpec spec, Component realComp)
+        {
+            foreach (var sf in StaticAfterInitMethods)
+            {
+                if (sf.Key.IsAssignableFrom(spec.GetType()))
+                {
+#if DEBUG
+                    Main.Log($"StaticAfterInit {sf.Key.Name} ({spec.GetType().Name}) - {realComp.name}");
+#endif
+                    sf.Value.Invoke(null, new object[] { spec, realComp });
+                }
+            }
+        }
+
+        public static void ExecuteStaticAfterCopy(CopiedCabDevice spec, GameObject newObject)
+        {
+            foreach (var sf in StaticAfterInitMethods)
+            {
+                if (sf.Key.IsAssignableFrom(spec.GetType()))
+                {
+#if DEBUG
+                    Main.Log($"StaticAfterCopy {sf.Key.Name} ({spec.GetType().Name}) - {newObject.name}");
+#endif
+                    sf.Value.Invoke(null, new object[] { spec, newObject });
+                }
+            }
+        }
+
         public static Component CreateRealComponent(ComponentInitSpec spec)
         {
             // *All* the reflection
@@ -39,6 +119,8 @@ namespace DVCustomCarLoader
                 MethodInfo finalizeMethod = finalizerType.GetMethod("FinalizeFromSpec");
                 finalizeMethod.Invoke(realComp, new object[] { spec });
             }
+
+            ExecuteStaticAfterInit(spec, realComp);
 
             if (spec.DestroyAfterCreation)
             {
@@ -76,6 +158,8 @@ namespace DVCustomCarLoader
             {
                 finalizer.FinalizeFromSpec(spec);
             }
+
+            ExecuteStaticAfterInit(spec, realComp);
 
             if (spec.DestroyAfterCreation)
             {
@@ -172,5 +256,27 @@ namespace DVCustomCarLoader
     public interface IInitSpecFinalizer<TSpec>
     {
         void FinalizeFromSpec(TSpec spec);
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class InitSpecAfterInitAttribute : Attribute
+    {
+        public Type SpecType;
+
+        public InitSpecAfterInitAttribute(Type specType)
+        {
+            SpecType = specType;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class CopySpecAfterInitAttribute : Attribute
+    {
+        public Type SpecType;
+
+        public CopySpecAfterInitAttribute(Type specType)
+        {
+            SpecType = specType;
+        }
     }
 }
