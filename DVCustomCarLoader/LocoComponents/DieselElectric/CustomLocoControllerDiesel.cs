@@ -9,7 +9,7 @@ using DV.ServicePenalty;
 using DV.Util.EventWrapper;
 using UnityEngine;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.LocoComponents.DieselElectric
 {
     public class CustomLocoControllerDiesel : 
 		CustomLocoController<

@@ -6,6 +6,7 @@ using CCL_GameScripts.CabControls;
 using DV.CabControls.Spec;
 using DV.MultipleUnit;
 using DVCustomCarLoader.LocoComponents;
+using DVCustomCarLoader.LocoComponents.DieselElectric;
 using HarmonyLib;
 using UnityEngine;
 

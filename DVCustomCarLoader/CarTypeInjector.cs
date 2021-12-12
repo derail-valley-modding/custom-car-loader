@@ -7,6 +7,7 @@ using CCL_GameScripts;
 using CCL_GameScripts.Effects;
 using DV.Logic.Job;
 using DVCustomCarLoader.LocoComponents;
+using DVCustomCarLoader.LocoComponents.DieselElectric;
 using HarmonyLib;
 using UnityEngine;
 

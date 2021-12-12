@@ -2,7 +2,7 @@
 using CCL_GameScripts.CabControls;
 using UnityEngine;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.LocoComponents.DieselElectric
 {
     public class CustomDieselSimEvents :
         CustomLocoSimEvents<CustomLocoSimDiesel, DamageControllerCustomDiesel>

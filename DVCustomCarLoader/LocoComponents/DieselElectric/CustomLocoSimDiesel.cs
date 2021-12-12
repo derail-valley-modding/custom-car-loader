@@ -9,7 +9,7 @@ using UnityEngine;
 using CCL_GameScripts;
 using DV.ServicePenalty;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.LocoComponents.DieselElectric
 {
     public class CustomLocoSimDiesel : 
 		CustomLocoSimulation<SimParamsDiesel, DamageControllerCustomDiesel>

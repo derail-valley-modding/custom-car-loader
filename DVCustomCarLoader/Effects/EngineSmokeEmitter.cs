@@ -2,6 +2,7 @@
 using UnityEngine;
 using CCL_GameScripts.Effects;
 using DVCustomCarLoader.LocoComponents;
+using DVCustomCarLoader.LocoComponents.DieselElectric;
 
 namespace DVCustomCarLoader.Effects
 {

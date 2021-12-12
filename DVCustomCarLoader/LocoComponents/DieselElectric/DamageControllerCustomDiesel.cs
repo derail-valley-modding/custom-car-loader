@@ -7,7 +7,7 @@ using DV.ServicePenalty;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.LocoComponents.DieselElectric
 {
     public class DamageControllerCustomDiesel : DamageControllerCustomLoco<
             CustomLocoControllerDiesel,
