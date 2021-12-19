@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CCL_GameScripts;
 using CCL_GameScripts.Effects;
 using DV.Logic.Job;
+using DV.RenderTextureSystem.BookletRender;
 using DVCustomCarLoader.LocoComponents;
 using DVCustomCarLoader.LocoComponents.DieselElectric;
 using HarmonyLib;
@@ -26,8 +27,13 @@ namespace DVCustomCarLoader
         private static readonly Dictionary<TrainCarType, CustomCar> carTypeToCustomCar = new Dictionary<TrainCarType, CustomCar>();
 
         public static bool TryGetCarTypeById( string id, out TrainCarType type ) => idToCarType.TryGetValue(id.ToLower(), out type);
+        public static TrainCarType CarTypeById(string id) => idToCarType[id];
+
         public static bool TryGetCustomCarByType( TrainCarType carType, out CustomCar car ) => carTypeToCustomCar.TryGetValue(carType, out car);
+        public static CustomCar CustomCarByType(TrainCarType carType) => carTypeToCustomCar[carType];
+
         public static bool TryGetCustomCarById( string id, out CustomCar car ) => idToCustomCar.TryGetValue(id.ToLower(), out car);
+        public static CustomCar CustomCarById(string id) => idToCustomCar[id];
 
         public static bool IsCustomTypeRegistered( TrainCarType carType ) => carTypeToCustomCar.ContainsKey(carType);
         public static bool IsCustomTypeRegistered( string identifier ) => idToCarType.ContainsKey(identifier);
@@ -37,7 +43,9 @@ namespace DVCustomCarLoader
         // Reflected fields
         private static readonly HashSet<TrainCarType> locomotivesMap;
         private static readonly HashSet<TrainCarType> multipleUnitLocos;
-        private static readonly Dictionary<TrainCarType, CargoContainerType> CarTypeToContainerType;
+        private static Dictionary<TrainCarType, CargoContainerType> CarTypeToContainerType => CargoTypes.CarTypeToContainerType;
+        private static readonly Dictionary<TrainCarType, float> carTypeToFullDamagePrice;
+        private static Dictionary<TrainCarType, float> trainCarTypeToLength;
 
         static CarTypeInjector()
         {
@@ -53,11 +61,28 @@ namespace DVCustomCarLoader
                 Main.Error("Failed to get CarTypes.multipleUnitLocos");
             }
 
-            CarTypeToContainerType = AccessTools.Field(typeof(CargoTypes), nameof(CargoTypes.CarTypeToContainerType))?.GetValue(null)
-                as Dictionary<TrainCarType, CargoContainerType>;
-            if( CarTypeToContainerType == null )
+            carTypeToFullDamagePrice = AccessTools.Field(typeof(ResourceTypes), "carTypeToFullDamagePrice")?.GetValue(null)
+                as Dictionary<TrainCarType, float>;
+            if (carTypeToFullDamagePrice == null)
             {
-                Main.Error("Failed to get CargoTypes.CarTypeToContainerType");
+                Main.Error("Failed to get ResourceTypes.carTypeToFullDamagePrice");
+            }
+        }
+
+        public static void InjectYardTracksOrganizer(YardTracksOrganizer yto)
+        {
+            trainCarTypeToLength = AccessTools.Field(typeof(YardTracksOrganizer), "trainCarTypeToLength")?.GetValue(yto)
+                as Dictionary<TrainCarType, float>;
+
+            if (trainCarTypeToLength == null)
+            {
+                Main.Error("Failed to get YardTracksOrganizer.trainCarTypeToLength");
+                return;
+            }
+
+            foreach (CustomCar car in CustomCarManager.CustomCarTypes)
+            {
+                trainCarTypeToLength.Add(car.CarType, car.InterCouplerDistance);
             }
         }
 
@@ -116,6 +141,21 @@ namespace DVCustomCarLoader
             }
 
             CarTypeToContainerType.Add(car.CarType, car.CargoClass);
+            carTypeToFullDamagePrice.Add(car.CarType, car.FullDamagePrice);
+
+            // setup booklet sprite
+            if (car.BookletSprite)
+            {
+                IconsSpriteMap.carTypeToSpriteIcon.Add(car.CarType, car.BookletSprite);
+            }
+            else
+            {
+                if (IconsSpriteMap.carTypeToSpriteIcon.TryGetValue(car.BaseCarType, out var baseSprite))
+                {
+                    car.BookletSprite = baseSprite;
+                    IconsSpriteMap.carTypeToSpriteIcon.Add(car.CarType, baseSprite);
+                }
+            }
         }
 
         #region Audio Pooling
@@ -222,6 +262,8 @@ namespace DVCustomCarLoader
         #endregion
     }
 
+    #region Car Types Patches
+
     [HarmonyPatch(typeof(CarTypes), nameof(CarTypes.GetCarPrefab))]
     public static class CarTypes_GetCarPrefab_Patch
     {
@@ -315,6 +357,36 @@ namespace DVCustomCarLoader
         }
     }
 
+    #endregion
+
+    [HarmonyPatch(typeof(CargoTypes), nameof(CargoTypes.GetTrainCarTypesThatAreSpecificContainerType))]
+    public static class CargoTypes_GetCarsByContainer_Patch
+    {
+        public static void Postfix(ref List<TrainCarType> __result)
+        {
+            if (Main.Settings.PreferCustomCarsForJobs)
+            {
+                // override all base types
+                if (__result.Any(CarTypeInjector.IsInCustomRange))
+                {
+                    __result = __result.Where(CarTypeInjector.IsInCustomRange).ToList();
+                }
+            }
+            else
+            {
+                // only override individual cars
+                var overridden = __result
+                    .Where(CarTypeInjector.IsInCustomRange)
+                    .Select(CarTypeInjector.CustomCarByType)
+                    .Where(car => car.ReplaceBaseType)
+                    .Select(car => car.BaseCarType)
+                    .ToHashSet();
+
+                __result = __result.Where(ct => !overridden.Contains(ct)).ToList();
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(TrainComponentPool), "Awake")]
     public static class TrainComponentPool_Awake_Patch
     {
@@ -326,6 +398,15 @@ namespace DVCustomCarLoader
             {
                 CarTypeInjector.InjectLocoAudioToPool(car, __instance);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(YardTracksOrganizer), "Awake")]
+    public static class YardTracksOrganizer_Awake_Patch
+    {
+        public static void Postfix(YardTracksOrganizer __instance)
+        {
+            CarTypeInjector.InjectYardTracksOrganizer(__instance);
         }
     }
 }

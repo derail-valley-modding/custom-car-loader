@@ -9,28 +9,6 @@ namespace DVCustomCarLoader
     public static class CustomCarManager
     {
         public static List<CustomCar> CustomCarTypes = new List<CustomCar>();
-
-        //private static readonly Dictionary<TrainCar, string> SpawnedCustomCarIds = new Dictionary<TrainCar, string>();
-
-        //public static bool IsRegisteredCustomCar( TrainCar trainCar )
-        //{
-        //    return SpawnedCustomCarIds.ContainsKey(trainCar);
-        //}
-
-        //public static bool TryGetCustomCarId( TrainCar trainCar, out string id )
-        //{
-        //    return SpawnedCustomCarIds.TryGetValue(trainCar, out id);
-        //}
-
-        //public static void RegisterSpawnedCar( TrainCar car, string identifier )
-        //{
-        //    SpawnedCustomCarIds[car] = identifier;
-        //}
-
-        //public static void DeregisterCar( TrainCar car )
-        //{
-        //    SpawnedCustomCarIds.Remove(car);
-        //}
         
         public static void Setup()
         {

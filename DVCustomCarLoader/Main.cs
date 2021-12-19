@@ -12,10 +12,16 @@ namespace DVCustomCarLoader
 		public static UnityModManager.ModEntry ModEntry;
 		public static bool Enabled;
 
+		public static CCLSettings Settings { get; private set; }
+
 		public static bool Load(UnityModManager.ModEntry modEntry)
 		{
 			Enabled = modEntry.Enabled;
 			ModEntry = modEntry;
+
+			Settings = UnityModManager.ModSettings.Load<CCLSettings>(ModEntry);
+			ModEntry.OnGUI = DrawGUI;
+			ModEntry.OnSaveGUI = SaveGUI;
 
 			Harmony harmony = null;
 
@@ -47,6 +53,16 @@ namespace DVCustomCarLoader
             }
 
 			return true;
+		}
+
+		static void DrawGUI(UnityModManager.ModEntry entry)
+		{
+			Settings.Draw(entry);
+		}
+
+		static void SaveGUI(UnityModManager.ModEntry entry)
+		{
+			Settings.Save(entry);
 		}
 
 		#region Logging
