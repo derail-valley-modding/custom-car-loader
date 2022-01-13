@@ -32,6 +32,8 @@ namespace CCL_GameScripts.CabControls
         public float rigidBodyDrag = 15f;
 
         // TODO: Custom connection anchor?
+        [ProxyField]
+        public Transform pivot;
 
         [ProxyComponent("nonVrStaticInteractionArea", "StaticInteractionArea")]
         public GameObject StaticInteractionArea = null;

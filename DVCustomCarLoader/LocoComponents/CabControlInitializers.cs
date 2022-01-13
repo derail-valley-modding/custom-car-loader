@@ -73,5 +73,14 @@ namespace DVCustomCarLoader.LocoComponents
             var indicatorInfo = realIndicator.gameObject.AddComponent<IndicatorRelay>();
             indicatorInfo.Initialize(spec.OutputBinding, realIndicator);
         }
+
+        [InitSpecAfterInit(typeof(PullerSetup))]
+        public static void FinalizeCustomPuller(PullerSetup spec, Puller realPuller)
+        {
+            if (realPuller && !realPuller.pivot)
+            {
+                realPuller.pivot = realPuller.transform.parent ? realPuller.transform.parent : realPuller.transform;
+            }
+        }
     }
 }
