@@ -99,6 +99,10 @@
     <Compile Include="LocoComponents\LocoEventManager.cs" />
     <Compile Include="LocoComponents\IndicatorRelay.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
+    <Compile Include="LocoComponents\Steam\CustomDamageControllerSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoControllerSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoSimEventsSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoSimSteam.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />
