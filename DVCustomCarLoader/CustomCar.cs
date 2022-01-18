@@ -326,23 +326,9 @@ namespace DVCustomCarLoader
                 LocoType = simParams.SimType;
                 LocoAudioType = simParams.AudioType;
                 RequiredLicense = simParams.RequiredLicense;
-
-                if( carSetup.InteriorPrefab )
-                {
-                    GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
-                    interiorFab.SetActive(false);
-                    Object.DontDestroyOnLoad(interiorFab);
-
-                    LocoComponentManager.SetupCabComponents(interiorFab, simParams.SimType);
-                    interiorFab.SetLayersRecursive("Interactable");
-
-                    interiorFab.AddComponent<DoorAndWindowTracker>();
-
-                    newCar.interiorPrefab = interiorFab;
-                    InteriorPrefab = interiorFab;
-                }
             }
-            else if( carSetup.InteriorPrefab )
+            
+            if( carSetup.InteriorPrefab )
             {
                 GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
                 interiorFab.SetActive(false);
@@ -351,6 +337,8 @@ namespace DVCustomCarLoader
                 LocoComponentManager.CreateComponentsFromProxies(interiorFab);
                 LocoComponentManager.CreateCopiedControls(interiorFab);
                 interiorFab.SetLayersRecursive("Interactable");
+
+                LocoComponentManager.MakeDoorsCollidable(interiorFab);
 
                 interiorFab.AddComponent<DoorAndWindowTracker>();
 

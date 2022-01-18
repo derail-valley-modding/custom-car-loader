@@ -6,24 +6,18 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public class CustomLocoPitStopParams : CarPitStopParametersBase
     {
-        private DamageControllerCustomLoco dmgController;
-        private CustomLocoSimulation sim;
-
+        private IServicePenaltyProvider[] providers;
         private PitStopRefillable[] refillables;
 
-        public void Initialize( CustomLocoSimulation sim, DamageControllerCustomLoco dmg )
+        public void Initialize(params IServicePenaltyProvider[] pitStopProviders)
         {
-            this.sim = sim;
-            dmgController = dmg;
+            providers = pitStopProviders;
             InitPitStopParameters();
         }
 
         protected override void InitPitStopParameters()
         {
-            refillables = 
-                sim.GetPitStopParameters()
-                .Concat(dmgController.GetPitStopParameters())
-                .ToArray();
+            refillables = providers.SelectMany(p => p.GetPitStopParameters()).ToArray();
 
             carPitStopParameters = refillables.ToDictionary(
                 r => r.ResourceType,

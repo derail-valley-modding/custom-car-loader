@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
 using CCL_GameScripts.CabControls;
+using DV.CabControls;
 using DV.CabControls.Spec;
 using DV.MultipleUnit;
 using DVCustomCarLoader.LocoComponents;
 using DVCustomCarLoader.LocoComponents.DieselElectric;
+using DVCustomCarLoader.LocoComponents.Steam;
 using HarmonyLib;
 using UnityEngine;
 
@@ -20,6 +25,10 @@ namespace DVCustomCarLoader
             {
                 case LocoParamsType.DieselElectric:
                     AddDieselSimulation(prefab, (SimParamsDiesel)simParams);
+                    break;
+
+                case LocoParamsType.Steam:
+                    AddSteamSimulation(prefab, (SimParamsSteam)simParams);
                     break;
 
                 default:
@@ -89,6 +98,25 @@ namespace DVCustomCarLoader
             locoController.drivingForce = drivingForce;
 
             Main.Log($"Added diesel electric simulation to {prefab.name}");
+        }
+
+        public static void AddSteamSimulation(GameObject prefab, SimParamsSteam simParams)
+        {
+            // add brake compressor, rate is set in controller start
+            var train = prefab.GetComponent<TrainCar>();
+            train.hasCompressor = simParams.AirCompressorRate > 0;
+
+            var drivingForce = prefab.AddComponent<DrivingForce>();
+            ApplyDrivingForceParams(drivingForce, simParams);
+
+            prefab.AddComponent<CustomLocoSimSteam>();
+            prefab.AddComponent<CustomLocoSimEventsSteam>();
+            prefab.AddComponent<CustomDamageControllerSteam>();
+
+            var locoController = prefab.AddComponent<CustomLocoControllerSteam>();
+            locoController.drivingForce = drivingForce;
+
+            Main.Log($"Added steam simulation to {prefab.name}");
         }
 
         private static void ApplyDrivingForceParams( DrivingForce driver, SimParamsBase simParams )
@@ -232,6 +260,31 @@ namespace DVCustomCarLoader
         {
             Horn newHorn = prefab.AddComponent<Horn>();
             newHorn.playHornAt = prefab.transform;
+        }
+
+        public static void MakeDoorsCollidable(GameObject prefab)
+        {
+            var doors = prefab.GetComponentsInChildren<LeverSetup>()
+                .Where(l => l.TrackAsDoor);
+
+            foreach (var door in doors)
+            {
+                var collider = door.gameObject.GetComponentInChildren<BoxCollider>();
+                if (collider)
+                {
+                    var playerCollideRoot = new GameObject("playerCollision");
+                    playerCollideRoot.transform.parent = collider.transform.parent;
+                    playerCollideRoot.transform.localPosition = collider.transform.localPosition;
+                    playerCollideRoot.transform.localRotation = collider.transform.localRotation;
+                    playerCollideRoot.transform.localScale = collider.transform.localScale;
+
+                    var playerCollide = playerCollideRoot.AddComponent<BoxCollider>();
+                    playerCollide.center = collider.center;
+                    playerCollide.size = collider.size;
+
+                    playerCollideRoot.SetLayersRecursive("Train_Walkable");
+                }
+            }
         }
     }
 }

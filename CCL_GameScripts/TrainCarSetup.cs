@@ -47,6 +47,8 @@ namespace CCL_GameScripts
         public BaseCargoContainerType CargoClass = BaseCargoContainerType.None;
 
         public GameObject InteriorPrefab;
+        [ProxyField]
+        public bool keepInteriorLoaded = false;
         public Sprite BookletSprite = null;
 
         public float FullDamagePrice = 10000f;

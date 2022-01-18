@@ -17,7 +17,16 @@
         Sand,
         Fan,
         Headlights,
-        CabLights
+        CabLights,
+
+        Blower,
+        Damper,
+        Injector,
+        WaterDump,
+        SteamDump,
+        Whistle,
+        FireDoor,
+        Stoker
     }
 
     public enum SimEventType
@@ -49,6 +58,14 @@
         LightsForward,
         LightsReverse,
         Amperage,
+
+        FireTemp,
+        WaterLevel,
+        BoilerPressure,
+        FireboxLevel,
+        Cutoff,
+        InjectorFlow,
+        StokerFlow
     }
 
     public enum SimThresholdDirection

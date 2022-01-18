@@ -34,6 +34,11 @@ namespace DVCustomCarLoader.LocoComponents
             StartCoroutine(CheckCouplingIntegrity(COUPLING_INTEGRITY_CHECK_PERIOD));
         }
 
+        protected virtual void OnDisable()
+        {
+            StopAllCoroutines();
+        }
+
         private IEnumerator CheckTankDamageStateRoutine()
         {
             WaitForSeconds waitTimeout = WaitFor.Seconds(FUEL_OIL_DMG_CHECK_PERIOD);

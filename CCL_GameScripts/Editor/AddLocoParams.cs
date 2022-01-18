@@ -89,6 +89,22 @@ public class AddLocoParams : EditorWindow
                 dmgConfig.ApplyShunterDefaults();
             }
         }
+        else if (LocoType == LocoSimTemplate.SH282)
+        {
+            SimParamsSteam simParams = obj.GetComponent<SimParamsSteam>();
+            if (!simParams)
+            {
+                simParams = obj.AddComponent<SimParamsSteam>();
+            }
+
+            DamageConfigBasic dmgConfig = obj.GetComponent<DamageConfigBasic>();
+            if (!dmgConfig)
+            {
+                dmgConfig = obj.AddComponent<DamageConfigBasic>();
+            }
+
+            
+        }
     }
 
     #endregion

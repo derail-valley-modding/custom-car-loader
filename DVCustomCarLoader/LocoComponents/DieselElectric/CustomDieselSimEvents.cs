@@ -65,11 +65,6 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
             EngineDamage = GetAmount(dmgController.engine.DamagePercentage, EngineDamageThreshold);
         }
 
-        protected void OnDisable()
-        {
-            StopAllCoroutines();
-        }
-
         protected override void OnEnable()
         {
             base.OnEnable();

@@ -77,7 +77,6 @@
     <Compile Include="CustomCarEnums.cs" />
     <Compile Include="DamageConfigBasic.cs" />
     <Compile Include="DamageConfigDiesel.cs" />
-    <Compile Include="DamageConfigSteam.cs" />
     <Compile Include="Editor\DamageConfigEditor.cs" />
     <Compile Include="Editor\AddLocoParams.cs" />
     <Compile Include="Editor\CreateAssetBundles.cs" />
@@ -98,6 +97,7 @@
     <Compile Include="SimParamsDiesel.cs" />
     <Compile Include="Editor\SimParamsEditor.cs" />
     <Compile Include="SimParamsSteam.cs" />
+    <Compile Include="TenderSetup.cs" />
     <Compile Include="TrainCarSetup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

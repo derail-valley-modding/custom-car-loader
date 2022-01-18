@@ -10,12 +10,12 @@ namespace DVCustomCarLoader.LocoComponents.Steam
     {
         protected override void CheckTankAndDamageLevels()
         {
-            throw new NotImplementedException();
+            
         }
 
         protected override void InitThresholds()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

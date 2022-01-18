@@ -78,6 +78,7 @@
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
     <Compile Include="CCLSettings.cs" />
+    <Compile Include="DebugCommands.cs" />
     <Compile Include="Effects\ControllableLight.cs" />
     <Compile Include="Effects\DirectionalLightController.cs" />
     <Compile Include="Effects\EngineSmokeEmitter.cs" />
@@ -103,6 +104,8 @@
     <Compile Include="LocoComponents\Steam\CustomLocoControllerSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoSimEventsSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoSimSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomTenderDebtTracker.cs" />
+    <Compile Include="LocoComponents\Steam\CustomTenderSimulation.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />

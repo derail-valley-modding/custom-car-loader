@@ -311,23 +311,17 @@ namespace DVCustomCarLoader
     [HarmonyPatch(typeof(CarTypes))]
     public static class CarTypes_LicenseCheck_Patches
     {
-        private static bool DoesCarNeedLicense( TrainCarType carType, LocoRequiredLicense license )
-        {
-            if( CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car) )
-            {
-                return (car.RequiredLicense == license);
-            }
-            else return false;
-        }
-
         [HarmonyPrefix]
         [HarmonyPatch(nameof(CarTypes.IsSteamLocomotive))]
         public static bool IsSteamLocomotive( TrainCarType carType, ref bool __result )
         {
             if( CarTypeInjector.IsInCustomRange(carType) )
             {
-                __result = DoesCarNeedLicense(carType, LocoRequiredLicense.Steam);
-                return false;
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = car.LocoType == LocoParamsType.Steam;
+                    return false;
+                }
             }
             return true;
         }
@@ -338,8 +332,11 @@ namespace DVCustomCarLoader
         {
             if( CarTypeInjector.IsInCustomRange(carType) )
             {
-                __result = DoesCarNeedLicense(carType, LocoRequiredLicense.DE2);
-                return false;
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.DieselElectric) && (car.RequiredLicense != LocoRequiredLicense.DE6);
+                    return false;
+                }
             }
             return true;
         }
@@ -350,8 +347,41 @@ namespace DVCustomCarLoader
         {
             if( CarTypeInjector.IsInCustomRange(carType) )
             {
-                __result = DoesCarNeedLicense(carType, LocoRequiredLicense.DE6);
-                return false;
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.DieselElectric) && (car.RequiredLicense == LocoRequiredLicense.DE6);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(CarTypes.IsTender))]
+        public static bool IsTender(TrainCarType carType, ref bool __result)
+        {
+            if (CarTypeInjector.IsInCustomRange(carType))
+            {
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.Tender);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(CarTypes.IsCaboose))]
+        public static bool IsCaboose(TrainCarType carType, ref bool __result)
+        {
+            if (CarTypeInjector.IsInCustomRange(carType))
+            {
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.Caboose);
+                    return false;
+                }
             }
             return true;
         }
