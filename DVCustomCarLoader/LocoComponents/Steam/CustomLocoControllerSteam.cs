@@ -121,6 +121,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             return Mathf.Sign(reverser) * GetTractionForce() / train.Bogies.Length;
         }
 
+        public void AddCoalChunk() => sim.AddCoalChunk();
+
         #endregion
 
         #region Cab Controls
@@ -256,6 +258,15 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             EventManager.UpdateValueDispatchOnChange(this, ref _FireTemp, sim.temperature.value, SimEventType.FireTemp);
             EventManager.UpdateValueDispatchOnChange(this, ref _FireFuelLevel, sim.fireboxFuel.value, SimEventType.FireboxLevel);
         }
+
+        public bool IsFireOn
+        {
+            get => sim.fireOn.value > 0;
+            set => sim.fireOn.value = value ? 1 : 0;
+        }
+        public float FireboxLevel => _FireFuelLevel;
+        public float FireTemp => _FireTemp;
+        public float MaxFireTemp => sim.temperature.max;
 
         #endregion
     }

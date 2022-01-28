@@ -14,8 +14,8 @@ namespace CCL_GameScripts
         public override LocoAudioBasis AudioType => LocoAudioBasis.Steam;
 
         [Header("Firebox")]
-        public float BlowerBonusFuelConsumption = 12;
-        public float DraftBonusFuelConsumption = 8;
+        public float BlowerBonusFuelConsumption = 36;
+        public float DraftBonusFuelConsumption = 24;
 
         public float FireboxCapacity = 90;
         public float AutoFuelMaxPerS = 0;
@@ -29,6 +29,7 @@ namespace CCL_GameScripts
         [Header("Fuel")]
         public SteamFuelType FuelType;
         public string TenderIdentifier;
+        public bool IsTankLoco = false;
         public float BunkerWaterCapacity = 0;
         public float BunkerFuelCapacity = 0;
 

@@ -130,7 +130,7 @@ namespace DVCustomCarLoader
 
         private static void InjectCarTypesData( CustomCar car )
         {
-            if( car.LocoType != LocoParamsType.None )
+            if (!car.LocoType.EqualsOneOf(LocoParamsType.None, LocoParamsType.Tender))
             {
                 locomotivesMap?.Add(car.CarType);
 

@@ -12,8 +12,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 {
     public class CustomTenderSimulation : MonoBehaviour, IServicePenaltyProvider
     {
-        protected SimParamsSteam.SteamFuelType _FuelType;
-        public ResourceType FuelType => (ResourceType)_FuelType;
+        public ResourceType FuelType;
 
         public float WaterCapacityL;
         public float FuelCapacity;

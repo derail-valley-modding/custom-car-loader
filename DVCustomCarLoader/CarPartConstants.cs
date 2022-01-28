@@ -61,6 +61,9 @@ namespace DVCustomCarLoader
         public const string EXHAUST_SMOKE = "ExhaustEngineSmoke";
         public const string HIGH_TEMP_SMOKE = "HighTempEngineSmoke";
         public const string DAMAGED_SMOKE = "DamagedEngineSmoke";
+
+        public const string FIREBOX_ROOT = "I firebox";
+        public const string FIREBOX_PARTICLES = "firebox_coal_pivot/fire";
     }
 
     public static class CarPartOffset
@@ -73,5 +76,9 @@ namespace DVCustomCarLoader
 
         public static readonly Vector3 COUPLER_FRONT = new Vector3(0, 0, 0.249f);
         public static readonly Vector3 COUPLER_REAR = new Vector3(0, 0, -0.249f);
+
+        public static readonly Vector3 FIREBOX_OFFSET = new Vector3(0, -0.282f, -1.335f);
+        public static readonly Vector3 FIREBOX_COLLIDER_CENTER = new Vector3(0, -1.898f, -0.716f);
+
     }
 }

@@ -12,11 +12,17 @@ namespace CCL_GameScripts
         public override string TargetTypeName => "CustomTenderSimulation";
         public override bool DestroyAfterCreation => true;
 
-        [ProxyField("_FuelType")]
+        [ProxyField]
         public SimParamsSteam.SteamFuelType FuelType = SimParamsSteam.SteamFuelType.Coal;
         [ProxyField]
         public float WaterCapacityL = 45000;
         [ProxyField]
         public float FuelCapacity = 3000;
+    }
+
+    public class CoalPileSetup : ComponentInitSpec
+    {
+        public override string TargetTypeName => "CustomCoalPile";
+        public override bool DestroyAfterCreation => true;
     }
 }

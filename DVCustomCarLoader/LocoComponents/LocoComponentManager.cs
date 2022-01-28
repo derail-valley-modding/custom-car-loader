@@ -116,6 +116,11 @@ namespace DVCustomCarLoader
             var locoController = prefab.AddComponent<CustomLocoControllerSteam>();
             locoController.drivingForce = drivingForce;
 
+            if (!simParams.IsTankLoco)
+            {
+                prefab.AddComponent<CustomTenderAutoCouple>();
+            }
+
             Main.Log($"Added steam simulation to {prefab.name}");
         }
 
@@ -136,6 +141,10 @@ namespace DVCustomCarLoader
             if( locoType == LocoParamsType.DieselElectric )
             {
                 interior.AddComponent<CustomFuseController>();
+            }
+            else if (locoType == LocoParamsType.Steam)
+            {
+                SetupFirebox(interior);
             }
 
             // add controller/"brain" components
@@ -284,6 +293,53 @@ namespace DVCustomCarLoader
 
                     playerCollideRoot.SetLayersRecursive("Train_Walkable");
                 }
+            }
+        }
+
+        public static void SetInteriorLayers(GameObject interior)
+        {
+            interior.SetLayersRecursive("Interactable");
+
+            var coalPiles = interior.GetComponentsInChildren<ShovelCoalPile>().Cast<Component>();
+            var coalTargets = interior.GetComponentsInChildren<NonPhysicsCoalTarget>();
+
+            foreach (var component in coalPiles.Concat(coalTargets))
+            {
+                component.gameObject.layer = LayerMask.NameToLayer("Train_Interior");
+            }
+        }
+
+        private static void SetupFirebox(GameObject interior)
+        {
+            var fireSetup = interior.GetComponentInChildren<FireboxSetup>();
+            if (fireSetup)
+            {
+                GameObject oldFireObj = fireSetup.gameObject;
+
+                var steamInterior = GetTrainCarInterior(TrainCarType.LocoSteamHeavy);
+                var baseFireTform = steamInterior.transform.Find(CarPartNames.FIREBOX_ROOT);
+                var newFireObj = GameObject.Instantiate(baseFireTform.gameObject, oldFireObj.transform.parent);
+                newFireObj.transform.localPosition = oldFireObj.transform.localPosition;
+                newFireObj.transform.localRotation = oldFireObj.transform.localRotation;
+                newFireObj.transform.localScale = oldFireObj.transform.localScale;
+
+                var baseFire = newFireObj.GetComponent<Fire>();
+                var newFire = newFireObj.AddComponent<CustomFire>();
+
+                newFire.InitializeFromOther(baseFire);
+                foreach (var indicator in newFireObj.GetComponents<Indicator>())
+                {
+                    var relay = newFireObj.AddComponent<IndicatorRelay>();
+                    relay.Initialize(SimEventType.FireboxLevel, indicator);
+                }
+
+                var fireParticles = newFireObj.transform.Find(CarPartNames.FIREBOX_PARTICLES).GetComponent<ParticleSystem>();
+                var fpMain = fireParticles.main;
+                var scaleV = newFireObj.transform.localScale;
+                fpMain.startSizeMultiplier = Mathf.Min(scaleV.x, scaleV.y, scaleV.z);
+
+                GameObject.Destroy(baseFire);
+                GameObject.Destroy(oldFireObj);
             }
         }
     }

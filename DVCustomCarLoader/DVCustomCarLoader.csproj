@@ -16,7 +16,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>embedded</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -62,6 +62,7 @@
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
@@ -100,12 +101,17 @@
     <Compile Include="LocoComponents\LocoEventManager.cs" />
     <Compile Include="LocoComponents\IndicatorRelay.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
+    <Compile Include="LocoComponents\Steam\CustomCoalPile.cs" />
     <Compile Include="LocoComponents\Steam\CustomDamageControllerSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomFire.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoControllerSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoSimEventsSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoSimSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomSteamDebugGUI.cs" />
+    <Compile Include="LocoComponents\Steam\CustomTenderAutoCouple.cs" />
     <Compile Include="LocoComponents\Steam\CustomTenderDebtTracker.cs" />
     <Compile Include="LocoComponents\Steam\CustomTenderSimulation.cs" />
+    <Compile Include="LocoComponents\Steam\ShovelPatches.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />

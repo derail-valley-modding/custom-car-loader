@@ -1,8 +1,10 @@
 ﻿using CCL_GameScripts;
 using DV.JObjectExtstensions;
 using DV.ServicePenalty;
+using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +31,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         // Firebox
         public SimComponent fireOn = new SimComponent("FireOn", 0f, 1f, 1f, 0f);
-        public SimComponent fireDoorOpen = new SimComponent("FireDoorOpen", 0f, 1f, 0.25f, 0f);
+        public SimComponent fireDoorOpen = new SimComponent("FireDoorOpen", 0f, 1f, 0.25f, 1f);
         public SimComponent temperature = new SimComponent("Temperature", 25f, 1350f, 1f, 0f);
         public SimComponent damper = new SimComponent("Damper", 0f, 1f, 0.1f, 0f);
         public SimComponent blower = new SimComponent("Blower", 0f, 1f, 0.1f, 0f);
@@ -212,6 +214,21 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float GetBlowerFlowPercent() => blower.value * (boilerPressure.value / boilerPressure.max);
         public float GetDraftFlowPercent() => regulator.value * (boilerPressure.value / boilerPressure.max);
 
+        protected const float TEMP_GAIN_PER_UNIT_FUEL = 50; // 2.5
+        protected const float TEMP_RESISTANCE_DIVISOR = 16;
+        protected const float MAX_BURN_RATE = 8;
+        protected const float MAX_BURN_FILL_LEVEL = 0.67f;
+
+        protected const float BASE_AIR_MULTIPLIER = 0.1f;
+        protected const float DRAFT_AIR_MULTIPLIER = 0.4f;
+        protected const float BLOWER_AIR_MULTIPLER = 0.5f;
+
+        protected const float AMBIENT_TEMP = 25;
+        protected const float AMBIENT_LOSS_MULTIPLIER = 0.1f;
+        protected const float DOOR_LOSS_MULTIPLIER = 0.1f;
+
+        protected float burnRateDamp;
+
         protected void SimulateFire(float delta)
         {
             if (fireOn.value > 0 && fireboxFuel.value == 0)
@@ -221,10 +238,19 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
             if ((fireOn.value > 0) && (fireboxFuel.value > 0))
             {
-                fuelConsumptionRate =
-                    temperature.value / SteamLocoSimulation.COAL_BURN_TEMPERATURE +
-                    GetDraftFlowPercent() * simParams.DraftBonusFuelConsumption +
-                    GetBlowerFlowPercent() * simParams.BlowerBonusFuelConsumption;
+                //float boxPercentFill = fireboxFuel.value / fireboxFuel.max;
+                //float richMultiplier = (1 - Mathf.Abs(boxPercentFill - MAX_BURN_FILL_LEVEL));
+
+                float airRate = Mathf.Clamp(
+                    (BASE_AIR_MULTIPLIER + GetDraftFlowPercent() * DRAFT_AIR_MULTIPLIER + GetBlowerFlowPercent() * BLOWER_AIR_MULTIPLER) * damper.value,
+                    0.1f, 1);
+
+                float targetRate = airRate * MAX_BURN_RATE;
+                if (fireboxFuel.value < 0.1 * fireboxFuel.max)
+                {
+                    targetRate *= 0.1f;
+                }
+                fuelConsumptionRate = Mathf.SmoothDamp(fuelConsumptionRate, targetRate, ref burnRateDamp, delta);
             }
             else
             {
@@ -249,13 +275,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
 
             float tempLoss =
-                    SteamLocoSimulation.OUTSIDE_TEMP_COOLDOWN_C_PER_S +
-                    temperature.value / SteamLocoSimulation.TEMP_COOLDOWN_SCALER +
-                    SteamLocoSimulation.FIREDOOR_LEAK_C_PER_MS * fireDoorOpen.value;
+                    (temperature.value - AMBIENT_TEMP) *
+                    (AMBIENT_LOSS_MULTIPLIER + DOOR_LOSS_MULTIPLIER * fireDoorOpen.value);
 
             float tempDelta =
-                fuelConsumedInTick * SteamLocoSimulation.TEMP_GAIN_FROM_COAL_KG_PER_S -
-                tempLoss * delta;
+                (fuelConsumptionRate * TEMP_GAIN_PER_UNIT_FUEL - tempLoss) * delta;
 
             temperature.AddNextValue(tempDelta);
             if (fireOn.value > 0)
@@ -331,7 +355,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             {
                 if (speed.value > 0)
                 {
-                    const float pressureMult = -SteamLocoSimulation.PRESSURE_CONSUMPTION_MULT * SteamLocoSimulation.POWER_CONST_HP / 2;
+                    const float pressureMult = -SteamLocoSimulation.PRESSURE_CONSUMPTION_MULT / (SteamLocoSimulation.POWER_CONST_HP / 2);
                     boilerPressure.AddNextValue(pressureMult * power.value * delta);
                 }
             }

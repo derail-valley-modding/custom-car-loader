@@ -327,17 +327,23 @@ namespace DVCustomCarLoader
                 LocoAudioType = simParams.AudioType;
                 RequiredLicense = simParams.RequiredLicense;
             }
-            
+            else
+            {
+                var tenderSetup = newFab.GetComponent<TenderSetup>();
+                if (tenderSetup)
+                {
+                    LocoType = LocoParamsType.Tender;
+                }
+            }
+
             if( carSetup.InteriorPrefab )
             {
                 GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
                 interiorFab.SetActive(false);
                 Object.DontDestroyOnLoad(interiorFab);
 
-                LocoComponentManager.CreateComponentsFromProxies(interiorFab);
-                LocoComponentManager.CreateCopiedControls(interiorFab);
-                interiorFab.SetLayersRecursive("Interactable");
-
+                LocoComponentManager.SetupCabComponents(interiorFab, LocoType);
+                LocoComponentManager.SetInteriorLayers(interiorFab);
                 LocoComponentManager.MakeDoorsCollidable(interiorFab);
 
                 interiorFab.AddComponent<DoorAndWindowTracker>();
@@ -553,7 +559,7 @@ namespace DVCustomCarLoader
             for (int i = 0; i < bufferRoot.transform.childCount; i++)
             {
                 Transform child = bufferRoot.transform.GetChild(i);
-                string childName = child.name.Trim();
+                string childName = child.name.Trim(' ', '1');
 
                 if (CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName))
                 {
@@ -576,21 +582,37 @@ namespace DVCustomCarLoader
                 {
                     // front hook plate
                     child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
+                    Main.Log("Adjust Hook Plate F");
                 }
                 else if (CarPartNames.BUFFER_PLATE_REAR.Equals(childName))
                 {
                     // rear hook plate
                     child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
+                    Main.Log("Adjust Hook Plate R");
                 }
                 else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName) || CarPartNames.BUFFER_REAR_PADS.Contains(childName))
                 {
                     // destroy template buffer pads since we're overriding
                     GameObject.Destroy(child.gameObject);
+                    Main.Log($"Destroy buffer pad {childName}");
                 }
                 else
                 {
                     Main.Log($"Unknown buffer child {childName}");
                 }
+            }
+
+            if (!newRearBufferRig)
+            {
+                newRearBufferRig = GameObject.Instantiate(newFrontBufferRig, newFrontBufferRig.parent);
+                newRearBufferRig.eulerAngles = new Vector3(0, 180, 0);
+                newRearBufferRig.localPosition = rearRigPosition;
+            }
+            if (!newFrontBufferRig)
+            {
+                newFrontBufferRig = GameObject.Instantiate(newRearBufferRig, newRearBufferRig.parent);
+                newFrontBufferRig.eulerAngles = Vector3.zero;
+                newFrontBufferRig.localPosition = frontRigPosition;
             }
 
             // reparent buffer pads to new root & adjust anchor positions
@@ -612,21 +634,31 @@ namespace DVCustomCarLoader
                     newBufferRig = newRearBufferRig;
                 }
 
+                Main.Log($"Adjust pads for {newBufferRig?.name}, rig = {rig != null}: {rig?.name}");
+
                 // Reparent buffer pads
                 BufferController bufferController = newBufferRig.gameObject.GetComponentInChildren<BufferController>(true);
                 if (bufferController)
                 {
-                    var lPad = rig.Find(lPadName);
-                    Vector3 position = newPrefab.transform.InverseTransformPoint(lPad.position);
-                    lPad.parent = bufferRoot.transform;
-                    lPad.localPosition = position;
-                    bufferController.bufferModelLeft = lPad;
+                    Vector3 position;
+
+                    var lPad = rig.FindSafe(lPadName);
+                    if (lPad)
+                    {
+                        position = newPrefab.transform.InverseTransformPoint(lPad.position);
+                        lPad.parent = bufferRoot.transform;
+                        lPad.localPosition = position;
+                        bufferController.bufferModelLeft = lPad;
+                    }
 
                     var rPad = rig.Find(rPadName);
-                    position = newPrefab.transform.InverseTransformPoint(rPad.position);
-                    rPad.parent = bufferRoot.transform;
-                    rPad.localPosition = position;
-                    bufferController.bufferModelRight = rPad;
+                    if (rPad)
+                    {
+                        position = newPrefab.transform.InverseTransformPoint(rPad.position);
+                        rPad.parent = bufferRoot.transform;
+                        rPad.localPosition = position;
+                        bufferController.bufferModelRight = rPad;
+                    }
                 }
                 else
                 {
@@ -635,11 +667,13 @@ namespace DVCustomCarLoader
                 }
 
                 // Adjust new anchors to match positions in prefab
-                Transform bufferChainRig = rig.Find(CarPartNames.BUFFER_CHAIN_REGULAR);
+                Transform bufferChainRig = rig.FindSafe(CarPartNames.BUFFER_CHAIN_REGULAR);
+
+                Main.Log($"Adjust anchors for {newBufferRig.name} - {bufferChainRig?.name}");
 
                 foreach (string anchorName in CarPartNames.BUFFER_ANCHORS)
                 {
-                    var anchor = bufferChainRig.Find(anchorName);
+                    var anchor = bufferChainRig.FindSafe(anchorName);
                     var newAnchor = newBufferRig.Find(anchorName);
 
                     newAnchor.localPosition = anchor.localPosition;
@@ -648,16 +682,22 @@ namespace DVCustomCarLoader
                 // Adjust air hose & MU connector positions
                 if (customHoses)
                 {
-                    var hoseRoot = bufferChainRig.Find(CarPartNames.HOSES_ROOT);
+                    Main.Log($"Adjust hoses for {newBufferRig?.name}");
+
+                    var hoseRoot = bufferChainRig.FindSafe(CarPartNames.HOSES_ROOT);
                     var newHoseRoot = newBufferRig.Find(CarPartNames.HOSES_ROOT);
 
-                    if (hoseRoot.Find(CarPartNames.AIR_HOSE) is Transform airHose)
+                    Transform airHose = hoseRoot.FindSafe(CarPartNames.AIR_HOSE);
+                    Main.Log($"Air hose = {!!airHose}");
+                    if (airHose)
                     {
                         var newAir = newHoseRoot.Find(CarPartNames.AIR_HOSE);
                         newAir.localPosition = airHose.localPosition;
                     }
 
-                    if (hoseRoot.Find(CarPartNames.MU_CONNECTOR) is Transform muHose)
+                    Transform muHose = hoseRoot.FindSafe(CarPartNames.MU_CONNECTOR);
+                    Main.Log($"MU hose = {!!muHose}");
+                    if (muHose)
                     {
                         var newMU = newHoseRoot.Find(CarPartNames.MU_CONNECTOR);
                         newMU.localPosition = muHose.localPosition;

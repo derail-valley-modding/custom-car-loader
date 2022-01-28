@@ -186,7 +186,7 @@ namespace DVCustomCarLoader
                     }
 
                     string targetName = proxy.TargetName ?? sourceField.Name;
-                    FieldInfo targetField = targetType.GetField(targetName);
+                    FieldInfo targetField = AccessTools.Field(targetType, targetName);
 
                     if (targetField != null)
                     {
