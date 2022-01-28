@@ -7,7 +7,6 @@ namespace CCL_GameScripts.CabControls
     public class GaugeSetup : IndicatorSetupBase
     {
         public override string TargetTypeName => "IndicatorGauge";
-        public override IndicatorType IndicatorType => IndicatorType.Gauge;
 
 		[ProxyField("unclamped")]
         public bool Unclamped = false;

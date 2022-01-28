@@ -76,14 +76,15 @@ namespace CCL_GameScripts.CabControls
 			Color startColor = InvertDirection ? END_COLOR : START_COLOR;
 			Color endColor = InvertDirection ? START_COLOR : END_COLOR;
 
-			(Vector3 gizmoZeroVector, Vector3 massZeroVector) = ModelUtil.GetModelCenterHingeProjection(gameObject, JointAxis);
+			Vector3 massCenter = ModelUtil.GetModelCenterline(gameObject);
+			Vector3 massZeroVector = transform.InverseTransformPoint(massCenter);
+			Vector3 gizmoZeroVector = Vector3.ProjectOnPlane(massZeroVector, JointAxis);
 
 			float massLength = massZeroVector.magnitude;
-			Vector3 massCenterOfRotation = transform.TransformPoint(Vector3.Project(massZeroVector, JointAxis));
-			massZeroVector = massZeroVector.normalized;
+			Vector3 massPivot = Vector3.Project(massZeroVector, JointAxis);
 
 			Gizmos.color = Color.blue;
-			Gizmos.DrawLine(transform.position, massCenterOfRotation);
+			Gizmos.DrawLine(transform.position, transform.TransformPoint(massPivot));
 
 			if( UseNotches && (Notches > 0) )
 			{
@@ -102,15 +103,15 @@ namespace CCL_GameScripts.CabControls
 					Gizmos.DrawLine(transform.position, rayVector);
 
 					// center of mass sweep
-					rayVector = transform.TransformPoint((rotation * massZeroVector) * massLength);
-					Gizmos.DrawLine(massCenterOfRotation, rayVector);
+					rayVector = transform.TransformPoint(rotation * massZeroVector);
+					Gizmos.DrawLine(transform.TransformPoint(massPivot), rayVector);
 				}
 			}
 			else
             {
 				// draw semi-circle
 				Vector3 lastVector = transform.position;
-				Vector3 lastMassVector = massCenterOfRotation;
+				Vector3 lastMassVector = massPivot;
 
 				for( int i = 0; i <= GIZMO_SEGMENTS; i++ )
 				{
@@ -121,12 +122,12 @@ namespace CCL_GameScripts.CabControls
 
 					// projected sweep
 					Vector3 nextVector = transform.TransformPoint((rotation * gizmoZeroVector) * GIZMO_RADIUS);
-					Vector3 nextMassVector = transform.TransformPoint((rotation * massZeroVector) * massLength);
+					Vector3 nextMassVector = transform.TransformPoint(rotation * massZeroVector);
 
 					if( i == 0 || i == GIZMO_SEGMENTS )
                     {
 						Gizmos.DrawLine(transform.position, nextVector);
-						Gizmos.DrawLine(massCenterOfRotation, nextMassVector);
+						Gizmos.DrawLine(massPivot, nextMassVector);
 					}
 					if( i != 0 )
                     {
