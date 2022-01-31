@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CCL_GameScripts.CabControls;
-using DV;
+using DV.MultipleUnit;
 using DV.ServicePenalty;
 using DV.Util.EventWrapper;
 using UnityEngine;
@@ -15,10 +15,13 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 		CustomLocoController<
 			CustomLocoSimDiesel,
 			DamageControllerCustomDiesel,
-			CustomDieselSimEvents>,
+			CustomDieselSimEvents,
+			CustomDieselSaveState>,
 		IFusedLocoController
     {
 		protected List<CabInputRelay> HornRelays = new List<CabInputRelay>();
+
+		public MultipleUnitModule muModule;
 
         public float EngineRPM => sim.engineRPM.value;
 

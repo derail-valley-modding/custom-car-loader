@@ -130,10 +130,11 @@ namespace DVCustomCarLoader.LocoComponents
         #endregion
     }
 
-    public abstract class CustomLocoController<TSim,TDmg,TEvents> : CustomLocoController
+    public abstract class CustomLocoController<TSim, TDmg, TEvents, TSave> : CustomLocoController
         where TSim : CustomLocoSimulation
         where TDmg : DamageControllerCustomLoco
         where TEvents : CustomLocoSimEvents<TSim, TDmg>
+        where TSave : CustomLocoSaveState
     {
         protected TSim sim;
         protected TDmg damageController;
@@ -160,6 +161,10 @@ namespace DVCustomCarLoader.LocoComponents
 
             carVisitChecker = gameObject.AddComponent<CarVisitChecker>();
             carVisitChecker.Initialize(train);
+
+            var saveState = gameObject.AddComponent<TSave>();
+            var saveStateStrict = saveState as CustomLocoSaveState<TSim, TDmg, CustomLocoController<TSim, TDmg, TEvents, TSave>>;
+            saveStateStrict.Initialize(sim, damageController, this, carVisitChecker);
 
             train.LogicCarInitialized += OnLogicCarInitialized;
         }

@@ -1,6 +1,7 @@
 ﻿using CCL_GameScripts;
 using DV;
 using DV.ServicePenalty;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             tenderWater = new SimComponent("TenderWater", 0, WaterCapacityL, 4500, WaterCapacityL);
             tenderFuel = new SimComponent("TenderFuel", 0, FuelCapacity, 300, FuelCapacity);
 
-            //gameObject.AddComponent<LocoStateSaveTender>().Initialize(this, carVisitChecker);
+            gameObject.AddComponent<CustomTenderSaveState>().Initialize(this, visitChecker);
             train.LogicCarInitialized += OnLogicCarInitialized;
         }
 
@@ -114,5 +115,23 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
             Main.Warning("Trying to refill/repair something that is not part of this loco");
         }
+
+        #region Save Data
+
+        public JObject GetComponentsSaveData()
+        {
+            var simData = new JObject();
+            SimComponent.SaveComponentState(tenderFuel, simData);
+            SimComponent.SaveComponentState(tenderWater, simData);
+            return simData;
+        }
+
+        public void LoadComponentsState(JObject stateData)
+        {
+            SimComponent.LoadComponentState(tenderFuel, stateData);
+            SimComponent.LoadComponentState(tenderWater, stateData);
+        }
+
+        #endregion
     }
 }

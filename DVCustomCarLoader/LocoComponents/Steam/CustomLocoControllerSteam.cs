@@ -8,8 +8,13 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents.Steam
 {
+    public class CustomSteamSaveState : CustomLocoSaveState<CustomLocoSimSteam, CustomDamageControllerSteam, CustomLocoControllerSteam>
+    {
+
+    }
+
     public class CustomLocoControllerSteam :
-        CustomLocoController<CustomLocoSimSteam, CustomDamageControllerSteam, CustomLocoSimEventsSteam>
+        CustomLocoController<CustomLocoSimSteam, CustomDamageControllerSteam, CustomLocoSimEventsSteam, CustomSteamSaveState>
     {
         public TrainCar LastTender { get; protected set; }
 

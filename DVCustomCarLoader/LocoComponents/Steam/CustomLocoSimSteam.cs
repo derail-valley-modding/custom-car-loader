@@ -241,12 +241,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 //float boxPercentFill = fireboxFuel.value / fireboxFuel.max;
                 //float richMultiplier = (1 - Mathf.Abs(boxPercentFill - MAX_BURN_FILL_LEVEL));
 
-                float airRate = Mathf.Clamp(
-                    (BASE_AIR_MULTIPLIER + GetDraftFlowPercent() * DRAFT_AIR_MULTIPLIER + GetBlowerFlowPercent() * BLOWER_AIR_MULTIPLER) * damper.value,
-                    0.1f, 1);
+                float airRate = 
+                    (BASE_AIR_MULTIPLIER + GetDraftFlowPercent() * DRAFT_AIR_MULTIPLIER + GetBlowerFlowPercent() * BLOWER_AIR_MULTIPLER) * damper.value;
 
                 float targetRate = airRate * MAX_BURN_RATE;
-                if (fireboxFuel.value < 0.1 * fireboxFuel.max)
+                if (fireboxFuel.value < (0.1f * fireboxFuel.max))
                 {
                     targetRate *= 0.1f;
                 }
@@ -345,18 +344,23 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             return Mathf.Sqrt((2 * c) - (c * c));
         }
 
+        private float GetSteamPipeFlow()
+        {
+            return (boilerPressure.value / boilerPressure.max) * regulator.value * cutoff.value;
+        }
+
         protected virtual void SimulateCylinder(float delta)
         {
             float powerLevel = GetCutoffPowerPercent();
-            float steamFlow = boilerPressure.value / boilerPressure.max * regulator.value;
+            float steamFlow = GetSteamPipeFlow();
             power.SetNextValue(powerLevel * steamFlow * SteamLocoSimulation.POWER_CONST_HP);
 
             if (power.value > 0 && boilerPressure.value > 0)
             {
                 if (speed.value > 0)
                 {
-                    const float pressureMult = -SteamLocoSimulation.PRESSURE_CONSUMPTION_MULT / (SteamLocoSimulation.POWER_CONST_HP / 2);
-                    boilerPressure.AddNextValue(pressureMult * power.value * delta);
+                    //const float pressureMult = -SteamLocoSimulation.PRESSURE_CONSUMPTION_MULT / (SteamLocoSimulation.POWER_CONST_HP / 2);
+                    boilerPressure.AddNextValue(steamFlow * delta);
                 }
             }
         }
