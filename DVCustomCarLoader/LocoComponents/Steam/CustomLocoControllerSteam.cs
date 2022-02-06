@@ -273,6 +273,14 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float FireTemp => _FireTemp;
         public float MaxFireTemp => sim.temperature.max;
 
+        public float BoilerPressure => _BoilerPressure;
+        public float MaxBoilerPressure => sim.boilerPressure.max;
+
+        public float FuelConsumptionRate => sim.fuelConsumptionRate;
+        public float MaxFuelConsumptionRate => sim.maxFuelConsumptionRate;
+
+        public float SafetyValve => sim.safetyPressureValve.value;
+
         #endregion
     }
 }

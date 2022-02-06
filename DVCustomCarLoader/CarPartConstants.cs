@@ -62,6 +62,22 @@ namespace DVCustomCarLoader
         public const string HIGH_TEMP_SMOKE = "HighTempEngineSmoke";
         public const string DAMAGED_SMOKE = "DamagedEngineSmoke";
 
+        // Steam Loco Particles
+        public const string CHIMNEY_STEAM = "steam_lit";
+        public const string STEAM_CHUFF_L = "SteamChuff L";
+        public const string STEAM_CHUFF_R = "SteamChuff R";
+        public const string STEAM_CHUFF_NAME = "SteamChuffParticles";
+
+        public const string STEAM_RELEASE_L = "SteamRelease L";
+        public const string STEAM_RELEASE_R = "SteamRelease R";
+        public const string STEAM_RELEASE_SAFETY = "SteamSafetyRelease";
+        public const string STEAM_RELEASE_NAME = "SteamReleaseParticles";
+
+        public const string STEAM_WHISTLE_M = "Whistle Mid";
+        public const string STEAM_WHISTLE_F = "Whistle F";
+        public const string STEAM_WHISTLE_NAME = "SteamWhistleParticles";
+
+        // Firebox
         public const string FIREBOX_ROOT = "I firebox";
         public const string FIREBOX_PARTICLES = "firebox_coal_pivot/fire";
     }

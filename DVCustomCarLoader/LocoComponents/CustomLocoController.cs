@@ -163,8 +163,7 @@ namespace DVCustomCarLoader.LocoComponents
             carVisitChecker.Initialize(train);
 
             var saveState = gameObject.AddComponent<TSave>();
-            var saveStateStrict = saveState as CustomLocoSaveState<TSim, TDmg, CustomLocoController<TSim, TDmg, TEvents, TSave>>;
-            saveStateStrict.Initialize(sim, damageController, this, carVisitChecker);
+            saveState.Initialize(carVisitChecker);
 
             train.LogicCarInitialized += OnLogicCarInitialized;
         }

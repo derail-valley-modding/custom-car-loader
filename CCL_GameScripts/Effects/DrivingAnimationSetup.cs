@@ -7,11 +7,14 @@ namespace CCL_GameScripts.Effects
 {
     public class DrivingAnimationSetup : ComponentInitSpec
     {
-        public override string TargetTypeName => "DVCustomCarLoader.LocoComponents.DrivingAnimation";
+        public override string TargetTypeName => "DVCustomCarLoader.Effects.DrivingAnimation";
         public override bool DestroyAfterCreation => true;
 
         [ProxyField]
+        public bool IsDrivingWheels = false;
+        [ProxyField]
         public float MaxWheelslipMultiplier = 8f;
+        [ProxyField]
         public float DefaultWheelRadius = 0.7f;
         public bool UseDefaultRadiusForAll = false;
 

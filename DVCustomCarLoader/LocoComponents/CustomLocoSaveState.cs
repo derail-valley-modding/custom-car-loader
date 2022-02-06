@@ -11,6 +11,10 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public abstract class CustomLocoSaveState : LocoStateSave
     {
+        public virtual void Initialize(CarVisitChecker checker)
+        {
+
+        }
     }
 
     public abstract class CustomLocoSaveState<TSim, TDmg, TCtrl> : CustomLocoSaveState
@@ -27,11 +31,11 @@ namespace DVCustomCarLoader.LocoComponents
         protected TCtrl controller;
         protected CarVisitChecker visitChecker;
 
-        public virtual void Initialize(TSim sim, TDmg dmg, TCtrl ctrl, CarVisitChecker checker)
+        public override void Initialize(CarVisitChecker checker)
         {
-            locoSim = sim;
-            locoDmg = dmg;
-            controller = ctrl;
+            locoSim = GetComponent<TSim>();
+            locoDmg = GetComponent<TDmg>();
+            controller = GetComponent<TCtrl>();
             visitChecker = checker;
         }
 
@@ -54,13 +58,13 @@ namespace DVCustomCarLoader.LocoComponents
             {
                 locoSim.LoadComponentsState(simData);
             }
-            else Main.Error($"Failed to load sim data for {typeof(TSim).Name}");
+            else Main.Error($"Failed to load sim data for {GetType().Name}");
 
             if (saveData.GetJObject(DAMAGE_SAVE_KEY) is JObject dmgData)
             {
                 locoDmg.LoadDamagesState(dmgData);
             }
-            else Main.Error($"Failed to load dmg data for {typeof(TDmg).Name}");
+            else Main.Error($"Failed to load dmg data for {GetType().Name}");
 
             float? visitTime = saveData.GetFloat(VISIT_CHECKER_KEY);
             if (visitTime.HasValue)

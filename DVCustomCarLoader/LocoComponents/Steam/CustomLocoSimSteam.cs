@@ -31,7 +31,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         // Firebox
         public SimComponent fireOn = new SimComponent("FireOn", 0f, 1f, 1f, 0f);
-        public SimComponent fireDoorOpen = new SimComponent("FireDoorOpen", 0f, 1f, 0.25f, 1f);
+        public SimComponent fireDoorOpen = new SimComponent("FireDoorOpen", 0f, 1f, 0.25f, 0);
         public SimComponent temperature = new SimComponent("Temperature", 25f, 1350f, 1f, 0f);
         public SimComponent damper = new SimComponent("Damper", 0f, 1f, 0.1f, 0f);
         public SimComponent blower = new SimComponent("Blower", 0f, 1f, 0.1f, 0f);
@@ -73,7 +73,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         protected override void Awake()
         {
             base.Awake();
-            //maxFuelConsumptionRate = 1f * temperature.max / 140f + 24f + 36f;
+            maxFuelConsumptionRate = (BASE_AIR_MULTIPLIER + DRAFT_AIR_MULTIPLIER + BLOWER_AIR_MULTIPLER) * MAX_BURN_RATE;
         }
 
         #region Component Manipulation
@@ -224,7 +224,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         protected const float BLOWER_AIR_MULTIPLER = 0.5f;
 
         protected const float AMBIENT_TEMP = 25;
-        protected const float AMBIENT_LOSS_MULTIPLIER = 0.1f;
+        protected const float AMBIENT_LOSS_MULTIPLIER = 0.2f;
         protected const float DOOR_LOSS_MULTIPLIER = 0.1f;
 
         protected float burnRateDamp;
@@ -241,8 +241,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 //float boxPercentFill = fireboxFuel.value / fireboxFuel.max;
                 //float richMultiplier = (1 - Mathf.Abs(boxPercentFill - MAX_BURN_FILL_LEVEL));
 
+                float damperMult = damper.value < 0.1f ? 0.1f : damper.value;
                 float airRate = 
-                    (BASE_AIR_MULTIPLIER + GetDraftFlowPercent() * DRAFT_AIR_MULTIPLIER + GetBlowerFlowPercent() * BLOWER_AIR_MULTIPLER) * damper.value;
+                    (BASE_AIR_MULTIPLIER + GetDraftFlowPercent() * DRAFT_AIR_MULTIPLIER + GetBlowerFlowPercent() * BLOWER_AIR_MULTIPLER) * damperMult;
 
                 float targetRate = airRate * MAX_BURN_RATE;
                 if (fireboxFuel.value < (0.1f * fireboxFuel.max))

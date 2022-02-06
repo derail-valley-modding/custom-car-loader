@@ -13,10 +13,10 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
         protected const string MU_CONNECTED_FRONT_KEY = "muF";
         protected const string MU_CONNECTED_REAR_KEY = "muR";
 
-        public override void Initialize(CustomLocoSimDiesel sim, DamageControllerCustomDiesel dmg, CustomLocoControllerDiesel ctrl, CarVisitChecker checker)
+        public override void Initialize(CarVisitChecker checker)
         {
-            base.Initialize(sim, dmg, ctrl, checker);
-			muModule = ctrl.muModule;
+            base.Initialize(checker);
+            muModule = controller?.muModule;
         }
 
         public override JObject GetLocoStateSaveData()
