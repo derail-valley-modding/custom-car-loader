@@ -108,6 +108,7 @@
     <Compile Include="LocoComponents\Steam\CustomCoalPile.cs" />
     <Compile Include="LocoComponents\Steam\CustomDamageControllerSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomFire.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoAudioSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoControllerSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoSimEventsSteam.cs" />
     <Compile Include="LocoComponents\Steam\CustomLocoSimSteam.cs" />

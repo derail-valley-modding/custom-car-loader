@@ -12,6 +12,16 @@ namespace CCL_GameScripts
         Caboose = 4
     }
 
+    public static class LocoParamsExtensions
+    {
+        public static bool IsLocomotiveType(this LocoParamsType paramsType)
+        {
+            return
+                (paramsType == LocoParamsType.DieselElectric) ||
+                (paramsType == LocoParamsType.Steam);
+        }
+    }
+
     public enum LocoRequiredLicense
     {
         None = 0,

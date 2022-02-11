@@ -10,33 +10,35 @@ namespace CCL_GameScripts.Effects
         public abstract bool IsOverrideSet(int index);
     }
 
-    public class DieselAudioConfig : AudioConfig, IProxyScript
+    public class DieselAudioConfig : AudioConfig
     {
-        public override string TargetTypeName => "DVCustomCarLoader.LocoComponents.CustomLocoAudioDiesel";
+        public override string TargetTypeName => "DVCustomCarLoader.LocoComponents.DieselElectric.CustomLocoAudioDiesel";
 
-        public override bool IsOverrideSet(int index)
-        {
-            // only override if field isn't null
-            switch (index)
-            {
-                case 1:
-                    return playEngineAt;
-                case 2:
-                    return playReverserAt;
-                case 3:
-                    return playSandAt;
-                default:
-                    return false;
-            }
-        }
+        public override bool IsOverrideSet(int index) => false;
 
-        [ProxyField(overrideFlag: 1)]
+        [ProxyFieldIfSet]
         public Transform playEngineAt;
 
-        [ProxyField(overrideFlag: 2)]
+        [ProxyFieldIfSet]
         public Transform playReverserAt;
 
-        [ProxyField(overrideFlag: 3)]
+        [ProxyFieldIfSet]
         public Transform playSandAt;
+    }
+
+    public class SteamAudioConfig : AudioConfig
+    {
+        public override string TargetTypeName => "DVCustomCarLoader.LocoComponents.Steam.CustomLocoAudioSteam";
+
+        public override bool IsOverrideSet(int index) => false;
+
+        [ProxyFieldIfSet]
+        public Transform playLeftCylAt;
+
+        [ProxyFieldIfSet]
+        public Transform playRightCylAt;
+
+        [ProxyFieldIfSet]
+        public Transform playChimneyAt;
     }
 }

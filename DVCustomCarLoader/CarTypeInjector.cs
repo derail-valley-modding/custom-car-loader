@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CCL_GameScripts;
 using CCL_GameScripts.Effects;
 using DV.Logic.Job;
 using DV.RenderTextureSystem.BookletRender;
 using DVCustomCarLoader.LocoComponents;
 using DVCustomCarLoader.LocoComponents.DieselElectric;
+using DVCustomCarLoader.LocoComponents.Steam;
 using HarmonyLib;
 using UnityEngine;
 
@@ -130,7 +129,7 @@ namespace DVCustomCarLoader
 
         private static void InjectCarTypesData( CustomCar car )
         {
-            if (!car.LocoType.EqualsOneOf(LocoParamsType.None, LocoParamsType.Tender))
+            if (car.LocoType.IsLocomotiveType())
             {
                 locomotivesMap?.Add(car.CarType);
 
@@ -254,6 +253,23 @@ namespace DVCustomCarLoader
                     break;
 
                 case LocoAudioBasis.Steam:
+                    sourcePrefab = GetPooledAudioPrefab(componentPool, TrainCarType.LocoSteamHeavy);
+                    if (sourcePrefab)
+                    {
+                        newPrefab = CopyAudioPrefab<CustomLocoAudioSteam>(sourcePrefab, audioConfig);
+
+                        var newPoolData = new AudioPoolReferences.AudioPoolData()
+                        {
+                            trainCarType = car.CarType,
+                            audioPrefab = newPrefab,
+                            poolSize = LOCO_POOL_SIZE
+                        };
+
+                        componentPool.audioPoolReferences.poolData.Add(newPoolData);
+                    }
+                    else Main.Warning("Couldn't find SH282 pooled audio");
+                    break;
+
                 default:
                     break;
             }
