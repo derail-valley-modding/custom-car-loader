@@ -92,12 +92,12 @@ namespace DVCustomCarLoader
                     }
                 }
 
-                Main.Log("Added multiple unit module");
+                Main.LogVerbose("Added multiple unit module");
             }
 
             locoController.drivingForce = drivingForce;
 
-            Main.Log($"Added diesel electric simulation to {prefab.name}");
+            Main.LogVerbose($"Added diesel electric simulation to {prefab.name}");
         }
 
         public static void AddSteamSimulation(GameObject prefab, SimParamsSteam simParams)
@@ -121,7 +121,7 @@ namespace DVCustomCarLoader
                 prefab.AddComponent<CustomTenderAutoCouple>();
             }
 
-            Main.Log($"Added steam simulation to {prefab.name}");
+            Main.LogVerbose($"Added steam simulation to {prefab.name}");
         }
 
         private static void ApplyDrivingForceParams( DrivingForce driver, SimParamsBase simParams )
@@ -161,7 +161,7 @@ namespace DVCustomCarLoader
                 if( compSpec is ControlSetupBase control && !((compSpec is IApertureTrackable a) && a.TrackAsAperture)  )
                 {
 #if DEBUG
-                    Main.Log($"Add input relay to {controlObject.name}");
+                    Main.LogVerbose($"Add input relay to {controlObject.name}");
 #endif
                     var inputRelay = controlObject.AddComponent<CabInputRelay>();
                     inputRelay.Binding = control.InputBinding;

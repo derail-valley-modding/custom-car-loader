@@ -12,6 +12,9 @@ namespace DVCustomCarLoader
         [Draw("Prefer custom cars to default cars when generating jobs")]
         public bool PreferCustomCarsForJobs = false;
 
+        [Draw("Verbose Logging")]
+        public bool VerboseMode = true;
+
         public void OnChange()
         {
             

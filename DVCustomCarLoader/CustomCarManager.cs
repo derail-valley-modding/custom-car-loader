@@ -15,22 +15,22 @@ namespace DVCustomCarLoader
             //Load all json files
             string bundlePath = Path.Combine(Main.ModEntry.Path, "Cars");
             
-            Main.ModEntry.Logger.Log($"Mod path: {bundlePath}");
+            Main.LogVerbose($"Mod path: {bundlePath}");
             
             if (!Directory.Exists(bundlePath))
                 Directory.CreateDirectory(bundlePath);
 
             var Folders = Directory.GetDirectories(bundlePath);
 
-            Main.ModEntry.Logger.Log($"Folder count: {Folders.Length}");
+            Main.LogVerbose($"Folder count: {Folders.Length}");
             
             foreach (var directory in Folders)
             {
-                Main.ModEntry.Logger.Log($"Reading directory: {directory}");
+                Main.LogVerbose($"Reading directory: {directory}");
                 
                 foreach (var file in Directory.GetFiles(directory, "*.json"))
                 {
-                    Main.ModEntry.Logger.Log($"Reading JSON file: {file}");
+                    Main.LogVerbose($"Reading JSON file: {file}");
                     
                     using (StreamReader reader = File.OpenText(file))
                     {
@@ -39,11 +39,6 @@ namespace DVCustomCarLoader
                         //Load JSON
                         JSONObject jsonFile = new JSONObject(jsonText);
 
-#if DEBUG
-                        //Print JSON file for debug.
-                        Main.ModEntry.Logger.Log($"{jsonFile.ToString(true)}");
-#endif
-
                         if (jsonFile.keys.Count>0)
                         {
                             CustomCar newCar = CreateCustomCar(directory, jsonFile);
@@ -51,11 +46,11 @@ namespace DVCustomCarLoader
                             if( newCar != null )
                             {
                                 CustomCarTypes.Add(newCar);
-                                Main.ModEntry.Logger.Log($"Successfully added new car to spawn list: {newCar.identifier}");
+                                Main.LogAlways($"Successfully added new car to spawn list: {newCar.identifier}");
                             }
                             else
                             {
-                                Main.ModEntry.Logger.Error($"Failed to load custom car from {directory}");
+                                Main.Error($"Failed to load custom car from {directory}");
                             }
                         }
                         else
@@ -76,19 +71,18 @@ namespace DVCustomCarLoader
 
                 if( File.Exists(assetBundlePath) )
                 {
-                    Main.ModEntry.Logger.Log(
-                        $"Loading AssetBundle: {assetBundleName} at path {assetBundlePath}");
+                    Main.LogVerbose($"Loading AssetBundle: {assetBundleName} at path {assetBundlePath}");
 
                     //Try to load asset bundle.
                     var assetBundle = AssetBundle.LoadFromFile(assetBundlePath);
 
                     if( assetBundle == null )
                     {
-                        Debug.Log($"Failed to load AssetBundle: {assetBundleName}");
+                        Main.Warning($"Failed to load AssetBundle: {assetBundleName}");
                         return null;
                     }
 
-                    Main.ModEntry.Logger.Log($"Successfully loaded asset bundle. Bundle name is {assetBundleName}");
+                    Main.LogVerbose($"Successfully loaded asset bundle. Bundle name is {assetBundleName}");
 
                     //Try to get car prefab from asset bundle
                     var prefabName = jsonFile[CarJSONKeys.PREFAB_NAME].str;
@@ -100,7 +94,7 @@ namespace DVCustomCarLoader
 
                     if( carPrefab != null )
                     {
-                        Main.ModEntry.Logger.Log($"Successfully loaded prefab from asset bundle. Prefab name is {carPrefab.name}");
+                        Main.LogVerbose($"Successfully loaded prefab from asset bundle. Prefab name is {carPrefab.name}");
 
                         var newCar = new CustomCar()
                         {
@@ -148,7 +142,7 @@ namespace DVCustomCarLoader
             }
             catch( Exception e )
             {
-                Main.ModEntry.Logger.Error(e.ToString());
+                Main.Error(e.ToString());
             }
 
             return null;

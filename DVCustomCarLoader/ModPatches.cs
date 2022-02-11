@@ -35,15 +35,13 @@ namespace DVCustomCarLoader
                 }
                 else
                 {
-                    Main.Log("Loco Lights traincar patch not found, skipping");
+                    Main.LogAlways("Loco Lights traincar patch not found, skipping");
                 }
             }
             catch( Exception ex )
             {
-                Main.Log("Not creating Loco Lights patch");
-#if DEBUG
-                Main.ModEntry.Logger.LogException(ex);
-#endif
+                Main.LogAlways("Not creating Loco Lights patch");
+                Main.LogVerbose(ex.ToString());
             }
         }
 

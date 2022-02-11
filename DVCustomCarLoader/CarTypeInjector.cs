@@ -182,7 +182,7 @@ namespace DVCustomCarLoader
             var origAudio = newFab.GetComponentInChildren<LocoTrainAudio>();
             if( origAudio )
             {
-                Main.Log($"Adding audio {typeof(TAudio).Name}");
+                Main.LogVerbose($"Creating audio prefab, type = {typeof(TAudio).Name}");
                 TAudio newAudio = origAudio.gameObject.AddComponent<TAudio>();
                 newAudio.PullSettingsFromOtherAudio(origAudio);
                 UnityEngine.Object.DestroyImmediate(origAudio);
@@ -438,7 +438,7 @@ namespace DVCustomCarLoader
     {
         public static void Prefix( TrainComponentPool __instance )
         {
-            Main.Log("Injecting custom cars into component pool");
+            Main.LogVerbose("Injecting custom cars into component pool");
 
             foreach( CustomCar car in CustomCarManager.CustomCarTypes )
             {

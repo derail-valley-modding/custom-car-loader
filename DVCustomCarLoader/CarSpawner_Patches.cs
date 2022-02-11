@@ -33,7 +33,7 @@ namespace DVCustomCarLoader
             {
                 if( !(AccessTools.Field(typeof(CarSpawner), nameof(CarSpawner.CarSpawned)).GetValue(null) is MulticastDelegate mcd) )
                 {
-                    Main.ModEntry.Logger.Error("Couldn't get CarSpawner.CarSpawned delegate");
+                    Main.Error("Couldn't get CarSpawner.CarSpawned delegate");
                     return;
                 }
 

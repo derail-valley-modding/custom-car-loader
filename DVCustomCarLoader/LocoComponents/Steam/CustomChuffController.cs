@@ -40,7 +40,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
 
             wheelCircumference = driverAnimation.DefaultWheelRadius * Mathf.PI * 2;
-            Main.Log("CustomChuffController awakened");
+            Main.LogVerbose("CustomChuffController awakened");
         }
 
         protected void Update()

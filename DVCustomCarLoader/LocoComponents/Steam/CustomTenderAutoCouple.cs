@@ -119,7 +119,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                         }
 
 #if DEBUG
-						Main.Log($"Trying to couple engine {attachedCar.ID} ({engineFuelType}) to tender {carInRange.ID} ({tenderFuel})");
+						Main.LogVerbose($"Trying to couple engine {attachedCar.ID} ({engineFuelType}) to tender {carInRange.ID} ({tenderFuel})");
 #endif
 
 						if (tenderFuel == engineFuelType)
@@ -128,7 +128,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 							if (rearCoupler.IsCoupled())
 							{
 #if DEBUG
-								Main.Log($"Auto-coupled steamer {attachedCar.ID} to tender {carInRange.ID}");
+								Main.LogVerbose($"Auto-coupled steamer {attachedCar.ID} to tender {carInRange.ID}");
 #endif
 
 								checkAutoCoupleCoro = null;

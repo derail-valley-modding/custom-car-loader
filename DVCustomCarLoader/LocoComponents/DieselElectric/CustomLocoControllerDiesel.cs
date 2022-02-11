@@ -251,7 +251,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			{
 				var keyboardCtrl = gameObject.AddComponent<LocoKeyboardInputDiesel>();
 				keyboardCtrl.control = this;
-				Main.Log("Added keyboard input to car");
+				Main.LogVerbose("Added keyboard input to car");
 			}
 
 			train.brakeSystem.compressorProductionRate = sim.simParams.AirCompressorRate;

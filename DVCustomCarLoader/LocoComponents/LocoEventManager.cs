@@ -112,7 +112,7 @@ namespace DVCustomCarLoader.LocoComponents
                 }
                 
 #if DEBUG
-                Main.Log($"EventManager Start: {pCount} providers, {aCount} acceptors");
+                Main.LogVerbose($"EventManager Start: {pCount} providers, {aCount} acceptors");
 #endif
             }
         }

@@ -63,7 +63,7 @@ namespace DVCustomCarLoader.Effects
 			}
 			enabled = anyMoving;
 
-			Main.Log($"DrivingAnimation on  Enabled: {enabled}");
+			Main.LogVerbose($"DrivingAnimation start, Enabled: {enabled}");
 
 			loco = gameObject.GetComponent<LocoControllerBase>();
 

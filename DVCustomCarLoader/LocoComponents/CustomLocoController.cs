@@ -39,6 +39,13 @@ namespace DVCustomCarLoader.LocoComponents
         // Headlights
         protected float _Headlights;
         public float Headlights => _Headlights;
+
+        protected float _ForwardLights;
+        public float ForwardLights => _ForwardLights;
+
+        protected float _RearLights;
+        public float RearLights => _RearLights;
+
         public void SetHeadlight( float value )
         {
             if( value != Headlights )
@@ -76,6 +83,12 @@ namespace DVCustomCarLoader.LocoComponents
             EventManager.UpdateValueDispatchOnChange(this, ref _BrakePipePressure, GetBrakePipePressure(), SimEventType.BrakePipe);
             EventManager.UpdateValueDispatchOnChange(this, ref _BrakeResPressure, GetBrakeResPressure(), SimEventType.BrakeReservoir);
             EventManager.UpdateValueDispatchOnChange(this, ref _IndependentPressure, GetIndependentPressure(), SimEventType.IndependentPipe);
+
+            float fwdLight = Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, 1, reverser));
+            EventManager.UpdateValueDispatchOnChange(this, ref _ForwardLights, fwdLight, SimEventType.LightsForward);
+
+            float revLight = Mathf.Lerp(0, _RearLights, Mathf.InverseLerp(0, -1, reverser));
+            EventManager.UpdateValueDispatchOnChange(this, ref _RearLights, revLight, SimEventType.LightsReverse);
 
             base.Update();
         }

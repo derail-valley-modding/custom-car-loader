@@ -29,7 +29,7 @@ namespace DVCustomCarLoader.LocoComponents
                     GameObject newIAObj = UnityEngine.Object.Instantiate(iArea.gameObject, newObject.transform.parent);
                     iArea = newIAObj.GetComponent<StaticInteractionArea>();
                     iAreaField.SetValue(realControlSpec, iArea);
-                    Main.Log("Instantiated static interaction area");
+                    Main.LogVerbose("Instantiated static interaction area");
                 }
             }
 
@@ -40,9 +40,8 @@ namespace DVCustomCarLoader.LocoComponents
             }
 
             // Add wrapper to connect the control to the loco brain
-#if DEBUG
-            Main.Log($"Add input relay to {newObject.name}");
-#endif
+            Main.LogVerbose($"Add input relay to {newObject.name}");
+
             var inputRelay = newObject.AddComponent<CabInputRelay>();
             inputRelay.Binding = spec.InputBinding;
             inputRelay.MapMin = spec.MappedMinimum;

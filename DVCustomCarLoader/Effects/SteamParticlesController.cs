@@ -71,7 +71,7 @@ namespace DVCustomCarLoader.Effects
             {
                 SmokeCoro = StartCoroutine(UpdateSmokeParticles(SMOKE_UPDATE_PERIOD));
             }
-            Main.Log("SteamParticlesController enabled");
+            Main.LogVerbose("SteamParticlesController enabled");
         }
 
         protected void OnDisable()
@@ -118,15 +118,16 @@ namespace DVCustomCarLoader.Effects
 
                 var main = chimneyParticles.main;
                 float burnRatePercent = controller.FuelConsumptionRate / controller.MaxFuelConsumptionRate;
-                Main.Log($"Chimney burn rate: {burnRatePercent} ({controller.FuelConsumptionRate}/{controller.MaxFuelConsumptionRate})");
+                Main.LogVerbose($"Chimney burn rate: {burnRatePercent} ({controller.FuelConsumptionRate}/{controller.MaxFuelConsumptionRate})");
+
                 if ((burnRatePercent == 0) && chimneyParticles.isPlaying)
                 {
-                    Main.Log("Chimney stop");
+                    Main.LogVerbose("Chimney stop");
                     chimneyParticles.Stop();
                 }
                 else if (!chimneyParticles.isPlaying)
                 {
-                    Main.Log("Chimney start");
+                    Main.LogVerbose("Chimney start");
                     chimneyParticles.Play();
                 }
 
