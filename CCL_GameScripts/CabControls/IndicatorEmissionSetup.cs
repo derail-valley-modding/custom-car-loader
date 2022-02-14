@@ -8,7 +8,6 @@ namespace CCL_GameScripts.CabControls
     {
         public override string TargetTypeName => "IndicatorEmission";
         public override bool DestroyAfterCreation => true;
-        public override IndicatorType IndicatorType => IndicatorType.Light;
 
         [ProxyField]
 		public bool binary = true;

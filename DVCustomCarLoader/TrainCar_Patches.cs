@@ -20,7 +20,7 @@ namespace DVCustomCarLoader
             if (!___loadedInterior.activeSelf)
             {
                 ___loadedInterior.gameObject.SetActive(true);
-                Main.Log($"Activating interior on {___loadedInterior.gameObject.name}");
+                Main.LogVerbose($"Activating interior on {___loadedInterior.gameObject.name}");
 
                 var eventMgr = __instance.gameObject.GetComponent<LocoEventManager>();
                 if (eventMgr)

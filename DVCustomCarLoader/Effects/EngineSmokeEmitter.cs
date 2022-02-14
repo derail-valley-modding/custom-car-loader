@@ -104,9 +104,8 @@ namespace DVCustomCarLoader.Effects
 
 		public void Toggle(bool on)
 		{
-#if DEBUG
-			Main.Log($"{gameObject.name} Engine Smoke toggle - {on}");
-#endif
+			Main.LogVerbose($"{gameObject.name} Engine Smoke toggle - {on}");
+
 			shouldPlayEngineOnParticles = on;
 			if (on)
 			{

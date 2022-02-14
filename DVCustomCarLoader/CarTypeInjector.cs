@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CCL_GameScripts;
 using CCL_GameScripts.Effects;
 using DV.Logic.Job;
 using DV.RenderTextureSystem.BookletRender;
 using DVCustomCarLoader.LocoComponents;
 using DVCustomCarLoader.LocoComponents.DieselElectric;
+using DVCustomCarLoader.LocoComponents.Steam;
 using HarmonyLib;
 using UnityEngine;
 
@@ -130,7 +129,7 @@ namespace DVCustomCarLoader
 
         private static void InjectCarTypesData( CustomCar car )
         {
-            if( car.LocoType != LocoParamsType.None )
+            if (car.LocoType.IsLocomotiveType())
             {
                 locomotivesMap?.Add(car.CarType);
 
@@ -183,7 +182,7 @@ namespace DVCustomCarLoader
             var origAudio = newFab.GetComponentInChildren<LocoTrainAudio>();
             if( origAudio )
             {
-                Main.Log($"Adding audio {typeof(TAudio).Name}");
+                Main.LogVerbose($"Creating audio prefab, type = {typeof(TAudio).Name}");
                 TAudio newAudio = origAudio.gameObject.AddComponent<TAudio>();
                 newAudio.PullSettingsFromOtherAudio(origAudio);
                 UnityEngine.Object.DestroyImmediate(origAudio);
@@ -254,6 +253,23 @@ namespace DVCustomCarLoader
                     break;
 
                 case LocoAudioBasis.Steam:
+                    sourcePrefab = GetPooledAudioPrefab(componentPool, TrainCarType.LocoSteamHeavy);
+                    if (sourcePrefab)
+                    {
+                        newPrefab = CopyAudioPrefab<CustomLocoAudioSteam>(sourcePrefab, audioConfig);
+
+                        var newPoolData = new AudioPoolReferences.AudioPoolData()
+                        {
+                            trainCarType = car.CarType,
+                            audioPrefab = newPrefab,
+                            poolSize = LOCO_POOL_SIZE
+                        };
+
+                        componentPool.audioPoolReferences.poolData.Add(newPoolData);
+                    }
+                    else Main.Warning("Couldn't find SH282 pooled audio");
+                    break;
+
                 default:
                     break;
             }
@@ -311,23 +327,17 @@ namespace DVCustomCarLoader
     [HarmonyPatch(typeof(CarTypes))]
     public static class CarTypes_LicenseCheck_Patches
     {
-        private static bool DoesCarNeedLicense( TrainCarType carType, LocoRequiredLicense license )
-        {
-            if( CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car) )
-            {
-                return (car.RequiredLicense == license);
-            }
-            else return false;
-        }
-
         [HarmonyPrefix]
         [HarmonyPatch(nameof(CarTypes.IsSteamLocomotive))]
         public static bool IsSteamLocomotive( TrainCarType carType, ref bool __result )
         {
             if( CarTypeInjector.IsInCustomRange(carType) )
             {
-                __result = DoesCarNeedLicense(carType, LocoRequiredLicense.Steam);
-                return false;
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = car.LocoType == LocoParamsType.Steam;
+                    return false;
+                }
             }
             return true;
         }
@@ -338,8 +348,11 @@ namespace DVCustomCarLoader
         {
             if( CarTypeInjector.IsInCustomRange(carType) )
             {
-                __result = DoesCarNeedLicense(carType, LocoRequiredLicense.DE2);
-                return false;
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.DieselElectric) && (car.RequiredLicense != LocoRequiredLicense.DE6);
+                    return false;
+                }
             }
             return true;
         }
@@ -350,8 +363,41 @@ namespace DVCustomCarLoader
         {
             if( CarTypeInjector.IsInCustomRange(carType) )
             {
-                __result = DoesCarNeedLicense(carType, LocoRequiredLicense.DE6);
-                return false;
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.DieselElectric) && (car.RequiredLicense == LocoRequiredLicense.DE6);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(CarTypes.IsTender))]
+        public static bool IsTender(TrainCarType carType, ref bool __result)
+        {
+            if (CarTypeInjector.IsInCustomRange(carType))
+            {
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.Tender);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(CarTypes.IsCaboose))]
+        public static bool IsCaboose(TrainCarType carType, ref bool __result)
+        {
+            if (CarTypeInjector.IsInCustomRange(carType))
+            {
+                if (CarTypeInjector.TryGetCustomCarByType(carType, out CustomCar car))
+                {
+                    __result = (car.LocoType == LocoParamsType.Caboose);
+                    return false;
+                }
             }
             return true;
         }
@@ -392,7 +438,7 @@ namespace DVCustomCarLoader
     {
         public static void Prefix( TrainComponentPool __instance )
         {
-            Main.Log("Injecting custom cars into component pool");
+            Main.LogVerbose("Injecting custom cars into component pool");
 
             foreach( CustomCar car in CustomCarManager.CustomCarTypes )
             {

@@ -66,7 +66,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         public override void TurnOffDebtSources()
         {
-            locoController.SetNeutralState();
+            locoController?.SetNeutralState();
         }
 
         public override void UpdateDebtValues()

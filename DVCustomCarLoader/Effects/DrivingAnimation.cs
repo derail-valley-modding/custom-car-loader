@@ -4,13 +4,15 @@ using System.Linq;
 using UnityEngine;
 using CCL_GameScripts.Effects;
 
-namespace DVCustomCarLoader.LocoComponents
+namespace DVCustomCarLoader.Effects
 {
     public class DrivingAnimation : MonoBehaviour
 	{
 		protected const string SPEED = "SpeedMultiplier";
 
 		public float MaxWheelslipMultiplier = 8f;
+		public bool IsDrivingWheels = false;
+		public float DefaultWheelRadius = 0.7f;
 
 		// Transforms
 		public Transform[] transformsToRotate;
@@ -61,7 +63,7 @@ namespace DVCustomCarLoader.LocoComponents
 			}
 			enabled = anyMoving;
 
-			Main.Log($"DrivingAnimation on  Enabled: {enabled}");
+			Main.LogVerbose($"DrivingAnimation start, Enabled: {enabled}");
 
 			loco = gameObject.GetComponent<LocoControllerBase>();
 

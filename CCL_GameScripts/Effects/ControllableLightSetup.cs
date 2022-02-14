@@ -9,7 +9,6 @@ namespace CCL_GameScripts.Effects
     {
         public override string TargetTypeName => "DVCustomCarLoader.Effects.ControllableLight";
         public override bool DestroyAfterCreation => true;
-        public override IndicatorType IndicatorType => IndicatorType.Light;
 
         [ProxyField]
         public Light[] Lights;

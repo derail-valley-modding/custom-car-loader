@@ -39,6 +39,8 @@ namespace DVCustomCarLoader
 				harmony = new Harmony(modEntry.Info.Id);
 				harmony.PatchAll(Assembly.GetExecutingAssembly());
 				LocoLights_Patch.TryCreatePatch(harmony);
+
+				DebugCommands.RegisterCommands();
 			}
 			catch( Exception ex )
             {
@@ -67,7 +69,16 @@ namespace DVCustomCarLoader
 
 		#region Logging
 
-		public static void Log( string msg ) => ModEntry.Logger.Log(msg);
+		public static void LogVerbose(string msg)
+		{
+			if (Settings.VerboseMode)
+			{
+				ModEntry.Logger.Log(msg);
+			}
+		}
+
+		public static void LogAlways(string msg) => ModEntry.Logger.Log(msg);
+
 		public static void Warning( string msg ) => ModEntry.Logger.Warning(msg);
 		public static void Error( string msg ) => ModEntry.Logger.Error(msg);
 

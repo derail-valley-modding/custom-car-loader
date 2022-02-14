@@ -39,6 +39,13 @@ namespace DVCustomCarLoader.LocoComponents
         // Headlights
         protected float _Headlights;
         public float Headlights => _Headlights;
+
+        protected float _ForwardLights;
+        public float ForwardLights => _ForwardLights;
+
+        protected float _RearLights;
+        public float RearLights => _RearLights;
+
         public void SetHeadlight( float value )
         {
             if( value != Headlights )
@@ -76,6 +83,12 @@ namespace DVCustomCarLoader.LocoComponents
             EventManager.UpdateValueDispatchOnChange(this, ref _BrakePipePressure, GetBrakePipePressure(), SimEventType.BrakePipe);
             EventManager.UpdateValueDispatchOnChange(this, ref _BrakeResPressure, GetBrakeResPressure(), SimEventType.BrakeReservoir);
             EventManager.UpdateValueDispatchOnChange(this, ref _IndependentPressure, GetIndependentPressure(), SimEventType.IndependentPipe);
+
+            float fwdLight = Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, 1, reverser));
+            EventManager.UpdateValueDispatchOnChange(this, ref _ForwardLights, fwdLight, SimEventType.LightsForward);
+
+            float revLight = Mathf.Lerp(0, _RearLights, Mathf.InverseLerp(0, -1, reverser));
+            EventManager.UpdateValueDispatchOnChange(this, ref _RearLights, revLight, SimEventType.LightsReverse);
 
             base.Update();
         }
@@ -130,10 +143,11 @@ namespace DVCustomCarLoader.LocoComponents
         #endregion
     }
 
-    public abstract class CustomLocoController<TSim,TDmg,TEvents> : CustomLocoController
+    public abstract class CustomLocoController<TSim, TDmg, TEvents, TSave> : CustomLocoController
         where TSim : CustomLocoSimulation
         where TDmg : DamageControllerCustomLoco
         where TEvents : CustomLocoSimEvents<TSim, TDmg>
+        where TSave : CustomLocoSaveState
     {
         protected TSim sim;
         protected TDmg damageController;
@@ -151,6 +165,7 @@ namespace DVCustomCarLoader.LocoComponents
             {
                 brakePowerCurve = simParams.BrakePowerCurve;
                 tractionTorqueCurve = simParams.TractionTorqueCurve;
+                tractionTorqueMult = simParams.tractionTorqueMultiplier;
             }
             else
             {
@@ -159,6 +174,9 @@ namespace DVCustomCarLoader.LocoComponents
 
             carVisitChecker = gameObject.AddComponent<CarVisitChecker>();
             carVisitChecker.Initialize(train);
+
+            var saveState = gameObject.AddComponent<TSave>();
+            saveState.Initialize(carVisitChecker);
 
             train.LogicCarInitialized += OnLogicCarInitialized;
         }

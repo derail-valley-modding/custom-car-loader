@@ -85,7 +85,7 @@ namespace DVCustomCarLoader.LocoComponents
                 );
 
                 SetBodyDamageProps(props);
-                Main.Log("Applied body damage properties");
+                Main.LogVerbose("Applied body damage properties");
             }
             else
             {

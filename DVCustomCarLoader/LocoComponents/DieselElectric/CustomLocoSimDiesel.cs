@@ -58,7 +58,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 		{
 			base.InitComponents();
 
-			sand = new SimComponent("Sand", 0f, simParams.SandCapacity, 40f, simParams.SandCapacity);
+			sand = new SimComponent("Sand", 0f, simParams.SandCapacity, simParams.SandCapacity * 0.2f, simParams.SandCapacity);
 			speed = new SimComponent("Speed", 0f, simParams.MaxSpeed, 1f, 0f);
 			fuel = new SimComponent("Fuel", 0f, simParams.FuelCapacity, 1200f, simParams.FuelCapacity);
 			oil = new SimComponent("Oil", 0f, simParams.OilCapacity, 100f, simParams.OilCapacity);

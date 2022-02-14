@@ -12,23 +12,25 @@ namespace CCL_GameScripts
         /// </summary>
         public static Vector3 GetModelCenterline( GameObject gameObject )
         {
-            Vector3 massZeroVector = Vector3.forward;
+            Vector3 massCenter = Vector3.forward;
 
             var renderers = gameObject.GetComponentsInChildren<Renderer>();
             if( renderers.Length > 0 )
             {
-                massZeroVector = Vector3.zero;
+                massCenter = Vector3.zero;
 
                 foreach( Renderer r in renderers )
                 {
-                    Vector3 center = gameObject.transform.InverseTransformPoint(r.bounds.center);
-                    massZeroVector += center;
+                    //Vector3 center = r.transform.InverseTransformPoint(r.bounds.center);
+                    massCenter += r.bounds.center;
                 }
+
+                massCenter /= renderers.Length;
             }
 
-            if( massZeroVector == Vector3.zero ) return Vector3.forward;
+            if( massCenter == Vector3.zero ) return Vector3.forward;
 
-            return massZeroVector;
+            return massCenter;
         }
 
         /// <summary>
@@ -47,6 +49,27 @@ namespace CCL_GameScripts
 
             gizmoZeroVector = gizmoZeroVector.normalized;
             return (gizmoZeroVector, massZeroVector);
+        }
+
+
+        public static Transform FindSafe(this Transform tform, string name)
+        {
+            var names = new[] { name, $"{name} 1", $"{name} " };
+
+            foreach (var attempt in names)
+            {
+                try
+                {
+                    var result = tform.Find(attempt);
+                    if (result) return result;
+                }
+                catch (NullReferenceException)
+                {
+
+                }
+            }
+
+            return null;
         }
     }
 }

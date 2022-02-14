@@ -65,6 +65,8 @@
     <Compile Include="CabControls\CopiedRotary.cs" />
     <Compile Include="CabControls\CopiedToggle.cs" />
     <Compile Include="CabControls\GaugeSetup.cs" />
+    <Compile Include="CabControls\IndicatorSliderSetup.cs" />
+    <Compile Include="CabControls\IndicatorScalerSetup.cs" />
     <Compile Include="CabControls\IndicatorSetupBase.cs" />
     <Compile Include="CabControls\LeverSetup.cs" />
     <Compile Include="CabControls\IndicatorEmissionSetup.cs" />
@@ -89,6 +91,8 @@
     <Compile Include="Effects\DirectionalLightSetup.cs" />
     <Compile Include="Effects\DrivingAnimationSetup.cs" />
     <Compile Include="Effects\SmokeEmissionSetup.cs" />
+    <Compile Include="Effects\SteamEmissionSetup.cs" />
+    <Compile Include="FireboxSetup.cs" />
     <Compile Include="JSONObject\JSONObject.cs" />
     <Compile Include="JSONObject\VectorTemplates.cs" />
     <Compile Include="ModelUtil.cs" />
@@ -96,6 +100,8 @@
     <Compile Include="SimParamsBase.cs" />
     <Compile Include="SimParamsDiesel.cs" />
     <Compile Include="Editor\SimParamsEditor.cs" />
+    <Compile Include="SimParamsSteam.cs" />
+    <Compile Include="TenderSetup.cs" />
     <Compile Include="TrainCarSetup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

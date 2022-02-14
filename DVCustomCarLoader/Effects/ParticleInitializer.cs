@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CCL_GameScripts.Effects;
+using System.Collections;
 using UnityEngine;
 
 namespace DVCustomCarLoader.Effects
@@ -7,6 +8,7 @@ namespace DVCustomCarLoader.Effects
     {
         private static GameObject de6EngineSmokeTemplate;
         private static GameObject shunterEngineSmokeTemplate;
+        private static GameObject steamEngineParticleTemplate;
 
         private static bool fetched = false;
 
@@ -17,6 +19,8 @@ namespace DVCustomCarLoader.Effects
         public static AnimationCurve ShunterEmissionRatePerThrottleCurve;
         public static AnimationCurve ShunterStartSpeedMultPerThrottleCurve;
         public static AnimationCurve ShunterMaxParticlesPerThrottle;
+
+        public static SteamLocoChuffSmokeParticles sh282ChuffParticles;
 
         public static void FetchDefaults()
         {
@@ -54,6 +58,17 @@ namespace DVCustomCarLoader.Effects
             ShunterStartSpeedMultPerThrottleCurve   = shunterSmoke.startSpeedMultPerThrottleCurve;
             ShunterMaxParticlesPerThrottle          = shunterSmoke.maxParticlesPerThrottle;
 
+            // Steam
+            carRoot = CarTypes.GetCarPrefab(TrainCarType.LocoSteamHeavy);
+            sh282ChuffParticles = carRoot.GetComponent<SteamLocoChuffSmokeParticles>();
+
+            particles = carRoot.transform.Find(CarPartNames.PARTICLE_ROOT).gameObject;
+            steamEngineParticleTemplate = GameObject.Instantiate(particles);
+            steamEngineParticleTemplate.SetActive(false);
+
+            sparks = steamEngineParticleTemplate.transform.Find(CarPartNames.WHEEL_SPARKS).gameObject;
+            GameObject.DestroyImmediate(sparks);
+
             fetched = true;
         }
 
@@ -86,6 +101,17 @@ namespace DVCustomCarLoader.Effects
             smoke.AlignEmittersToRoot();
             return smoke;
         }
+
+        public static SteamParticles AddSteamParticles(SteamParticlesController controller, SteamEmissionSetup spec)
+        {
+            var newParticleRoot = GameObject.Instantiate(steamEngineParticleTemplate, controller.transform);
+            newParticleRoot.name = CarPartNames.PARTICLE_ROOT;
+            newParticleRoot.transform.localPosition = Vector3.zero;
+
+            var particles = new SteamParticles(newParticleRoot);
+            particles.AlignParticles(spec);
+            return particles;
+        }
     }
 
     public struct EngineSmokeParticles
@@ -115,6 +141,62 @@ namespace DVCustomCarLoader.Effects
             EngineSmoke.gameObject.transform.localPosition = Vector3.zero;
             HighTempSmoke.gameObject.transform.localPosition = Vector3.zero;
             DamagedSmoke.gameObject.transform.localPosition = Vector3.zero;
+        }
+    }
+
+    public struct SteamParticles
+    {
+        public GameObject Root;
+
+        public ParticleSystem ChimneyParticles;
+        public ParticleSystem ChuffParticlesLeft;
+        public ParticleSystem ChuffParticlesRight;
+
+        public ParticleSystem WhistleMid;
+        public ParticleSystem WhistleFront;
+
+        public ParticleSystem ReleaseLeft;
+        public ParticleSystem ReleaseRight;
+
+        public ParticleSystem SafetyRelease;
+
+        public SteamParticles(GameObject root)
+        {
+            Root = root;
+            var t = root.transform;
+
+            ChimneyParticles = t.Find(CarPartNames.CHIMNEY_STEAM).GetComponentInChildren<ParticleSystem>();
+            ChuffParticlesLeft = t.Find(CarPartNames.STEAM_CHUFF_L).GetComponentInChildren<ParticleSystem>();
+            ChuffParticlesRight = t.Find(CarPartNames.STEAM_CHUFF_R).GetComponentInChildren<ParticleSystem>();
+
+            WhistleMid = t.Find(CarPartNames.STEAM_WHISTLE_M).GetComponentInChildren<ParticleSystem>();
+            WhistleFront = t.Find(CarPartNames.STEAM_WHISTLE_F).GetComponentInChildren<ParticleSystem>();
+
+            ReleaseLeft = t.Find(CarPartNames.STEAM_RELEASE_L).GetComponentInChildren<ParticleSystem>();
+            ReleaseRight = t.Find(CarPartNames.STEAM_RELEASE_R).GetComponentInChildren<ParticleSystem>();
+            SafetyRelease = t.Find(CarPartNames.STEAM_RELEASE_SAFETY).GetComponentInChildren<ParticleSystem>();
+        }
+
+        private void ApplyOffset(Transform tform, ParticleSystem particles)
+        {
+            var parent = particles.transform.parent;
+            Vector3 offset = tform ? Root.transform.InverseTransformPoint(tform.position) : Vector3.zero;
+            parent.localPosition = offset;
+            particles.transform.localPosition = Vector3.zero;
+        }
+
+        public void AlignParticles(SteamEmissionSetup spec)
+        {
+            ApplyOffset(spec.ChimneyParticlesLocation, ChimneyParticles);
+            ApplyOffset(spec.ChuffParticlesLeftLocation, ChuffParticlesLeft);
+            ApplyOffset(spec.ChuffParticlesRightLocation, ChuffParticlesRight);
+
+            ApplyOffset(spec.WhistleMidLocation, WhistleMid);
+            ApplyOffset(spec.WhistleFrontLocation, WhistleFront);
+
+            ApplyOffset(spec.ReleaseLeftLocation, ReleaseLeft);
+            ApplyOffset(spec.ReleaseRightLocation, ReleaseRight);
+            ApplyOffset(spec.SafetyReleaseLocation, SafetyRelease);
         }
     }
 }

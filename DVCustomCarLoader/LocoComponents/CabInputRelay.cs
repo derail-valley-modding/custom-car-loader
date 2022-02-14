@@ -44,6 +44,7 @@ namespace DVCustomCarLoader.LocoComponents
 					initializedField = AccessTools.Field(__control.GetType(), "isInitialized");
 					__control.ValueChanged += OnValueChanged;
 					__control.Used += OnUsed;
+					newControl = true;
 				}
             }
         }
@@ -53,6 +54,7 @@ namespace DVCustomCarLoader.LocoComponents
 		protected Func<float> GetTargetValue = null;
 		private float lastValue;
 
+		private bool newControl = true;
 		private FieldInfo initializedField = null;
 		protected bool IsControlInitialized
         {
@@ -99,6 +101,10 @@ namespace DVCustomCarLoader.LocoComponents
         {
 			ValueChanged += (s, e) => onUserInput(e);
 			GetTargetValue = getFeedback;
+			if (getFeedback != null)
+            {
+				lastValue = getFeedback();
+            }
 
 			Initialized = true;
         }
@@ -107,6 +113,10 @@ namespace DVCustomCarLoader.LocoComponents
         {
 			ValueChanged += onUserInput;
 			GetTargetValue = getFeedback;
+			if (getFeedback != null)
+			{
+				lastValue = getFeedback();
+			}
 
 			Initialized = true;
         }
@@ -119,6 +129,7 @@ namespace DVCustomCarLoader.LocoComponents
 
 		private void OnValueChanged( ValueChangedEventArgs e )
         {
+			if (newControl) return;
 			ValueChanged?.Invoke(this, ControlPositionToBoundValue(e.newValue));
         }
 
@@ -142,6 +153,13 @@ namespace DVCustomCarLoader.LocoComponents
 					Main.Warning($"Input relay {name} is missing ControlImplBase");
 					return;
                 }
+            }
+
+			if (newControl && IsControlInitialized)
+            {
+				Control.SetValue(BoundValueToControlPosition(lastValue));
+				newControl = false;
+				return;
             }
 
 			// handle feedback from the loco controller (eg keyboard controls)

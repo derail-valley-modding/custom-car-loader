@@ -7,7 +7,19 @@ namespace CCL_GameScripts
     {
         None = 0,
         DieselElectric = 1,
-        Steam = 2
+        Steam = 2,
+        Tender = 3,
+        Caboose = 4
+    }
+
+    public static class LocoParamsExtensions
+    {
+        public static bool IsLocomotiveType(this LocoParamsType paramsType)
+        {
+            return
+                (paramsType == LocoParamsType.DieselElectric) ||
+                (paramsType == LocoParamsType.Steam);
+        }
     }
 
     public enum LocoRequiredLicense
@@ -26,6 +38,7 @@ namespace CCL_GameScripts
         Steam = 3,
     }
 
+    [RequireComponent(typeof(TrainCarSetup))]
     public abstract class SimParamsBase : MonoBehaviour
     {
         [HideInInspector]
@@ -45,6 +58,7 @@ namespace CCL_GameScripts
         [Header("Physics Curves")]
         public AnimationCurve BrakePowerCurve;
         public AnimationCurve TractionTorqueCurve;
+        public float tractionTorqueMultiplier = 250000;
 
         [Header("Drivers")]
         public bool PreventWheelslip = false;

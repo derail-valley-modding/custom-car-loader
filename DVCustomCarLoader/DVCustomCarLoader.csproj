@@ -16,7 +16,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>embedded</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -62,6 +62,7 @@
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
@@ -78,20 +79,23 @@
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
     <Compile Include="CCLSettings.cs" />
+    <Compile Include="DebugCommands.cs" />
     <Compile Include="Effects\ControllableLight.cs" />
-    <Compile Include="Effects\DirectionalLightController.cs" />
     <Compile Include="Effects\EngineSmokeEmitter.cs" />
     <Compile Include="Effects\ParticleInitializer.cs" />
+    <Compile Include="Effects\SteamParticlesController.cs" />
     <Compile Include="InitSpecManager.cs" />
     <Compile Include="LocoComponents\CabControlInitializers.cs" />
     <Compile Include="LocoComponents\CabInputRelay.cs" />
     <Compile Include="LocoComponents\CabinSnapshotSwitcher.cs" />
     <Compile Include="Effects\DrivingAnimation.cs" />
     <Compile Include="LocoComponents\CustomCabInputController.cs" />
+    <Compile Include="LocoComponents\CustomLocoSaveState.cs" />
     <Compile Include="LocoComponents\DieselElectric\CustomDieselReverserLock.cs" />
     <Compile Include="LocoComponents\CustomFuseController.cs" />
     <Compile Include="LocoComponents\DashboardLampRelay.cs" />
     <Compile Include="LocoComponents\CustomLocoAudio.cs" />
+    <Compile Include="LocoComponents\DieselElectric\CustomDieselSaveState.cs" />
     <Compile Include="LocoComponents\DieselElectric\CustomLocoAudioDiesel.cs" />
     <Compile Include="LocoComponents\DoorAndWindowTracker.cs" />
     <Compile Include="LocoComponents\ICabControlAcceptor.cs" />
@@ -99,6 +103,21 @@
     <Compile Include="LocoComponents\LocoEventManager.cs" />
     <Compile Include="LocoComponents\IndicatorRelay.cs" />
     <Compile Include="LocoComponents\LocoComponentManager.cs" />
+    <Compile Include="LocoComponents\Steam\CustomChuffController.cs" />
+    <Compile Include="LocoComponents\Steam\CustomCoalPile.cs" />
+    <Compile Include="LocoComponents\Steam\CustomDamageControllerSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomFire.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoAudioSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoControllerSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoSimEventsSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomLocoSimSteam.cs" />
+    <Compile Include="LocoComponents\Steam\CustomSteamDebugGUI.cs" />
+    <Compile Include="LocoComponents\Steam\CustomTenderAutoCouple.cs" />
+    <Compile Include="LocoComponents\Steam\CustomTenderDebtTracker.cs" />
+    <Compile Include="LocoComponents\Steam\CustomTenderSaveState.cs" />
+    <Compile Include="LocoComponents\Steam\CustomTenderSimulation.cs" />
+    <Compile Include="LocoComponents\Steam\ShovelPatches.cs" />
+    <Compile Include="LocoComponents\VisitCheckerPatch.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />

@@ -54,7 +54,7 @@ namespace DVCustomCarLoader
 
         public bool FinalizePrefab()
         {
-            Main.ModEntry.Logger.Log($"Augmenting prefab for {identifier}");
+            Main.LogVerbose($"Augmenting prefab for {identifier}");
 
             GameObject newFab = Object.Instantiate(CarPrefab, null);
             newFab.SetActive(false);
@@ -112,7 +112,7 @@ namespace DVCustomCarLoader
             if( !colliderRoot )
             {
                 // collider should be initialized in prefab, but make sure
-                Main.ModEntry.Logger.Warning($"Adding collision root to {identifier}, should have been part of prefab!");
+                Main.Warning($"Adding collision root to {identifier}, should have been part of prefab!");
 
                 GameObject colliders = new GameObject(CarPartNames.COLLIDERS_ROOT);
                 colliderRoot = colliders.transform;
@@ -136,7 +136,7 @@ namespace DVCustomCarLoader
                 Transform items = colliderRoot.Find(CarPartNames.ITEM_COLLIDERS);
                 if( !items )
                 {
-                    Main.ModEntry.Logger.Log("Reusing walkable colliders as item colliders");
+                    Main.LogVerbose("Reusing walkable colliders as item colliders");
                     GameObject newItemsObj = Object.Instantiate(walkable.gameObject, colliderRoot);
                     newItemsObj.name = CarPartNames.ITEM_COLLIDERS;
                 }
@@ -151,7 +151,7 @@ namespace DVCustomCarLoader
                     var walkableColliders = walkable.GetComponentsInChildren<BoxCollider>();
                     if( walkableColliders.Length > 0 )
                     {
-                        Main.ModEntry.Logger.Log("Building bounding collision box from walkable colliders");
+                        Main.LogVerbose("Building bounding collision box from walkable colliders");
 
                         Bounds boundBox = BoundsUtil.BoxColliderAABB(walkableColliders[0], newFab.transform);
                         for( int i = 1; i < walkableColliders.Length; i++ )
@@ -169,7 +169,7 @@ namespace DVCustomCarLoader
             Transform bogieColliderTform = colliderRoot.transform.Find(CarPartNames.BOGIE_COLLIDERS);
             if( !bogieColliderTform )
             {
-                Main.ModEntry.Logger.Log("Adding bogie collider root");
+                Main.LogVerbose("Adding bogie collider root");
 
                 GameObject bogiesRoot = new GameObject(CarPartNames.BOGIE_COLLIDERS);
                 bogieColliderTform = bogiesRoot.transform;
@@ -190,17 +190,17 @@ namespace DVCustomCarLoader
             Transform newFrontBogieTransform = newFab.transform.Find(CarPartNames.BOGIE_FRONT);
             if( !newFrontBogieTransform )
             {
-                Main.ModEntry.Logger.Error("Front bogie transform is missing from prefab!");
+                Main.Error("Front bogie transform is missing from prefab!");
             }
 
             Transform newRearBogieTransform = newFab.transform.Find(CarPartNames.BOGIE_REAR);
             if( !newRearBogieTransform )
             {
-                Main.ModEntry.Logger.Error("Rear bogie transform is missing from prefab!");
+                Main.Error("Rear bogie transform is missing from prefab!");
             }
 
             // Front bogie
-            if( this.HasCustomFrontBogie && newFrontBogieTransform )
+            if( HasCustomFrontBogie && newFrontBogieTransform )
             {
                 // replacing the original bogie, only steal the script
                 frontBogie = newFrontBogieTransform.gameObject.AddComponent<Bogie>();
@@ -234,7 +234,7 @@ namespace DVCustomCarLoader
             }
 
             // Rear bogie
-            if( this.HasCustomRearBogie && newRearBogieTransform )
+            if( HasCustomRearBogie && newRearBogieTransform )
             {
                 // use bogie from new prefab
                 rearBogie = newRearBogieTransform.gameObject.AddComponent<Bogie>();
@@ -292,7 +292,7 @@ namespace DVCustomCarLoader
             var newCar = InitSpecManager.CreateRealComponent<TrainCarSetup, TrainCar>(carSetup);
             if( !newCar )
             {
-                Main.Warning("Couldn't create TrainCar component");
+                Main.Error($"Couldn't create TrainCar component for car {identifier}");
                 Object.Destroy(newFab);
                 return false;
             }
@@ -303,7 +303,7 @@ namespace DVCustomCarLoader
             FullDamagePrice = carSetup.FullDamagePrice;
             ReplaceBaseType = carSetup.ReplaceBaseType;
 
-            Main.Log($"Cargo class: {CargoClass}, Damage price: {FullDamagePrice}");
+            Main.LogVerbose($"Cargo class: {CargoClass}, Damage price: {FullDamagePrice}, ReplaceBase: {ReplaceBaseType}");
 
             if( !carSetup.OverridePhysics )
             {
@@ -326,31 +326,25 @@ namespace DVCustomCarLoader
                 LocoType = simParams.SimType;
                 LocoAudioType = simParams.AudioType;
                 RequiredLicense = simParams.RequiredLicense;
-
-                if( carSetup.InteriorPrefab )
+            }
+            else
+            {
+                var tenderSetup = newFab.GetComponent<TenderSetup>();
+                if (tenderSetup)
                 {
-                    GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
-                    interiorFab.SetActive(false);
-                    Object.DontDestroyOnLoad(interiorFab);
-
-                    LocoComponentManager.SetupCabComponents(interiorFab, simParams.SimType);
-                    interiorFab.SetLayersRecursive("Interactable");
-
-                    interiorFab.AddComponent<DoorAndWindowTracker>();
-
-                    newCar.interiorPrefab = interiorFab;
-                    InteriorPrefab = interiorFab;
+                    LocoType = LocoParamsType.Tender;
                 }
             }
-            else if( carSetup.InteriorPrefab )
+
+            if( carSetup.InteriorPrefab )
             {
                 GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
                 interiorFab.SetActive(false);
                 Object.DontDestroyOnLoad(interiorFab);
 
-                LocoComponentManager.CreateComponentsFromProxies(interiorFab);
-                LocoComponentManager.CreateCopiedControls(interiorFab);
-                interiorFab.SetLayersRecursive("Interactable");
+                LocoComponentManager.SetupCabComponents(interiorFab, LocoType);
+                LocoComponentManager.SetInteriorLayers(interiorFab);
+                LocoComponentManager.MakeDoorsCollidable(interiorFab);
 
                 interiorFab.AddComponent<DoorAndWindowTracker>();
 
@@ -394,7 +388,7 @@ namespace DVCustomCarLoader
             CarPrefab = newFab;
             CarPrefab.name = identifier;
 
-            Main.ModEntry.Logger.Log($"Finalized prefab for {identifier}");
+            Main.LogVerbose($"Finalized prefab for {identifier}");
             return true;
         }
 
@@ -538,7 +532,7 @@ namespace DVCustomCarLoader
                 }
                 else
                 {
-                    Main.ModEntry.Logger.Log($"Unknown buffer child {childName}");
+                    Main.LogVerbose($"Unknown buffer child {childName}");
                 }
             }
 
@@ -565,7 +559,7 @@ namespace DVCustomCarLoader
             for (int i = 0; i < bufferRoot.transform.childCount; i++)
             {
                 Transform child = bufferRoot.transform.GetChild(i);
-                string childName = child.name.Trim();
+                string childName = child.name.Trim(' ', '1');
 
                 if (CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName))
                 {
@@ -575,34 +569,50 @@ namespace DVCustomCarLoader
                     {
                         child.localPosition = frontRigPosition;
                         newFrontBufferRig = child;
-                        Main.Log($"Set newFrontBufferRig {newFrontBufferRig.name}");
+                        Main.LogVerbose($"Set newFrontBufferRig {newFrontBufferRig.name}");
                     }
                     else
                     {
                         child.localPosition = rearRigPosition;
                         newRearBufferRig = child;
-                        Main.Log($"Set newRearBufferRig {newRearBufferRig.name}");
+                        Main.LogVerbose($"Set newRearBufferRig {newRearBufferRig.name}");
                     }
                 }
                 else if (CarPartNames.BUFFER_PLATE_FRONT.Equals(childName))
                 {
                     // front hook plate
                     child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
+                    Main.LogVerbose("Adjust Hook Plate F");
                 }
                 else if (CarPartNames.BUFFER_PLATE_REAR.Equals(childName))
                 {
                     // rear hook plate
                     child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
+                    Main.LogVerbose("Adjust Hook Plate R");
                 }
                 else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName) || CarPartNames.BUFFER_REAR_PADS.Contains(childName))
                 {
                     // destroy template buffer pads since we're overriding
                     GameObject.Destroy(child.gameObject);
+                    Main.LogVerbose($"Destroy buffer pad {childName}");
                 }
                 else
                 {
-                    Main.Log($"Unknown buffer child {childName}");
+                    Main.LogVerbose($"Unknown buffer child {childName}");
                 }
+            }
+
+            if (!newRearBufferRig)
+            {
+                newRearBufferRig = GameObject.Instantiate(newFrontBufferRig, newFrontBufferRig.parent);
+                newRearBufferRig.eulerAngles = new Vector3(0, 180, 0);
+                newRearBufferRig.localPosition = rearRigPosition;
+            }
+            if (!newFrontBufferRig)
+            {
+                newFrontBufferRig = GameObject.Instantiate(newRearBufferRig, newRearBufferRig.parent);
+                newFrontBufferRig.eulerAngles = Vector3.zero;
+                newFrontBufferRig.localPosition = frontRigPosition;
             }
 
             // reparent buffer pads to new root & adjust anchor positions
@@ -624,21 +634,31 @@ namespace DVCustomCarLoader
                     newBufferRig = newRearBufferRig;
                 }
 
+                Main.LogVerbose($"Adjust pads for {newBufferRig?.name}, rig = {rig != null}: {rig?.name}");
+
                 // Reparent buffer pads
                 BufferController bufferController = newBufferRig.gameObject.GetComponentInChildren<BufferController>(true);
                 if (bufferController)
                 {
-                    var lPad = rig.Find(lPadName);
-                    Vector3 position = newPrefab.transform.InverseTransformPoint(lPad.position);
-                    lPad.parent = bufferRoot.transform;
-                    lPad.localPosition = position;
-                    bufferController.bufferModelLeft = lPad;
+                    Vector3 position;
+
+                    var lPad = rig.FindSafe(lPadName);
+                    if (lPad)
+                    {
+                        position = newPrefab.transform.InverseTransformPoint(lPad.position);
+                        lPad.parent = bufferRoot.transform;
+                        lPad.localPosition = position;
+                        bufferController.bufferModelLeft = lPad;
+                    }
 
                     var rPad = rig.Find(rPadName);
-                    position = newPrefab.transform.InverseTransformPoint(rPad.position);
-                    rPad.parent = bufferRoot.transform;
-                    rPad.localPosition = position;
-                    bufferController.bufferModelRight = rPad;
+                    if (rPad)
+                    {
+                        position = newPrefab.transform.InverseTransformPoint(rPad.position);
+                        rPad.parent = bufferRoot.transform;
+                        rPad.localPosition = position;
+                        bufferController.bufferModelRight = rPad;
+                    }
                 }
                 else
                 {
@@ -647,11 +667,13 @@ namespace DVCustomCarLoader
                 }
 
                 // Adjust new anchors to match positions in prefab
-                Transform bufferChainRig = rig.Find(CarPartNames.BUFFER_CHAIN_REGULAR);
+                Transform bufferChainRig = rig.FindSafe(CarPartNames.BUFFER_CHAIN_REGULAR);
+
+                Main.LogVerbose($"Adjust anchors for {newBufferRig.name} - {bufferChainRig?.name}");
 
                 foreach (string anchorName in CarPartNames.BUFFER_ANCHORS)
                 {
-                    var anchor = bufferChainRig.Find(anchorName);
+                    var anchor = bufferChainRig.FindSafe(anchorName);
                     var newAnchor = newBufferRig.Find(anchorName);
 
                     newAnchor.localPosition = anchor.localPosition;
@@ -660,16 +682,22 @@ namespace DVCustomCarLoader
                 // Adjust air hose & MU connector positions
                 if (customHoses)
                 {
-                    var hoseRoot = bufferChainRig.Find(CarPartNames.HOSES_ROOT);
+                    Main.LogVerbose($"Adjust hoses for {newBufferRig?.name}");
+
+                    var hoseRoot = bufferChainRig.FindSafe(CarPartNames.HOSES_ROOT);
                     var newHoseRoot = newBufferRig.Find(CarPartNames.HOSES_ROOT);
 
-                    if (hoseRoot.Find(CarPartNames.AIR_HOSE) is Transform airHose)
+                    Transform airHose = hoseRoot.FindSafe(CarPartNames.AIR_HOSE);
+                    Main.LogVerbose($"Air hose = {!!airHose}");
+                    if (airHose)
                     {
                         var newAir = newHoseRoot.Find(CarPartNames.AIR_HOSE);
                         newAir.localPosition = airHose.localPosition;
                     }
 
-                    if (hoseRoot.Find(CarPartNames.MU_CONNECTOR) is Transform muHose)
+                    Transform muHose = hoseRoot.FindSafe(CarPartNames.MU_CONNECTOR);
+                    Main.LogVerbose($"MU hose = {!!muHose}");
+                    if (muHose)
                     {
                         var newMU = newHoseRoot.Find(CarPartNames.MU_CONNECTOR);
                         newMU.localPosition = muHose.localPosition;

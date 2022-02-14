@@ -12,11 +12,23 @@ namespace CCL_GameScripts.Attributes
         public string TargetName;
         public int OverrideFlag;
 
-        public ProxyFieldAttribute( string proxyField = null, int overrideFlag = -1 )
+        public ProxyFieldAttribute(string targetName = null, int overrideFlag = -1)
         {
-            TargetName = proxyField;
+            TargetName = targetName;
             OverrideFlag = overrideFlag;
         }
+
+        public ProxyFieldAttribute(int overrideFlag)
+        {
+            TargetName = null;
+            OverrideFlag = overrideFlag;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Field)]
+    public class ProxyFieldIfSetAttribute : ProxyFieldAttribute
+    {
+        public ProxyFieldIfSetAttribute(string targetName = null) : base(targetName) { }
     }
 
     [AttributeUsage(AttributeTargets.Field)]
@@ -98,6 +110,18 @@ namespace CCL_GameScripts.Attributes
                             // direct assignment
                             assignValueType = sourceField.FieldType;
                             assignValue = sourceField.GetValue(source);
+                        }
+
+                        if (proxy is ProxyFieldIfSetAttribute)
+                        {
+                            if (typeof(Component).IsAssignableFrom(assignValueType))
+                            {
+                                if (!(Component)assignValue) continue;
+                            }
+                            else if (assignValue == null)
+                            {
+                                continue;
+                            }
                         }
 
                         if( targetField.FieldType.IsAssignableFrom(assignValueType) )

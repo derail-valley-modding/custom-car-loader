@@ -37,12 +37,12 @@ namespace DVCustomCarLoader.LocoComponents
             if (car.Bogies.Length != BogieCount)
             {
                 BogieCount = car.Bogies.Length;
-                Main.Log($"Resetting audio {GetType()} on car {car.ID}");
+                Main.LogVerbose($"Resetting audio {GetType()} on car {car.ID}");
                 Awake();
             }
             else if ( bogieAudioField.GetValue(this) == null )
             {
-                Main.Log($"Resetting audio {GetType()} on car {car.ID}");
+                Main.LogVerbose($"Resetting audio {GetType()} on car {car.ID}");
                 Awake();
             }
 

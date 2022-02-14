@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
 using CCL_GameScripts.CabControls;
+using DV.CabControls;
 using DV.CabControls.Spec;
 using DV.MultipleUnit;
 using DVCustomCarLoader.LocoComponents;
 using DVCustomCarLoader.LocoComponents.DieselElectric;
+using DVCustomCarLoader.LocoComponents.Steam;
 using HarmonyLib;
 using UnityEngine;
 
@@ -20,6 +25,10 @@ namespace DVCustomCarLoader
             {
                 case LocoParamsType.DieselElectric:
                     AddDieselSimulation(prefab, (SimParamsDiesel)simParams);
+                    break;
+
+                case LocoParamsType.Steam:
+                    AddSteamSimulation(prefab, (SimParamsSteam)simParams);
                     break;
 
                 default:
@@ -83,12 +92,36 @@ namespace DVCustomCarLoader
                     }
                 }
 
-                Main.Log("Added multiple unit module");
+                Main.LogVerbose("Added multiple unit module");
             }
 
             locoController.drivingForce = drivingForce;
 
-            Main.Log($"Added diesel electric simulation to {prefab.name}");
+            Main.LogVerbose($"Added diesel electric simulation to {prefab.name}");
+        }
+
+        public static void AddSteamSimulation(GameObject prefab, SimParamsSteam simParams)
+        {
+            // add brake compressor, rate is set in controller start
+            var train = prefab.GetComponent<TrainCar>();
+            train.hasCompressor = simParams.AirCompressorRate > 0;
+
+            var drivingForce = prefab.AddComponent<DrivingForce>();
+            ApplyDrivingForceParams(drivingForce, simParams);
+
+            prefab.AddComponent<CustomLocoSimSteam>();
+            prefab.AddComponent<CustomLocoSimEventsSteam>();
+            prefab.AddComponent<CustomDamageControllerSteam>();
+
+            var locoController = prefab.AddComponent<CustomLocoControllerSteam>();
+            locoController.drivingForce = drivingForce;
+
+            if (!simParams.IsTankLoco)
+            {
+                prefab.AddComponent<CustomTenderAutoCouple>();
+            }
+
+            Main.LogVerbose($"Added steam simulation to {prefab.name}");
         }
 
         private static void ApplyDrivingForceParams( DrivingForce driver, SimParamsBase simParams )
@@ -109,6 +142,10 @@ namespace DVCustomCarLoader
             {
                 interior.AddComponent<CustomFuseController>();
             }
+            else if (locoType == LocoParamsType.Steam)
+            {
+                SetupFirebox(interior);
+            }
 
             // add controller/"brain" components
             interior.AddComponent<CustomCabInputController>();
@@ -124,7 +161,7 @@ namespace DVCustomCarLoader
                 if( compSpec is ControlSetupBase control && !((compSpec is IApertureTrackable a) && a.TrackAsAperture)  )
                 {
 #if DEBUG
-                    Main.Log($"Add input relay to {controlObject.name}");
+                    Main.LogVerbose($"Add input relay to {controlObject.name}");
 #endif
                     var inputRelay = controlObject.AddComponent<CabInputRelay>();
                     inputRelay.Binding = control.InputBinding;
@@ -232,6 +269,78 @@ namespace DVCustomCarLoader
         {
             Horn newHorn = prefab.AddComponent<Horn>();
             newHorn.playHornAt = prefab.transform;
+        }
+
+        public static void MakeDoorsCollidable(GameObject prefab)
+        {
+            var doors = prefab.GetComponentsInChildren<LeverSetup>()
+                .Where(l => l.TrackAsDoor);
+
+            foreach (var door in doors)
+            {
+                var collider = door.gameObject.GetComponentInChildren<BoxCollider>();
+                if (collider)
+                {
+                    var playerCollideRoot = new GameObject("playerCollision");
+                    playerCollideRoot.transform.parent = collider.transform.parent;
+                    playerCollideRoot.transform.localPosition = collider.transform.localPosition;
+                    playerCollideRoot.transform.localRotation = collider.transform.localRotation;
+                    playerCollideRoot.transform.localScale = collider.transform.localScale;
+
+                    var playerCollide = playerCollideRoot.AddComponent<BoxCollider>();
+                    playerCollide.center = collider.center;
+                    playerCollide.size = collider.size;
+
+                    playerCollideRoot.SetLayersRecursive("Train_Walkable");
+                }
+            }
+        }
+
+        public static void SetInteriorLayers(GameObject interior)
+        {
+            interior.SetLayersRecursive("Interactable");
+
+            var coalPiles = interior.GetComponentsInChildren<ShovelCoalPile>().Cast<Component>();
+            var coalTargets = interior.GetComponentsInChildren<NonPhysicsCoalTarget>();
+
+            foreach (var component in coalPiles.Concat(coalTargets))
+            {
+                component.gameObject.layer = LayerMask.NameToLayer("Train_Interior");
+            }
+        }
+
+        private static void SetupFirebox(GameObject interior)
+        {
+            var fireSetup = interior.GetComponentInChildren<FireboxSetup>();
+            if (fireSetup)
+            {
+                GameObject oldFireObj = fireSetup.gameObject;
+
+                var steamInterior = GetTrainCarInterior(TrainCarType.LocoSteamHeavy);
+                var baseFireTform = steamInterior.transform.Find(CarPartNames.FIREBOX_ROOT);
+                var newFireObj = GameObject.Instantiate(baseFireTform.gameObject, oldFireObj.transform.parent);
+                newFireObj.transform.localPosition = oldFireObj.transform.localPosition;
+                newFireObj.transform.localRotation = oldFireObj.transform.localRotation;
+                newFireObj.transform.localScale = oldFireObj.transform.localScale;
+
+                var baseFire = newFireObj.GetComponent<Fire>();
+                var newFire = newFireObj.AddComponent<CustomFire>();
+
+                newFire.InitializeFromOther(baseFire);
+                foreach (var indicator in newFireObj.GetComponents<Indicator>())
+                {
+                    var relay = newFireObj.AddComponent<IndicatorRelay>();
+                    relay.Initialize(SimEventType.FireboxLevel, indicator);
+                }
+
+                var fireParticles = newFireObj.transform.Find(CarPartNames.FIREBOX_PARTICLES).GetComponent<ParticleSystem>();
+                var fpMain = fireParticles.main;
+                var scaleV = newFireObj.transform.localScale;
+                fpMain.startSizeMultiplier = Mathf.Min(scaleV.x, scaleV.y, scaleV.z);
+
+                GameObject.Destroy(baseFire);
+                GameObject.Destroy(oldFireObj);
+            }
         }
     }
 }

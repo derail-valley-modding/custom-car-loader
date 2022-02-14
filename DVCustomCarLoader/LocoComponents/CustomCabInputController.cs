@@ -29,16 +29,14 @@ namespace DVCustomCarLoader.LocoComponents
 			}
 
 			Relays = GetComponentsInChildren<CabInputRelay>(true);
-			Main.Log($"CustomCabInput Start - {Relays.Length} controls");
+			Main.LogVerbose($"CustomCabInput Start - {Relays.Length} controls");
 			foreach( CabInputRelay relay in Relays )
 			{
 				foreach( var receiver in controlAcceptors )
                 {
 					if( receiver.AcceptsControlOfType(relay.Binding) )
 					{
-#if DEBUG
-						Main.Log($"Add {relay.GetType().Name} {relay.name} to {receiver.GetType().Name}");
-#endif
+						Main.LogVerbose($"Add {relay.GetType().Name} {relay.name} to {receiver.GetType().Name}");
 						receiver.RegisterControl(relay);
 					}
                 }

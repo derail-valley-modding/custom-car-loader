@@ -53,6 +53,15 @@ namespace CCL_GameScripts
 
         public void ApplyDE6Defaults()
         {
+            RequiredLicense = LocoRequiredLicense.DE6;
+            SandCapacity = 200;
+            SandMaxFlow = 5;
+            tractionTorqueMultiplier = 250000;
+
+            FrictionCoefficient = 0.25f;
+            SandCoefficient = 1.5f;
+            SlopeCoefficientMultiplier = 10;
+
             ThrottleUpRate = 2;
             ThrottleDownRate = 2;
             ColdEnginePowerFactor = 0.8f;
@@ -105,6 +114,15 @@ namespace CCL_GameScripts
 
         public void ApplyShunterDefaults()
         {
+            RequiredLicense = LocoRequiredLicense.DE2;
+            SandCapacity = 200;
+            SandMaxFlow = 5;
+            tractionTorqueMultiplier = 150000;
+
+            FrictionCoefficient = 0.25f;
+            SandCoefficient = 1.5f;
+            SlopeCoefficientMultiplier = 10;
+
             ThrottleUpRate = 2;
             ThrottleDownRate = 2;
             ColdEnginePowerFactor = 0.8f;

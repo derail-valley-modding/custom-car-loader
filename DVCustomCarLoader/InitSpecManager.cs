@@ -25,9 +25,8 @@ namespace DVCustomCarLoader
                 {
                     if (m.GetCustomAttribute<InitSpecAfterInitAttribute>() is InitSpecAfterInitAttribute attribute)
                     {
-#if DEBUG
-                        Main.Log($"Static After Init Found: {t.Name}.{m.Name}, spec = {attribute.SpecType.Name}");
-#endif
+                        Main.LogVerbose($"Static After Init Found: {t.Name}.{m.Name}, spec = {attribute.SpecType.Name}");
+
                         var parameters = m.GetParameters();
                         if ((parameters.Length == 2) && 
                             (parameters[0].ParameterType == attribute.SpecType) &&
@@ -43,9 +42,8 @@ namespace DVCustomCarLoader
                     }
                     else if (m.GetCustomAttribute<CopySpecAfterInitAttribute>() is CopySpecAfterInitAttribute copyAfterInit)
                     {
-#if DEBUG
-                        Main.Log($"Static After Copy Found: {t.Name}.{m.Name}, spec = {copyAfterInit.SpecType.Name}");
-#endif
+                        Main.LogVerbose($"Static After Copy Found: {t.Name}.{m.Name}, spec = {copyAfterInit.SpecType.Name}");
+
                         var parameters = m.GetParameters();
                         if ((parameters.Length == 2) &&
                             (parameters[0].ParameterType == copyAfterInit.SpecType) &&
@@ -69,9 +67,8 @@ namespace DVCustomCarLoader
             {
                 if (sf.Key.IsAssignableFrom(spec.GetType()))
                 {
-#if DEBUG
-                    Main.Log($"StaticAfterInit {sf.Key.Name} ({spec.GetType().Name}) - {realComp.name}");
-#endif
+                    Main.LogVerbose($"StaticAfterInit {sf.Key.Name} ({spec.GetType().Name}) - {realComp.name}");
+
                     sf.Value.Invoke(null, new object[] { spec, realComp });
                 }
             }
@@ -83,9 +80,8 @@ namespace DVCustomCarLoader
             {
                 if (sf.Key.IsAssignableFrom(spec.GetType()))
                 {
-#if DEBUG
-                    Main.Log($"StaticAfterCopy {sf.Key.Name} ({spec.GetType().Name}) - {newObject.name}");
-#endif
+                    Main.LogVerbose($"StaticAfterCopy {sf.Key.Name} ({spec.GetType().Name}) - {newObject.name}");
+
                     sf.Value.Invoke(null, new object[] { spec, newObject });
                 }
             }
@@ -186,7 +182,7 @@ namespace DVCustomCarLoader
                     }
 
                     string targetName = proxy.TargetName ?? sourceField.Name;
-                    FieldInfo targetField = targetType.GetField(targetName);
+                    FieldInfo targetField = AccessTools.Field(targetType, targetName);
 
                     if (targetField != null)
                     {
