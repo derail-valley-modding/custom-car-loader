@@ -14,8 +14,11 @@ namespace CCL_GameScripts
         public override LocoAudioBasis AudioType => LocoAudioBasis.Steam;
 
         [Header("Firebox")]
-        public float BlowerBonusFuelConsumption = 36;
-        public float DraftBonusFuelConsumption = 24;
+        public float BaseAirMultiplier = 0.1f;
+        public float BlowerAirMultiplier = 0.4f;
+        public float DraftAirMultiplier = 0.5f;
+
+        public float MaxBurnRate = 40;
 
         public float FireboxCapacity = 90;
         public float AutoFuelMaxPerS = 0;
@@ -23,6 +26,7 @@ namespace CCL_GameScripts
         [Header("Boiler")]
         public float BoilerWaterCapacityL = 20000;
         public float BoilerMaxPressure = 24;
+        public float VaporizationRate = 0.17f;
         public float SafetyValvePressure = 20;
         public float InjectorMaxFlowLPS = 3000;
 
@@ -48,6 +52,7 @@ namespace CCL_GameScripts
             RequiredLicense = LocoRequiredLicense.Steam;
             SandCapacity = 1200;
             SandMaxFlow = 40;
+            tractionTorqueMultiplier = 800000;
 
             FrictionCoefficient = 0.25f;
             SandCoefficient = 1.5f;
@@ -84,8 +89,10 @@ namespace CCL_GameScripts
                 };
 
             // Steam
-            BlowerBonusFuelConsumption = 12;
-            DraftBonusFuelConsumption = 8;
+            BaseAirMultiplier = 0.1f;
+            BlowerAirMultiplier = 0.4f;
+            DraftAirMultiplier = 0.5f;
+            MaxBurnRate = 40;
 
             FireboxCapacity = 90;
             AutoFuelMaxPerS = 0;

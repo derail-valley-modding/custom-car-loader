@@ -58,7 +58,7 @@ namespace CCL_GameScripts
         [Header("Physics Curves")]
         public AnimationCurve BrakePowerCurve;
         public AnimationCurve TractionTorqueCurve;
-        public float tractionTorqueMultiplier;
+        public float tractionTorqueMultiplier = 250000;
 
         [Header("Drivers")]
         public bool PreventWheelslip = false;
