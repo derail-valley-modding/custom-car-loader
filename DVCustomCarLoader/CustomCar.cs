@@ -691,16 +691,22 @@ namespace DVCustomCarLoader
                     Main.LogVerbose($"Air hose = {!!airHose}");
                     if (airHose)
                     {
-                        var newAir = newHoseRoot.Find(CarPartNames.AIR_HOSE);
-                        newAir.localPosition = airHose.localPosition;
+                        var newAir = newHoseRoot.FindSafe(CarPartNames.AIR_HOSE);
+                        if (newAir)
+                        {
+                            newAir.localPosition = airHose.localPosition;
+                        }
                     }
 
                     Transform muHose = hoseRoot.FindSafe(CarPartNames.MU_CONNECTOR);
                     Main.LogVerbose($"MU hose = {!!muHose}");
                     if (muHose)
                     {
-                        var newMU = newHoseRoot.Find(CarPartNames.MU_CONNECTOR);
-                        newMU.localPosition = muHose.localPosition;
+                        var newMU = newHoseRoot.FindSafe(CarPartNames.MU_CONNECTOR);
+                        if (newMU)
+                        {
+                            newMU.localPosition = muHose.localPosition;
+                        }
                     }
                 }
             }
