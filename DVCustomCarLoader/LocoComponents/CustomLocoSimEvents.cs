@@ -51,6 +51,13 @@ namespace DVCustomCarLoader.LocoComponents
         }
 
         protected abstract void CheckTankAndDamageLevels();
+
+        public virtual void ForceDispatchAll()
+        {
+            SandEvent.ForceDispatch();
+            WheelslipEvent.ForceDispatch();
+            CoupleEvent.ForceDispatch();
+        }
     }
 
     public abstract class CustomLocoSimEvents<TSim,TDmg> : CustomLocoSimEvents

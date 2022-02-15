@@ -13,5 +13,7 @@ namespace DVCustomCarLoader.LocoComponents
         bool CanEngineStart { get; }
 
         bool AutoStart { get; }
+
+        bool MasterPower { get; set; }
     }
 }

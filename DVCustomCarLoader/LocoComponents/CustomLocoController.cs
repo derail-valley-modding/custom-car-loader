@@ -36,7 +36,10 @@ namespace DVCustomCarLoader.LocoComponents
         }
         public float GetReverserCabPosition() => (reverser + 1f) / 2f;
 
+        protected abstract float AccessoryPowerLevel { get; }
+
         // Headlights
+        protected float _HeadlightControlLevel;
         protected float _Headlights;
         public float Headlights => _Headlights;
 
@@ -48,20 +51,24 @@ namespace DVCustomCarLoader.LocoComponents
 
         public void SetHeadlight( float value )
         {
-            if( value != Headlights )
+            if( value != _HeadlightControlLevel )
             {
-                //headlights.SetActive(HeadlightsOn);
+                _HeadlightControlLevel = value;
+                value = _HeadlightControlLevel * AccessoryPowerLevel;
                 EventManager.UpdateValueDispatchOnChange(this, ref _Headlights, value, SimEventType.Headlights);
             }
         }
 
         // Cab Lights
+        protected float _CabLightControlLevel;
         protected float _CabLights;
         public float CabLights => _CabLights;
         public void SetCabLight( float value )
         {
-            if (value != CabLights)
+            if (value != _CabLightControlLevel)
             {
+                _CabLightControlLevel = value;
+                value = _CabLightControlLevel * AccessoryPowerLevel;
                 EventManager.UpdateValueDispatchOnChange(this, ref _CabLights, value, SimEventType.CabLights);
             }
         }
@@ -84,13 +91,32 @@ namespace DVCustomCarLoader.LocoComponents
             EventManager.UpdateValueDispatchOnChange(this, ref _BrakeResPressure, GetBrakeResPressure(), SimEventType.BrakeReservoir);
             EventManager.UpdateValueDispatchOnChange(this, ref _IndependentPressure, GetIndependentPressure(), SimEventType.IndependentPipe);
 
+            float light = _HeadlightControlLevel * AccessoryPowerLevel;
+            EventManager.UpdateValueDispatchOnChange(this, ref _Headlights, light, SimEventType.Headlights);
+
+            float cab = _CabLightControlLevel * AccessoryPowerLevel;
+            EventManager.UpdateValueDispatchOnChange(this, ref _CabLights, cab, SimEventType.CabLights);
+
             float fwdLight = Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, 1, reverser));
             EventManager.UpdateValueDispatchOnChange(this, ref _ForwardLights, fwdLight, SimEventType.LightsForward);
 
-            float revLight = Mathf.Lerp(0, _RearLights, Mathf.InverseLerp(0, -1, reverser));
+            float revLight = Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, -1, reverser));
             EventManager.UpdateValueDispatchOnChange(this, ref _RearLights, revLight, SimEventType.LightsReverse);
 
             base.Update();
+        }
+
+        public virtual void ForceDispatchAll()
+        {
+            EventManager.Dispatch(this, SimEventType.Speed, Speed);
+            EventManager.Dispatch(this, SimEventType.BrakePipe, _BrakePipePressure);
+            EventManager.Dispatch(this, SimEventType.BrakeReservoir, _BrakeResPressure);
+            EventManager.Dispatch(this, SimEventType.IndependentPipe, _IndependentPressure);
+
+            EventManager.Dispatch(this, SimEventType.Headlights, _Headlights);
+            EventManager.Dispatch(this, SimEventType.CabLights, _CabLights);
+            EventManager.Dispatch(this, SimEventType.LightsForward, _ForwardLights);
+            EventManager.Dispatch(this, SimEventType.LightsReverse, _RearLights);
         }
 
         #region ICabControlAcceptor

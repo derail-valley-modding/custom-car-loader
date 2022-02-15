@@ -91,6 +91,7 @@ namespace DVCustomCarLoader
                         muModule.rearCableAdapter = muHoseAdapter;
                     }
                 }
+                locoController.muModule = muModule;
 
                 Main.LogVerbose("Added multiple unit module");
             }

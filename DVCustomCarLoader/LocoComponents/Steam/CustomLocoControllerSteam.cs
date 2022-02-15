@@ -34,6 +34,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 var keyboardCtrl = gameObject.AddComponent<LocoKeyboardInputSteam>();
                 keyboardCtrl.control = this;
             }
+
+            maxPowerPressure = sim.boilerPressure.max / 3f;
         }
 
         private void OnRearCouple(object _, CoupleEventArgs e)
@@ -247,6 +249,16 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         //================================================================================
         #region Watchable Values
 
+        private float maxPowerPressure;
+        protected override float AccessoryPowerLevel
+        {
+            get
+            {
+                if (sim.boilerPressure.value > maxPowerPressure) return 1;
+                return Mathf.InverseLerp(0, maxPowerPressure, sim.boilerPressure.value);
+            }
+        }
+
         protected float _SandLevel;
         protected float _Cutoff;
         protected float _BoilerPressure;
@@ -262,6 +274,18 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             EventManager.UpdateValueDispatchOnChange(this, ref _BoilerWater, sim.boilerWater.value, SimEventType.WaterLevel);
             EventManager.UpdateValueDispatchOnChange(this, ref _FireTemp, sim.temperature.value, SimEventType.FireTemp);
             EventManager.UpdateValueDispatchOnChange(this, ref _FireFuelLevel, sim.fireboxFuel.value, SimEventType.FireboxLevel);
+        }
+
+        public override void ForceDispatchAll()
+        {
+            base.ForceDispatchAll();
+
+            EventManager.Dispatch(this, SimEventType.Sand, _SandLevel);
+            EventManager.Dispatch(this, SimEventType.Cutoff, _Cutoff);
+            EventManager.Dispatch(this, SimEventType.BoilerPressure, _BoilerPressure);
+            EventManager.Dispatch(this, SimEventType.WaterLevel, _BoilerWater);
+            EventManager.Dispatch(this, SimEventType.FireTemp, _FireTemp);
+            EventManager.Dispatch(this, SimEventType.FireboxLevel, _FireFuelLevel);
         }
 
         public bool IsFireOn

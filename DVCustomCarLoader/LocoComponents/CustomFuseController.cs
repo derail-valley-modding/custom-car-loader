@@ -21,6 +21,8 @@ namespace DVCustomCarLoader.LocoComponents
         protected const float LATE_INIT_DELAY = 0.5f;
         protected const float MAIN_BREAKER_DELAY = 0.2f;
 
+        protected bool StartupComplete = false;
+
         protected bool AreAllSideFusesOn()
         {
             return SideFuses.TrueForAll(fuse => fuse.Value > SWITCH_THRESHOLD);
@@ -38,16 +40,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
 
             MainFuse.Value = relayPos;
-
-            EventManager.Dispatch(this, SimEventType.PowerOn, on);
-            if( on )
-            {
-                TryStarter();
-            }
-            else
-            {
-                KillEngine();
-            }
+            SetLocoPowerState(on);
         }
 
         public void TryStarter()
@@ -66,6 +59,12 @@ namespace DVCustomCarLoader.LocoComponents
             locoController.EngineRunning = false;
         }
 
+        protected void SetLocoPowerState(bool newState)
+        {
+            EventManager.Dispatch(this, SimEventType.PowerOn, newState);
+            locoController.MasterPower = newState;
+        }
+
         public void Start()
         {
             var car = TrainCar.Resolve(gameObject);
@@ -82,6 +81,7 @@ namespace DVCustomCarLoader.LocoComponents
                 return;
             }
 
+            StartupComplete = false;
             StartCoroutine(DelayedEnable());
         }
 
@@ -89,6 +89,7 @@ namespace DVCustomCarLoader.LocoComponents
         {
             yield return WaitFor.SecondsRealtime(LATE_INIT_DELAY);
             SetMasterPower(locoController.EngineRunning);
+            StartupComplete = true;
             yield break;
         }
 
@@ -97,7 +98,7 @@ namespace DVCustomCarLoader.LocoComponents
             yield return WaitFor.SecondsRealtime(MAIN_BREAKER_DELAY);
             if( !AreAllSideFusesOn() )
             {
-                EventManager.Dispatch(this, SimEventType.PowerOn, false);
+                SetLocoPowerState(false);
                 MainFuse.Value = 0;
             }
 
@@ -110,6 +111,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected void OnSideFuseChanged( float newVal )
         {
+            if (!StartupComplete) return;
             if( newVal <= SWITCH_THRESHOLD )
             {
                 if( locoController.EngineRunning ) KillEngine();
@@ -122,6 +124,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected void OnMainFuseChanged( float newVal )
         {
+            if (!StartupComplete) return;
             bool nowOn = (newVal > SWITCH_THRESHOLD);
 
             if( nowOn )
@@ -134,18 +137,19 @@ namespace DVCustomCarLoader.LocoComponents
                     }
                     return;
                 }
-                EventManager.Dispatch(this, SimEventType.PowerOn, nowOn);
+                SetLocoPowerState(nowOn);
             }
             else
             {
                 // turned off
-                EventManager.Dispatch(this, SimEventType.PowerOn, nowOn);
+                SetLocoPowerState(nowOn);
                 KillEngine();
             }
         }
 
         protected void OnStarterChanged( float newVal )
         {
+            if (!StartupComplete) return;
             if( (newVal > SWITCH_THRESHOLD) && !locoController.EngineRunning )
             {
                 TryStarter();
@@ -159,6 +163,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected void OnEStopChanged( float newVal )
         {
+            if (!StartupComplete) return;
             if( (newVal > SWITCH_THRESHOLD) && locoController.EngineRunning )
             {
                 KillEngine();
@@ -200,5 +205,10 @@ namespace DVCustomCarLoader.LocoComponents
         }
 
         #endregion
+
+        public void ForceDispatchAll()
+        {
+            if (locoController != null) EventManager.Dispatch(this, SimEventType.PowerOn, locoController.MasterPower);
+        }
     }
 }

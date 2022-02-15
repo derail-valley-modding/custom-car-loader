@@ -118,7 +118,7 @@ namespace DVCustomCarLoader.Effects
 
                 var main = chimneyParticles.main;
                 float burnRatePercent = controller.FuelConsumptionRate / controller.MaxFuelConsumptionRate;
-                Main.LogVerbose($"Chimney burn rate: {burnRatePercent} ({controller.FuelConsumptionRate}/{controller.MaxFuelConsumptionRate})");
+                //Main.LogVerbose($"Chimney burn rate: {burnRatePercent} ({controller.FuelConsumptionRate}/{controller.MaxFuelConsumptionRate})");
 
                 if ((burnRatePercent == 0) && chimneyParticles.isPlaying)
                 {

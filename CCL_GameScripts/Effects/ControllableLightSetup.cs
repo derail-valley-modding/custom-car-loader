@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CCL_GameScripts.Effects
 {
-    public class ControllableLightSetup : IndicatorSetupBase
+    public class ControllableLightSetup : ComponentInitSpec
     {
         public override string TargetTypeName => "DVCustomCarLoader.Effects.ControllableLight";
         public override bool DestroyAfterCreation => true;
@@ -20,5 +20,13 @@ namespace CCL_GameScripts.Effects
 
         [ProxyField]
         public float Lag = 0.05f;
+
+        [Header("Binding")]
+        [ProxyField]
+        public SimEventType OutputBinding;
+        [ProxyField]
+        public float MinValue = 0;
+        [ProxyField]
+        public float MaxValue = 1;
     }
 }

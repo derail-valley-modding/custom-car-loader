@@ -6,7 +6,7 @@ using System;
 
 namespace DVCustomCarLoader.Effects
 {
-    public class ControllableLight : Indicator
+    public class ControllableLight : MonoBehaviour, ILocoEventAcceptor
     {
         public Light[] Lights;
         public float MinLevel = 0;
@@ -17,44 +17,56 @@ namespace DVCustomCarLoader.Effects
         protected float SmoothingVelo = 0;
         protected float TargetLevel = 0;
 
+        public SimEventType OutputBinding;
+        public SimEventType[] EventTypes => new[] { OutputBinding };
+        public float MinValue = 0;
+        public float MaxValue = 1;
+
+        private float MapInputValue(float input)
+        {
+            return (input - MinValue) / (MaxValue - MinValue);
+        }
+
         public void ApplyNormalizedLevel(float newLevel)
         {
-            float mapped = Mathf.Lerp(MinLevel, MaxLevel, newLevel);
+            float mapped = Mathf.LerpUnclamped(MinLevel, MaxLevel, newLevel);
 
             foreach (Light l in Lights)
             {
                 l.intensity = mapped;
-                SmoothedLevel = mapped;
             }
         }
 
-        protected override void Start()
+        protected void Start()
         {
-            base.Start();
-            ApplyNormalizedLevel(MinLevel);
-        }
-
-        protected override void OnValueSet()
-        {
-            if (!Application.isPlaying)
-            {
-                return;
-            }
-
-            TargetLevel = GetNormalizedValue(true);
-
-            if (Lag == 0)
-            {
-                ApplyNormalizedLevel(TargetLevel);
-            }
+            TargetLevel = 0;
+            ApplyNormalizedLevel(0);
         }
 
         protected void Update()
         {
             if (Lag > 0)
             {
-                float smoothedLevel = Mathf.SmoothDamp(SmoothedLevel, TargetLevel, ref SmoothingVelo, Lag);
-                ApplyNormalizedLevel(smoothedLevel);
+                SmoothedLevel = Mathf.SmoothDamp(SmoothedLevel, TargetLevel, ref SmoothingVelo, Lag);
+                ApplyNormalizedLevel(SmoothedLevel);
+            }
+        }
+
+        public void HandleEvent(LocoEventInfo eventInfo)
+        {
+            if (eventInfo.NewValue is float value)
+            {
+                TargetLevel = MapInputValue(value);
+            }
+            else if (eventInfo.NewValue is bool onOff)
+            {
+                TargetLevel = onOff ? 1 : 0;
+            }
+            else return;
+
+            if (Lag == 0)
+            {
+                ApplyNormalizedLevel(TargetLevel);
             }
         }
     }

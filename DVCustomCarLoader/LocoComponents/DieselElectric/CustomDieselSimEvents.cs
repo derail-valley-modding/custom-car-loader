@@ -152,5 +152,16 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
                 EngineDamageChanged.Invoke(newDamageLevel);
             }
         }
+
+        public override void ForceDispatchAll()
+        {
+            base.ForceDispatchAll();
+
+            FuelEvent.ForceDispatch();
+            OilEvent.ForceDispatch();
+            EngineRunningEvent.ForceDispatch();
+            EngineTempEvent.ForceDispatch();
+            EngineDamageEvent.ForceDispatch();
+        }
     }
 }

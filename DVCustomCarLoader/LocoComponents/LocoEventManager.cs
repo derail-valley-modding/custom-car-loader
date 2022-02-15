@@ -25,12 +25,15 @@ namespace DVCustomCarLoader.LocoComponents
     public interface ILocoEventProvider
     {
         LocoEventManager EventManager { get; set; }
+        void ForceDispatchAll();
     }
 
-    public class LocoEventWrapper<T>
+    public class LocoEventWrapper<T> where T : struct
     {
         public readonly ILocoEventProvider Provider;
         public readonly SimEventType EventType;
+
+        public T? LastValue = null;
 
         private LocoEventWrapper(ILocoEventProvider parent, SimEventType eventType)
         {
@@ -40,7 +43,16 @@ namespace DVCustomCarLoader.LocoComponents
 
         public void OnChange(T newVal)
         {
+            LastValue = newVal;
             Provider.EventManager?.Dispatch(Provider, EventType, newVal);
+        }
+
+        public void ForceDispatch()
+        {
+            if (LastValue.HasValue)
+            {
+                Provider.EventManager?.Dispatch(Provider, EventType, LastValue.Value);
+            }
         }
 
         public static LocoEventWrapper<T> Create(ref event_<T> e, ILocoEventProvider parent, SimEventType eventType)
@@ -63,6 +75,8 @@ namespace DVCustomCarLoader.LocoComponents
         {
             protected Dictionary<SimEventType, LinkedList<ILocoEventAcceptor>> EventAcceptors = 
                 new Dictionary<SimEventType, LinkedList<ILocoEventAcceptor>>();
+
+            protected List<ILocoEventProvider> Providers = new List<ILocoEventProvider>();
 
             protected void Add(SimEventType eventType, ILocoEventAcceptor acceptor)
             {
@@ -87,6 +101,7 @@ namespace DVCustomCarLoader.LocoComponents
             public void Clear()
             {
                 EventAcceptors.Clear();
+                Providers.Clear();
             }
 
             public void Initialize(GameObject prefab, LocoEventManager dispatcher)
@@ -104,16 +119,21 @@ namespace DVCustomCarLoader.LocoComponents
                 }
 
                 var providers = prefab.GetComponentsInChildrenByInterface<ILocoEventProvider>();
-                int pCount = 0;
+                Providers.AddRange(providers);
                 foreach (var provider in providers)
                 {
-                    pCount++;
                     provider.EventManager = dispatcher;
                 }
                 
-#if DEBUG
-                Main.LogVerbose($"EventManager Start: {pCount} providers, {aCount} acceptors");
-#endif
+                Main.LogVerbose($"EventManager Start: {Providers.Count} providers, {aCount} acceptors");
+            }
+
+            public void ForceDispatchAll()
+            {
+                foreach (var provider in Providers)
+                {
+                    provider.ForceDispatchAll();
+                }
             }
         }
 
@@ -147,11 +167,16 @@ namespace DVCustomCarLoader.LocoComponents
         public void Start()
         {
             ExteriorEvents.Initialize(gameObject, this);
+
+            ExteriorEvents.ForceDispatchAll();
         }
 
         public void OnInteriorLoaded(GameObject interior)
         {
             InteriorEvents.Initialize(interior, this);
+
+            ExteriorEvents.ForceDispatchAll();
+            InteriorEvents.ForceDispatchAll();
         }
 
         public void OnInteriorUnloaded()

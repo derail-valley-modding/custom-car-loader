@@ -41,9 +41,12 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 				}
 			}
 		}
-		public bool CanEngineStart => !EngineRunning && (FuelLevel > 0);
+		public bool CanEngineStart => (FuelLevel > 0);
 		public bool AutoStart => autostart;
+		public bool MasterPower { get; set; }
 
+        protected override float AccessoryPowerLevel => 
+			MasterPower ? (0.6f + sim.engineRPM.value * 0.4f) : 0;
 
 		private float GetFuel() => sim.fuel.value;
 		private float GetOil() => sim.oil.value;
@@ -83,6 +86,20 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 		public void SetFanControl(float value)
 		{
 			EventManager.UpdateValueDispatchOnChange(this, ref FanOn, value > 0.5f, SimEventType.Fan);
+		}
+
+        public override void ForceDispatchAll()
+        {
+            base.ForceDispatchAll();
+
+			EventManager.Dispatch(this, SimEventType.Fuel, _FuelLevel);
+			EventManager.Dispatch(this, SimEventType.Oil, _OilLevel);
+			EventManager.Dispatch(this, SimEventType.Sand, _SandLevel);
+			EventManager.Dispatch(this, SimEventType.EngineTemp, _EngineTemp);
+			EventManager.Dispatch(this, SimEventType.EngineRPMGauge, _EngineRPMGauge);
+			EventManager.Dispatch(this, SimEventType.Amperage, _Amperage);
+
+			EventManager.Dispatch(this, SimEventType.Fan, FanOn);
 		}
 
         private void UpdateWatchables()
@@ -177,7 +194,13 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			base.SetReverser(position);
 		}
 
-		public override float GetTractionForce()
+        public override void UpdateHorn(float value)
+        {
+			if (BrakeResPressure < 2) value = 0;
+            base.UpdateHorn(value);
+        }
+
+        public override float GetTractionForce()
 		{
 			float num = (sim.engineRPM.value > 0f) ? tractionTorqueCurve.Evaluate(GetSpeedKmH() / sim.engineRPM.value) : 0f;
 			float num2 = (Mathf.Sign(GetForwardSpeed() * reverser) > 0f) ? num : 1f;
