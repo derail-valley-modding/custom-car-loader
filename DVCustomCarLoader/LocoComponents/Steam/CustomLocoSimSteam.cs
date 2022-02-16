@@ -314,7 +314,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 (boilerWater.value > 0) && 
                 (boilerPressure.value < boilerPressure.max * 0.999f))
             {
-                float evaporatedWater = VAPOR_RATE * (temperature.value - SteamLocoSimulation.WATER_BOIL_TEMP) * delta;
+                float evaporatedWater = simParams.VaporizationRate * (temperature.value - SteamLocoSimulation.WATER_BOIL_TEMP) * delta;
                 boilerWater.AddNextValue(-evaporatedWater);
                 boilerPressure.AddNextValue(evaporatedWater * PRESSURE_CONST);
             }

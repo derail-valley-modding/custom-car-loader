@@ -45,6 +45,7 @@ namespace CCL_GameScripts
 
         [Header("Other Equipment")]
         public float AirCompressorRate = 0.8f;
+        public float SandValveSpeed = 10f;
 
         public SimParamsDiesel()
         {
@@ -80,6 +81,9 @@ namespace CCL_GameScripts
             PerformanceDropDamageLevel = 0.5f;
             OilCapacity = 500;
             OilConsumptionEngineRpm = 1;
+
+            AirCompressorRate = 0.8f;
+            SandValveSpeed = 10;
 
             BrakePowerCurve =
                 new AnimationCurve(
@@ -141,6 +145,9 @@ namespace CCL_GameScripts
             PerformanceDropDamageLevel = 0.5f;
             OilCapacity = 100;
             OilConsumptionEngineRpm = 0.3f;
+
+            AirCompressorRate = 0.8f;
+            SandValveSpeed = 10;
 
             BrakePowerCurve =
                 new AnimationCurve(

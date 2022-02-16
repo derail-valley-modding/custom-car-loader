@@ -103,6 +103,7 @@ namespace CCL_GameScripts
             InjectorMaxFlowLPS = 3000;
 
             FuelType = SteamFuelType.Coal;
+            IsTankLoco = false;
             BunkerWaterCapacity = 0;
             BunkerFuelCapacity = 0;
 

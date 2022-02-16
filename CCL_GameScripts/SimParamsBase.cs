@@ -52,7 +52,6 @@ namespace CCL_GameScripts
         public LocoRequiredLicense RequiredLicense = LocoRequiredLicense.None;
         public float MaxSpeed = 120f;
         public float SandCapacity = 200f;
-        public float SandValveSpeed = 10f;
         public float SandMaxFlow = 5f;
 
         [Header("Physics Curves")]
