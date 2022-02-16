@@ -60,5 +60,27 @@ namespace CCL_GameScripts
                     postWrapMode = WrapMode.ClampForever
                 };
         }
+
+        public void ApplySH282Defaults()
+        {
+            BodyHitpoints = 17920f;
+            BodyCollisionResistance = 25f;
+            BodyCollisionMultiplier = 1f;
+            BodyFireResistance = 7.5f;
+            BodyFireMultiplier = 1f;
+            DamageTolerance = 0.01f;
+
+            BrakeSpeedDamageCurve =
+                new AnimationCurve(
+                    new Keyframe(0, 0, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(2, 0, 0, 0, 0.3333f, 0.3333f),
+                    new Keyframe(7.5f, 0.125f, 0.0285f, 0.0285f, 0.3333f, 0.3333f),
+                    new Keyframe(29, 0.6706f, 0.0151f, 0.0151f, 0.3333f, 0.3333f),
+                    new Keyframe(100, 1, 0, 0, 0.3333f, 0.3333f))
+                {
+                    preWrapMode = WrapMode.ClampForever,
+                    postWrapMode = WrapMode.ClampForever
+                };
+        }
     }
 }

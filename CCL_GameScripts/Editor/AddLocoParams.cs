@@ -96,14 +96,14 @@ public class AddLocoParams : EditorWindow
             {
                 simParams = obj.AddComponent<SimParamsSteam>();
             }
+            simParams.ApplySH282Defaults();
 
             DamageConfigBasic dmgConfig = obj.GetComponent<DamageConfigBasic>();
             if (!dmgConfig)
             {
                 dmgConfig = obj.AddComponent<DamageConfigBasic>();
             }
-
-            
+            dmgConfig.ApplySH282Defaults();
         }
     }
 
