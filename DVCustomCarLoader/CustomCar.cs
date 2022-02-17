@@ -366,19 +366,26 @@ namespace DVCustomCarLoader
             //==============================================================================================================
             #region Cab
 
-            var cabTform = newFab.transform.Find(CarPartNames.CAB_TELEPORT_ROOT);
-            if( cabTform )
+            CabinSnapshotSwitcher snapshotSwitcher = null;
+            for (int i = 0; i < newFab.transform.childCount; i++)
             {
-                var teleportDest = cabTform.gameObject.AddComponent<CabTeleportDestination>();
-                teleportDest.hoverRenderer = cabTform.GetComponentInChildren<Renderer>();
-
-                if (InteriorPrefab)
+                var cabTform = newFab.transform.GetChild(i);
+                if (cabTform.name == CarPartNames.CAB_TELEPORT_ROOT)
                 {
-                    var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
-                    if (cabCollider)
+                    var teleportDest = cabTform.gameObject.AddComponent<CabTeleportDestination>();
+                    teleportDest.hoverRenderer = cabTform.GetComponentInChildren<Renderer>();
+
+                    if (InteriorPrefab)
                     {
-                        var snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
-                        snapshotSwitcher.box = cabCollider;
+                        var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
+                        if (cabCollider)
+                        {
+                            if (!snapshotSwitcher)
+                            {
+                                snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
+                            }
+                            snapshotSwitcher.AddCabRegion(cabCollider);
+                        }
                     }
                 }
             }

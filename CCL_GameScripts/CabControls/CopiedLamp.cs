@@ -30,7 +30,7 @@ namespace CCL_GameScripts.CabControls
                 (BaseTrainCarType.LocoShunter, "C dashboard buttons controller/I power_fuse_lamp"),
 
                 (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I brake_aux_lamp"),
-                (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I bell_lamp"),
+                (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I headlights_lamp"),
                 (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I button_sand_lamp"),
                 (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I service_engine_lamp"),
                 (BaseTrainCarType.LocoDiesel, "offset/I Indicator lamps/I fan_lamp"),
@@ -59,6 +59,7 @@ namespace CCL_GameScripts.CabControls
         public CopiedLampType LampType;
 
         [Header("Simulation Binding")]
+        public bool UseGaugeValue = false;
         public SimThresholdDirection ThresholdDirection;
         public SimAmount SolidThreshold;
         public bool UseBlinkMode;
@@ -82,6 +83,12 @@ namespace CCL_GameScripts.CabControls
             LampGizmoInfo gizmo = GizmoData[(int)LampType];
 
             Vector3 axis = gizmo.Flipped ? Vector3.back : Vector3.forward;
+            if (LampType == CopiedLampType.LargeRed)
+            {
+                // rotate gizmo 90 around X axis for this lamp
+                axis = Vector3.up;
+            }
+
             Vector3 peak = transform.TransformPoint(axis * gizmo.Depth);
 
             Vector3 lastVector = transform.position;

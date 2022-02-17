@@ -15,6 +15,8 @@ namespace DVCustomCarLoader.LocoComponents
         public SimEventType[] EventTypes => new[] { EventType };
 
         public LampControl Lamp;
+
+        public bool UseGaugeValue = false;
         public SimThresholdDirection ThresholdDirection;
         public LocoSimulationEvents.Amount SolidThreshold;
         public bool UseBlinkMode;
@@ -28,6 +30,7 @@ namespace DVCustomCarLoader.LocoComponents
             lampRelay.EventType = spec.SimBinding;
             lampRelay.Lamp = realLamp;
 
+            lampRelay.UseGaugeValue = spec.UseGaugeValue;
             lampRelay.ThresholdDirection = spec.ThresholdDirection;
             lampRelay.SolidThreshold = (LocoSimulationEvents.Amount)spec.SolidThreshold;
             lampRelay.UseBlinkMode = spec.UseBlinkMode;
@@ -36,7 +39,11 @@ namespace DVCustomCarLoader.LocoComponents
 
         public void HandleEvent(LocoEventInfo eventInfo)
         {
-            if (eventInfo.NewValue is LocoSimulationEvents.Amount newAmount)
+            if (UseGaugeValue && eventInfo.NewValue is float newFloat)
+            {
+                HandleChange(newFloat > 0);
+            }
+            else if (eventInfo.NewValue is LocoSimulationEvents.Amount newAmount)
             {
                 HandleChange(newAmount);
             }
@@ -94,7 +101,8 @@ namespace DVCustomCarLoader.LocoComponents
 
             if( (ThresholdDirection == SimThresholdDirection.Below) ^ newValue )
             {
-                UpdateLampState(UseBlinkMode ? LampControl.LampState.Blinking : LampControl.LampState.On, true);
+                LampControl.LampState newState = UseBlinkMode ? LampControl.LampState.Blinking : LampControl.LampState.On;
+                UpdateLampState(newState, true);
             }
             else
             {
