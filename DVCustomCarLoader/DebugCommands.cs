@@ -13,16 +13,25 @@ namespace DVCustomCarLoader
 {
     public static class DebugCommands
     {
+        [HarmonyPatch(typeof(Terminal), "Start")]
+        [HarmonyPostfix]
         public static void RegisterCommands()
         {
-            Terminal.Shell.AddCommand("CCL.ForceSteamUp", ForceSteamUp, 0, 0, "");
-            Terminal.Autocomplete.Register("CCL.ForceSteamUp");
+            try
+            {
+                Terminal.Shell.AddCommand("CCL.ForceSteamUp", ForceSteamUp, 0, 0, "");
+                Terminal.Autocomplete.Register("CCL.ForceSteamUp");
 
-            Terminal.Shell.AddCommand("CCL.SteamDebug", SteamDebug, 0, 1, "");
-            Terminal.Autocomplete.Register("CCL.SteamDebug");
+                Terminal.Shell.AddCommand("CCL.SteamDebug", SteamDebug, 0, 1, "");
+                Terminal.Autocomplete.Register("CCL.SteamDebug");
 
-            MethodInfo registerDevCommands = AccessTools.Method(typeof(DV.Console), "RegisterDevCommands");
-            registerDevCommands.Invoke(null, new object[] { });
+                //MethodInfo registerDevCommands = AccessTools.Method(typeof(DV.Console), "RegisterDevCommands");
+                //registerDevCommands.Invoke(null, new object[] { });
+            }
+            catch (Exception ex)
+            {
+                Main.Error("Failed to register debug commands: " + ex.ToString());
+            }
         }
 
         public static void SteamDebug(CommandArg[] args)
