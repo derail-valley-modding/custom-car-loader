@@ -35,8 +35,6 @@ namespace DVCustomCarLoader
         public GameObject InteriorPrefab;
 
         //Bogies
-        public bool HasCustomFrontBogie = false;
-        public bool HasCustomRearBogie = false;
         public CustomBogieParams FrontBogieConfig = null;
         public CustomBogieParams RearBogieConfig = null;
         
@@ -200,7 +198,7 @@ namespace DVCustomCarLoader
             }
 
             // Front bogie
-            if( HasCustomFrontBogie && newFrontBogieTransform )
+            if (carSetup.UseCustomFrontBogie && newFrontBogieTransform)
             {
                 // replacing the original bogie, only steal the script
                 frontBogie = newFrontBogieTransform.gameObject.AddComponent<Bogie>();
@@ -234,7 +232,7 @@ namespace DVCustomCarLoader
             }
 
             // Rear bogie
-            if( HasCustomRearBogie && newRearBogieTransform )
+            if (carSetup.UseCustomRearBogie && newRearBogieTransform)
             {
                 // use bogie from new prefab
                 rearBogie = newRearBogieTransform.gameObject.AddComponent<Bogie>();

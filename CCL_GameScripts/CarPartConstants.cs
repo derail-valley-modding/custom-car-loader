@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace DVCustomCarLoader
+namespace CCL_GameScripts
 {
     public static class CarPartNames
     {
@@ -48,6 +48,7 @@ namespace DVCustomCarLoader
         // Bogies
         public const string BOGIE_FRONT = "BogieF";
         public const string BOGIE_REAR = "BogieR";
+        public const string BOGIE_CAR = "bogie_car";
 
         // Info Plates
         public static readonly string[] INFO_PLATES = { "[car plate anchor1]", "[car plate anchor2]" };

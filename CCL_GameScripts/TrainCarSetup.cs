@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CCL_GameScripts.Attributes;
 using UnityEditor;
 using UnityEngine;
@@ -54,13 +55,10 @@ namespace CCL_GameScripts
         public float FullDamagePrice = 10000f;
 
         [Header("Bogie Replacement")]
-        public Transform FrontBogie;
-        public Transform RearBogie;
         public bool UseCustomFrontBogie;
         public bool UseCustomRearBogie;
-        public CapsuleCollider FrontBogieCollider;
-        public CapsuleCollider RearBogieCollider;
 
+        [Header("Buffer Replacement")]
         public bool UseCustomBuffers = false;
         public bool UseCustomHosePositions = false;
 
@@ -88,32 +86,38 @@ namespace CCL_GameScripts
         #region Helpers
 
         [MethodButton(
-            nameof(CreateAssetBundleForTrainCar),
             nameof(AlignBogieColliders),
             nameof(AddLocoSimulation),
             nameof(ExportCar))]
         [SerializeField]
         private bool editorFoldout = true;
 
-        public void CreateAssetBundleForTrainCar()
-        {
-            string assetPath = AssetDatabase.GetAssetPath(PrefabUtility.GetCorrespondingObjectFromSource(gameObject));
+        private const string BOGIE_COLLIDERS = CarPartNames.COLLIDERS_ROOT + "/" + CarPartNames.BOGIE_COLLIDERS;
 
-            if (string.IsNullOrEmpty(assetPath))
+        public CapsuleCollider GetFrontBogieCollider()
+        {
+            var bogies = transform.FindSafe(BOGIE_COLLIDERS);
+            if (bogies)
             {
-                Debug.LogError("Asset path is null! Make sure the TrainCar is a prefab!");
-                return;
+                var bogieColliders = bogies.GetComponentsInChildren<CapsuleCollider>().OrderBy(c => c.center.z);
+                return bogieColliders.LastOrDefault();
             }
-        
-            //Change name of asset bundle to this GameObject.
-            AssetImporter.GetAtPath(assetPath).SetAssetBundleNameAndVariant(name, "");
-        
-            //Remove unused assetBundle names.
-            AssetDatabase.RemoveUnusedAssetBundleNames();
-        
-            EditorUtility.DisplayDialog("Created AssetBundle",
-                $"An AssetBundle with the name {name} was created successfully.", "OK");
+            return null;
         }
+
+        public CapsuleCollider GetRearBogieCollider()
+        {
+            var bogies = transform.FindSafe(BOGIE_COLLIDERS);
+            if (bogies)
+            {
+                var bogieColliders = bogies.GetComponentsInChildren<CapsuleCollider>().OrderBy(c => c.center.z);
+                return bogieColliders.FirstOrDefault();
+            }
+            return null;
+        }
+
+        public Transform GetFrontBogie() => transform.FindSafe(CarPartNames.BOGIE_FRONT);
+        public Transform GetRearBogie() => transform.FindSafe(CarPartNames.BOGIE_REAR);
 
         /// <summary>
         /// This will properly align the bogie colliders to the bogie along the x and z axes.
@@ -122,22 +126,24 @@ namespace CCL_GameScripts
         {
             List<Object> objectsToUndo = new List<Object>();
 
-            if( FrontBogieCollider )
+            var frontCollider = GetFrontBogieCollider();
+            var frontBogie = GetFrontBogie();
+            if (frontCollider && frontBogie)
             {
-                //var frontCenter = FrontBogieCollider.center;
-                var frontCenter = new Vector3(0, WheelRadius, FrontBogie.localPosition.z);
-                FrontBogieCollider.center = frontCenter;
-                FrontBogieCollider.radius = WheelRadius;
-                objectsToUndo.Add(FrontBogieCollider.transform);
+                var frontCenter = new Vector3(0, WheelRadius, frontBogie.localPosition.z);
+                frontCollider.center = frontCenter;
+                frontCollider.radius = WheelRadius;
+                objectsToUndo.Add(frontCollider.transform);
             }
 
-            if( RearBogieCollider )
+            var rearCollider = GetRearBogieCollider();
+            var rearBogie = GetRearBogie();
+            if (rearCollider)
             {
-                //var rearCenter = RearBogieCollider.center;
-                var rearCenter = new Vector3(0, WheelRadius, RearBogie.localPosition.z);
-                RearBogieCollider.center = rearCenter;
-                RearBogieCollider.radius = WheelRadius;
-                objectsToUndo.Add(RearBogieCollider.transform);
+                var rearCenter = new Vector3(0, WheelRadius, rearBogie.localPosition.z);
+                rearCollider.center = rearCenter;
+                rearCollider.radius = WheelRadius;
+                objectsToUndo.Add(rearCollider.transform);
             }
 
             Undo.RecordObjects(objectsToUndo.ToArray(), "Undo Align Bogies");
@@ -145,41 +151,13 @@ namespace CCL_GameScripts
 
         private void ExportCar()
         {
-            ExportTrainCar.ShowWindow(this);
+            TrainCarValidator.ValidateExport(this);
         }
 
         private void AddLocoSimulation()
         {
             AddLocoParams.ShowWindow(this);
         }
-
-        #endregion
-
-        #region Gizmos
-
-    //private void OnDrawGizmos()
-    //{
-    //    #region Coupler Gizmos
-    //    if (FrontCoupler != null) Gizmos.DrawWireCube(FrontCoupler.position, new Vector3(0.3f, 0.3f, 0.3f));
-    //    if (RearCoupler != null) Gizmos.DrawWireCube(RearCoupler.position, new Vector3(0.3f, 0.3f, 0.3f));
-    //    #endregion
-
-    //    #region Bogie Gizmos
-
-    //    //if (FrontBogieCollider != null)
-    //    //{
-    //    //    var frontBogiePos = FrontBogieCollider.transform.position + FrontBogieCollider.transform.TransformPoint(FrontBogieCollider.bounds.center);
-    //    //    Gizmos.DrawWireCube(frontBogiePos, FrontBogieCollider.bounds.size);
-    //    //}
-
-    //    //if (RearBogieCollider != null)
-    //    //{
-    //    //    var rearBogiePos = RearBogieCollider.transform.position + RearBogieCollider.transform.TransformPoint(RearBogieCollider.bounds.center);
-    //    //    Gizmos.DrawWireCube(rearBogiePos, RearBogieCollider.bounds.size);
-    //    //}
-
-    //    #endregion
-    //}
 
         #endregion
     }
