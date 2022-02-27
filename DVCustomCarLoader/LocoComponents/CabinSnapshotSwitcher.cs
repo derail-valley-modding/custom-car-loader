@@ -7,40 +7,30 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public class CabinSnapshotSwitcher : InternalExternalSnapshotSwitcher
+    public class CabinSnapshotSwitcher : MonoBehaviour
     {
-        protected TrainCar AttachedTrainCar;
-        protected DoorAndWindowTracker OpeningTracker;
-
-        protected List<BoxCollider> interiorRegions = new List<BoxCollider>();
-
-        protected static readonly MethodInfo PointInOABBMethod;
-        protected readonly Func<Vector3, BoxCollider, bool> PointInOABB;
+        private static readonly AccessTools.FieldRef<object, int> UpdatedInternalityLastFrame;
+        private static readonly AccessTools.FieldRef<object, bool> IsInsideAny;
 
         static CabinSnapshotSwitcher()
         {
-            PointInOABBMethod = AccessTools.Method(typeof(InternalExternalSnapshotSwitcher), "PointInOABB");
-            if (PointInOABBMethod == null)
-            {
-                Main.Error("CabinSnapshotSwitcher - PointInOABB not found");
-            }
+            UpdatedInternalityLastFrame = AccessTools.FieldRefAccess<int>(typeof(InternalExternalSnapshotSwitcher), "updatedInternalityLastFrame");
+            IsInsideAny = AccessTools.FieldRefAccess<bool>(typeof(InternalExternalSnapshotSwitcher), "isInsideAny");
         }
 
-        public CabinSnapshotSwitcher()
-        {
-            PointInOABB = AccessTools.MethodDelegate<Func<Vector3, BoxCollider, bool>>(PointInOABBMethod, this);
-        }
+        protected TrainCar AttachedTrainCar;
+        protected DoorAndWindowTracker OpeningTracker;
+
+        public List<BoxCollider> interiorRegions = new List<BoxCollider>();
+
+        private bool isInside;
 
         public void AddCabRegion(BoxCollider box)
         {
-            if (interiorRegions.Count == 0)
-            {
-                this.box = box;
-            }
             interiorRegions.Add(box);
         }
 
-        protected override void Start()
+        protected void Start()
         {
             if (!AudioManager.e)
             {
@@ -58,6 +48,36 @@ namespace DVCustomCarLoader.LocoComponents
             }
 
             AttachedTrainCar.InteriorPrefabLoaded += OnInteriorLoaded;
+        }
+
+        private void Update()
+        {
+            Camera playerCamera = PlayerManager.PlayerCamera;
+            if (!playerCamera)
+            {
+                return;
+            }
+
+            int frameCount = Time.frameCount;
+            if (UpdatedInternalityLastFrame() != frameCount)
+            {
+                AudioManager e = AudioManager.e;
+                UpdatedInternalityLastFrame() = frameCount;
+
+                if (IsInsideAny() != (e.internality == 1f))
+                {
+                    e.internality = (IsInsideAny() ? 1f : 0f);
+                }
+                IsInsideAny() = false;
+            }
+
+            if ((transform.position - playerCamera.transform.position).sqrMagnitude > 36f && !isInside)
+            {
+                return;
+            }
+
+            isInside = InInternalSpace(playerCamera.transform);
+            IsInsideAny() |= isInside;
         }
 
         private void OnDestroy()
@@ -83,9 +103,18 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-        protected override bool InInternalSpace(Transform playerCameraTransform)
+        private bool PointInOABB(Vector3 point, BoxCollider box)
         {
-            return OpeningTracker && !OpeningTracker.IsAnythingOpen() && interiorRegions.Any(r => PointInOABB(playerCameraTransform.position, r));
+            point = box.transform.InverseTransformPoint(point) - box.center;
+            float num = box.size.x * 0.5f;
+            float num2 = box.size.y * 0.5f;
+            float num3 = box.size.z * 0.5f;
+            return point.x < num && point.x > -num && point.y < num2 && point.y > -num2 && point.z < num3 && point.z > -num3;
+        }
+
+        protected bool InInternalSpace(Transform playerCameraTransform)
+        {
+            return interiorRegions.Any(r => PointInOABB(playerCameraTransform.position, r)) && !(OpeningTracker && OpeningTracker.IsAnythingOpen());
         }
     }
 
