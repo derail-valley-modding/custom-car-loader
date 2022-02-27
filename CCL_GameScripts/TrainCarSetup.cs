@@ -44,14 +44,15 @@ namespace CCL_GameScripts
         [Header("Basic")]
         public string Identifier = "My New Car";
         public BaseTrainCarType BaseCarType;
-        public bool ReplaceBaseType = false;
-        public BaseCargoContainerType CargoClass = BaseCargoContainerType.None;
 
         public GameObject InteriorPrefab;
         [ProxyField]
         public bool keepInteriorLoaded = false;
-        public Sprite BookletSprite = null;
 
+        [Header("Cargo & Jobs")]
+        public BaseCargoContainerType CargoClass = BaseCargoContainerType.None;
+        public bool ReplaceBaseType = false;
+        public Sprite BookletSprite = null;
         public float FullDamagePrice = 10000f;
 
         [Header("Bogie Replacement")]
