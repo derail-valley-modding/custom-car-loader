@@ -105,23 +105,15 @@ namespace DVCustomCarLoader
 
                         //Bogies
                         // Custom Front Bogie
-                        jsonFile.GetField(out newCar.HasCustomFrontBogie, CarJSONKeys.REPLACE_FRONT_BOGIE, false);
-                        if( newCar.HasCustomFrontBogie )
+                        if (jsonFile.GetField(CarJSONKeys.FRONT_BOGIE_PARAMS) is JSONObject fbs)
                         {
-                            if( jsonFile.GetField(CarJSONKeys.FRONT_BOGIE_PARAMS) is JSONObject fbs )
-                            {
-                                newCar.FrontBogieConfig = CustomBogieParams.FromJSON(fbs);
-                            }
+                            newCar.FrontBogieConfig = CustomBogieParams.FromJSON(fbs);
                         }
 
                         // Custom Rear Bogie
-                        jsonFile.GetField(out newCar.HasCustomRearBogie, CarJSONKeys.REPLACE_REAR_BOGIE, false);
-                        if( newCar.HasCustomRearBogie )
+                        if (jsonFile.GetField(CarJSONKeys.REAR_BOGIE_PARAMS) is JSONObject rbs)
                         {
-                            if( jsonFile.GetField(CarJSONKeys.REAR_BOGIE_PARAMS) is JSONObject rbs )
-                            {
-                                newCar.RearBogieConfig = CustomBogieParams.FromJSON(rbs);
-                            }
+                            newCar.RearBogieConfig = CustomBogieParams.FromJSON(rbs);
                         }
 
                         if( newCar.FinalizePrefab() )

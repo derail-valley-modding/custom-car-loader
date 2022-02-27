@@ -125,7 +125,7 @@ namespace DVCustomCarLoader.Effects
                     Main.LogVerbose("Chimney stop");
                     chimneyParticles.Stop();
                 }
-                else if (!chimneyParticles.isPlaying)
+                else if ((burnRatePercent > 0) && !chimneyParticles.isPlaying)
                 {
                     Main.LogVerbose("Chimney start");
                     chimneyParticles.Play();

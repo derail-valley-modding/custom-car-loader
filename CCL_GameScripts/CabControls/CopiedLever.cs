@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CCL_GameScripts.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace CCL_GameScripts.CabControls
         EngineThrottleDE6
     }
 
-    public class CopiedLever : CopiedCabInput
+    public class CopiedLever : CopiedCabInput, IProxyScript
     {
         protected static readonly (BaseTrainCarType, string)[] TargetObjects =
             new []
@@ -73,6 +74,22 @@ namespace CCL_GameScripts.CabControls
         protected const int GIZMO_SEGMENTS = 40;
         protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
         protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
+
+        public string TargetTypeName => "DV.CabControls.Spec.Lever";
+        public bool IsOverrideSet(int index) => 
+            ((index == 1) && OverrideNotches) || 
+            ((index == 2) && OverrideDirection);
+
+        public bool OverrideNotches = false;
+
+        [ProxyField("useSteppedJoint", 1)]
+        public bool UseNotches = true; // useSteppedJoint
+        [ProxyField(1)]
+        public int notches = 20;
+
+        public bool OverrideDirection = false;
+        [ProxyField(2)]
+        public bool invertDirection = false;
 
         private void OnDrawGizmos()
         {

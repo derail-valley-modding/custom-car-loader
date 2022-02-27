@@ -35,8 +35,6 @@ namespace DVCustomCarLoader
         public GameObject InteriorPrefab;
 
         //Bogies
-        public bool HasCustomFrontBogie = false;
-        public bool HasCustomRearBogie = false;
         public CustomBogieParams FrontBogieConfig = null;
         public CustomBogieParams RearBogieConfig = null;
         
@@ -200,7 +198,7 @@ namespace DVCustomCarLoader
             }
 
             // Front bogie
-            if( HasCustomFrontBogie && newFrontBogieTransform )
+            if (carSetup.UseCustomFrontBogie && newFrontBogieTransform)
             {
                 // replacing the original bogie, only steal the script
                 frontBogie = newFrontBogieTransform.gameObject.AddComponent<Bogie>();
@@ -234,7 +232,7 @@ namespace DVCustomCarLoader
             }
 
             // Rear bogie
-            if( HasCustomRearBogie && newRearBogieTransform )
+            if (carSetup.UseCustomRearBogie && newRearBogieTransform)
             {
                 // use bogie from new prefab
                 rearBogie = newRearBogieTransform.gameObject.AddComponent<Bogie>();
@@ -372,20 +370,20 @@ namespace DVCustomCarLoader
                 var cabTform = newFab.transform.GetChild(i);
                 if (cabTform.name == CarPartNames.CAB_TELEPORT_ROOT)
                 {
+                    Main.LogVerbose("Found cab");
                     var teleportDest = cabTform.gameObject.AddComponent<CabTeleportDestination>();
                     teleportDest.hoverRenderer = cabTform.GetComponentInChildren<Renderer>();
 
-                    if (InteriorPrefab)
+                    var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
+                    if (cabCollider)
                     {
-                        var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
-                        if (cabCollider)
+                        Main.LogVerbose("Found cab teleport collider");
+                        if (!snapshotSwitcher)
                         {
-                            if (!snapshotSwitcher)
-                            {
-                                snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
-                            }
-                            snapshotSwitcher.AddCabRegion(cabCollider);
+                            snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
+                            Main.LogVerbose("Add snapshot audio switcher");
                         }
+                        snapshotSwitcher.AddCabRegion(cabCollider);
                     }
                 }
             }

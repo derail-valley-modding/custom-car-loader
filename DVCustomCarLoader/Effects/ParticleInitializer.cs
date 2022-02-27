@@ -1,4 +1,5 @@
-﻿using CCL_GameScripts.Effects;
+﻿using CCL_GameScripts;
+using CCL_GameScripts.Effects;
 using System.Collections;
 using UnityEngine;
 
