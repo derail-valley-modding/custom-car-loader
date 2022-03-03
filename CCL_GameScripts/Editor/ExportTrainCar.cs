@@ -180,22 +180,30 @@ public class ExportTrainCar : EditorWindow
 		string bundleName = GetBundleName(_trainCarSetup.Identifier);
 		Debug.Log($"Exporting assetBundle to: {exportFolderPath} - bundle name: {bundleName}");
 
-		// Create a temp prefab object
 		string assetFolder = Path.GetDirectoryName(_trainCarSetup.gameObject.scene.path);
-		string tempPrefabPath = Path.Combine(assetFolder, GetPrefabName(_trainCarSetup.Identifier)).Replace('\\', '/');
-		var tempPrefab = PrefabUtility.SaveAsPrefabAsset(_trainCarSetup.gameObject, tempPrefabPath);
 
+		// create temp interior prefab
 		string tempInteriorPath = null;
+		var originalInterior = _trainCarSetup.InteriorPrefab;
+
 		if (_trainCarSetup.InteriorPrefab)
 		{
+			Debug.Log($"Creating temp prefab from interior object {_trainCarSetup.InteriorPrefab.name}");
 			tempInteriorPath = Path.Combine(assetFolder, GetInteriorPrefabName(_trainCarSetup.Identifier)).Replace('\\', '/');
 			var tempInteriorPrefab = PrefabUtility.SaveAsPrefabAsset(_trainCarSetup.InteriorPrefab, tempInteriorPath);
-			tempPrefab.GetComponent<TrainCarSetup>().InteriorPrefab = tempInteriorPrefab;
+
+			originalInterior = _trainCarSetup.InteriorPrefab;
+			_trainCarSetup.InteriorPrefab = tempInteriorPrefab;
 
 			AssetImporter.GetAtPath(tempInteriorPath).SetAssetBundleNameAndVariant(bundleName, "");
 		}
 
-		//Change name of asset bundle to this GameObject.
+		// Create a temp prefab object
+		Debug.Log($"Creating temp prefab from car object {_trainCarSetup.gameObject.name}");
+		string tempPrefabPath = Path.Combine(assetFolder, GetPrefabName(_trainCarSetup.Identifier)).Replace('\\', '/');
+		var tempPrefab = PrefabUtility.SaveAsPrefabAsset(_trainCarSetup.gameObject, tempPrefabPath);
+
+		//Change name of asset bundle on the temp prefab
 		AssetImporter.GetAtPath(tempPrefabPath).SetAssetBundleNameAndVariant(bundleName, "");
 		AssetDatabase.RemoveUnusedAssetBundleNames();
 		
@@ -216,6 +224,9 @@ public class ExportTrainCar : EditorWindow
 
 		BuildPipeline.BuildAssetBundles(exportFolderPath, trainCarBundleBuild, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
 		Debug.Log($"Finished AssetBundle build for car: {_trainCarSetup.Identifier}.");
+
+		// reapply original interior if changed
+		_trainCarSetup.InteriorPrefab = originalInterior;
 
 		AssetDatabase.DeleteAsset(tempPrefabPath);
 		if (tempInteriorPath != null)

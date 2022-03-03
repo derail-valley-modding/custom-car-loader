@@ -155,6 +155,7 @@ namespace CCL_GameScripts
             trainCarSetup = carSetup;
 
             // run tests
+            Run(CheckCarSetup);
             Run(CheckTransform);
             Run(CheckLOD);
             Run(CheckBogies);
@@ -225,6 +226,16 @@ namespace CCL_GameScripts
                 pass.Name = testName;
                 results.Add(pass);
             }
+        }
+
+        [CarPrefabTest("Car Setup")]
+        private Result CheckCarSetup()
+        {
+            if (trainCarSetup.BaseCarType == BaseTrainCarType.NotSet)
+            {
+                return Result.Failed("Base car type must be set");
+            }
+            return Result.Pass();
         }
 
         [CarPrefabTest("Root Transform")]
