@@ -409,7 +409,7 @@ namespace CCL_GameScripts
                 {
                     foreach (string name in CarPartNames.BUFFER_REAR_PADS)
                     {
-                        var pad = frontRig.FindSafe(name);
+                        var pad = rearRig.FindSafe(name);
                         if (!pad)
                         {
                             yield return Result.Warning("Missing buffer pad " + name);

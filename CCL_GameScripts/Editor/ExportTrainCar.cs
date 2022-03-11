@@ -235,7 +235,7 @@ public class ExportTrainCar : EditorWindow
 		}
 
 		// Create car.json file.
-		var jsonFile = Path.Combine(exportFolderPath, "car.json");
+		var jsonFile = Path.Combine(exportFolderPath, CarJSONKeys.JSON_FILENAME);
 		WriteCarSettingsFile(bundleName, jsonFile);
 	}
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using CCL_GameScripts;
 
@@ -9,7 +10,12 @@ namespace DVCustomCarLoader
     public static class CustomCarManager
     {
         public static List<CustomCar> CustomCarTypes = new List<CustomCar>();
-        
+
+        public static IEnumerable<KeyValuePair<TrainCarType, string>> GetCustomCarList()
+        {
+            return CustomCarTypes.Select(car => new KeyValuePair<TrainCarType, string>(car.CarType, car.identifier));
+        }
+
         public static void Setup()
         {
             //Load all json files
@@ -27,36 +33,44 @@ namespace DVCustomCarLoader
             foreach (var directory in Folders)
             {
                 Main.LogVerbose($"Reading directory: {directory}");
-                
-                foreach (var file in Directory.GetFiles(directory, "*.json"))
+
+                string file = Path.Combine(directory, CarJSONKeys.JSON_FILENAME);
+                if (File.Exists(file))
                 {
                     Main.LogVerbose($"Reading JSON file: {file}");
-                    
-                    using (StreamReader reader = File.OpenText(file))
+
+                    try
                     {
-                        var jsonText = reader.ReadToEnd();
-
-                        //Load JSON
-                        JSONObject jsonFile = new JSONObject(jsonText);
-
-                        if (jsonFile.keys.Count>0)
+                        using (StreamReader reader = File.OpenText(file))
                         {
-                            CustomCar newCar = CreateCustomCar(directory, jsonFile);
+                            var jsonText = reader.ReadToEnd();
 
-                            if( newCar != null )
+                            //Load JSON
+                            JSONObject jsonFile = new JSONObject(jsonText);
+
+                            if (jsonFile.keys.Count > 0)
                             {
-                                CustomCarTypes.Add(newCar);
-                                Main.LogAlways($"Successfully added new car to spawn list: {newCar.identifier}");
+                                CustomCar newCar = CreateCustomCar(directory, jsonFile);
+
+                                if (newCar != null)
+                                {
+                                    CustomCarTypes.Add(newCar);
+                                    Main.LogAlways($"Successfully added new car to spawn list: {newCar.identifier}");
+                                }
+                                else
+                                {
+                                    Main.Error($"Failed to load custom car from {directory}");
+                                }
                             }
                             else
                             {
-                                Main.Error($"Failed to load custom car from {directory}");
+                                break;
                             }
                         }
-                        else
-                        {
-                            break;
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Main.Error($"Error loading file {file}:\n{ex.Message}");
                     }
                 }
             }

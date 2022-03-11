@@ -6,6 +6,7 @@ namespace CCL_GameScripts
 {
     public class CarJSONKeys
     {
+        public const string JSON_FILENAME = "car.json";
         public const string BUNDLE_NAME = "assetBundleName";
         public const string PREFAB_NAME = "carPrefabName";
         public const string IDENTIFIER = "identifier";
