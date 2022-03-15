@@ -17,6 +17,11 @@ public class ExportTrainCar : EditorWindow
 	#region Internal Data
 	
 	private static ExportTrainCar window = null;
+	private static string LastExportPath
+    {
+		get => EditorPrefs.GetString("CCL_LastExportPath");
+		set => EditorPrefs.SetString("CCL_LastExportPath", value);
+    }
 	
 	private GUIStyle _boxStyle;
 	private GUIStyle BoxStyle => _boxStyle ?? GUI.skin.box;
@@ -73,21 +78,53 @@ public class ExportTrainCar : EditorWindow
 				$"You are about to export your TrainCar named {_trainCarSetup.Identifier}, are you sure you want to proceed?",
 				"Yes", "No"))
 			{
+				string startingPath = null;
+				string folderName;
 
-				//Basically we store two paths that can potentially have the game existing in it.
-				var cPath = Path.Combine("C:/Program Files/Steam/steamapps/common/Derail Valley/Mods/DVCustomCarLoader/Cars");
-				var xPath = Path.Combine("X:/Program Files/Steam/steamapps/common/Derail Valley/Mods/DVCustomCarLoader/Cars");
-				var ExistAtC = Directory.Exists(cPath);
-				var ExistAtX = Directory.Exists(xPath);
-					    
-				//We check both paths to see if they exist. If not, we just open at the users desktop.
-				var exportFolderPath = EditorUtility.SaveFolderPanel(
-					"Export Car",
-					ExistAtC ? cPath : (ExistAtX ? xPath : System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop)),
-					_trainCarSetup.Identifier);
+				string lastExport = LastExportPath;
+				if (!string.IsNullOrEmpty(lastExport) && Directory.Exists(lastExport))
+				{
+					startingPath = Path.GetDirectoryName(lastExport);
+					folderName = Path.GetFileName(lastExport.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+				}
+				else
+				{
+					// search for the user's DV install
+					foreach (var drive in DriveInfo.GetDrives())
+					{
+						try
+						{
+							string driveRoot = drive.RootDirectory.FullName;
+							string potentialPath = Path.Combine(driveRoot, "Program Files/Steam/steamapps/common/Derail Valley/Mods/DVCustomCarLoader/Cars");
+							if (Directory.Exists(potentialPath))
+							{
+								startingPath = potentialPath;
+								break;
+							}
+
+							potentialPath = Path.Combine(driveRoot, "Program Files (x86)/Steam/steamapps/common/Derail Valley/Mods/DVCustomCarLoader/Cars");
+							if (Directory.Exists(potentialPath))
+							{
+								startingPath = potentialPath;
+								break;
+							}
+						}
+						catch (System.Exception) { }
+					}
+
+					if (string.IsNullOrEmpty(startingPath))
+                    {
+						startingPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Desktop);
+					}
+
+					folderName = _trainCarSetup.Identifier;
+				}
+
+				string exportFolderPath = EditorUtility.SaveFolderPanel("Export Car", startingPath, folderName);
 
 				if (!string.IsNullOrWhiteSpace(exportFolderPath))
 				{
+					LastExportPath = exportFolderPath;
 					ExportCar(exportFolderPath);
 
 					//Goto folder when finished building.
@@ -168,7 +205,7 @@ public class ExportTrainCar : EditorWindow
 		if (directory.GetFiles().Length > 0 || directory.GetDirectories().Length > 0)
 		{
 			if (EditorUtility.DisplayDialog("Clear Folder",
-				"The directory you selected isn't empty, would you like to clear the folder before proceeding? \n \n WARNING: THIS WILL DELETE EVERYTHING IN THE FOLDER.",
+				"The directory you selected isn't empty, would you like to clear the files from the folder before proceeding? \n \n WARNING: THIS WILL DELETE ALL FILES (BUT NOT DIRECTORIES) IN THE FOLDER.",
 				"Clear Folder",
 				"Cancel"))
 			{

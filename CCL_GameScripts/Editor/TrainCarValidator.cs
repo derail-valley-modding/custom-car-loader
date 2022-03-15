@@ -350,18 +350,11 @@ namespace CCL_GameScripts
             }
 
             // bogies
-            if (trainCarSetup.UseCustomFrontBogie || trainCarSetup.UseCustomRearBogie)
+            var bogies = collidersRoot.FindSafe(CarPartNames.BOGIE_COLLIDERS);
+            var bogieColliders = bogies.GetComponentsInChildren<Collider>();
+            if (!bogies || bogieColliders.Length != 2)
             {
-                var bogies = collidersRoot.FindSafe(CarPartNames.BOGIE_COLLIDERS);
-
-                int expectedNumColliders = trainCarSetup.UseCustomFrontBogie ? 1 : 0;
-                expectedNumColliders += trainCarSetup.UseCustomRearBogie ? 1 : 0;
-
-                var bogieColliders = bogies.GetComponentsInChildren<Collider>();
-                if (!bogies || bogieColliders.Length != expectedNumColliders)
-                {
-                    yield return Result.Failed($"One or more {CarPartNames.BOGIE_COLLIDERS} colliders missing for custom bogies");
-                }
+                yield return Result.Failed($"Incorrect number of {CarPartNames.BOGIE_COLLIDERS} colliders - should be 2");
             }
         }
 
