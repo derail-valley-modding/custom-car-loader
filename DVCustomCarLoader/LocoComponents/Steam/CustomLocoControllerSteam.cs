@@ -43,7 +43,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             var attachedCar = e.otherCoupler.train;
             if (CarTypes.IsTender(attachedCar.carType))
             {
-                var customTender = train.GetComponent<CustomTenderSimulation>();
+                var customTender = attachedCar.GetComponent<CustomTenderSimulation>();
                 if (customTender)
                 {
                     LastTender = attachedCar;
@@ -56,7 +56,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                     return;
                 }
 
-                var baseTender = train.GetComponent<TenderSimulation>();
+                var baseTender = attachedCar.GetComponent<TenderSimulation>();
                 if (baseTender)
                 {
                     LastTender = attachedCar;
