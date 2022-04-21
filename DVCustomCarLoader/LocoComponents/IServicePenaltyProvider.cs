@@ -31,12 +31,12 @@ namespace DVCustomCarLoader.LocoComponents
 
         public void ResetDebt()
         {
-            Provider.UpdateDebtValue(Debt);
+            Provider.ResetDebt(Debt);
         }
 
         public void UpdateDebtValue()
         {
-            Provider.ResetDebt(Debt);
+            Provider.UpdateDebtValue(Debt);
         }
     }
 
