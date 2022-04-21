@@ -125,6 +125,8 @@ namespace DVCustomCarLoader
                 collision = collisionObj.transform;
                 collision.parent = colliderRoot.transform;
             }
+            // Ensure PitStop detects this as a serviceable car
+            collision.tag = "MainTriggerCollider";
 
             // find [walkable]
             // copy walkable to items if items doesn't exist
