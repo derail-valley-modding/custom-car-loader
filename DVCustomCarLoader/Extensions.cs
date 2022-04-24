@@ -1,6 +1,10 @@
-﻿using System;
+﻿using CCL_GameScripts;
+using DV.Logic.Job;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -82,6 +86,75 @@ namespace DVCustomCarLoader
             float fromRange = fromMax - fromMin;
             float toRange = toMax - toMin;
             return (value - fromMin) * (toRange / fromRange) + toMin;
+        }
+        
+        public static bool IsCustomCargoClass(this CargoContainerType containerType)
+        {
+            return containerType == (CargoContainerType)BaseCargoContainerType.Custom;
+        }
+
+        public static bool IsCustomCargoType(this CargoType cargoType)
+        {
+            return cargoType == (CargoType)BaseCargoType.Custom;
+        }
+    }
+
+    public static class AccessToolsExtensions
+    {
+        public static void SaveTo<T>(this FieldInfo field, out T dest, object source = null)
+        {
+            if (field != null)
+            {
+                dest = (T)field.GetValue(source);
+            }
+            else
+            {
+                dest = default;
+            }
+        }
+
+        public static void SaveTo<T>(this PropertyInfo property, out T dest, object source = null)
+        {
+            if (property != null)
+            {
+                dest = (T)property.GetValue(source);
+            }
+            else
+            {
+                dest = default;
+            }
+        }
+    }
+
+    public class WrappedEnumerator : IEnumerator
+    {
+        private readonly IEnumerator enumerator;
+        public event Action OnMoveNext;
+        public event Action OnComplete;
+
+        public WrappedEnumerator(IEnumerator toWrap)
+        {
+            enumerator = toWrap;
+        }
+
+        public object Current => enumerator.Current;
+
+        public bool MoveNext()
+        {
+            bool result = enumerator.MoveNext();
+
+            OnMoveNext?.Invoke();
+            if (!result)
+            {
+                OnComplete?.Invoke();
+            }
+
+            return result;
+        }
+
+        public void Reset()
+        {
+            enumerator.Reset();
         }
     }
 }

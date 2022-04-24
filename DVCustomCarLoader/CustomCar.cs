@@ -45,7 +45,9 @@ namespace DVCustomCarLoader
         public LocoParamsType LocoType { get; protected set; } = LocoParamsType.None;
         public LocoAudioBasis LocoAudioType { get; protected set; } = LocoAudioBasis.None;
         public LocoRequiredLicense RequiredLicense { get; protected set; } = LocoRequiredLicense.None;
-        public CargoContainerType CargoClass { get; protected set; } = CargoContainerType.None;
+
+        public CargoContainerType CargoClass { get; set; } = CargoContainerType.None;
+        public CargoModelSetup[] CargoModels { get; protected set; } = null;
 
         public Sprite BookletSprite { get; set; } = null;
         public float FullDamagePrice { get; protected set; } = 10000f;
@@ -298,10 +300,19 @@ namespace DVCustomCarLoader
             }
 
             // setup traincar properties
-            CargoClass = (CargoContainerType)carSetup.CargoClass;
             BookletSprite = carSetup.BookletSprite;
             FullDamagePrice = carSetup.FullDamagePrice;
             ReplaceBaseType = carSetup.ReplaceBaseType;
+
+            CargoClass = (CargoContainerType)carSetup.CargoClass;
+
+            var cargoSetups = newFab.GetComponentsInChildren<CargoModelSetup>(true);
+            if (cargoSetups.Length > 0)
+            {
+                CargoModels = cargoSetups;
+                string mString = CargoModels != null ? string.Join<CargoModelSetup>(",", CargoModels) : "empty";
+                Main.LogVerbose($"Cargo models - {mString}");
+            }
 
             Main.LogVerbose($"Cargo class: {CargoClass}, Damage price: {FullDamagePrice}, ReplaceBase: {ReplaceBaseType}");
 
