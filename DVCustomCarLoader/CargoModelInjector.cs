@@ -109,7 +109,11 @@ namespace DVCustomCarLoader
                         nameList = new List<string>();
                         modelDict.Add(cargoType, nameList);
                     }
-                    nameList.Add(modelName);
+
+                    if (!string.IsNullOrEmpty(modelName))
+                    {
+                        nameList.Add(modelName);
+                    }
                 }
             }
         }

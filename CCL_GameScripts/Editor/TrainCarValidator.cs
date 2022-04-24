@@ -21,7 +21,7 @@ namespace CCL_GameScripts
 
         private enum ResultStatus
         {
-            Pass, Warning, Failed
+            Pass, Warning, Failed, Skipped
         }
 
         private class Result
@@ -40,6 +40,7 @@ namespace CCL_GameScripts
             public static Result Pass() => new Result(null, ResultStatus.Pass);
             public static Result Warning(string message) => new Result(null, ResultStatus.Warning, message);
             public static Result Failed(string message) => new Result(null, ResultStatus.Failed, message);
+            public static Result Skipped() => new Result(null, ResultStatus.Skipped);
 
             public Color StatusColor
             {
@@ -162,6 +163,7 @@ namespace CCL_GameScripts
             Run(CheckColliders);
             Run(CheckCouplers);
             Run(CheckCabTransform);
+            Run(CheckCargoSettings);
         }
 
         private void Run(Func<Result> test)
@@ -421,6 +423,29 @@ namespace CCL_GameScripts
                 {
                     return Result.Warning("Interior is not centered at (0,0,0)");
                 }
+            }
+
+            return Result.Pass();
+        }
+
+        [CarPrefabTest("Cargo Settings")]
+        private Result CheckCargoSettings()
+        {
+            bool isCustomCargoClass = trainCarSetup.CargoClass == BaseCargoContainerType.Custom;
+            var cargoModels = trainCarSetup.GetComponents<CargoModelSetup>();
+
+            if (!isCustomCargoClass && cargoModels.Length == 0)
+            {
+                return Result.Skipped();
+            }
+
+            if (!isCustomCargoClass) // models length > 0
+            {
+                return Result.Warning($"Cargo models are set up, but car is set to use base container type {trainCarSetup.CargoClass}");
+            }
+            if (cargoModels.Length == 0) // is custom cargo class
+            {
+                return Result.Warning("Car is set to custom cargo container, but no cargo models are set up - will not be able to carry cargo");
             }
 
             return Result.Pass();

@@ -514,6 +514,20 @@ namespace DVCustomCarLoader
             bufferRoot = Object.Instantiate(bufferRoot, newPrefab.transform);
             bufferRoot.name = CarPartNames.BUFFERS_ROOT;
 
+            // special case for refrigerator - chain rigs are parented to car root instead of [buffers]
+            if (BaseCarType == TrainCarType.RefrigeratorWhite)
+            {
+                for (int i = 0; i < basePrefab.transform.childCount; i++)
+                {
+                    var child = basePrefab.transform.GetChild(i).gameObject;
+                    if (child.name == CarPartNames.BUFFER_CHAIN_REGULAR)
+                    {
+                        GameObject copiedChain = Object.Instantiate(child, bufferRoot.transform);
+                        copiedChain.name = CarPartNames.BUFFER_CHAIN_REGULAR;
+                    }
+                }
+            }
+
             // adjust transforms of buffer components
             for (int i = 0; i < bufferRoot.transform.childCount; i++)
             {
