@@ -76,9 +76,12 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseInjector.cs" />
+    <Compile Include="CargoModelInjector.cs" />
     <Compile Include="CarSpawner_Patches.cs" />
     <Compile Include="CarTypeInjector.cs" />
     <Compile Include="CCLSettings.cs" />
+    <Compile Include="CustomCargoInjector.cs" />
     <Compile Include="DebugCommands.cs" />
     <Compile Include="Effects\ControllableLight.cs" />
     <Compile Include="Effects\EngineSmokeEmitter.cs" />

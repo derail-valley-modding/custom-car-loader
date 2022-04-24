@@ -34,6 +34,7 @@ namespace DVCustomCarLoader
 
 				InitSpecManager.OnStartup();
 				Effects.ParticleInitializer.FetchDefaults();
+				CustomCargoInjector.LoadDefinitions();
 				CustomCarManager.Setup();
 
 				harmony = new Harmony(modEntry.Info.Id);

@@ -134,6 +134,8 @@ namespace DVCustomCarLoader
                         {
                             if( CarTypeInjector.RegisterCustomCarType(newCar) != TrainCarType.NotSet )
                             {
+                                CargoModelInjector.RegisterCargo(newCar);
+
                                 return newCar;
                             }
                             else

@@ -42,7 +42,6 @@ namespace DVCustomCarLoader
         // Reflected fields
         private static readonly HashSet<TrainCarType> locomotivesMap;
         private static readonly HashSet<TrainCarType> multipleUnitLocos;
-        private static Dictionary<TrainCarType, CargoContainerType> CarTypeToContainerType => CargoTypes.CarTypeToContainerType;
         private static readonly Dictionary<TrainCarType, float> carTypeToFullDamagePrice;
         private static Dictionary<TrainCarType, float> trainCarTypeToLength;
 
@@ -139,7 +138,6 @@ namespace DVCustomCarLoader
                 }
             }
 
-            CarTypeToContainerType.Add(car.CarType, car.CargoClass);
             carTypeToFullDamagePrice.Add(car.CarType, car.FullDamagePrice);
 
             // setup booklet sprite

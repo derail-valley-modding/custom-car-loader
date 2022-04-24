@@ -17,5 +17,16 @@ namespace CCL_GameScripts
 
         public const string REPLACE_REAR_BOGIE = "rearBogieReplacement";
         public const string REAR_BOGIE_PARAMS = "rearBogieParams";
+
+        // Cargo Definitions
+        public const string CARGO_JSON_FILE = "cargo.json";
+        public const string CARGO_SHORT_NAME = "shortName";
+        public const string CARGO_LONG_NAME = "longName";
+        public const string CARGO_MASS = "massPerUnit";
+        public const string CARGO_VALUE = "valuePerUnit";
+        public const string CARGO_ENVIRONMENT = "environmentPerUnit";
+        public const string CARGO_LICENSE = "requiredLicense";
+        public const string CARGO_SOURCE = "sources";
+        public const string CARGO_DEST = "destinations";
     }
 }
