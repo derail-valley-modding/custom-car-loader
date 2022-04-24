@@ -46,7 +46,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         protected void Update()
         {
             chuffPower = loco.GetTotalPowerForcePercentage();
-            float speed = (loco.drivingForce.wheelslip > 0f) ? (driverAnimation.DefaultWheelRadius * wheelCircumference) : loco.GetForwardSpeed();
+            float speed = Mathf.Abs((loco.drivingForce.wheelslip > 0f) ? (driverAnimation.defaultRotationSpeed * wheelCircumference) : loco.GetForwardSpeed());
 
             revolutionPos = (revolutionPos + speed * Time.deltaTime) % wheelCircumference;
             currentChuff = (int)(revolutionPos / wheelCircumference * chuffsPerRevolution) % chuffsPerRevolution;

@@ -35,6 +35,8 @@ namespace DVCustomCarLoader.Effects
 		protected LocoControllerBase loco;
 		protected float curVelocity;
 
+		public float defaultRotationSpeed;
+
 		protected static Vector3 WorldToLocalAxis(RotationAxis axis)
         {
 			if (axis == RotationAxis.XAxis) return Vector3.right;
@@ -130,6 +132,9 @@ namespace DVCustomCarLoader.Effects
             {
 				curVelocity = 0;
             }
+
+			defaultRotationSpeed = curVelocity / DefaultWheelRadius;
+			defaultRotationSpeed = Mathf.Lerp(defaultRotationSpeed, Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.drivingForce.wheelslip);
 
 			SetRevSpeeds(transformCircumferences, transformRevSpeed);
 			UpdateTransformRotations();
