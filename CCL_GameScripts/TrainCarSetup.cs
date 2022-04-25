@@ -49,6 +49,11 @@ namespace CCL_GameScripts
         [ProxyField]
         public bool keepInteriorLoaded = false;
 
+        [Header("Auto Spawning (Locos Only)")]
+        [InspectorName("Spawn Locations")]
+        public StationYard LocoSpawnLocations = StationYard.None;
+        public string TenderID;
+
         [Header("Cargo & Jobs")]
         public BaseCargoContainerType CargoClass = BaseCargoContainerType.None;
         public bool ReplaceBaseType = false;

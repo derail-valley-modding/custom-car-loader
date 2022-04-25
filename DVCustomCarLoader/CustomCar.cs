@@ -34,6 +34,9 @@ namespace DVCustomCarLoader
 
         public GameObject InteriorPrefab;
 
+        public StationYard LocoSpawnLocations { get; protected set; }
+        public string TenderID { get; protected set; }
+
         //Bogies
         public CustomBogieParams FrontBogieConfig = null;
         public CustomBogieParams RearBogieConfig = null;
@@ -303,6 +306,9 @@ namespace DVCustomCarLoader
             BookletSprite = carSetup.BookletSprite;
             FullDamagePrice = carSetup.FullDamagePrice;
             ReplaceBaseType = carSetup.ReplaceBaseType;
+
+            LocoSpawnLocations = carSetup.LocoSpawnLocations;
+            TenderID = carSetup.TenderID;
 
             CargoClass = (CargoContainerType)carSetup.CargoClass;
 

@@ -121,6 +121,7 @@
     <Compile Include="LocoComponents\Steam\CustomTenderSimulation.cs" />
     <Compile Include="LocoComponents\Steam\ShovelPatches.cs" />
     <Compile Include="LocoComponents\VisitCheckerPatch.cs" />
+    <Compile Include="LocoSpawnerInjector.cs" />
     <Compile Include="ModPatches.cs" />
     <Compile Include="CustomCar.cs" />
     <Compile Include="CustomCarManager.cs" />
