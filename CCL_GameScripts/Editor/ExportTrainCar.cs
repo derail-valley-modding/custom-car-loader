@@ -108,6 +108,7 @@ public class ExportTrainCar : EditorWindow
 					
 					//Close the window when we are done building.
 					Close();
+					return;
 				}
 			}
 		}
@@ -148,6 +149,7 @@ public class ExportTrainCar : EditorWindow
 		if (GUILayout.Button("Close"))
 		{
 			Close();
+			return;
 		}
 
 		GUILayout.EndVertical(); // -1

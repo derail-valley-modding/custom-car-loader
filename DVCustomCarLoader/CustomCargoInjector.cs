@@ -229,15 +229,6 @@ namespace DVCustomCarLoader
                 }
             }
         }
-
-        [HarmonyPatch(typeof(LogicController), "Start")]
-        [HarmonyPostfix]
-        public static void LogicController_Start_Postfix(ref IEnumerator __result)
-        {
-            var wrapped = new WrappedEnumerator(__result);
-            wrapped.OnComplete += CustomCargoInjector.OnLogicControllerInitialized;
-            __result = wrapped;
-        }
     }
 
     [HarmonyPatch(typeof(CommsRadioCargoLoader))]

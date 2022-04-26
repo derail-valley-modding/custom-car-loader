@@ -25,7 +25,7 @@ namespace DVCustomCarLoader
                 {
                     if (m.GetCustomAttribute<InitSpecAfterInitAttribute>() is InitSpecAfterInitAttribute attribute)
                     {
-                        Main.LogVerbose($"Static After Init Found: {t.Name}.{m.Name}, spec = {attribute.SpecType.Name}");
+                        //Main.LogVerbose($"Static After Init Found: {t.Name}.{m.Name}, spec = {attribute.SpecType.Name}");
 
                         var parameters = m.GetParameters();
                         if ((parameters.Length == 2) && 
@@ -42,7 +42,7 @@ namespace DVCustomCarLoader
                     }
                     else if (m.GetCustomAttribute<CopySpecAfterInitAttribute>() is CopySpecAfterInitAttribute copyAfterInit)
                     {
-                        Main.LogVerbose($"Static After Copy Found: {t.Name}.{m.Name}, spec = {copyAfterInit.SpecType.Name}");
+                        //Main.LogVerbose($"Static After Copy Found: {t.Name}.{m.Name}, spec = {copyAfterInit.SpecType.Name}");
 
                         var parameters = m.GetParameters();
                         if ((parameters.Length == 2) &&
@@ -67,7 +67,7 @@ namespace DVCustomCarLoader
             {
                 if (sf.Key.IsAssignableFrom(spec.GetType()))
                 {
-                    Main.LogVerbose($"StaticAfterInit {sf.Key.Name} ({spec.GetType().Name}) - {realComp.name}");
+                    //Main.LogVerbose($"StaticAfterInit {sf.Key.Name} ({spec.GetType().Name}) - {realComp.name}");
 
                     sf.Value.Invoke(null, new object[] { spec, realComp });
                 }
@@ -80,7 +80,7 @@ namespace DVCustomCarLoader
             {
                 if (sf.Key.IsAssignableFrom(spec.GetType()))
                 {
-                    Main.LogVerbose($"StaticAfterCopy {sf.Key.Name} ({spec.GetType().Name}) - {newObject.name}");
+                    //Main.LogVerbose($"StaticAfterCopy {sf.Key.Name} ({spec.GetType().Name}) - {newObject.name}");
 
                     sf.Value.Invoke(null, new object[] { spec, newObject });
                 }

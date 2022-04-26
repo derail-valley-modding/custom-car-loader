@@ -34,6 +34,9 @@ namespace DVCustomCarLoader
 
         public GameObject InteriorPrefab;
 
+        public StationYard LocoSpawnLocations { get; protected set; }
+        public string TenderID { get; protected set; }
+
         //Bogies
         public CustomBogieParams FrontBogieConfig = null;
         public CustomBogieParams RearBogieConfig = null;
@@ -304,6 +307,9 @@ namespace DVCustomCarLoader
             FullDamagePrice = carSetup.FullDamagePrice;
             ReplaceBaseType = carSetup.ReplaceBaseType;
 
+            LocoSpawnLocations = carSetup.LocoSpawnLocations;
+            TenderID = carSetup.TenderID;
+
             CargoClass = (CargoContainerType)carSetup.CargoClass;
 
             var cargoSetups = newFab.GetComponentsInChildren<CargoModelSetup>(true);
@@ -513,6 +519,20 @@ namespace DVCustomCarLoader
             GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
             bufferRoot = Object.Instantiate(bufferRoot, newPrefab.transform);
             bufferRoot.name = CarPartNames.BUFFERS_ROOT;
+
+            // special case for refrigerator - chain rigs are parented to car root instead of [buffers]
+            if (BaseCarType == TrainCarType.RefrigeratorWhite)
+            {
+                for (int i = 0; i < basePrefab.transform.childCount; i++)
+                {
+                    var child = basePrefab.transform.GetChild(i).gameObject;
+                    if (child.name == CarPartNames.BUFFER_CHAIN_REGULAR)
+                    {
+                        GameObject copiedChain = Object.Instantiate(child, bufferRoot.transform);
+                        copiedChain.name = CarPartNames.BUFFER_CHAIN_REGULAR;
+                    }
+                }
+            }
 
             // adjust transforms of buffer components
             for (int i = 0; i < bufferRoot.transform.childCount; i++)

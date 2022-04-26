@@ -32,7 +32,6 @@ namespace CCL_GameScripts
 
         [Header("Fuel")]
         public SteamFuelType FuelType;
-        public string TenderIdentifier;
         public bool IsTankLoco = false;
         public float BunkerWaterCapacity = 0;
         public float BunkerFuelCapacity = 0;

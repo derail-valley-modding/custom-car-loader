@@ -84,6 +84,18 @@ namespace DVCustomCarLoader
         #endregion
     }
 
+	[HarmonyPatch(typeof(LogicController), "Start")]
+	public static class LogicController_Start_Patch
+    {
+		public static void Postfix(ref System.Collections.IEnumerator __result)
+		{
+			var wrapped = new WrappedEnumerator(__result);
+			wrapped.OnComplete += CustomCargoInjector.OnLogicControllerInitialized;
+			wrapped.OnComplete += LocoSpawnerInjector.InjectCarsToSpawners;
+			__result = wrapped;
+		}
+	}
+
     internal static class AppQuitWatcher
     {
 		public static bool isQuitting { get; private set; } = false;
