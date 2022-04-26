@@ -13,7 +13,7 @@ namespace DVCustomCarLoader
     public static class CargoModelInjector
     {
         private static readonly Dictionary<string, CargoContainerType> idToContainerType = new Dictionary<string, CargoContainerType>(StringComparer.OrdinalIgnoreCase);
-        private static readonly HashSet<CargoContainerType> customCargoContainers = new HashSet<CargoContainerType>();
+        private static readonly Dictionary<CargoContainerType, string> customCargoContainers = new Dictionary<CargoContainerType, string>();
         private static readonly Dictionary<string, GameObject> customModels = new Dictionary<string, GameObject>();
 
         private static Dictionary<TrainCarType, CargoContainerType> CarTypeToContainerType => CargoTypes.CarTypeToContainerType;
@@ -23,8 +23,11 @@ namespace DVCustomCarLoader
         // Containers
         public static bool TryGetContainerTypeById(string id, out CargoContainerType type) => idToContainerType.TryGetValue(id.ToLower(), out type);
         public static CargoContainerType ContainerTypeById(string id) => idToContainerType[id];
-        public static bool IsCustomTypeRegistered(CargoContainerType containerType) => customCargoContainers.Contains(containerType);
+        public static bool IsCustomTypeRegistered(CargoContainerType containerType) => customCargoContainers.ContainsKey(containerType);
         public static bool IsCustomTypeRegistered(string identifier) => idToContainerType.ContainsKey(identifier);
+
+        public static bool TryGetContainerName(CargoContainerType containerType, out string name) =>
+            customCargoContainers.TryGetValue(containerType, out name);
 
         public static bool TryGetModelByName(string id, out GameObject model) => customModels.TryGetValue(id, out model);
 
@@ -55,7 +58,7 @@ namespace DVCustomCarLoader
             car.CargoClass = BaseInjector.GenerateUniqueType<CargoContainerType>(car.identifier, IsCustomTypeRegistered);
 
             idToContainerType.Add(car.identifier, car.CargoClass);
-            customCargoContainers.Add(car.CargoClass);
+            customCargoContainers.Add(car.CargoClass, car.identifier);
 
             CarTypeToContainerType.Add(car.CarType, car.CargoClass);
             ContainerTypeToCarTypes.Add(car.CargoClass, new List<TrainCarType>() { car.CarType });
@@ -200,6 +203,20 @@ namespace DVCustomCarLoader
             }
 
             cargoModel = null;
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(CargoTypes), nameof(CargoTypes.DisplayName))]
+    public static class ContainerDisplayName_Patch
+    {
+        public static bool Prefix(CargoContainerType containerType, ref string __result)
+        {
+            if (CargoModelInjector.TryGetContainerName(containerType, out string name))
+            {
+                __result = name;
+                return false;
+            }
             return true;
         }
     }
