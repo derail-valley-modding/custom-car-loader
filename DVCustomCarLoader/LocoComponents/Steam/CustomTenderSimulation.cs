@@ -41,7 +41,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         {
             train.LogicCarInitialized -= OnLogicCarInitialized;
             CarDamageModel component = GetComponent<CarDamageModel>();
-            if (!train.playerSpawnedCar)
+            if (!train.playerSpawnedCar || Main.Settings.FeesForCCLLocos)
             {
                 tenderDebt = new CustomTenderDebtTracker(this, component, train.ID, train.carType);
                 SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(tenderDebt);
@@ -53,7 +53,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         private void OnLocoDestroyed(TrainCar _)
         {
             train.OnDestroyCar -= OnLocoDestroyed;
-            if (!train.playerSpawnedCar)
+            if ((!train.playerSpawnedCar || Main.Settings.FeesForCCLLocos) && (tenderDebt != null))
             {
                 SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(tenderDebt);
             }

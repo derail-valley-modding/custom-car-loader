@@ -211,7 +211,7 @@ namespace DVCustomCarLoader.LocoComponents
         {
             train.LogicCarInitialized -= OnLogicCarInitialized;
 
-            if( !train.playerSpawnedCar )
+            if (!train.playerSpawnedCar || Main.Settings.FeesForCCLLocos)
             {
                 locoDebt = new DebtTrackerCustomLoco(train.ID, train.carType, this, damageController, sim);
                 SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(locoDebt);
@@ -224,7 +224,7 @@ namespace DVCustomCarLoader.LocoComponents
         protected virtual void OnLocoDestroyed( TrainCar train )
         {
             train.OnDestroyCar -= OnLocoDestroyed;
-            if( !train.playerSpawnedCar )
+            if ((!train.playerSpawnedCar || Main.Settings.FeesForCCLLocos) && (locoDebt != null))
             {
                 SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(locoDebt);
             }

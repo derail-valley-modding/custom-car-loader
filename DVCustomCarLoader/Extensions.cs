@@ -1,5 +1,6 @@
 ﻿using CCL_GameScripts;
 using DV.Logic.Job;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -155,6 +156,25 @@ namespace DVCustomCarLoader
         public void Reset()
         {
             enumerator.Reset();
+        }
+    }
+
+    [HarmonyPatch(typeof(Enum), nameof(Enum.IsDefined))]
+    public static class EnumPatch
+    {
+        public static bool Prefix(Type enumType, object value, ref bool __result)
+        {
+            if ((enumType == typeof(TrainCarType)) && (value is TrainCarType carType))
+            {
+                __result = CarTypeInjector.IsCustomTypeRegistered(carType);
+                if (__result) return false;
+            }
+            else if ((enumType == typeof(CargoType)) && (value is CargoType cargoType))
+            {
+                __result = CustomCargoInjector.IsCustomTypeRegistered(cargoType);
+                if (__result) return false;
+            }
+            return true;
         }
     }
 }
