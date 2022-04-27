@@ -158,6 +158,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             return sim.sandValve.value;
         }
 
+        public override float GetSandersFlow()
+        {
+            return sim.sandFlow.value * sim.simParams.SandMaxFlow;
+        }
+
         public float GetBlower() => sim.blower.value;
         public void SetBlower(float value) => sim.blower.SetValue(value);
 
