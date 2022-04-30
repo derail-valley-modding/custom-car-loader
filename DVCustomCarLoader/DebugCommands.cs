@@ -25,6 +25,9 @@ namespace DVCustomCarLoader
                 Terminal.Shell.AddCommand("CCL.SteamDebug", SteamDebug, 0, 1, "");
                 Terminal.Autocomplete.Register("CCL.SteamDebug");
 
+                Terminal.Shell.AddCommand("CCL.SetPower", SetPowerParams, 2, 2, "");
+                Terminal.Autocomplete.Register("CCL.SetPower");
+
                 //MethodInfo registerDevCommands = AccessTools.Method(typeof(DV.Console), "RegisterDevCommands");
                 //registerDevCommands.Invoke(null, new object[] { });
             }
@@ -110,6 +113,44 @@ namespace DVCustomCarLoader
                 {
                     Debug.Log("Custom loco sim not found");
                 }
+            }
+        }
+
+        public static void SetPowerParams(CommandArg[] args)
+        {
+            float newTE = args[0].Float;
+            float newMaxSpeed = args[1].Float;
+
+            if (Terminal.IssuedError) return;
+
+            TrainCar currentCar = PlayerManager.Car;
+            if (currentCar == null)
+            {
+                Debug.Log("Player is not currently on a car");
+                return;
+            }
+
+            if (!CarTypes.IsSteamLocomotive(currentCar.carType) || !CarTypeInjector.IsInCustomRange(currentCar.carType))
+            {
+                Debug.Log("Current car is not a CCL steam locomotive");
+                return;
+            }
+
+            var sim = currentCar.gameObject.GetComponent<CustomLocoSimSteam>();
+            if (sim != null)
+            {
+                sim.simParams.tractionTorqueMultiplier = newTE;
+                sim.simParams.MaxSpeed = newMaxSpeed;
+                sim.speed = new SimComponent("Speed", 0f, newMaxSpeed, 1f, 0f);
+                sim.RecalculateTractionConstant();
+
+                //float vpmax = newMaxSpeed / 4f;
+                //float pmax = sim.GetMaxTractiveEffort(vpmax);
+                Debug.Log($"Set {currentCar.ID} TE = {newTE} N, Vmax = {newMaxSpeed} kmh");//, Pmax = {pmax} W @ {vpmax} kmh");
+            }
+            else
+            {
+                Debug.Log("Custom loco sim not found");
             }
         }
     }

@@ -54,34 +54,41 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         internal void OnEnableOverride()
         {
-            if (!locoSim)
-            {
-                StartCoroutine(GetSimReference());
-            }
-
-            rearCoupler = TrainCar.Resolve(gameObject).rearCoupler;
-            shovelTrigger = GetComponent<Collider>();
-
-            if (rearCoupler.coupledTo && rearCoupler.coupledTo.train)
-            {
-                shovelTrigger.enabled = CarTypes.IsTender(rearCoupler.coupledTo.train.carType);
-            }
-            else
-            {
-                shovelTrigger.enabled = false;
-            }
-
-            rearCoupler.Coupled += OnCouple;
-            rearCoupler.Uncoupled += OnUncouple;
+            StartCoroutine(GetSimReference());
         }
 
         protected void LateInit()
         {
+            var train = TrainCar.Resolve(gameObject);
+            if (!train)
+            {
+                Main.Error("CustomCoalPile: train is null!");
+                enabled = false;
+                return;
+            }
+
+            rearCoupler = train.rearCoupler;
+            shovelTrigger = GetComponent<Collider>();
+
             if (locoSim.simParams.IsTankLoco)
             {
                 shovelTrigger.enabled = true;
                 rearCoupler.Coupled -= OnCouple;
                 rearCoupler.Uncoupled -= OnUncouple;
+            }
+            else
+            {
+                if (rearCoupler.coupledTo && rearCoupler.coupledTo.train)
+                {
+                    shovelTrigger.enabled = CarTypes.IsTender(rearCoupler.coupledTo.train.carType);
+                }
+                else
+                {
+                    shovelTrigger.enabled = false;
+                }
+
+                rearCoupler.Coupled += OnCouple;
+                rearCoupler.Uncoupled += OnUncouple;
             }
         }
 

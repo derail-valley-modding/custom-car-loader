@@ -33,7 +33,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public SimComponent fireOn = new SimComponent("FireOn", 0f, 1f, 1f, 0f);
         public SimComponent fireDoorOpen = new SimComponent("FireDoorOpen", 0f, 1f, 0.25f, 0);
         public SimComponent temperature = new SimComponent("Temperature", 25f, 1350f, 1f, 0f);
-        public SimComponent damper = new SimComponent("Damper", 0f, 1f, 0.1f, 0f);
+        public SimComponent damper = new SimComponent("Damper", 0f, 1f, 0.1f, 1f);
         public SimComponent blower = new SimComponent("Blower", 0f, 1f, 0.1f, 0f);
 
         public SimComponent fireboxFuel;
@@ -51,9 +51,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         // Steam
         public SimComponent regulator = new SimComponent("Regulator", 0f, 1f, 0.1f, 0f);
         public SimComponent cutoff = new SimComponent("Cutoff", 0f, 1f, 0.01f, 0.5f);
+        public SimComponent exhaust = new SimComponent("Exhaust", 0, 100);
 
-        public SimComponent power = new SimComponent("Power", 0f, 19000f, 1f, 0f);
-        public SimComponent speed = new SimComponent("Speed", 0f, 120f, 1f, 0f);
+        public SimComponent power = new SimComponent("Power", 0f, 1, 1f, 0f);
+        public SimComponent speed;
 
         public SimComponent sandFlow = new SimComponent("SandFlow", 0f, 1f, 0.25f, 0f);
         public SimComponent sandValve = new SimComponent("SandValve", 0f, 1f, 0.25f, 0f);
@@ -68,6 +69,18 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         private const string TOTAL_FUEL_CONSUMED_KEY = "fuelConsumed";
 
+        private float tractionConstant;
+        public float GetMaxTractiveEffort(float velocity)
+        {
+            // TE = TEmax - TEmax/Vmax^1.5 * v^1.5
+            return simParams.tractionTorqueMultiplier - tractionConstant * Mathf.Pow(velocity, 1.5f);
+        }
+
+        public void RecalculateTractionConstant()
+        {
+            tractionConstant = simParams.tractionTorqueMultiplier / Mathf.Pow(simParams.MaxSpeed, 1.5f);
+        }
+
         #endregion
 
         protected override void Awake()
@@ -75,6 +88,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             base.Awake();
             maxFuelConsumptionRate = (simParams.BaseAirMultiplier + simParams.DraftAirMultiplier + simParams.BlowerAirMultiplier) * simParams.MaxBurnRate;
             tempRange = temperature.max - temperature.min;
+            RecalculateTractionConstant();
         }
 
         #region Component Manipulation
@@ -82,6 +96,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         protected override void InitComponents()
         {
             base.InitComponents();
+
+            speed = new SimComponent("Speed", 0f, simParams.MaxSpeed, 1f, 0f);
 
             fireboxFuel = new SimComponent("FireboxFuel", 0, simParams.FireboxCapacity, 15, 0);
             autoFuelFeed = new SimComponent("Stoker", 0, simParams.AutoFuelMaxPerS, 15, 0);
@@ -118,7 +134,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 sand,
                 sandFlow,
                 sandValve,
-                autoFuelFeed
+                autoFuelFeed,
+                exhaust
             };
         }
 
@@ -213,16 +230,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         }
 
         public float GetBlowerFlowPercent() => blower.value * (boilerPressure.value / boilerPressure.max);
-        public float GetDraftFlowPercent() => regulator.value * (boilerPressure.value / boilerPressure.max);
+        public float GetDraftFlowPercent() => exhaust.value / simParams.SteamPipeMultiplier;
 
         protected const float TEMP_GAIN_PER_UNIT_FUEL = 20; // 2.5
         protected const float TEMP_RESISTANCE_DIVISOR = 16;
-        //protected const float MAX_BURN_RATE = 40;
-        protected const float MAX_BURN_FILL_LEVEL = 0.67f;
-
-        //protected const float BASE_AIR_MULTIPLIER = 0.1f;
-        //protected const float DRAFT_AIR_MULTIPLIER = 0.5f;
-        //protected const float BLOWER_AIR_MULTIPLER = 0.4f;
 
         protected const float AMBIENT_TEMP = 25;
         protected const float AMBIENT_LOSS_MULTIPLIER = 0.2f;
@@ -304,7 +315,6 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
         }
 
-        protected const float VAPOR_RATE = 0.17f;
         protected const float PRESSURE_CONST = 875E-5f;
 
         protected virtual void SimulateSteam(float delta)
@@ -352,28 +362,26 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             return Mathf.Sqrt((2 * c) - (c * c));
         }
 
-        protected const float STEAM_PIPE_MULT = 2.5f;
-
-        private float GetSteamPipeFlow()
+        private (float, float) GetSteamPipeFlow()
         {
-            return (boilerPressure.value / boilerPressure.max) * regulator.value * cutoff.value;
+            float speedPercent = Mathf.InverseLerp(0, speed.max / 2, speed.value);
+            float availableFlow = (boilerPressure.value / boilerPressure.max) * regulator.value;
+            return (
+                availableFlow * GetCutoffPowerPercent(),
+                Mathf.Lerp(0, availableFlow, speedPercent) * simParams.SteamPipeMultiplier * cutoff.value
+            );
         }
-
-        protected const float POWER_MULT = 0.15f;
 
         protected virtual void SimulateCylinder(float delta)
         {
-            float powerLevel = GetCutoffPowerPercent();
-            float steamFlow = GetSteamPipeFlow();
-            power.SetNextValue(powerLevel * steamFlow * SteamLocoSimulation.POWER_CONST_HP * POWER_MULT);
+            (float availFlowPercent, float actualFlow) = GetSteamPipeFlow();
+
+            power.SetNextValue(availFlowPercent);
+            exhaust.SetNextValue(actualFlow * delta);
 
             if (power.value > 0 && boilerPressure.value > 0)
             {
-                if (speed.value > 0)
-                {
-                    //const float pressureMult = -SteamLocoSimulation.PRESSURE_CONSUMPTION_MULT / (SteamLocoSimulation.POWER_CONST_HP / 2);
-                    boilerPressure.AddNextValue(-steamFlow * delta);
-                }
+                boilerPressure.AddNextValue(-actualFlow * delta);
             }
         }
 
