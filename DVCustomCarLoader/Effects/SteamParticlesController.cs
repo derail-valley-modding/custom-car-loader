@@ -59,6 +59,19 @@ namespace DVCustomCarLoader.Effects
                 return;
             }
 
+            var main = chimneyParticles.main;
+            main.startSpeedMultiplier *= 2;
+            main.startSizeMultiplier *= 1.5f;
+            
+            var emission = chimneyParticles.emission;
+            emission.rateOverTime = emission.rateOverTime.constant * 2;
+
+            chuffOriginalSpeedMultiplier = chimneyParticles.main.startSpeedMultiplier;
+            chuffOriginalSizeMultiplier = chimneyParticles.main.startSizeMultiplier;
+            chuffOriginalEmissionRate = chimneyParticles.emission.rateOverTime.constant;
+
+            smoothedColor = smokeColorClear;
+
             chuffController = car.GetComponent<CustomChuffController>();
             if (!chuffController)
             {
@@ -106,8 +119,12 @@ namespace DVCustomCarLoader.Effects
         public float chuffSpeedMult = 2f;
         public float chuffEmissionRate = 1000f;
 
-        public Color smokeColorLight = Color.white;
+        public Color steamColor = Color.white;
+        public Color smokeColorClear = new Color(0.14f, 0.14f, 0.13f, 0.1f);
         public Color smokeColorDark = new Color(0.14f, 0.14f, 0.13f);
+
+        private Color smoothedColor;
+        private const float SMOOTHING_RATE = 0.7f;
 
         protected IEnumerator UpdateSmokeParticles(float period)
         {
@@ -117,23 +134,24 @@ namespace DVCustomCarLoader.Effects
                 yield return wait;
 
                 var main = chimneyParticles.main;
-                float burnRatePercent = controller.FuelConsumptionRate / controller.MaxFuelConsumptionRate;
+                float burnRatePercent = controller.BurnRatePercent;
                 //Main.LogVerbose($"Chimney burn rate: {burnRatePercent} ({controller.FuelConsumptionRate}/{controller.MaxFuelConsumptionRate})");
 
                 if ((burnRatePercent == 0) && chimneyParticles.isPlaying)
                 {
-                    Main.LogVerbose("Chimney stop");
                     chimneyParticles.Stop();
                 }
                 else if ((burnRatePercent > 0) && !chimneyParticles.isPlaying)
                 {
-                    Main.LogVerbose("Chimney start");
                     chimneyParticles.Play();
                 }
 
                 if (chimneyParticles.isPlaying)
                 {
-                    main.startColor = Color.Lerp(smokeColorLight, smokeColorDark, burnRatePercent * 2);
+                    var targetColor = Color.Lerp(smokeColorClear, smokeColorDark, burnRatePercent);
+                    smoothedColor = Color.Lerp(smoothedColor, targetColor, SMOOTHING_RATE);
+                    main.startColor = smoothedColor;
+
                     float t = Mathf.InverseLerp(0, MAX_SMOKE_BURN_PERCENT, burnRatePercent);
                     main.startLifetime = Mathf.Lerp(LIFETIME_MIN, LIFETIME_MAX, t);
 
@@ -150,12 +168,22 @@ namespace DVCustomCarLoader.Effects
                 return;
             }
 
+            if (!chimneyParticles.isPlaying)
+            {
+                chimneyParticles.Play();
+            }
+
+            float steamLvl = power * 2;
+
+            smoothedColor = Color.Lerp(smoothedColor, steamColor, steamLvl);
+
             ParticleSystem.MainModule main = chimneyParticles.main;
-            main.startSpeedMultiplier = chuffOriginalSpeedMultiplier * chuffSpeedMult;
-            main.startSizeMultiplier = chuffOriginalSizeMultiplier * chuffSizeMult;
+            main.startSpeedMultiplier = chuffOriginalSpeedMultiplier * Mathf.Lerp(1, chuffSpeedMult, steamLvl);
+            main.startSizeMultiplier = chuffOriginalSizeMultiplier * Mathf.Lerp(1, chuffSizeMult, steamLvl);
+            main.startColor = smoothedColor;
 
             var emission = chimneyParticles.emission;
-            emission.rateOverTime = chuffEmissionRate;
+            emission.rateOverTime = Mathf.Lerp(chuffOriginalEmissionRate, chuffEmissionRate, steamLvl);
 
             StartCoroutine(EndChuffCoro());
             chuffParticlesLeft.Play();
@@ -172,6 +200,11 @@ namespace DVCustomCarLoader.Effects
 
             var emission = chimneyParticles.emission;
             emission.rateOverTime = chuffOriginalEmissionRate;
+
+            if ((controller.BurnRatePercent == 0) && chimneyParticles.isPlaying)
+            {
+                chimneyParticles.Stop();
+            }
 
             yield break;
         }

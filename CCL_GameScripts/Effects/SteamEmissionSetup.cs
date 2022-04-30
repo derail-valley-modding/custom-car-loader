@@ -15,8 +15,13 @@ namespace CCL_GameScripts.Effects
         public Transform ChuffParticlesRightLocation;
 
         [ProxyField]
-        public Color smokeColorLight = Color.white;
+        [InspectorName("Exhaust Steam Color")]
+        public Color steamColor = Color.white;
         [ProxyField]
+        [InspectorName("Light Smoke Color")]
+        public Color smokeColorClear = new Color(0.14f, 0.14f, 0.13f, 0.1f);
+        [ProxyField]
+        [InspectorName("Heavy Smoke Color")]
         public Color smokeColorDark = new Color(0.14f, 0.14f, 0.13f);
 
         [ProxyField]
