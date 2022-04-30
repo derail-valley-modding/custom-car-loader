@@ -30,6 +30,9 @@ namespace CCL_GameScripts
         public float SafetyValvePressure = 20;
         public float InjectorMaxFlowLPS = 3000;
 
+        [Header("Steam Chest")]
+        public float SteamPipeMultiplier = 20;
+
         [Header("Fuel")]
         public SteamFuelType FuelType;
         public bool IsTankLoco = false;

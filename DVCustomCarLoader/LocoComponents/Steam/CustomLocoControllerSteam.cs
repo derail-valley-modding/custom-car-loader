@@ -112,14 +112,16 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         public float GetTotalPowerForcePercentage()
         {
-            bool dirMatchesReverser = (GetForwardSpeed() * reverser) >= 0;
-            float torqueMultiplier = dirMatchesReverser ? tractionTorqueCurve.Evaluate(GetSpeedKmH()) : 1f;
-            return (sim.power.value / sim.power.max) * torqueMultiplier;
+            //bool dirMatchesReverser = (GetForwardSpeed() * reverser) >= 0;
+            //float torqueMultiplier = dirMatchesReverser ? tractionTorqueCurve.Evaluate(GetSpeedKmH()) : 1f;
+            return sim.power.value; // * torqueMultiplier;
         }
 
         public override float GetTractionForce()
         {
-            return GetTotalPowerForcePercentage() * tractionTorqueMult;
+            bool dirMatchesReverser = (GetForwardSpeed() * reverser) >= 0;
+            float calcSpeed = dirMatchesReverser ? sim.speed.value : 0;
+            return sim.power.value * sim.GetMaxTractiveEffort(calcSpeed); //GetTotalPowerForcePercentage() * tractionTorqueMult;
         }
 
         public override float GetTotalAppliedForcePerBogie()
@@ -156,6 +158,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float GetSanderValve()
         {
             return sim.sandValve.value;
+        }
+
+        public override float GetSandersFlow()
+        {
+            return sim.sandFlow.value * sim.simParams.SandMaxFlow;
         }
 
         public float GetBlower() => sim.blower.value;
@@ -294,9 +301,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             set => sim.fireOn.value = value ? 1 : 0;
         }
         public float FireboxLevel => _FireFuelLevel;
-        public float FireTemp => _FireTemp;
+        public float FireTemp => sim.temperature.value;
         public float MaxFireTemp => sim.temperature.max;
-        public float FireTempPercent => _FireTemp / sim.temperature.max;
+        public float FireTempPercent => sim.temperature.value / sim.temperature.max;
 
         public float BlowerFlow => sim.GetBlowerFlowPercent();
         public float DraftFlow => sim.GetDraftFlowPercent();
@@ -311,6 +318,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         public float FuelConsumptionRate => sim.fuelConsumptionRate;
         public float MaxFuelConsumptionRate => sim.maxFuelConsumptionRate;
+        public float BurnRatePercent => FuelConsumptionRate / MaxFuelConsumptionRate;
 
         public float TenderWater => sim.tenderWater.value;
 

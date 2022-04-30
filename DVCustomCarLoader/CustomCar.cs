@@ -530,6 +530,20 @@ namespace DVCustomCarLoader
                     {
                         GameObject copiedChain = Object.Instantiate(child, bufferRoot.transform);
                         copiedChain.name = CarPartNames.BUFFER_CHAIN_REGULAR;
+
+                        var bufferController = copiedChain.GetComponent<BufferController>();
+                        if (copiedChain.transform.localPosition.z > 0)
+                        {
+                            // front buffer
+                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FL);
+                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FR);
+                        }
+                        else
+                        {
+                            // rear buffer
+                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RL);
+                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RR);
+                        }
                     }
                 }
             }
