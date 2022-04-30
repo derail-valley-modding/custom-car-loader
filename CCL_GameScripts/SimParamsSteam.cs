@@ -18,6 +18,7 @@ namespace CCL_GameScripts
         public float BlowerAirMultiplier = 0.4f;
         public float DraftAirMultiplier = 0.5f;
 
+        [Tooltip("Max fuel usage per second")]
         public float MaxBurnRate = 40;
 
         public float FireboxCapacity = 90;
@@ -26,20 +27,25 @@ namespace CCL_GameScripts
         [Header("Boiler")]
         public float BoilerWaterCapacityL = 20000;
         public float BoilerMaxPressure = 24;
+        [Tooltip("Temperature to steam generation factor")]
         public float VaporizationRate = 0.17f;
         public float SafetyValvePressure = 20;
         public float InjectorMaxFlowLPS = 3000;
 
         [Header("Steam Chest")]
+        [Tooltip("Flow rate of steam to the cylinders at max power")]
         public float SteamPipeMultiplier = 20;
 
         [Header("Fuel")]
         public SteamFuelType FuelType;
         public bool IsTankLoco = false;
+        [Tooltip("(Tank loco) Internal water capacity")]
         public float BunkerWaterCapacity = 0;
+        [Tooltip("(Tank loco) Internal fuel capacity")]
         public float BunkerFuelCapacity = 0;
 
         [Header("Other Equipment")]
+        [Tooltip("Generation = (boiler pressure - reservoir pressure) * rate")]
         public float AirCompressorRate = 0.25f;
 
         public enum SteamFuelType
@@ -54,9 +60,8 @@ namespace CCL_GameScripts
             RequiredLicense = LocoRequiredLicense.Steam;
             SandCapacity = 1200;
             SandMaxFlow = 40;
-            tractionTorqueMultiplier = 800000;
+            tractionTorqueMultiplier = 240000;
 
-            FrictionCoefficient = 0.25f;
             SandCoefficient = 1.5f;
             SlopeCoefficientMultiplier = 10;
 
@@ -64,17 +69,6 @@ namespace CCL_GameScripts
                 new AnimationCurve(
                     new Keyframe(0, 0, 0.274394065f, 0.274394065f, 0.3333f, 0.05606759f),
                     new Keyframe(1, 1, 1.64810324f, 1.64810324f, 0.0627f, 0.3333f))
-                {
-                    preWrapMode = WrapMode.ClampForever,
-                    postWrapMode = WrapMode.ClampForever
-                };
-
-            TractionTorqueCurve =
-                new AnimationCurve(
-                    new Keyframe(0, 1, 0, 0, 0.3333f, 0.3333f),
-                    new Keyframe(0.555921f, 1, 0, 0, 0.3333f, 0.3333f),
-                    new Keyframe(69.7312851f, 0.8700045f, -0.005687814f, -0.005687814f, 0.10638544f, 0.3333f),
-                    new Keyframe(120, 0, -0.0160727836f, -0.0160727836f, 0.3333f, 0.3333f))
                 {
                     preWrapMode = WrapMode.ClampForever,
                     postWrapMode = WrapMode.ClampForever

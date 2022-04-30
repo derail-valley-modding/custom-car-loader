@@ -15,36 +15,49 @@ namespace CCL_GameScripts
         [Header("Throttle")]
         public float ThrottleUpRate = 2f;
         public float ThrottleDownRate = 2f;
+        [Tooltip("Percent of max tractive effort available to drivers based on speed")]
+        public AnimationCurve TractionTorqueCurve;
 
         [Header("Heat Management (°C)")]
+        [Tooltip("Power multiplier when below Max Power Temp")]
         public float ColdEnginePowerFactor = 0.8f;
 
         public float PassiveTempLoss = 5.5f;
         public bool HasForwardRadiator = false;
+        [Tooltip("Extra cooling per second at max speed")]
         public float ForwardMovementTempLoss = 0;
         public float IdleTempGain = 5;
         public float IdleMaxTemp = 52;
 
+        [Tooltip("Extra heating per second per %(RPM > idle)")]
         public float TempGainPerRpm = 8;
         //public float MinTemp = 30;
         //public float MaxTemp = 120;
+        [Tooltip("Temp where cold running penalty drops off")]
         public float MaxPowerTemp = 75;
 
         [Header("Fuel (L)")]
         public float FuelCapacity = 6000;
+        [Tooltip("Base fuel use per second")]
         public float FuelConsumptionBase = 35;
+        [Tooltip("Fuel use multiplier at max RPM")]
         public float FuelConsumptionMax = 1;
+        [Tooltip("Fuel use multiplier at min RPM")]
         public float FuelConsumptionMin = 0.025f;
 
+        [Tooltip("Damage % where engine begins seizing up")]
         public float PerformanceDropDamageLevel = 0.5f;
 
         [Header("Lubrication (L)")]
         public float OilCapacity = 500;
+        [Tooltip("Oil consumption per second at max RPM")]
         public float OilConsumptionEngineRpm = 1;
         //public float OilConsumptionWheels = 0.12f;
 
         [Header("Other Equipment")]
+        [Tooltip("Air production per second when running")]
         public float AirCompressorRate = 0.8f;
+        [Tooltip("Sand valve response speed")]
         public float SandValveSpeed = 10f;
 
         public SimParamsDiesel()
@@ -59,7 +72,6 @@ namespace CCL_GameScripts
             SandMaxFlow = 5;
             tractionTorqueMultiplier = 250000;
 
-            FrictionCoefficient = 0.25f;
             SandCoefficient = 1.5f;
             SlopeCoefficientMultiplier = 10;
 
@@ -123,7 +135,6 @@ namespace CCL_GameScripts
             SandMaxFlow = 5;
             tractionTorqueMultiplier = 150000;
 
-            FrictionCoefficient = 0.25f;
             SandCoefficient = 1.5f;
             SlopeCoefficientMultiplier = 10;
 

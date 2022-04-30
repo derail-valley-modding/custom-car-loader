@@ -52,19 +52,22 @@ namespace CCL_GameScripts
         public LocoRequiredLicense RequiredLicense = LocoRequiredLicense.None;
         public float MaxSpeed = 120f;
         public float SandCapacity = 200f;
+        [Tooltip("Max kg/s to sanders")]
         public float SandMaxFlow = 5f;
 
         [Header("Physics Curves")]
         public AnimationCurve BrakePowerCurve;
-        public AnimationCurve TractionTorqueCurve;
+        [Tooltip("Maximum (starting) tractive effort (N)")]
         public float tractionTorqueMultiplier = 250000;
 
         [Header("Drivers")]
+        [Tooltip("Simulate infinite friction with track")]
         public bool PreventWheelslip = false;
-        public float FrictionCoefficient = 0.25f;
-        [Range(1f, 10f)]
+        [Tooltip("Friction multiplier at 100 % sand application")]
         public float SandCoefficient = 1.5f;
+        [Tooltip("Multiplier of track slope for adhesion calcs")]
         public float SlopeCoefficientMultiplier = 2f;
+        [Tooltip("Relationship of % wheelslip -> friction coefficient")]
         public AnimationCurve WheelslipToFrictionModifier;
 
         public SimParamsBase()
@@ -74,17 +77,6 @@ namespace CCL_GameScripts
                 new AnimationCurve(
                     new Keyframe(0, 0, 0.3512f, 0.3512f, 0.3333f, 0.1033f),
                     new Keyframe(1, 1, 1.7677f, 1.7677f, 0.0627f, 0.3333f))
-                {
-                    preWrapMode = WrapMode.ClampForever,
-                    postWrapMode = WrapMode.ClampForever
-                };
-
-            TractionTorqueCurve =
-                new AnimationCurve(
-                    new Keyframe(0, 1, 0, 0, 0.3333f, 0.3333f),
-                    new Keyframe(15, 1, 0, 0, 0.3333f, 0.3333f),
-                    new Keyframe(98.8f, 0.4813f, -0.0087f, -0.0087f, 0.1278f, 0.3589f),
-                    new Keyframe(120, 0, -0.0247f, -0.0247f, 0.2221f, 0.3333f))
                 {
                     preWrapMode = WrapMode.ClampForever,
                     postWrapMode = WrapMode.ClampForever
