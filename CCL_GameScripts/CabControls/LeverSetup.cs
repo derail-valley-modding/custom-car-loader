@@ -26,12 +26,14 @@ namespace CCL_GameScripts.CabControls
 		[Header("Hinge Joint")]
 		[ProxyField("jointAxis")]
 		public Vector3 JointAxis = Vector3.up;
-		//public bool UseLimits = true;
+		[ProxyField]
+		public bool useLimits = true;
 		[ProxyField("jointLimitMin")]
 		public float JointLimitMin = 0;
 		[ProxyField("jointLimitMax")]
 		public float JointLimitMax = 90;
-		//public bool UseSpring = true;
+		[ProxyField]
+		public bool useSpring = true;
 		[ProxyField("jointSpring")]
 		public float JointSpring = 100f;
 		[ProxyField("jointDamper")]

@@ -79,7 +79,7 @@ namespace CCL_GameScripts
 
         [Range(0, 1)]
         [ProxyField("bogieMassRatio", 1)]
-        public float MassRatioPerBogie = 0.5f;
+        public float AdhesiveMassRatio = 0.5f;
 
         [ProxyField("bogieSpring", 1)]
         public float BogieSpring = 2e7f;
