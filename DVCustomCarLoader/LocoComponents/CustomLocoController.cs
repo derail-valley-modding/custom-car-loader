@@ -190,7 +190,6 @@ namespace DVCustomCarLoader.LocoComponents
             if( simParams )
             {
                 brakePowerCurve = simParams.BrakePowerCurve;
-                tractionTorqueCurve = simParams.TractionTorqueCurve;
                 tractionTorqueMult = simParams.tractionTorqueMultiplier;
             }
             else

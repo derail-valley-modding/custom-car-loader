@@ -127,7 +127,6 @@ namespace DVCustomCarLoader
 
         private static void ApplyDrivingForceParams( DrivingForce driver, SimParamsBase simParams )
         {
-            driver.frictionCoeficient = simParams.FrictionCoefficient;
             driver.preventWheelslip = simParams.PreventWheelslip;
             driver.sandCoefMax = simParams.SandCoefficient;
             driver.slopeCoeficientMultiplier = simParams.SlopeCoefficientMultiplier;

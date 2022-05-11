@@ -9,6 +9,7 @@ namespace DVCustomCarLoader.Effects
     public class DrivingAnimation : MonoBehaviour
 	{
 		protected const string SPEED = "SpeedMultiplier";
+		protected const string REVERSER = "Reverser";
 
 		public float MaxWheelslipMultiplier = 8f;
 		public bool IsDrivingWheels = false;
@@ -34,6 +35,7 @@ namespace DVCustomCarLoader.Effects
 		protected TrainCar trainCar;
 		protected LocoControllerBase loco;
 		protected float curVelocity;
+		protected bool allBogiesStopped;
 
 		public float defaultRotationSpeed;
 
@@ -63,9 +65,9 @@ namespace DVCustomCarLoader.Effects
 				bogie.StoppedOnSlope += OnBogieStopped;
 				anyMoving |= !bogie.isStoppedOnSlope;
 			}
-			enabled = anyMoving;
+			allBogiesStopped = !anyMoving;
 
-			Main.LogVerbose($"DrivingAnimation start, Enabled: {enabled}");
+			Main.LogVerbose($"DrivingAnimation start, bogie state: {allBogiesStopped}");
 
 			loco = gameObject.GetComponent<LocoControllerBase>();
 
@@ -77,7 +79,7 @@ namespace DVCustomCarLoader.Effects
 
 		private void OnBogieStopped(bool stopped)
 		{
-			if (enabled != stopped)
+			if (allBogiesStopped == stopped)
 			{
 				// no change in stopped state
 				return;
@@ -93,7 +95,7 @@ namespace DVCustomCarLoader.Effects
 			}
 
 			// final bogie to start/stop triggers state switch
-			enabled = !stopped;
+			allBogiesStopped = stopped;
 			Update();
 		}
 
@@ -125,8 +127,22 @@ namespace DVCustomCarLoader.Effects
 			}
         }
 
+		private void UpdateAnimatorReverser()
+        {
+			float reverser = loco.reverser;
+
+			foreach (var animator in animators)
+            {
+				animator.SetFloat(REVERSER, reverser);
+            }
+        }
+
 		protected void Update()
 		{
+			UpdateAnimatorReverser();
+
+			if (allBogiesStopped) return;
+
 			curVelocity = trainCar.GetForwardSpeed();
 			if (Mathf.Abs(curVelocity) < 0.005f)
             {
