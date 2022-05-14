@@ -102,7 +102,7 @@ namespace DVCustomCarLoader
                         modelName = $"CCL_{car.identifier}_{cargoType.GetShortCargoName()}";
                         model.Model.name = modelName;
 
-                        ValidateCargoColliders(model.Model);
+                        //ValidateCargoColliders(model.Model);
 
                         customModels.Add(modelName, model.Model);
                     }

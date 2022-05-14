@@ -71,5 +71,52 @@ namespace CCL_GameScripts
 
             return null;
         }
+
+        public static void SetLayersRecursive(GameObject go, int layer)
+        {
+            go.layer = layer;
+            Transform[] componentsInChildren = go.GetComponentsInChildren<Transform>();
+            for (int i = 0; i < componentsInChildren.Length; i++)
+            {
+                componentsInChildren[i].gameObject.layer = layer;
+            }
+        }
+
+        public static void SetLayersRecursive(GameObject go, DVLayer layer)
+        {
+            SetLayersRecursive(go, (int)layer);
+        }
+    }
+
+    public enum DVLayer
+    { 
+        Default = 1,
+        TransparentFX = 2,
+        //Ignore Raycast = 3,
+        //,
+        Water = 5,
+        UI = 6,
+        //,
+        //,
+        Terrain = 9,
+        Player = 10,
+        Train_Big_Collider = 11,
+        Train_Walkable = 12,
+        Train_Interior = 13,
+        Interactable = 14,
+        Teleport_Destination = 15,
+        Laser_Pointer_Target = 16,
+        Camera_Dampening = 17,
+        Culling_Sleepers = 18,
+        Culling_Anchors = 19,
+        Culling_Rails = 20,
+        Render_Elements = 21,
+        No_Teleport_Interaction = 22,
+        Inventory = 23,
+        Controller = 24,
+        Hazmat = 25,
+        PostProcessing = 26,
+        Grabbed_Item = 27,
+        World_Item = 28,
     }
 }

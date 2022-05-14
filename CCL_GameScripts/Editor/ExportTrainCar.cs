@@ -242,6 +242,8 @@ public class ExportTrainCar : EditorWindow
         {
 			if (modelSetup.Model && !PrefabUtility.IsPartOfPrefabAsset(modelSetup.Model))
 			{
+				modelSetup.ValidateColliders();
+
 				Debug.Log($"Creating temp prefab for cargo model {modelSetup}");
 
 				string tempModelPath = Path.Combine(assetFolder, GetCargoModelPrefabName(_trainCarSetup.Identifier, modelSetup))
