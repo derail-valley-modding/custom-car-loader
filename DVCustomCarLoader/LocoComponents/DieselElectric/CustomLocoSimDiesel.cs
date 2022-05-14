@@ -14,11 +14,6 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
     public class CustomLocoSimDiesel : 
 		CustomLocoSimulation<SimParamsDiesel, DamageControllerCustomDiesel>
     {
-		public float TotalFuelConsumed { get; private set; }
-
-		//public SimParamsDiesel simParams;
-		//private DamageControllerCustomDiesel dmgController;
-
 		// Sanders
 		public bool sandOn;
 		public SimComponent sand;
@@ -40,8 +35,6 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 		public SimComponent fuel;
 		public SimComponent oil;
 
-		private const string TOTAL_FUEL_CONSUMED_SAVE_KEY = "fuelConsumed";
-
 
         public override JObject GetComponentsSaveData()
 		{
@@ -50,7 +43,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			SimComponent.SaveComponentState(oil, jobject);
 			SimComponent.SaveComponentState(sand, jobject);
 			SimComponent.SaveComponentState(engineTemp, jobject);
-			jobject.SetFloat("fuelConsumed", TotalFuelConsumed);
+			jobject.SetFloat(TOTAL_FUEL_CONSUMED_SAVE_KEY, TotalFuelConsumed);
 			return jobject;
 		}
 
@@ -100,11 +93,6 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			fuel.SetValue(fuel.max);
 			oil.SetValue(oil.max);
 			sand.SetValue(sand.max);
-		}
-
-        public override void ResetFuelConsumption()
-        {
-			TotalFuelConsumed = 0f;
 		}
 
 		private void SimulateEngineRPM( float delta )

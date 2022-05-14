@@ -16,7 +16,6 @@ namespace DVCustomCarLoader.LocoComponents.Steam
     public class CustomLocoSimSteam : CustomLocoSimulation<SimParamsSteam, CustomDamageControllerSteam>
     {
         public ResourceType FuelType => GetFuelResourceType(simParams);
-        public float TotalFuelConsumed { get; private set; }
 
         [NonSerialized]
         public float fuelConsumptionRate;

@@ -7,10 +7,13 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public abstract class CustomLocoSimulation : LocoSimulation, IServicePenaltyProvider
     {
+        protected const string TOTAL_FUEL_CONSUMED_SAVE_KEY = "fuelConsumed";
+        public float TotalFuelConsumed { get; protected set; }
+
         public abstract IEnumerable<DebtTrackingInfo> GetDebtComponents();
         public abstract void ResetDebt( DebtComponent debt );
         public abstract void UpdateDebtValue( DebtComponent debt );
-        public virtual void ResetFuelConsumption() { }
+        public virtual void ResetFuelConsumption() => TotalFuelConsumed = 0f;
         public abstract IEnumerable<PitStopRefillable> GetPitStopParameters();
         public abstract void ChangePitStopLevel( ResourceType type, float changeAmount );
         public abstract float GetPitStopLevel( ResourceType type );
