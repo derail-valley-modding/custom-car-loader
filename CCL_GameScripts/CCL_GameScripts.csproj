@@ -89,6 +89,7 @@
     <Compile Include="Editor\FBXMeshExtractor.cs" />
     <Compile Include="Editor\FindMissingScripts.cs" />
     <Compile Include="Editor\TrainCarValidator.cs" />
+    <Compile Include="Effects\BoundAnimationSetup.cs" />
     <Compile Include="Effects\ControllableLightSetup.cs" />
     <Compile Include="Effects\AudioConfig.cs" />
     <Compile Include="Effects\DirectionalLightSetup.cs" />

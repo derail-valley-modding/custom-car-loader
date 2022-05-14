@@ -18,8 +18,8 @@ namespace DVCustomCarLoader.LocoComponents
 			}
 
 			controlAcceptors = 
-				car.gameObject.GetComponentsByInterface<ICabControlAcceptor>()
-				.Concat(gameObject.GetComponentsByInterface<ICabControlAcceptor>())
+				car.gameObject.GetComponentsInChildrenByInterface<ICabControlAcceptor>()
+				.Concat(gameObject.GetComponentsInChildrenByInterface<ICabControlAcceptor>())
 				.ToArray();
 
 			if( controlAcceptors.Length == 0 )

@@ -83,6 +83,7 @@
     <Compile Include="CCLSettings.cs" />
     <Compile Include="CustomCargoInjector.cs" />
     <Compile Include="DebugCommands.cs" />
+    <Compile Include="Effects\BoundAnimation.cs" />
     <Compile Include="Effects\ControllableLight.cs" />
     <Compile Include="Effects\EngineSmokeEmitter.cs" />
     <Compile Include="Effects\ParticleInitializer.cs" />

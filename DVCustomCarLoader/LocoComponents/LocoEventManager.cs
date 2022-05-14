@@ -112,6 +112,8 @@ namespace DVCustomCarLoader.LocoComponents
                 foreach (var acceptor in acceptors)
                 {
                     aCount++;
+                    if (!acceptor.EventTypes.SafeAny()) continue;
+
                     foreach (SimEventType eventType in acceptor.EventTypes)
                     {
                         Add(eventType, acceptor);

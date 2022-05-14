@@ -82,6 +82,11 @@ namespace DVCustomCarLoader
             return false;
         }
 
+        public static bool SafeAny<T>(this IEnumerable<T> array)
+        {
+            return (array != null) && array.Any();
+        }
+
         public static float Mapf( float fromMin, float fromMax, float toMin, float toMax, float value )
         {
             float fromRange = fromMax - fromMin;
