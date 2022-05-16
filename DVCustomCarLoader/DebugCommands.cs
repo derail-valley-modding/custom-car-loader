@@ -13,8 +13,8 @@ namespace DVCustomCarLoader
 {
     public static class DebugCommands
     {
-        [HarmonyPatch(typeof(Terminal), "Start")]
-        [HarmonyPostfix]
+        //[HarmonyPatch(typeof(Terminal), "Start")]
+        //[HarmonyPostfix]
         public static void RegisterCommands()
         {
             try

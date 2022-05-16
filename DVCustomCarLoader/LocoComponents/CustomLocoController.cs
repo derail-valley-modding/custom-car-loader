@@ -178,6 +178,7 @@ namespace DVCustomCarLoader.LocoComponents
         protected TSim sim;
         protected TDmg damageController;
         protected TEvents eventController;
+        protected TSave saveState;
 
         protected override void Awake()
         {
@@ -200,7 +201,7 @@ namespace DVCustomCarLoader.LocoComponents
             carVisitChecker = gameObject.AddComponent<CarVisitChecker>();
             carVisitChecker.Initialize(train);
 
-            var saveState = gameObject.AddComponent<TSave>();
+            saveState = gameObject.AddComponent<TSave>();
             saveState.Initialize(carVisitChecker);
 
             train.LogicCarInitialized += OnLogicCarInitialized;

@@ -209,14 +209,18 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 
         #region Events
 
-        //protected override void Awake()
-        //{
-        //	base.Awake();
+        protected override void Awake()
+		{
+			muModule = GetComponent<MultipleUnitModule>();
 
-        //	// TODO: MU, save state
-        //	//MultipleUnitModule component = base.GetComponent<MultipleUnitModule>();
-        //	//base.gameObject.AddComponent<LocoStateSaveDiesel>().Initialize(sim, damageController, this, carVisitChecker, component);
-        //}
+			base.Awake();
+
+			var simParams = GetComponent<CCL_GameScripts.SimParamsDiesel>();
+			if (simParams)
+			{
+				tractionTorqueCurve = sim.simParams.TractionTorqueCurve;
+			}
+		}
 
         private void OnDisable()
 		{
