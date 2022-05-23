@@ -1,4 +1,4 @@
-﻿using CCL_GameScripts;
+﻿using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
 using Newtonsoft.Json.Linq;
@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents.Steam
 {
-    public class CustomTenderSimulation : MonoBehaviour, IServicePenaltyProvider
+    public class CustomTenderSimulation : MonoBehaviour, IServicePenaltyProvider, ILocoEventProvider
     {
         public ResourceType FuelType;
 
@@ -23,6 +23,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         public SimComponent tenderWater;
         public SimComponent tenderFuel;
+
+        public LocoEventManager EventManager { get; set; }
 
         protected void Awake()
         {
@@ -58,6 +60,23 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(tenderDebt);
             }
         }
+
+        private float _FuelLevel;
+        private float _WaterLevel;
+
+        protected void Update()
+        {
+            EventManager.UpdateValueDispatchOnChange(this, ref _FuelLevel, tenderFuel.value, SimEventType.Fuel);
+            EventManager.UpdateValueDispatchOnChange(this, ref _WaterLevel, tenderWater.value, SimEventType.WaterReserve);
+        }
+
+        public void ForceDispatchAll()
+        {
+            EventManager.Dispatch(this, SimEventType.Fuel, tenderFuel.value);
+            EventManager.Dispatch(this, SimEventType.WaterReserve, tenderWater.value);
+        }
+
+        #region Debt/Service
 
         public void ResetRefillableSimulationParams()
         {
@@ -115,6 +134,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
             Main.Warning("Trying to refill/repair something that is not part of this loco");
         }
+
+        #endregion
 
         #region Save Data
 

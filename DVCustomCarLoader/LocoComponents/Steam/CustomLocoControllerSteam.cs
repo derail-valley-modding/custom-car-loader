@@ -272,6 +272,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         protected float _BoilerWater;
         protected float _FireTemp;
         protected float _FireFuelLevel;
+        protected float _InjectorFlow;
+
+        protected float _FuelLevel;
+        protected float _WaterLevel;
 
         private void UpdateWatchables()
         {
@@ -281,18 +285,26 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             EventManager.UpdateValueDispatchOnChange(this, ref _BoilerWater, sim.boilerWater.value, SimEventType.WaterLevel);
             EventManager.UpdateValueDispatchOnChange(this, ref _FireTemp, sim.temperature.value, SimEventType.FireTemp);
             EventManager.UpdateValueDispatchOnChange(this, ref _FireFuelLevel, sim.fireboxFuel.value, SimEventType.FireboxLevel);
+            EventManager.UpdateValueDispatchOnChange(this, ref _InjectorFlow, sim.injector.value, SimEventType.InjectorFlow);
+
+            EventManager.UpdateValueDispatchOnChange(this, ref _FuelLevel, sim.tenderFuel.value, SimEventType.Fuel);
+            EventManager.UpdateValueDispatchOnChange(this, ref _WaterLevel, sim.tenderWater.value, SimEventType.WaterLevel);
         }
 
         public override void ForceDispatchAll()
         {
             base.ForceDispatchAll();
 
-            EventManager.Dispatch(this, SimEventType.Sand, _SandLevel);
-            EventManager.Dispatch(this, SimEventType.Cutoff, _Cutoff);
-            EventManager.Dispatch(this, SimEventType.BoilerPressure, _BoilerPressure);
-            EventManager.Dispatch(this, SimEventType.WaterLevel, _BoilerWater);
-            EventManager.Dispatch(this, SimEventType.FireTemp, _FireTemp);
-            EventManager.Dispatch(this, SimEventType.FireboxLevel, _FireFuelLevel);
+            EventManager.Dispatch(this, SimEventType.Sand, sim.sand.value);
+            EventManager.Dispatch(this, SimEventType.Cutoff, reverser);
+            EventManager.Dispatch(this, SimEventType.BoilerPressure, sim.boilerPressure.value);
+            EventManager.Dispatch(this, SimEventType.WaterLevel, sim.boilerWater.value);
+            EventManager.Dispatch(this, SimEventType.FireTemp, sim.temperature.value);
+            EventManager.Dispatch(this, SimEventType.FireboxLevel, sim.fireboxFuel.value);
+            EventManager.Dispatch(this, SimEventType.InjectorFlow, sim.injector.value);
+
+            EventManager.Dispatch(this, SimEventType.Fuel, sim.tenderFuel.value);
+            EventManager.Dispatch(this, SimEventType.WaterReserve, sim.tenderWater.value);
         }
 
         public bool IsFireOn

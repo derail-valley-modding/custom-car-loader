@@ -65,7 +65,9 @@
         FireboxLevel,
         Cutoff,
         InjectorFlow,
-        StokerFlow
+        StokerFlow,
+
+        WaterReserve,
     }
 
     public enum SimThresholdDirection
