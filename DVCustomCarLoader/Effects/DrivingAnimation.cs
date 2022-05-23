@@ -75,6 +75,8 @@ namespace DVCustomCarLoader.Effects
 			{
 				animators[i].Play(animators[i].GetCurrentAnimatorStateInfo(0).shortNameHash, 0, startTimeOffsets[i]);
 			}
+
+			UpdateRotations(true);
 		}
 
 		private void OnBogieStopped(bool stopped)
@@ -96,7 +98,7 @@ namespace DVCustomCarLoader.Effects
 
 			// final bogie to start/stop triggers state switch
 			allBogiesStopped = stopped;
-			Update();
+			UpdateRotations(true);
 		}
 
 		private void SetRevSpeeds(float[] c, float[] dest)
@@ -139,9 +141,14 @@ namespace DVCustomCarLoader.Effects
 
 		protected void Update()
 		{
+			UpdateRotations(false);
+		}
+
+		protected void UpdateRotations(bool forceUpdate)
+		{
 			UpdateAnimatorReverser();
 
-			if (allBogiesStopped) return;
+			if (allBogiesStopped && !forceUpdate) return;
 
 			curVelocity = trainCar.GetForwardSpeed();
 			if (Mathf.Abs(curVelocity) < 0.005f)
