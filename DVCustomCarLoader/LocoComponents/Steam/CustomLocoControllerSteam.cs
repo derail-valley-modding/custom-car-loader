@@ -40,6 +40,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         private void OnRearCouple(object _, CoupleEventArgs e)
         {
+            if (!sim.simParams.AllowAnyTenderConnection) return;
+
             var attachedCar = e.otherCoupler.train;
             if (CarTypes.IsTender(attachedCar.carType))
             {
@@ -47,8 +49,13 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 if (customTender)
                 {
                     LastTender = attachedCar;
-                    sim.tenderWater = customTender.tenderWater;
-                    if (sim.FuelType == customTender.FuelType)
+
+                    if (sim.simParams.AllowTenderWater)
+                    {
+                        sim.tenderWater = customTender.tenderWater;
+                    }
+
+                    if (sim.simParams.AllowTenderFuel && (sim.FuelType == customTender.FuelType))
                     {
                         sim.tenderFuel = customTender.tenderFuel;
                     }
@@ -60,8 +67,13 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 if (baseTender)
                 {
                     LastTender = attachedCar;
-                    sim.tenderWater = baseTender.tenderWater;
-                    if (sim.FuelType == ResourceType.Coal)
+
+                    if (sim.simParams.AllowTenderWater)
+                    {
+                        sim.tenderWater = baseTender.tenderWater;
+                    }
+
+                    if (sim.simParams.AllowTenderFuel && (sim.FuelType == ResourceType.Coal))
                     {
                         sim.tenderFuel = baseTender.tenderCoal;
                     }
@@ -73,6 +85,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         private void OnRearUncouple(object _, UncoupleEventArgs e)
         {
+            if (!sim.simParams.AllowAnyTenderConnection) return;
+
             if (CarTypes.IsTender(e.otherCoupler.train.carType))
             {
                 sim.tenderWater.SetValue(sim.tenderWater.nextValue);

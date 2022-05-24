@@ -44,6 +44,11 @@ namespace CCL_GameScripts
         [Tooltip("(Tank loco) Internal fuel capacity")]
         public float BunkerFuelCapacity = 0;
 
+        public bool AllowTenderFuel = true;
+        public bool AllowTenderWater = true;
+
+        public bool AllowAnyTenderConnection => AllowTenderFuel || AllowTenderWater;
+
         [Header("Other Equipment")]
         [Tooltip("Generation = (boiler pressure - reservoir pressure) * rate")]
         public float AirCompressorRate = 0.25f;
