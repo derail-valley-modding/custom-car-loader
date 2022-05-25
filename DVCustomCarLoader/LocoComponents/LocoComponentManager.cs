@@ -6,6 +6,7 @@ using System.Reflection;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
 using CCL_GameScripts.CabControls;
+using CCL_GameScripts.Effects;
 using DV.CabControls;
 using DV.CabControls.Spec;
 using DV.MultipleUnit;
@@ -98,6 +99,12 @@ namespace DVCustomCarLoader
 
             locoController.drivingForce = drivingForce;
 
+            var sparkSetup = prefab.GetComponentInChildren<WheelSparkSetup>();
+            if (sparkSetup)
+            {
+                Effects.ParticleInitializer.AddWheelSparks(prefab, sparkSetup, LocoSimTemplate.DE6);
+            }
+
             Main.LogVerbose($"Added diesel electric simulation to {prefab.name}");
         }
 
@@ -120,6 +127,12 @@ namespace DVCustomCarLoader
             if (!simParams.IsTankLoco)
             {
                 prefab.AddComponent<CustomTenderAutoCouple>();
+            }
+
+            var sparkSetup = prefab.GetComponentInChildren<WheelSparkSetup>();
+            if (sparkSetup)
+            {
+                Effects.ParticleInitializer.AddWheelSparks(prefab, sparkSetup, LocoSimTemplate.SH282);
             }
 
             Main.LogVerbose($"Added steam simulation to {prefab.name}");

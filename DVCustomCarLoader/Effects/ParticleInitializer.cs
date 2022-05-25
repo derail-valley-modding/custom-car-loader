@@ -23,6 +23,10 @@ namespace DVCustomCarLoader.Effects
 
         public static SteamLocoChuffSmokeParticles sh282ChuffParticles;
 
+        public static GameObject de6SparkTemplate;
+        public static GameObject shunterSparkTemplate;
+        public static GameObject steamSparkTemplate;
+
         public static void FetchDefaults()
         {
             if (fetched) return;
@@ -36,8 +40,9 @@ namespace DVCustomCarLoader.Effects
             de6EngineSmokeTemplate = GameObject.Instantiate(particles);
             de6EngineSmokeTemplate.SetActive(false);
 
-            var sparks = de6EngineSmokeTemplate.transform.Find(CarPartNames.WHEEL_SPARKS).gameObject;
-            GameObject.DestroyImmediate(sparks);
+            var sparks = de6EngineSmokeTemplate.transform.Find(CarPartNames.WHEEL_SPARKS);
+            de6SparkTemplate = GameObject.Instantiate(sparks.GetChild(0).gameObject);
+            GameObject.DestroyImmediate(sparks.gameObject);
 
             DieselEmissionRatePerThrottleCurve    = de6Smoke.emissionRatePerThrottleCurve;
             DieselStartSpeedMultPerThrottleCurve  = de6Smoke.startSpeedMultPerThrottleCurve;
@@ -52,8 +57,9 @@ namespace DVCustomCarLoader.Effects
             shunterEngineSmokeTemplate = GameObject.Instantiate(particles);
             shunterEngineSmokeTemplate.SetActive(false);
 
-            sparks = shunterEngineSmokeTemplate.transform.Find(CarPartNames.WHEEL_SPARKS).gameObject;
-            GameObject.DestroyImmediate(sparks);
+            sparks = shunterEngineSmokeTemplate.transform.Find(CarPartNames.WHEEL_SPARKS);
+            shunterSparkTemplate = GameObject.Instantiate(sparks.GetChild(0).gameObject);
+            GameObject.DestroyImmediate(sparks.gameObject);
 
             ShunterEmissionRatePerThrottleCurve     = shunterSmoke.emissionRatePerThrottleCurve;
             ShunterStartSpeedMultPerThrottleCurve   = shunterSmoke.startSpeedMultPerThrottleCurve;
@@ -67,8 +73,9 @@ namespace DVCustomCarLoader.Effects
             steamEngineParticleTemplate = GameObject.Instantiate(particles);
             steamEngineParticleTemplate.SetActive(false);
 
-            sparks = steamEngineParticleTemplate.transform.Find(CarPartNames.WHEEL_SPARKS).gameObject;
-            GameObject.DestroyImmediate(sparks);
+            sparks = steamEngineParticleTemplate.transform.Find(CarPartNames.WHEEL_SPARKS);
+            steamSparkTemplate = GameObject.Instantiate(sparks.GetChild(0).gameObject);
+            GameObject.DestroyImmediate(sparks.gameObject);
 
             fetched = true;
         }
@@ -112,6 +119,58 @@ namespace DVCustomCarLoader.Effects
             var particles = new SteamParticles(newParticleRoot);
             particles.AlignParticles(spec);
             return particles;
+        }
+
+        public static void AddWheelSparks(GameObject prefab, WheelSparkSetup spec, LocoSimTemplate locoType)
+        {
+            var particleRoot = prefab.transform.FindSafe(CarPartNames.PARTICLE_ROOT);
+            if (!particleRoot)
+            {
+                particleRoot = new GameObject(CarPartNames.PARTICLE_ROOT).transform;
+                particleRoot.SetParent(prefab.transform, false);
+            }
+
+            var sparksRoot = particleRoot.FindSafe(CarPartNames.WHEEL_SPARKS);
+            if (!sparksRoot)
+            {
+                sparksRoot = new GameObject(CarPartNames.WHEEL_SPARKS).transform;
+                sparksRoot.SetParent(particleRoot, false);
+            }
+
+            GameObject sparkTemplate;
+            switch (locoType)
+            {
+                case LocoSimTemplate.Shunter:
+                    sparkTemplate = shunterSparkTemplate;
+                    break;
+
+                case LocoSimTemplate.DE6:
+                    sparkTemplate = de6SparkTemplate;
+                    break;
+
+                case LocoSimTemplate.SH282:
+                    sparkTemplate = steamSparkTemplate;
+                    break;
+
+                default:
+                    Main.Error($"Unknown template type for wheel sparks {locoType}");
+                    return;
+            }
+
+            for (int i = 0; i < spec.SparkPoints.Length; i++)
+            {
+                var sparkPoint = spec.SparkPoints[i];
+
+                var newSparker = GameObject.Instantiate(sparkTemplate, sparksRoot);
+                newSparker.name = $"sparkPoint_{i}L";
+                newSparker.transform.localPosition = sparkPoint.localPosition + CarPartOffset.CENTER_TO_LEFT_RAIL;
+                newSparker.transform.localRotation = sparkPoint.localRotation;
+
+                newSparker = GameObject.Instantiate(sparkTemplate, sparksRoot);
+                newSparker.name = $"sparkPoint_{i}R";
+                newSparker.transform.localPosition = sparkPoint.localPosition + CarPartOffset.CENTER_TO_RIGHT_RAIL;
+                newSparker.transform.localRotation = sparkPoint.localRotation;
+            }
         }
     }
 
