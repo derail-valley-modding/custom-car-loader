@@ -31,8 +31,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
             if (!VRManager.IsVREnabled())
             {
-                var keyboardCtrl = gameObject.AddComponent<LocoKeyboardInputSteam>();
+                var keyboardCtrl = gameObject.AddComponent<SteamKeyboardInput>();
                 keyboardCtrl.control = this;
+                keyboardCtrl.Ctrl = this;
             }
 
             maxPowerPressure = sim.boilerPressure.max / 3f;
@@ -204,6 +205,17 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float GetStoker() => sim.autoFuelFeed.value;
         public void SetStoker(float value) => sim.autoFuelFeed.SetValue(value);
 
+        public float GetFireOn() => sim.fireOn.value;
+        public void SetFireOn(float value) => sim.fireOn.SetValue(value);
+
+        public void SetFireOut(float value)
+        {
+            if (value > 0)
+            {
+                sim.TryExtinguishFire();
+            }
+        }
+
         public override bool AcceptsControlOfType(CabInputType inputType)
         {
             return inputType.EqualsOneOf(
@@ -215,7 +227,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 CabInputType.SteamDump,
                 CabInputType.Whistle,
                 CabInputType.FireDoor,
-                CabInputType.Stoker
+                CabInputType.Stoker,
+                CabInputType.FireOut
             ) || base.AcceptsControlOfType(inputType);
         }
 
@@ -257,6 +270,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
                 case CabInputType.Stoker:
                     inputRelay.SetIOHandlers(SetStoker, GetStoker);
+                    break;
+
+                case CabInputType.FireOut:
+                    inputRelay.SetIOHandlers(SetFireOut);
                     break;
 
                 default:
@@ -321,11 +338,6 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             EventManager.Dispatch(this, SimEventType.WaterReserve, sim.tenderWater.value);
         }
 
-        public bool IsFireOn
-        {
-            get => sim.fireOn.value > 0;
-            set => sim.fireOn.value = value ? 1 : 0;
-        }
         public float FireboxLevel => _FireFuelLevel;
         public float FireTemp => sim.temperature.value;
         public float MaxFireTemp => sim.temperature.max;

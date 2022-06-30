@@ -214,6 +214,14 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
         }
 
+        public void TryExtinguishFire()
+        {
+            if (temperature.value <= 150)
+            {
+                fireOn.SetValue(0);
+            }
+        }
+
         //================================================================================
         #region Simulation Ticks
 

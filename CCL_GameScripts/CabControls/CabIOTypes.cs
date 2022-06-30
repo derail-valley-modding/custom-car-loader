@@ -26,7 +26,8 @@
         SteamDump,
         Whistle,
         FireDoor,
-        Stoker
+        Stoker,
+        FireOut,
     }
 
     public enum SimEventType

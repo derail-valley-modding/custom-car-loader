@@ -75,7 +75,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             {
                 yield return wait;
 
-                bool fireIsOn = loco.IsFireOn;
+                bool fireIsOn = (loco.GetFireOn() == 1);
 
                 if (fireIsOn ^ FireWasOn)
                 {
@@ -145,7 +145,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 {
                     if (lighter.IsFireOn() && loco.FireboxLevel > 0f)
                     {
-                        loco.IsFireOn = true;
+                        loco.SetFireOn(1);
                     }
 
                     lighter.GetComponent<LighterFetcher>().TryReturnToInventory();

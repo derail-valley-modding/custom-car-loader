@@ -16,7 +16,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>embedded</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -121,6 +121,7 @@
     <Compile Include="LocoComponents\Steam\CustomTenderSaveState.cs" />
     <Compile Include="LocoComponents\Steam\CustomTenderSimulation.cs" />
     <Compile Include="LocoComponents\Steam\ShovelPatches.cs" />
+    <Compile Include="LocoComponents\Steam\SteamKeyboardInput.cs" />
     <Compile Include="LocoComponents\VisitCheckerPatch.cs" />
     <Compile Include="LocoSpawnerInjector.cs" />
     <Compile Include="ModPatches.cs" />

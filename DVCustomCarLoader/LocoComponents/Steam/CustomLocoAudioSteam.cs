@@ -237,7 +237,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 			// Fire
 			if (fireLayered)
             {
-				float volume = customLocoController.IsFireOn ? customLocoController.FireTempPercent : 0;
+				float volume = (customLocoController.GetFireOn() == 1) ? customLocoController.FireTempPercent : 0;
 				fireLayered.Set(volume);
             }
 
