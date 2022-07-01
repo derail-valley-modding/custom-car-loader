@@ -9,7 +9,15 @@ namespace DVCustomCarLoader
 {
     public static class LocoSpawnerInjector
     {
-
+        [HarmonyPatch(typeof(StationLocoSpawner), nameof(StationLocoSpawner.Update))]
+        public static class UpdatePatch
+        {
+            public static void Postfix(StationLocoSpawner __instance)
+            {
+                __instance.nextLocoGroupSpawnIndex = UnityEngine.Random.Range(0, __instance.locoTypeGroupsToSpawn.Count);
+            }
+        }
+        
         public static void InjectCarsToSpawners()
         {
             foreach (var customCar in CustomCarManager.CustomCarTypes)
