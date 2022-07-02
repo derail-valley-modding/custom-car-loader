@@ -1,14 +1,14 @@
 ﻿using CCL_GameScripts;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace DVCustomCarLoader
 {
     public static class LocoSpawnerInjector
     {
+        private static FieldInfo nextLocoGroupSpawnIndex = AccessTools.Field(typeof(StationLocoSpawner), "nextLocoGroupSpawnIndex");
 
         public static void InjectCarsToSpawners()
         {
@@ -56,6 +56,8 @@ namespace DVCustomCarLoader
                             {
                                 Main.LogVerbose($"Added loco {customCar.identifier} to autospawn at {yardId}, track {spawner.locoSpawnTrackName}");
                                 spawner.locoTypeGroupsToSpawn.Add(typeListWrapper);
+                                int nextIndex = UnityEngine.Random.Range(0, spawner.locoTypeGroupsToSpawn.Count);
+                                nextLocoGroupSpawnIndex.SetValue(spawner, nextIndex);
                             }
                         }
                     }
