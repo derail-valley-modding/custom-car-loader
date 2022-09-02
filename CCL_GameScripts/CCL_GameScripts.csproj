@@ -110,4 +110,11 @@
     <Compile Include="TrainCarSetup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>@echo off
+setlocal enableextensions
+md $(SolutionDir)\$(OutDir)
+endlocal
+xcopy /d /y $(TargetPath) $(SolutionDir)\$(OutDir)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
