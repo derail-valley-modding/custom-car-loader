@@ -97,6 +97,7 @@
     <Compile Include="Effects\SmokeEmissionSetup.cs" />
     <Compile Include="Effects\SteamEmissionSetup.cs" />
     <Compile Include="Effects\WheelSparkSetup.cs" />
+    <Compile Include="ArrayExtensionMethods.cs" />
     <Compile Include="FireboxSetup.cs" />
     <Compile Include="JSONObject\JSONObject.cs" />
     <Compile Include="JSONObject\VectorTemplates.cs" />

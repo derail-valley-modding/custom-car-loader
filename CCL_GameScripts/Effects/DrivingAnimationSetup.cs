@@ -63,7 +63,7 @@ namespace CCL_GameScripts.Effects
 
                 if (UseDefaultRadiusForAll)
                 {
-                    Array.Fill(transformWheelRadii, DefaultWheelRadius);
+                    transformWheelRadii.Fill(DefaultWheelRadius);
                 }
             }
             else
@@ -94,7 +94,7 @@ namespace CCL_GameScripts.Effects
 
                 if (UseDefaultRadiusForAll)
                 {
-                    Array.Fill(animatorWheelRadii, DefaultWheelRadius);
+                    animatorWheelRadii.Fill(DefaultWheelRadius);
                 }
             }
             else
