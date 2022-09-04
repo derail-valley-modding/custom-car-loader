@@ -319,7 +319,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             EventManager.UpdateValueDispatchOnChange(this, ref _InjectorFlow, sim.injector.value, SimEventType.InjectorFlow);
 
             EventManager.UpdateValueDispatchOnChange(this, ref _FuelLevel, sim.tenderFuel.value, SimEventType.Fuel);
-            EventManager.UpdateValueDispatchOnChange(this, ref _WaterLevel, sim.tenderWater.value, SimEventType.WaterLevel);
+            EventManager.UpdateValueDispatchOnChange(this, ref _WaterLevel, sim.tenderWater.value, SimEventType.WaterReserve);
         }
 
         public override void ForceDispatchAll()
