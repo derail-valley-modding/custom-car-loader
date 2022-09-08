@@ -31,6 +31,8 @@ namespace DVCustomCarLoader
 
         public static bool TryGetModelByName(string id, out GameObject model) => customModels.TryGetValue(id, out model);
 
+        public static bool IsInCustomRange(CargoContainerType containerType) => (int)containerType >= BaseInjector.CUSTOM_TYPE_OFFSET;
+
         static CargoModelInjector()
         {
             AccessTools.Field(typeof(CargoTypes), "cargoTypeToSupportedCarContainer").SaveTo(out CargoTypeToSupportedContainer);
@@ -218,6 +220,22 @@ namespace DVCustomCarLoader
                 return false;
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(CargoTypes), nameof(CargoTypes.GetCarContainerTypesThatSupportCargoType))]
+    public static class CargoTypes_GetContainersByCargo_Patch
+    {
+        public static void Postfix(ref List<CargoContainerType> __result)
+        {
+            if (Main.Settings.PreferCustomCargoContainersForJobs)
+            {
+                // override all base types
+                if (__result.Any(CargoModelInjector.IsInCustomRange))
+                {
+                    __result = __result.Where(CargoModelInjector.IsInCustomRange).ToList();
+                }
+            }
         }
     }
 }
