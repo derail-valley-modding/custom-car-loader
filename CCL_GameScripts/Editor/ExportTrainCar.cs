@@ -199,10 +199,10 @@ public class ExportTrainCar : EditorWindow
 		//Prompt to clear folder before exporting.
 		if (directory.GetFiles().Length > 0 || directory.GetDirectories().Length > 0)
 		{
-			if (EditorUtility.DisplayDialog("Clear Folder",
+			if (!EditorUtility.DisplayDialog("Clear Folder",
 				"The directory you selected isn't empty, would you like to clear the files from the folder before proceeding? \n \n WARNING: THIS WILL DELETE ALL FILES (BUT NOT DIRECTORIES) IN THE FOLDER.",
-				"Clear Folder",
-				"Cancel"))
+				"Skip",
+				"Clear Folder"))
 			{
 				//DANGEROUS METHOD, DONT USE WITHOUT CONFIDENCE
 				directory.Empty();
