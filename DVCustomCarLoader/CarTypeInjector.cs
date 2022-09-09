@@ -416,18 +416,6 @@ namespace DVCustomCarLoader
                     __result = __result.Where(CarTypeInjector.IsInCustomRange).ToList();
                 }
             }
-            else
-            {
-                // only override individual cars
-                var overridden = __result
-                    .Where(CarTypeInjector.IsInCustomRange)
-                    .Select(CarTypeInjector.CustomCarByType)
-                    .Where(car => car.ReplaceBaseType)
-                    .Select(car => car.BaseCarType)
-                    .ToHashSet();
-
-                __result = __result.Where(ct => !overridden.Contains(ct)).ToList();
-            }
         }
     }
 
