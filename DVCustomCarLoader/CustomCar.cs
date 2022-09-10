@@ -78,6 +78,39 @@ namespace DVCustomCarLoader
             //==============================================================================================================
             #region Buffers/Chains
 
+            // copy main buffer part cohort
+            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
+            bufferRoot = Object.Instantiate(bufferRoot, newFab.transform);
+            bufferRoot.name = CarPartNames.BUFFERS_ROOT;
+
+            // special case for refrigerator - chain rigs are parented to car root instead of [buffers]
+            if (BaseCarType == TrainCarType.RefrigeratorWhite)
+            {
+                for (int i = 0; i < basePrefab.transform.childCount; i++)
+                {
+                    var child = basePrefab.transform.GetChild(i).gameObject;
+                    if (child.name == CarPartNames.BUFFER_CHAIN_REGULAR)
+                    {
+                        GameObject copiedChain = Object.Instantiate(child, bufferRoot.transform);
+                        copiedChain.name = CarPartNames.BUFFER_CHAIN_REGULAR;
+
+                        var bufferController = copiedChain.GetComponent<BufferController>();
+                        if (copiedChain.transform.localPosition.z > 0)
+                        {
+                            // front buffer
+                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FL);
+                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FR);
+                        }
+                        else
+                        {
+                            // rear buffer
+                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RL);
+                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RR);
+                        }
+                    }
+                }
+            }
+
             Vector3 frontRigPosition, rearRigPosition;
             if (carSetup.UseCustomBuffers)
             {
@@ -515,38 +548,8 @@ namespace DVCustomCarLoader
                 Main.Error("Missing rear coupler rig from prefab!");
             }
 
-            // copy main buffer part cohort
-            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
-            bufferRoot = Object.Instantiate(bufferRoot, newPrefab.transform);
-            bufferRoot.name = CarPartNames.BUFFERS_ROOT;
-
-            // special case for refrigerator - chain rigs are parented to car root instead of [buffers]
-            if (BaseCarType == TrainCarType.RefrigeratorWhite)
-            {
-                for (int i = 0; i < basePrefab.transform.childCount; i++)
-                {
-                    var child = basePrefab.transform.GetChild(i).gameObject;
-                    if (child.name == CarPartNames.BUFFER_CHAIN_REGULAR)
-                    {
-                        GameObject copiedChain = Object.Instantiate(child, bufferRoot.transform);
-                        copiedChain.name = CarPartNames.BUFFER_CHAIN_REGULAR;
-
-                        var bufferController = copiedChain.GetComponent<BufferController>();
-                        if (copiedChain.transform.localPosition.z > 0)
-                        {
-                            // front buffer
-                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FL);
-                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FR);
-                        }
-                        else
-                        {
-                            // rear buffer
-                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RL);
-                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RR);
-                        }
-                    }
-                }
-            }
+            // get copied buffer part cohort
+            GameObject bufferRoot = newPrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
 
             // adjust transforms of buffer components
             for (int i = 0; i < bufferRoot.transform.childCount; i++)
@@ -599,10 +602,8 @@ namespace DVCustomCarLoader
             Transform rearCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_REAR);
             Vector3 rearRigPosition = rearCouplerRig.position;
 
-            // copy main buffer part cohort
-            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
-            bufferRoot = Object.Instantiate(bufferRoot, newPrefab.transform);
-            bufferRoot.name = CarPartNames.BUFFERS_ROOT;
+            // get copied buffer part cohort
+            GameObject bufferRoot = newPrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
 
             Transform newFrontBufferRig = null;
             Transform newRearBufferRig = null;
