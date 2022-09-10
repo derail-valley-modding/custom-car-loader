@@ -4,8 +4,6 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace DVCustomCarLoader
@@ -30,6 +28,8 @@ namespace DVCustomCarLoader
             customCargoContainers.TryGetValue(containerType, out name);
 
         public static bool TryGetModelByName(string id, out GameObject model) => customModels.TryGetValue(id, out model);
+
+        public static bool IsInCustomRange(CargoContainerType containerType) => (int)containerType >= BaseInjector.CUSTOM_TYPE_OFFSET;
 
         static CargoModelInjector()
         {
@@ -93,8 +93,6 @@ namespace DVCustomCarLoader
                     }
                     supportedContainers.Add(car.CargoClass);
 
-                    Main.LogVerbose($"Cargo {cargoType.GetShortCargoName()} - {car.identifier}");
-
                     // figure out model
                     string modelName = model.BaseModel;
                     if (model.Model)
@@ -107,16 +105,19 @@ namespace DVCustomCarLoader
                         customModels.Add(modelName, model.Model);
                     }
 
-                    if (!modelDict.TryGetValue(cargoType, out var nameList))
+                    bool isModelNamePresent = !string.IsNullOrEmpty(modelName);
+                    if (isModelNamePresent)
                     {
-                        nameList = new List<string>();
-                        modelDict.Add(cargoType, nameList);
-                    }
+                        if (!modelDict.TryGetValue(cargoType, out var nameList))
+                        {
+                            nameList = new List<string>();
+                            modelDict.Add(cargoType, nameList);
+                        }
 
-                    if (!string.IsNullOrEmpty(modelName))
-                    {
                         nameList.Add(modelName);
                     }
+
+                    Main.LogVerbose($"Cargo {cargoType.GetShortCargoName()} - {car.identifier} - {(isModelNamePresent ? modelName : "none")}");
                 }
             }
         }
@@ -218,6 +219,22 @@ namespace DVCustomCarLoader
                 return false;
             }
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(CargoTypes), nameof(CargoTypes.GetCarContainerTypesThatSupportCargoType))]
+    public static class CargoTypes_GetContainersByCargo_Patch
+    {
+        public static void Postfix(ref List<CargoContainerType> __result)
+        {
+            if (Main.Settings.PreferCustomCargoContainersForJobs)
+            {
+                // override all base types
+                if (__result.Any(CargoModelInjector.IsInCustomRange))
+                {
+                    __result = __result.Where(CargoModelInjector.IsInCustomRange).ToList();
+                }
+            }
         }
     }
 }

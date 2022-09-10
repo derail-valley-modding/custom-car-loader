@@ -10,6 +10,7 @@ namespace DVCustomCarLoader
 {
     public class CCLSettings : UnityModManager.ModSettings
     {
+        public bool PreferCustomCargoContainersForJobs = false;
         public bool PreferCustomCarsForJobs = false;
         public bool VerboseMode = true;
 
@@ -26,6 +27,7 @@ namespace DVCustomCarLoader
         {
             GUILayout.BeginVertical();
 
+            PreferCustomCargoContainersForJobs = GUILayout.Toggle(PreferCustomCargoContainersForJobs, "Prefer custom cargo containers when generating jobs");
             PreferCustomCarsForJobs = GUILayout.Toggle(PreferCustomCarsForJobs, "Prefer custom cars to default cars when generating jobs");
             VerboseMode = GUILayout.Toggle(VerboseMode, "Verbose Logging");
             GUILayout.Space(2);
