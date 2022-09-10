@@ -151,4 +151,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>setlocal enableextensions
+if not exist $(SolutionDir)$(OutDir) md $(SolutionDir)$(OutDir)
+endlocal
+xcopy /d /y $(TargetPath) $(SolutionDir)$(OutDir)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
