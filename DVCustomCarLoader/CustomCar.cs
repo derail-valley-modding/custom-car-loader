@@ -25,7 +25,6 @@ namespace DVCustomCarLoader
         ///     The underlying type of this car.
         /// </summary>
         public TrainCarType BaseCarType = TrainCarType.FlatbedEmpty;
-        public bool ReplaceBaseType { get; protected set; } = false;
 
         /// <summary>
         ///     The base prefab that will be duplicated from.
@@ -338,7 +337,6 @@ namespace DVCustomCarLoader
             // setup traincar properties
             BookletSprite = carSetup.BookletSprite;
             FullDamagePrice = carSetup.FullDamagePrice;
-            ReplaceBaseType = carSetup.ReplaceBaseType;
 
             LocoSpawnLocations = carSetup.LocoSpawnLocations;
             TenderID = carSetup.TenderID;
@@ -353,7 +351,7 @@ namespace DVCustomCarLoader
                 Main.LogVerbose($"Cargo models - {mString}");
             }
 
-            Main.LogVerbose($"Cargo class: {CargoClass}, Damage price: {FullDamagePrice}, ReplaceBase: {ReplaceBaseType}");
+            Main.LogVerbose($"Cargo class: {CargoClass}, Damage price: {FullDamagePrice}");
 
             if( !carSetup.OverridePhysics )
             {
