@@ -186,6 +186,32 @@ namespace DVCustomCarLoader
         }
     }
 
+#warning Don't commit this cargo visibility debugging code region.
+    #region Cargo Visibility Debug
+    [HarmonyPatch(typeof(CargoModelsData), nameof(CargoModelsData.IsCargoVisibleOnCar))]
+    public static class CargoVisible_Patch
+    {
+        public static void Postfix(TrainCarType carType, CargoType cargoType, ref bool __result)
+        {
+            if (!CarTypeInjector.IsInCustomRange(carType)) { return; }
+
+            CargoContainerType containerType;
+            Dictionary<CargoType, List<string>> dictionary;
+            bool isContainerTypeRetrieved = CargoTypes.CarTypeToContainerType.TryGetValue(carType, out containerType);
+            if (isContainerTypeRetrieved && CargoModelsData.CargoContainerToAvailableCargoTypeModels.TryGetValue(containerType, out dictionary))
+            {
+                bool isVisible = dictionary.ContainsKey(cargoType);
+                string dictEntry = isVisible ? $"List{{{dictionary[cargoType].Join()}}}" : "None";
+                Main.LogVerbose($"IsCargoVisibleOnCar? (carType: {carType}, cargoType: {cargoType}) -> {__result}\n\tcontainerType: {CargoTypes.DisplayName(containerType)}\n\tdictionaryEntry: {dictEntry}\n\tlocalIsVisible: {isVisible}");
+            }
+            else
+            {
+                Main.LogVerbose($"IsCargoVisibleOnCar? (carType: {carType}, cargoType: {cargoType}) -> {__result}\n\tCouldn't retrieve {(isContainerTypeRetrieved ? "ContainerType" : "Dictionary")}.");
+            }
+        }
+    }
+    #endregion
+
     [HarmonyPatch(typeof(CargoModelController))]
     public static class CargoModelController_Patches
     {
