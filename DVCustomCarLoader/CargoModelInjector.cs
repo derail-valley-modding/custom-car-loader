@@ -93,8 +93,6 @@ namespace DVCustomCarLoader
                     }
                     supportedContainers.Add(car.CargoClass);
 
-                    Main.LogVerbose($"Cargo {cargoType.GetShortCargoName()} - {car.identifier}");
-
                     // figure out model
                     string modelName = model.BaseModel;
                     if (model.Model)
@@ -118,6 +116,8 @@ namespace DVCustomCarLoader
 
                         nameList.Add(modelName);
                     }
+
+                    Main.LogVerbose($"Cargo {cargoType.GetShortCargoName()} - {car.identifier} - {(isModelNamePresent ? modelName : "none")}");
                 }
             }
         }
