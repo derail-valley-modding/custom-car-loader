@@ -32,7 +32,7 @@ namespace DVCustomCarLoader.LocoComponents
 
         public void SetReverserFromCab( float position )
         {
-            reverser = (position * 2f) - 1f;
+            SetReverser((position * 2f) - 1f);
         }
         public float GetReverserCabPosition() => (reverser + 1f) / 2f;
 
