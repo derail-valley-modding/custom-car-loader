@@ -56,6 +56,8 @@ namespace CCL_GameScripts
 
         [Header("Cargo & Jobs")]
         public BaseCargoContainerType CargoClass = BaseCargoContainerType.None;
+        [ProxyField("cargoCapacity")]
+        public float CargoCapacity = 1f;
         public Sprite BookletSprite = null;
         public float FullDamagePrice = 10000f;
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using DV;
 using HarmonyLib;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace DVCustomCarLoader
     [HarmonyPatch(typeof(CarSpawner))]
     public static class CarSpawner_Patches
     {
+        private static readonly FieldInfo _cargoCapacityField = AccessTools.Field(typeof(TrainCar), nameof(TrainCar.cargoCapacity));
         private static Delegate[] carSpawnedDelegates = null;
 
         private static void RaiseCarSpawned( TrainCar car )
@@ -54,7 +56,7 @@ namespace DVCustomCarLoader
             ref TrainCar __result)
         {
             TrainCar prefabCar = carToSpawn.GetComponentInChildren<TrainCar>(true);
-            if( !CarTypeInjector.IsCustomTypeRegistered(prefabCar.carType) )
+            if(!CarTypeInjector.TryGetCustomCarByType(prefabCar.carType, out CustomCar customCarType))
             {
                 return true;
             }
@@ -66,12 +68,10 @@ namespace DVCustomCarLoader
             }
             TrainCar spawnedCar = carObj.GetComponentInChildren<TrainCar>();
 
+            _cargoCapacityField.SetValue(spawnedCar, customCarType.CargoCapacity);
             spawnedCar.playerSpawnedCar = playerSpawnedCar;
             spawnedCar.InitializeNewLogicCar();
             spawnedCar.SetTrack(track, position, forward);
-
-            //spawnedCar.OnDestroyCar += CustomCarManager.DeregisterCar;
-            //CustomCarManager.RegisterSpawnedCar(spawnedCar, identifier);
 
             RaiseCarSpawned(spawnedCar);
 
@@ -90,7 +90,7 @@ namespace DVCustomCarLoader
             ref TrainCar __result)
         {
             TrainCar prefabCar = carToSpawn.GetComponentInChildren<TrainCar>(true);
-            if( !CarTypeInjector.IsCustomTypeRegistered(prefabCar.carType) )
+            if(!CarTypeInjector.TryGetCustomCarByType(prefabCar.carType, out CustomCar customCarType))
             {
                 return true;
             }
@@ -102,6 +102,8 @@ namespace DVCustomCarLoader
             }
 
             TrainCar spawnedCar = carObj.GetComponentInChildren<TrainCar>();
+
+            _cargoCapacityField.SetValue(spawnedCar, customCarType.CargoCapacity);
             spawnedCar.playerSpawnedCar = playerSpawnedCar;
             spawnedCar.InitializeExistingLogicCar(carId, carGuid);
 
