@@ -45,6 +45,7 @@
     <Reference Include="DV.Utils, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="NAudio, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="net.smkd.vector3d, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
@@ -140,6 +141,8 @@
     <Compile Include="LocoComponents\DieselElectric\CustomLocoSimDiesel.cs" />
     <Compile Include="LocoComponents\DebtTrackerCustomLoco.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Patches\JobGeneratorPatches.cs" />
+    <Compile Include="Patches\JobPaymentPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoadPatches.cs" />
     <Compile Include="TrainCar_Patches.cs" />

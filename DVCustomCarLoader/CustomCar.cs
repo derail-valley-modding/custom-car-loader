@@ -50,6 +50,7 @@ namespace DVCustomCarLoader
 
         public CargoContainerType CargoClass { get; set; } = CargoContainerType.None;
         public CargoModelSetup[] CargoModels { get; protected set; } = null;
+        public float CargoCapacity { get; protected set; } = 1;
 
         public Sprite BookletSprite { get; set; } = null;
         public float FullDamagePrice { get; protected set; } = 10000f;
@@ -342,6 +343,7 @@ namespace DVCustomCarLoader
             TenderID = carSetup.TenderID;
 
             CargoClass = (CargoContainerType)carSetup.CargoClass;
+            CargoCapacity = carSetup.CargoCapacity;
 
             var cargoSetups = newFab.GetComponentsInChildren<CargoModelSetup>(true);
             if (cargoSetups.Length > 0)
