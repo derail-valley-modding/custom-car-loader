@@ -49,6 +49,7 @@ namespace CCL_GameScripts
         public GameObject InteriorPrefab;
         [ProxyField]
         public bool keepInteriorLoaded = false;
+        public bool MuffleInteriorAudio = true;
 
         [Header("Auto Spawning (Locos Only)")]
         [InspectorName("Spawn Locations")]

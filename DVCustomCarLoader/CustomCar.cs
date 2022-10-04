@@ -433,16 +433,19 @@ namespace DVCustomCarLoader
                     var teleportDest = cabTform.gameObject.AddComponent<CabTeleportDestination>();
                     teleportDest.hoverRenderer = cabTform.GetComponentInChildren<Renderer>();
 
-                    var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
-                    if (cabCollider)
+                    if (carSetup.MuffleInteriorAudio)
                     {
-                        Main.LogVerbose("Found cab teleport collider");
-                        if (!snapshotSwitcher)
+                        var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
+                        if (cabCollider)
                         {
-                            snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
-                            Main.LogVerbose("Add snapshot audio switcher");
+                            Main.LogVerbose("Found cab teleport collider");
+                            if (!snapshotSwitcher)
+                            {
+                                snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
+                                Main.LogVerbose("Add snapshot audio switcher");
+                            }
+                            snapshotSwitcher.AddCabRegion(cabCollider);
                         }
-                        snapshotSwitcher.AddCabRegion(cabCollider);
                     }
                 }
             }
