@@ -398,6 +398,8 @@ namespace DVCustomCarLoader
 
                 interiorFab.AddComponent<DoorAndWindowTracker>();
 
+                ApplyDefaultShader(interiorFab);
+
                 newCar.interiorPrefab = interiorFab;
                 InteriorPrefab = interiorFab;
             }
@@ -441,6 +443,8 @@ namespace DVCustomCarLoader
             }
 
             #endregion
+
+            ApplyDefaultShader(newFab);
 
             CarPrefab = newFab;
             CarPrefab.name = identifier;
@@ -771,6 +775,38 @@ namespace DVCustomCarLoader
         }
 
         #endregion
+
+        private static Shader _engineShader = null;
+
+        private static Shader EngineShader
+        {
+            get
+            {
+                if (!_engineShader)
+                {
+                    var prefab = CarTypes.GetCarPrefab(TrainCarType.LocoShunter);
+                    var exterior = prefab.transform.Find("shunter_ext/ext 621_exterior");
+                    var material = exterior.GetComponent<MeshRenderer>().material;
+                    _engineShader = material.shader;
+                }
+                return _engineShader;
+            }
+        }
+
+        private static void ApplyDefaultShader(GameObject prefab)
+        {
+            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+            {
+                foreach (var material in renderer.materials)
+                {
+                    // replace opaque material shader
+                    if ((material.shader.name == "Standard") && (material.GetFloat("_Mode") == 0))
+                    {
+                        material.shader = EngineShader;
+                    }
+                }
+            }
+        }
     }
 
     public class CustomBogieParams
