@@ -11,6 +11,7 @@ namespace CCL_GameScripts
     /// </summary>
     public class TrainCarSetup : ComponentInitSpec
     {
+        public static readonly System.Version ExporterVersion = new System.Version(1, 6);
 
         #region Internal
 

@@ -324,6 +324,7 @@ public class ExportTrainCar : EditorWindow
 		jsonfile.AddField(CarJSONKeys.PREFAB_NAME, GetPrefabName(_trainCarSetup.Identifier));
 		jsonfile.AddField(CarJSONKeys.IDENTIFIER, _trainCarSetup.Identifier);
 		jsonfile.AddField(CarJSONKeys.CAR_TYPE, (int)_trainCarSetup.BaseCarType);
+		jsonfile.AddField(CarJSONKeys.EXPORTER_VERSION, TrainCarSetup.ExporterVersion.ToString());
 
 		//Bogies
 		if( _trainCarSetup.UseCustomFrontBogie )

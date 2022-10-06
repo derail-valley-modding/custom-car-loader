@@ -76,21 +76,21 @@ namespace DVCustomCarLoader
             }
         }
 
-        private static CustomCar CreateCustomCar( string directory, JSONObject jsonFile )
+        private static CustomCar CreateCustomCar(string directory, JSONObject jsonFile)
         {
             try
             {
                 var assetBundleName = jsonFile[CarJSONKeys.BUNDLE_NAME].str;
                 var assetBundlePath = Path.Combine(directory, assetBundleName);
 
-                if( File.Exists(assetBundlePath) )
+                if (File.Exists(assetBundlePath))
                 {
                     Main.LogVerbose($"Loading AssetBundle: {assetBundleName} at path {assetBundlePath}");
 
                     //Try to load asset bundle.
                     var assetBundle = AssetBundle.LoadFromFile(assetBundlePath);
 
-                    if( assetBundle == null )
+                    if (assetBundle == null)
                     {
                         Main.Warning($"Failed to load AssetBundle: {assetBundleName}");
                         return null;
@@ -106,15 +106,18 @@ namespace DVCustomCarLoader
                     //Unload assetbundle to free up memory.
                     assetBundle.Unload(false);
 
-                    if( carPrefab != null )
+                    if (carPrefab != null)
                     {
                         Main.LogVerbose($"Successfully loaded prefab from asset bundle. Prefab name is {carPrefab.name}");
+
+                        jsonFile.GetField(out string version, CarJSONKeys.EXPORTER_VERSION, "1.5");
 
                         var newCar = new CustomCar()
                         {
                             CarPrefab = carPrefab,
                             identifier = jsonFile[CarJSONKeys.IDENTIFIER].str,
                             BaseCarType = (TrainCarType)jsonFile[CarJSONKeys.CAR_TYPE].i,
+                            ExporterVersion = new Version(version),
                         };
 
                         //Bogies
@@ -130,9 +133,9 @@ namespace DVCustomCarLoader
                             newCar.RearBogieConfig = CustomBogieParams.FromJSON(rbs);
                         }
 
-                        if( newCar.FinalizePrefab() )
+                        if (newCar.FinalizePrefab())
                         {
-                            if( CarTypeInjector.RegisterCustomCarType(newCar) != TrainCarType.NotSet )
+                            if (CarTypeInjector.RegisterCustomCarType(newCar) != TrainCarType.NotSet)
                             {
                                 CargoModelInjector.RegisterCargo(newCar);
 
@@ -148,7 +151,7 @@ namespace DVCustomCarLoader
                     }
                 }
             }
-            catch( Exception e )
+            catch (Exception e)
             {
                 Main.Error(e.ToString());
             }
