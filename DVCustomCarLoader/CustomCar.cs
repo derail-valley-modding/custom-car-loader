@@ -26,6 +26,8 @@ namespace DVCustomCarLoader
         /// </summary>
         public TrainCarType BaseCarType = TrainCarType.FlatbedEmpty;
 
+        public Version ExporterVersion;
+
         /// <summary>
         ///     The base prefab that will be duplicated from.
         /// </summary>
@@ -398,7 +400,10 @@ namespace DVCustomCarLoader
 
                 interiorFab.AddComponent<DoorAndWindowTracker>();
 
-                ApplyDefaultShader(interiorFab);
+                if (Main.Settings.ForceShaderOverride || (ExporterVersion > new Version(1, 6)))
+                {
+                    ApplyDefaultShader(interiorFab);
+                }
 
                 newCar.interiorPrefab = interiorFab;
                 InteriorPrefab = interiorFab;
@@ -444,7 +449,10 @@ namespace DVCustomCarLoader
 
             #endregion
 
-            ApplyDefaultShader(newFab);
+            if (Main.Settings.ForceShaderOverride || (ExporterVersion > new Version(1, 6)))
+            {
+                ApplyDefaultShader(newFab);
+            }
 
             CarPrefab = newFab;
             CarPrefab.name = identifier;

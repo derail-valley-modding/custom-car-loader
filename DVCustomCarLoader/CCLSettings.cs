@@ -23,6 +23,8 @@ namespace DVCustomCarLoader
         public bool FeesForAllLocos =>
             LocoFeeBehavior == SpawnerFeeBehavior.TrackAllLocos;
 
+        public bool ForceShaderOverride = false;
+
         public void Draw(UnityModManager.ModEntry modEntry)
         {
             GUILayout.BeginVertical();
@@ -34,6 +36,10 @@ namespace DVCustomCarLoader
 
             GUILayout.Label("Career Manager fee behavior for player-spawned locos:");
             LocoFeeBehavior = (SpawnerFeeBehavior)GUILayout.SelectionGrid((int)LocoFeeBehavior, spawnerBehaviorDescriptions, 1, "toggle");
+            GUILayout.Space(2);
+
+            GUILayout.Label("Other Settings:");
+            ForceShaderOverride = GUILayout.Toggle(ForceShaderOverride, "Force updated shader for older cars");
             GUILayout.Space(2);
 
             GUILayout.EndVertical();
