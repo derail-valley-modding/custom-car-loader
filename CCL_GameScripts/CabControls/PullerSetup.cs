@@ -22,8 +22,17 @@ namespace CCL_GameScripts.CabControls
         [ProxyField]
         public float linearLimit = 0.3f;
 
+        [Header("Window")]
         public bool TrackAsWindow = false;
         public bool TrackAsAperture => TrackAsWindow;
+
+        [SerializeField]
+        private int _cabNumber = -1;
+        public int CabNumber
+        {
+            get => _cabNumber;
+            set => _cabNumber = value;
+        }
 
         [Header("Physics")]
         [ProxyField]

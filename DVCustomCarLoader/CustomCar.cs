@@ -427,22 +427,41 @@ namespace DVCustomCarLoader
             for (int i = 0; i < newFab.transform.childCount; i++)
             {
                 var cabTform = newFab.transform.GetChild(i);
-                if (cabTform.name == CarPartNames.CAB_TELEPORT_ROOT)
+                if (cabTform.name.StartsWith(CarPartNames.CAB_TELEPORT_ROOT))
                 {
-                    Main.LogVerbose("Found cab");
+                    string cabIdString = cabTform.name.Replace(CarPartNames.CAB_TELEPORT_ROOT, string.Empty).Trim();
+
+                    int cabNumber;
+                    if (string.IsNullOrWhiteSpace(cabIdString))
+                    {
+                        cabNumber = -1;
+                    }
+                    else
+                    {
+                        if (!int.TryParse(cabIdString, out cabNumber))
+                        {
+                            Main.Warning($"Failed to parse cab number for transform \"{cabTform.name}\"");
+                            cabNumber = -1;
+                        }
+                    }
+
+                    Main.LogVerbose($"Found cab {cabNumber}");
                     var teleportDest = cabTform.gameObject.AddComponent<CabTeleportDestination>();
                     teleportDest.hoverRenderer = cabTform.GetComponentInChildren<Renderer>();
 
-                    var cabCollider = cabTform.gameObject.GetComponentInChildren<BoxCollider>();
-                    if (cabCollider)
+                    if (carSetup.MuffleInteriorAudio)
                     {
-                        Main.LogVerbose("Found cab teleport collider");
-                        if (!snapshotSwitcher)
+                        var cabColliders = cabTform.gameObject.GetComponentsInChildren<Collider>(true);
+                        if (cabColliders.SafeAny())
                         {
-                            snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
-                            Main.LogVerbose("Add snapshot audio switcher");
+                            Main.LogVerbose("Found cab teleport collider");
+                            if (!snapshotSwitcher)
+                            {
+                                snapshotSwitcher = newFab.AddComponent<CabinSnapshotSwitcher>();
+                                Main.LogVerbose("Add snapshot audio switcher");
+                            }
+                            snapshotSwitcher.AddCabRegion(cabNumber, cabColliders);
                         }
-                        snapshotSwitcher.AddCabRegion(cabCollider);
                     }
                 }
             }

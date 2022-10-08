@@ -9,24 +9,28 @@ namespace DVCustomCarLoader.LocoComponents
 {
     public class DoorAndWindowTracker : MonoBehaviour
     {
-        protected readonly List<ControlImplBase> Apertures = new List<ControlImplBase>();
+        protected readonly List<(ControlImplBase Control, int CabId)> Apertures = new List<(ControlImplBase, int)>();
 
         private bool initialized = false;
 
         protected void Start()
         {
-            var doorObjects = GetComponentsInChildren<LeverSetup>().Where(l => l.TrackAsDoor).Select(l => l.gameObject);
-            Apertures.AddRange(doorObjects.Select(obj => obj.GetComponent<LeverBase>()).Where(l => l));
+            var openings = gameObject.GetComponentsInChildrenByInterface<IApertureTrackable>()
+                .Where(a => a.TrackAsAperture)
+                .Select(a => (Control: a.gameObject.GetComponent<ControlImplBase>(), CabId: a.CabNumber))
+                .Where(c => c.Control);
 
-            var windowObjects = GetComponentsInChildren<PullerSetup>().Where(p => p.TrackAsWindow).Select(p => p.gameObject);
-            Apertures.AddRange(windowObjects.Select(obj => obj.GetComponent<PullerBase>()).Where(p => p));
+            Apertures.AddRange(openings);
+            Main.LogVerbose($"Found {Apertures.Count} apertures to track");
 
             initialized = true;
         }
 
-        public bool IsAnythingOpen()
+        public bool IsAnythingOpen(int cabId)
         {
-            return initialized && Apertures.Any(c => c.Value >= 0.1f);
+            if (!initialized) return false;
+
+            return Apertures.Any(c => (c.CabId == cabId) && (c.Control.Value >= 0.1f));
         }
     }
 }

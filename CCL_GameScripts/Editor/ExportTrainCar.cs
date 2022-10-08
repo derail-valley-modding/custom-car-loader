@@ -192,8 +192,67 @@ public class ExportTrainCar : EditorWindow
         }
     }
 
-	private void ExportCar(string exportFolderPath)
+	private class ExportTrackingInfo
     {
+		public readonly TrainCarSetup TrainCarSetup;
+		public readonly string ExportFolderPath;
+		public readonly string BundleName;
+		public readonly string AssetFolder;
+
+		public GameObject OriginalInterior;
+		public readonly List<OriginalCargoModelInfo> OriginalCargoModels = new List<OriginalCargoModelInfo>();
+
+		public string TempPrefabPath = null;
+		public string TempInteriorPath = null;
+
+		public ExportTrackingInfo(string exportFolderPath, TrainCarSetup trainCarSetup)
+        {
+			ExportFolderPath = exportFolderPath;
+			TrainCarSetup = trainCarSetup;
+			BundleName = GetBundleName(trainCarSetup.Identifier);
+			AssetFolder = Path.Combine(Path.GetDirectoryName(trainCarSetup.gameObject.scene.path), "temp");
+        }
+
+		public void Cleanup()
+        {
+			// reapply original interior if changed
+			TrainCarSetup.InteriorPrefab = OriginalInterior;
+
+			// reset cargo model objects
+			foreach (var modelInfo in OriginalCargoModels)
+			{
+				modelInfo.ModelSetup.Model = modelInfo.OriginalModel;
+				AssetDatabase.DeleteAsset(modelInfo.TempPrefabPath);
+			}
+
+			if (TempPrefabPath != null)
+            {
+				AssetDatabase.DeleteAsset(TempPrefabPath);
+			}
+
+			if (TempInteriorPath != null)
+			{
+				AssetDatabase.DeleteAsset(TempInteriorPath);
+			}
+
+			if (Directory.Exists(AssetFolder))
+			{
+				try
+				{
+					Directory.Delete(AssetFolder, true);
+				}
+				catch { }
+			}
+		}
+    }
+
+	private static bool Progress(string status, float percent)
+    {
+		return EditorUtility.DisplayCancelableProgressBar("Exporting Car", status, percent);
+    }
+
+	private void ExportCar(string exportFolderPath)
+	{
 		DirectoryInfo directory = new DirectoryInfo(exportFolderPath);
 
 		//Prompt to clear folder before exporting.
@@ -209,35 +268,63 @@ public class ExportTrainCar : EditorWindow
 			}
 		}
 
-		string bundleName = GetBundleName(_trainCarSetup.Identifier);
-		Debug.Log($"Exporting assetBundle to: {exportFolderPath} - bundle name: {bundleName}");
+		Close();
 
-		string assetFolder = Path.GetDirectoryName(_trainCarSetup.gameObject.scene.path);
-		assetFolder = Path.Combine(assetFolder, "temp");
-		Directory.CreateDirectory(assetFolder);
+		var exportInfo = new ExportTrackingInfo(exportFolderPath, _trainCarSetup);
+		Debug.Log($"Exporting assetBundle to: {exportFolderPath} - bundle name: {exportInfo.BundleName}");
 
-		// create temp interior prefab
-		string tempInteriorPath = null;
-		var originalInterior = _trainCarSetup.InteriorPrefab;
-
-		if (_trainCarSetup.InteriorPrefab)
+		try
 		{
-			if (!PrefabUtility.IsPartOfPrefabAsset(_trainCarSetup.InteriorPrefab))
+			Progress("Creating Bundle...", 0.00f);
+			Directory.CreateDirectory(exportInfo.AssetFolder);
+
+			PerformCarExport(exportInfo);
+		}
+		catch (System.Exception ex)
+        {
+			EditorUtility.DisplayDialog("Export Error", 
+				"An exception occurred while exporting your car. Details:\n\n" + ex.Message,
+				"Close Window");
+        }
+
+		// clean up whether we succeeded, failed, or canceled
+		Progress("Cleaning Up...", 0.90f);
+		exportInfo.Cleanup();
+
+		Progress("Finished!", 1.00f);
+		System.Threading.Thread.Sleep(2000);
+		EditorUtility.ClearProgressBar();
+	}
+
+	private static void PerformCarExport(ExportTrackingInfo exportInfo)
+	{
+		// create temp interior prefab
+		exportInfo.OriginalInterior = exportInfo.TrainCarSetup.InteriorPrefab;
+
+		if (exportInfo.TrainCarSetup.InteriorPrefab)
+		{
+			if (Progress("Generating Interior Prefab...", 0.10f)) return;
+
+			if (!PrefabUtility.IsPartOfPrefabAsset(exportInfo.TrainCarSetup.InteriorPrefab))
 			{
-				Debug.Log($"Creating temp prefab from interior object {_trainCarSetup.InteriorPrefab.name}");
-				tempInteriorPath = Path.Combine(assetFolder, GetInteriorPrefabName(_trainCarSetup.Identifier)).Replace('\\', '/');
-				var tempInteriorPrefab = PrefabUtility.SaveAsPrefabAsset(_trainCarSetup.InteriorPrefab, tempInteriorPath);
+				Debug.Log($"Creating temp prefab from interior object {exportInfo.TrainCarSetup.InteriorPrefab.name}");
+				exportInfo.TempInteriorPath = Path.Combine(exportInfo.AssetFolder, GetInteriorPrefabName(exportInfo.TrainCarSetup.Identifier)).Replace('\\', '/');
+				var tempInteriorPrefab = PrefabUtility.SaveAsPrefabAsset(exportInfo.TrainCarSetup.InteriorPrefab, exportInfo.TempInteriorPath);
 
-				originalInterior = _trainCarSetup.InteriorPrefab;
-				_trainCarSetup.InteriorPrefab = tempInteriorPrefab;
+				exportInfo.TrainCarSetup.InteriorPrefab = tempInteriorPrefab;
 
-				AssetImporter.GetAtPath(tempInteriorPath).SetAssetBundleNameAndVariant(bundleName, "");
+				AssetImporter.GetAtPath(exportInfo.TempInteriorPath).SetAssetBundleNameAndVariant(exportInfo.BundleName, "");
 			}
 		}
 
 		// Create prefabs for cargo models
-		var originalCargoModels = new List<OriginalCargoModelInfo>();
-		var modelSetupScripts = _trainCarSetup.gameObject.GetComponents<CargoModelSetup>();
+		var modelSetupScripts = exportInfo.TrainCarSetup.gameObject.GetComponents<CargoModelSetup>();
+
+		if (modelSetupScripts.Any())
+		{
+			if (Progress("Generating Cargo Prefabs...", 0.20f)) return;
+		}
+
 		foreach (var modelSetup in modelSetupScripts)
         {
 			if (modelSetup.Model && !PrefabUtility.IsPartOfPrefabAsset(modelSetup.Model))
@@ -246,25 +333,27 @@ public class ExportTrainCar : EditorWindow
 
 				Debug.Log($"Creating temp prefab for cargo model {modelSetup}");
 
-				string tempModelPath = Path.Combine(assetFolder, GetCargoModelPrefabName(_trainCarSetup.Identifier, modelSetup))
+				string tempModelPath = Path.Combine(exportInfo.AssetFolder, GetCargoModelPrefabName(exportInfo.TrainCarSetup.Identifier, modelSetup))
 					.Replace('\\', '/');
 
-				originalCargoModels.Add(new OriginalCargoModelInfo(modelSetup, modelSetup.Model, tempModelPath));
+				exportInfo.OriginalCargoModels.Add(new OriginalCargoModelInfo(modelSetup, modelSetup.Model, tempModelPath));
 
 				var tempModelPrefab = PrefabUtility.SaveAsPrefabAsset(modelSetup.Model, tempModelPath);
 				modelSetup.Model = tempModelPrefab;
 
-				AssetImporter.GetAtPath(tempModelPath).SetAssetBundleNameAndVariant(bundleName, "");
+				AssetImporter.GetAtPath(tempModelPath).SetAssetBundleNameAndVariant(exportInfo.BundleName, "");
 			}
-        }
+		}
+
+		if (Progress("Generating Car Prefab...", 0.30f)) return;
 
 		// Create a temp prefab object
-		Debug.Log($"Creating temp prefab from car object {_trainCarSetup.gameObject.name}");
-		string tempPrefabPath = Path.Combine(assetFolder, GetPrefabName(_trainCarSetup.Identifier)).Replace('\\', '/');
-		var tempPrefab = PrefabUtility.SaveAsPrefabAsset(_trainCarSetup.gameObject, tempPrefabPath);
+		Debug.Log($"Creating temp prefab from car object {exportInfo.TrainCarSetup.gameObject.name}");
+		exportInfo.TempPrefabPath = Path.Combine(exportInfo.AssetFolder, GetPrefabName(exportInfo.TrainCarSetup.Identifier)).Replace('\\', '/');
+		var tempPrefab = PrefabUtility.SaveAsPrefabAsset(exportInfo.TrainCarSetup.gameObject, exportInfo.TempPrefabPath);
 
 		//Change name of asset bundle on the temp prefab
-		AssetImporter.GetAtPath(tempPrefabPath).SetAssetBundleNameAndVariant(bundleName, "");
+		AssetImporter.GetAtPath(exportInfo.TempPrefabPath).SetAssetBundleNameAndVariant(exportInfo.BundleName, "");
 		AssetDatabase.RemoveUnusedAssetBundleNames();
 		
 		if (tempPrefab == null)
@@ -272,6 +361,8 @@ public class ExportTrainCar : EditorWindow
 			Debug.LogError("Failed to create temporary prefab for export, abandoning build");
 			return;
 		}
+
+		if (Progress("Exporting assets...", 0.50f)) return;
 
 		//Build assetBundle.
 		var processedBundles = new HashSet<string>();
@@ -282,63 +373,40 @@ public class ExportTrainCar : EditorWindow
 			Debug.LogError("Failed to create build for AssetBundle.");
 		}
 
-		BuildPipeline.BuildAssetBundles(exportFolderPath, trainCarBundleBuild, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
-		Debug.Log($"Finished AssetBundle build for car: {_trainCarSetup.Identifier}.");
-
-		// reapply original interior if changed
-		_trainCarSetup.InteriorPrefab = originalInterior;
-
-		// reset cargo model objects
-		foreach (var modelInfo in originalCargoModels)
-        {
-			modelInfo.ModelSetup.Model = modelInfo.OriginalModel;
-			AssetDatabase.DeleteAsset(modelInfo.TempPrefabPath);
-        }
-
-		AssetDatabase.DeleteAsset(tempPrefabPath);
-		if (tempInteriorPath != null)
-		{
-			AssetDatabase.DeleteAsset(tempInteriorPath);
-		}
-
-		if (Directory.Exists(assetFolder))
-		{
-			try
-			{
-				Directory.Delete(assetFolder, true);
-			}
-			catch { }
-		}
+		BuildPipeline.BuildAssetBundles(exportInfo.ExportFolderPath, trainCarBundleBuild, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
+		Debug.Log($"Finished AssetBundle build for car: {exportInfo.TrainCarSetup.Identifier}.");
 
 		// Create car.json file.
-		var jsonFile = Path.Combine(exportFolderPath, CarJSONKeys.JSON_FILENAME);
-		WriteCarSettingsFile(bundleName, jsonFile);
+		if (Progress("Writing car properties...", 0.80f)) return;
+		WriteCarSettingsFile(exportInfo);
 	}
 
-	private void WriteCarSettingsFile( string assetBundleName, string outFilePath )
-    {
+	private static void WriteCarSettingsFile(ExportTrackingInfo exportInfo)
+	{
+		var outFilePath = Path.Combine(exportInfo.ExportFolderPath, CarJSONKeys.JSON_FILENAME);
+
 		//Create master JSONObject
 		JSONObject jsonfile = new JSONObject();
 
-		jsonfile.AddField(CarJSONKeys.BUNDLE_NAME, assetBundleName);
-		jsonfile.AddField(CarJSONKeys.PREFAB_NAME, GetPrefabName(_trainCarSetup.Identifier));
-		jsonfile.AddField(CarJSONKeys.IDENTIFIER, _trainCarSetup.Identifier);
-		jsonfile.AddField(CarJSONKeys.CAR_TYPE, (int)_trainCarSetup.BaseCarType);
+		jsonfile.AddField(CarJSONKeys.BUNDLE_NAME, exportInfo.BundleName);
+		jsonfile.AddField(CarJSONKeys.PREFAB_NAME, GetPrefabName(exportInfo.TrainCarSetup.Identifier));
+		jsonfile.AddField(CarJSONKeys.IDENTIFIER, exportInfo.TrainCarSetup.Identifier);
+		jsonfile.AddField(CarJSONKeys.CAR_TYPE, (int)exportInfo.TrainCarSetup.BaseCarType);
 		jsonfile.AddField(CarJSONKeys.EXPORTER_VERSION, TrainCarSetup.ExporterVersion.ToString());
 
 		//Bogies
-		if( _trainCarSetup.UseCustomFrontBogie )
+		if(exportInfo.TrainCarSetup.UseCustomFrontBogie)
 		{
-			var frontBogie = _trainCarSetup.GetFrontBogie();
+			var frontBogie = exportInfo.TrainCarSetup.GetFrontBogie();
 			if (frontBogie && frontBogie.GetComponent<BogieSetup>() is BogieSetup fbs)
 			{
 				jsonfile.AddField(CarJSONKeys.FRONT_BOGIE_PARAMS, fbs.GetJSON());
 			}
 		}
 
-		if( _trainCarSetup.UseCustomRearBogie )
+		if(exportInfo.TrainCarSetup.UseCustomRearBogie)
 		{
-			var rearBogie = _trainCarSetup.GetRearBogie();
+			var rearBogie = exportInfo.TrainCarSetup.GetRearBogie();
 			if (rearBogie && rearBogie.GetComponent<BogieSetup>() is BogieSetup rbs )
 			{
 				jsonfile.AddField(CarJSONKeys.REAR_BOGIE_PARAMS, rbs.GetJSON());
