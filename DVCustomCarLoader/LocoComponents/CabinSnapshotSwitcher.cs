@@ -21,13 +21,19 @@ namespace DVCustomCarLoader.LocoComponents
         protected TrainCar AttachedTrainCar;
         protected DoorAndWindowTracker OpeningTracker;
 
-        public List<BoxCollider> interiorRegions = new List<BoxCollider>();
+        public List<Collider> interiorRegions = new List<Collider>();
+        public List<int> cabIds = new List<int>();
 
         private bool isInside;
 
-        public void AddCabRegion(BoxCollider box)
+        public void AddCabRegion(int cabId, IEnumerable<Collider> region)
         {
-            interiorRegions.Add(box);
+            foreach (var collider in region)
+            {
+                interiorRegions.Add(collider);
+                cabIds.Add(cabId);
+                Main.LogVerbose($"Add collider {collider.GetType()} for cab {cabId}");
+            }
         }
 
         protected void Start()
@@ -103,7 +109,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-        private bool PointInOABB(Vector3 point, BoxCollider box)
+        private static bool IsPointInsideBoxBounds(Vector3 point, BoxCollider box)
         {
             point = box.transform.InverseTransformPoint(point) - box.center;
             float num = box.size.x * 0.5f;
@@ -112,9 +118,34 @@ namespace DVCustomCarLoader.LocoComponents
             return point.x < num && point.x > -num && point.y < num2 && point.y > -num2 && point.z < num3 && point.z > -num3;
         }
 
+        protected static bool IsPointInsideCollider(Vector3 point, Collider collider)
+        {
+            if (collider is BoxCollider box)
+            {
+                return IsPointInsideBoxBounds(point, box);
+            }
+            else
+            {
+                return collider.ClosestPoint(point) == point;
+            }
+        }
+
         protected bool InInternalSpace(Transform playerCameraTransform)
         {
-            return interiorRegions.Any(r => PointInOABB(playerCameraTransform.position, r)) && !(OpeningTracker && OpeningTracker.IsAnythingOpen());
+            for (int i = 0; i < interiorRegions.Count; i++)
+            {
+                var collider = interiorRegions[i];
+
+                if (IsPointInsideCollider(playerCameraTransform.position, collider))
+                {
+                    if (!OpeningTracker) return true;
+
+                    int cabId = cabIds[i];
+                    return !OpeningTracker.IsAnythingOpen(cabId);
+                }
+            }
+
+            return false;
         }
     }
 

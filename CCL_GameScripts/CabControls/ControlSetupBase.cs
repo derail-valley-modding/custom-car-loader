@@ -30,6 +30,8 @@ namespace CCL_GameScripts.CabControls
 
     public interface IApertureTrackable
     {
+        GameObject gameObject { get; }
         bool TrackAsAperture { get; }
+        int CabNumber { get; }
     }
 }

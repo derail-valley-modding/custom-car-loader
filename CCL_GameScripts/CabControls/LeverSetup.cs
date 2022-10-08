@@ -19,9 +19,18 @@ namespace CCL_GameScripts.CabControls
 		public int Notches = 20;
 		[ProxyField("invertDirection")]
 		public bool InvertDirection = false;
-
+		
+		[Header("Door")]
 		public bool TrackAsDoor = false;
 		public bool TrackAsAperture => TrackAsDoor;
+
+		[SerializeField]
+		private int _cabNumber = -1;
+		public int CabNumber
+		{
+			get => _cabNumber;
+			set => _cabNumber = value;
+		}
 
 		[Header("Hinge Joint")]
 		[ProxyField("jointAxis")]
