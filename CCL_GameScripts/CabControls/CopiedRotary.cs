@@ -10,6 +10,10 @@ namespace CCL_GameScripts.CabControls
 
         StarterDE6,
         LightKnobDE6,
+
+        InjectorSH282,
+        BigValveSH282,
+        SmallValveSH282,
     }
 
     public class CopiedRotary : CopiedCabInput
@@ -22,6 +26,10 @@ namespace CCL_GameScripts.CabControls
 
                 (BaseTrainCarType.LocoDiesel, "offset/C engine controls/C engine_ignition"),
                 (BaseTrainCarType.LocoDiesel, "offset/C headlights dash_rotary01"),
+
+                (BaseTrainCarType.LocoSteamHeavy, "C injector"),
+                (BaseTrainCarType.LocoSteamHeavy, "C valve controller/C valve 1"),
+                (BaseTrainCarType.LocoSteamHeavy, "S_Valve01"),
             };
 
         public CopiedRotaryType RotaryType;
@@ -41,6 +49,11 @@ namespace CCL_GameScripts.CabControls
                 // DE6
                 new RotaryGizmoInfo(-60, 60, 0, Vector3.down),      // starter
                 new RotaryGizmoInfo(-22, 22, -22, Vector3.down),    // lights
+
+                // SH282
+                new RotaryGizmoInfo(0, 180, 0, Vector3.forward),    // injector
+                new RotaryGizmoInfo(0, 180, 0, Vector3.down),    // large valve
+                new RotaryGizmoInfo(0, 180, 0, Vector3.down),    // small valve
             };
 
         protected const int GIZMO_SLICE_SIZE = 10;
@@ -52,38 +65,53 @@ namespace CCL_GameScripts.CabControls
         {
             var gizmo = GizmoData[(int)RotaryType];
 
+            bool singleSweep = (gizmo.LimitMax - gizmo.LimitMin) >= 180;
+
+            DrawSweep(gizmo, gizmo.LimitMin, singleSweep);
+            DrawSweep(gizmo, gizmo.LimitMax, singleSweep);
+        }
+
+        private void DrawSweep(RotaryGizmoInfo gizmo, float end, bool single)
+        {
+            if (gizmo.StartPos == end) return;
+
             Vector3 lastVector = transform.position;
             Vector3 lastOpp = transform.position;
 
-            foreach( float end in new[] { gizmo.LimitMin, gizmo.LimitMax } )
+            float totalSweep = Mathf.Abs(end - gizmo.StartPos);
+            int gizmoSegments = Mathf.FloorToInt(totalSweep / GIZMO_SLICE_SIZE);
+
+            Quaternion axisTransform = Quaternion.FromToRotation(Vector3.up, gizmo.Axis);
+            Vector3 startVector = axisTransform * Vector3.forward;
+
+            for (int i = 0; i <= gizmoSegments; i++)
             {
-                if( gizmo.StartPos != end )
+                Gizmos.color = Color.Lerp(START_COLOR, END_COLOR, (float)i / gizmoSegments);
+                Vector3 radialVector = (Quaternion.AngleAxis(
+                    Mathf.Lerp(gizmo.StartPos, end, (float)i / gizmoSegments), gizmo.Axis)
+                    * startVector).normalized;
+
+                Vector3 nextVector = transform.TransformPoint(radialVector * GIZMO_RADIUS);
+
+                if (i != 0)
                 {
-                    float totalSweep = Mathf.Abs(end - gizmo.StartPos);
-                    int gizmoSegments = Mathf.FloorToInt(totalSweep / GIZMO_SLICE_SIZE);
+                    Gizmos.DrawLine(lastVector, nextVector);
+                }
+                lastVector = nextVector;
 
-                    for( int i = 0; i <= gizmoSegments; i++ )
+                Gizmos.DrawLine(transform.position, nextVector);
+
+                if (!single)
+                {
+                    Vector3 oppositeVector = transform.TransformPoint(radialVector * -GIZMO_RADIUS);
+
+                    if (i != 0)
                     {
-                        Gizmos.color = Color.Lerp(START_COLOR, END_COLOR, (float)i / gizmoSegments);
-                        Vector3 radialVector = (Quaternion.AngleAxis(
-                            Mathf.Lerp(gizmo.StartPos, end, (float)i / gizmoSegments), gizmo.Axis)
-                            * Vector3.forward).normalized;
-
-                        Vector3 nextVector = transform.TransformPoint(radialVector * GIZMO_RADIUS);
-                        Vector3 oppositeVector = transform.TransformPoint(radialVector * -GIZMO_RADIUS);
-
-                        if( i != 0 )
-                        {
-                            Gizmos.DrawLine(lastVector, nextVector);
-                            Gizmos.DrawLine(lastOpp, oppositeVector);
-                        }
-
-                        Gizmos.DrawLine(transform.position, nextVector);
-                        Gizmos.DrawLine(transform.position, oppositeVector);
-
-                        lastVector = nextVector;
-                        lastOpp = oppositeVector;
+                        Gizmos.DrawLine(lastOpp, oppositeVector);
                     }
+
+                    lastOpp = oppositeVector;
+                    Gizmos.DrawLine(transform.position, oppositeVector);
                 }
             }
         }

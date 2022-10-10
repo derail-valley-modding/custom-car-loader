@@ -64,6 +64,7 @@
     <Compile Include="CabControls\CopiedLever.cs" />
     <Compile Include="CabControls\CopiedRotary.cs" />
     <Compile Include="CabControls\CopiedToggle.cs" />
+    <Compile Include="CabControls\CopiedWheel.cs" />
     <Compile Include="CabControls\GaugeSetup.cs" />
     <Compile Include="CabControls\IndicatorSliderSetup.cs" />
     <Compile Include="CabControls\IndicatorScalerSetup.cs" />

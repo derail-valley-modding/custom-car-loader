@@ -39,6 +39,12 @@ namespace DVCustomCarLoader.LocoComponents
                 FinalizeCopiedLeverSetup(lever, newObject);
             }
 
+            // small sh282 valve has no spec attached
+            if ((spec is CopiedRotary rotary) && (rotary.RotaryType == CopiedRotaryType.SmallValveSH282))
+            {
+                ApplySmallSteamValveSpec(rotary);
+            }
+
             // Add wrapper to connect the control to the loco brain
             Main.LogVerbose($"Add input relay to {newObject.name}");
 
@@ -79,6 +85,18 @@ namespace DVCustomCarLoader.LocoComponents
             if (realPuller && !realPuller.pivot)
             {
                 realPuller.pivot = realPuller.transform.parent ? realPuller.transform.parent : realPuller.transform;
+            }
+        }
+
+        private static void ApplySmallSteamValveSpec(CopiedRotary rotary)
+        {
+            var steamInside = LocoComponentManager.GetTrainCarInterior(TrainCarType.LocoSteamHeavy);
+            var largeValve = steamInside.transform.Find("C valve controller/C valve 1");
+
+            if (largeValve)
+            {
+                var spec = largeValve.GetComponent<Rotary>();
+                LocoComponentManager.CopyComponent(spec, rotary.gameObject);
             }
         }
     }

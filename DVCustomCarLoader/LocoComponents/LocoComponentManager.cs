@@ -355,5 +355,18 @@ namespace DVCustomCarLoader
                 GameObject.Destroy(oldFireObj);
             }
         }
+
+        public static T CopyComponent<T>(T original, GameObject destination) where T : Component
+        {
+            var copy = destination.AddComponent<T>();
+            FieldInfo[] fields = typeof(T).GetFields();
+
+            foreach (var field in fields)
+            {
+                field.SetValue(copy, field.GetValue(original));
+            }
+
+            return copy;
+        }
     }
 }
