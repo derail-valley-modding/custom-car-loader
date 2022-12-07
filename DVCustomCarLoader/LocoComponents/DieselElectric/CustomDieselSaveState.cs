@@ -24,11 +24,11 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
             var data = base.GetLocoStateSaveData();
             data.SetBool(ENGINE_ON_SAVE_KEY, locoSim.engineOn);
 
-            if (muModule.frontCableAdapter.IsConnected)
+            if (muModule && muModule.frontCableAdapter.IsConnected)
             {
                 data.SetBool(MU_CONNECTED_FRONT_KEY, true);
             }
-            if (muModule.rearCableAdapter.IsConnected)
+            if (muModule && muModule.rearCableAdapter.IsConnected)
             {
                 data.SetBool(MU_CONNECTED_REAR_KEY, true);
             }
@@ -44,7 +44,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 
             bool muFront = saveData.GetBool(MU_CONNECTED_FRONT_KEY) ?? false;
             bool muRear = saveData.GetBool(MU_CONNECTED_REAR_KEY) ?? false;
-            if (muFront || muRear)
+            if (muModule && (muFront || muRear))
             {
                 muModule.MultipleUnitStateRestoreOnGameLoad(muFront, muRear);
             }

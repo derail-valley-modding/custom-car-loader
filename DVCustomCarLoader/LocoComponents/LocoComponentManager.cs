@@ -74,7 +74,7 @@ namespace DVCustomCarLoader
             var muHoses = prefab.GetComponentsInChildren<CouplingHoseMultipleUnitAdapter>(true);
             if( muHoses.Length == 0 )
             {
-                Main.Warning($"Could not find MU hose adapters for diesel engine");
+                Main.LogVerbose($"Could not find MU hose adapters for diesel engine");
             }
             else
             {
