@@ -352,6 +352,18 @@ namespace DVCustomCarLoader
             if (cargoSetups.Length > 0)
             {
                 CargoModels = cargoSetups;
+
+                if (Main.Settings.ForceShaderOverride || (ExporterVersion >= new Version(1, 6)))
+                {
+                    foreach (var model in CargoModels)
+                    {
+                        if (model.Model)
+                        {
+                            ApplyDefaultShader(model.Model);
+                        }
+                    }
+                }
+
                 string mString = CargoModels != null ? string.Join<CargoModelSetup>(",", CargoModels) : "empty";
                 Main.LogVerbose($"Cargo models - {mString}");
             }
