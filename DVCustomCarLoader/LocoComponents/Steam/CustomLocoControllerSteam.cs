@@ -261,7 +261,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                     break;
 
                 case CabInputType.Whistle:
-                    inputRelay.SetIOHandlers(SetWhistle, GetWhistle);
+                    inputRelay.SetIOHandlers(SetWhistle, () => 0);
                     break;
 
                 case CabInputType.FireDoor:

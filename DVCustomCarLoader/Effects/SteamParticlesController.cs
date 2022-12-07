@@ -7,6 +7,8 @@ namespace DVCustomCarLoader.Effects
 {
     public class SteamParticlesController : MonoBehaviour, IInitSpecFinalizer<SteamEmissionSetup>
     {
+        protected SteamEmissionSetup spec;
+
         public ParticleSystem chimneyParticles;
         public ParticleSystem chuffParticlesLeft;
         public ParticleSystem chuffParticlesRight;
@@ -24,6 +26,7 @@ namespace DVCustomCarLoader.Effects
 
         public void FinalizeFromSpec(SteamEmissionSetup spec)
         {
+            this.spec = spec;
             var particles = ParticleInitializer.AddSteamParticles(this, spec);
 
             chimneyParticles = particles.ChimneyParticles;
@@ -64,7 +67,7 @@ namespace DVCustomCarLoader.Effects
             main.startSizeMultiplier *= 1.5f;
             
             var emission = chimneyParticles.emission;
-            emission.rateOverTime = emission.rateOverTime.constant * 2;
+            //emission.rateOverTime = emission.rateOverTime.constant * 2;
 
             chuffOriginalSpeedMultiplier = chimneyParticles.main.startSpeedMultiplier;
             chuffOriginalSizeMultiplier = chimneyParticles.main.startSizeMultiplier;
@@ -115,8 +118,8 @@ namespace DVCustomCarLoader.Effects
         private float chuffOriginalSizeMultiplier;
         private float chuffOriginalEmissionRate;
 
-        public float chuffSizeMult = 1.6f;
-        public float chuffSpeedMult = 2f;
+        public float chuffSizeMult = 1.5f;
+        public float chuffSpeedMult = 1.5f;
         public float chuffEmissionRate = 1000f;
 
         public Color steamColor = Color.white;
@@ -186,8 +189,9 @@ namespace DVCustomCarLoader.Effects
             emission.rateOverTime = Mathf.Lerp(chuffOriginalEmissionRate, chuffEmissionRate, steamLvl);
 
             StartCoroutine(EndChuffCoro());
-            chuffParticlesLeft.Play();
-            chuffParticlesRight.Play();
+
+            if (spec.ChuffParticlesLeftLocation) chuffParticlesLeft.Play();
+            if (spec.ChuffParticlesRightLocation) chuffParticlesRight.Play();
         }
 
         private IEnumerator EndChuffCoro()
@@ -243,7 +247,7 @@ namespace DVCustomCarLoader.Effects
             {
                 float speed = Mathf.Lerp(WHISTLE_START_SPEED_MIN, WHISTLE_START_SPEED_MAX, whistle);
 
-                if (whistleMid)
+                if (whistleMid && spec.WhistleMidLocation)
                 {
                     var whistleMainM = whistleMid.main;
                     whistleMainM.startSpeed = speed;
@@ -254,7 +258,7 @@ namespace DVCustomCarLoader.Effects
                     }
                 }
 
-                if (whistleFront)
+                if (whistleFront && spec.WhistleFrontLocation)
                 {
                     var whistleMainF = whistleFront.main;
                     whistleMainF.startSpeed = speed;
@@ -299,7 +303,7 @@ namespace DVCustomCarLoader.Effects
                 float releaseLimit = controller.MaxBoilerPressure * LOW_STEAM_PERCENT_LIMIT;
                 float releaseSpeed = controller.GetSteamDump() * Mathf.Clamp01(controller.BoilerPressure / releaseLimit) + 1;
 
-                if (releaseLeft)
+                if (releaseLeft && spec.ReleaseLeftLocation)
                 {
                     var leftMain = releaseLeft.main;
                     leftMain.startSpeed = releaseSpeed;
@@ -310,7 +314,7 @@ namespace DVCustomCarLoader.Effects
                     }
                 }
 
-                if (releaseRight)
+                if (releaseRight && spec.ReleaseRightLocation)
                 {
                     var rightMain = releaseRight.main;
                     rightMain.startSpeed = releaseSpeed;
@@ -329,7 +333,7 @@ namespace DVCustomCarLoader.Effects
                 {
                     safetyRelease.Stop();
                 }
-                else if ((controller.SafetyValve > 0) && !safetyRelease.isPlaying)
+                else if ((controller.SafetyValve > 0) && !safetyRelease.isPlaying && spec.SafetyReleaseLocation)
                 {
                     safetyRelease.Play();
                 }

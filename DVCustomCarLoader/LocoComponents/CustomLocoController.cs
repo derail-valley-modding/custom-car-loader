@@ -36,6 +36,7 @@ namespace DVCustomCarLoader.LocoComponents
         }
         public float GetReverserCabPosition() => (reverser + 1f) / 2f;
 
+        protected float _AccessoryPowerLevel;
         protected abstract float AccessoryPowerLevel { get; }
 
         // Headlights
@@ -49,6 +50,7 @@ namespace DVCustomCarLoader.LocoComponents
         protected float _RearLights;
         public float RearLights => _RearLights;
 
+        public float GetHeadlightControl() => _HeadlightControlLevel;
         public void SetHeadlight( float value )
         {
             if( value != _HeadlightControlLevel )
@@ -63,6 +65,7 @@ namespace DVCustomCarLoader.LocoComponents
         protected float _CabLightControlLevel;
         protected float _CabLights;
         public float CabLights => _CabLights;
+        public float GetCabLightControl() => _CabLightControlLevel;
         public void SetCabLight( float value )
         {
             if (value != _CabLightControlLevel)
@@ -91,6 +94,8 @@ namespace DVCustomCarLoader.LocoComponents
             EventManager.UpdateValueDispatchOnChange(this, ref _BrakeResPressure, GetBrakeResPressure(), SimEventType.BrakeReservoir);
             EventManager.UpdateValueDispatchOnChange(this, ref _IndependentPressure, GetIndependentPressure(), SimEventType.IndependentPipe);
 
+            EventManager.UpdateValueDispatchOnChange(this, ref _AccessoryPowerLevel, AccessoryPowerLevel, SimEventType.AccessoryPower);
+
             float light = _HeadlightControlLevel * AccessoryPowerLevel;
             EventManager.UpdateValueDispatchOnChange(this, ref _Headlights, light, SimEventType.Headlights);
 
@@ -113,6 +118,7 @@ namespace DVCustomCarLoader.LocoComponents
             EventManager.Dispatch(this, SimEventType.BrakeReservoir, _BrakeResPressure);
             EventManager.Dispatch(this, SimEventType.IndependentPipe, _IndependentPressure);
 
+            EventManager.Dispatch(this, SimEventType.AccessoryPower, _AccessoryPowerLevel);
             EventManager.Dispatch(this, SimEventType.Headlights, _Headlights);
             EventManager.Dispatch(this, SimEventType.CabLights, _CabLights);
             EventManager.Dispatch(this, SimEventType.LightsForward, _ForwardLights);
@@ -142,11 +148,11 @@ namespace DVCustomCarLoader.LocoComponents
                     break;
 
                 case CabInputType.Headlights:
-                    inputRelay.SetIOHandlers(SetHeadlight, null);
+                    inputRelay.SetIOHandlers(SetHeadlight, GetHeadlightControl);
                     break;
 
                 case CabInputType.CabLights:
-                    inputRelay.SetIOHandlers(SetCabLight, null);
+                    inputRelay.SetIOHandlers(SetCabLight, GetCabLightControl);
                     break;
 
                 default:

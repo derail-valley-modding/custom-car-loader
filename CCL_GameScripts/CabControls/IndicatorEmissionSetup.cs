@@ -21,10 +21,8 @@ namespace CCL_GameScripts.CabControls
 
 		[Header("Texture Emission")]
 		[ProxyField]
-		[Range(0, 1)]
 		public float minEmission;
 		[ProxyField]
-		[Range(0, 1)]
 		public float maxEmission = 1f;
 		[ProxyField]
 		public Color emissionColor = Color.white;

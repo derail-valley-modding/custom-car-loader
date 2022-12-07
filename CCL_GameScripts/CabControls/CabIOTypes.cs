@@ -69,6 +69,7 @@
         StokerFlow,
 
         WaterReserve,
+        AccessoryPower,
     }
 
     public enum SimThresholdDirection

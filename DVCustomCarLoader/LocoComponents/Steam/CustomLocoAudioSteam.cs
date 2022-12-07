@@ -144,7 +144,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
 			if (chuffController)
 			{
-				ChuffUpdate(chuffController.currentChuff, chuffController.chuffPower, chuffController.chuffKmh);
+				ChuffUpdate(chuffController.currentChuff, chuffController.chuffPower, chuffController.chuffKmh * chuffController.chuffsPerRevolution);
 			}
 
 			// Injector

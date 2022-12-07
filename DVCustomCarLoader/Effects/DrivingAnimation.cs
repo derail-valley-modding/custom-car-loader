@@ -14,6 +14,7 @@ namespace DVCustomCarLoader.Effects
 		public float MaxWheelslipMultiplier = 8f;
 		public bool IsDrivingWheels = false;
 		public float DefaultWheelRadius = 0.7f;
+		protected float defaultCircumference;
 
 		// Transforms
 		public Transform[] transformsToRotate;
@@ -51,6 +52,7 @@ namespace DVCustomCarLoader.Effects
 			trainCar = GetComponent<TrainCar>();
 
 			// get circumferences
+			defaultCircumference = DefaultWheelRadius * 2f * Mathf.PI;
 			transformCircumferences = transformWheelRadii.Select(r => (r * 2f * Mathf.PI)).ToArray();
 			animatorCircumferences = animatorWheelRadii.Select(r => (r * 2f * Mathf.PI)).ToArray();
 
@@ -156,7 +158,7 @@ namespace DVCustomCarLoader.Effects
 				curVelocity = 0;
             }
 
-			defaultRotationSpeed = curVelocity / DefaultWheelRadius;
+			defaultRotationSpeed = curVelocity / defaultCircumference;
 			defaultRotationSpeed = Mathf.Lerp(defaultRotationSpeed, Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.drivingForce.wheelslip);
 
 			SetRevSpeeds(transformCircumferences, transformRevSpeed);

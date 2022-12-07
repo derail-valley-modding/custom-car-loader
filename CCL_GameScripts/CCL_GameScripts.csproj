@@ -94,6 +94,7 @@
     <Compile Include="Effects\ControllableLightSetup.cs" />
     <Compile Include="Effects\AudioConfig.cs" />
     <Compile Include="Effects\DirectionalLightSetup.cs" />
+    <Compile Include="Effects\SwivelExpandLink.cs" />
     <Compile Include="Effects\DrivingAnimationSetup.cs" />
     <Compile Include="Effects\SmokeEmissionSetup.cs" />
     <Compile Include="Effects\SteamEmissionSetup.cs" />
