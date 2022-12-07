@@ -13,6 +13,8 @@ namespace CCL_GameScripts
 
         public override LocoAudioBasis AudioType => LocoAudioBasis.Steam;
 
+        public int ChuffsPerRevolution = 2;
+
         [Header("Firebox")]
         public float BaseAirMultiplier = 0.1f;
         public float BlowerAirMultiplier = 0.4f;

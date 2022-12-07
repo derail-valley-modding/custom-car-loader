@@ -32,6 +32,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 enabled = false;
             }
 
+            var simParams = GetComponent<CCL_GameScripts.SimParamsSteam>();
+            chuffsPerRevolution = simParams.ChuffsPerRevolution;
+
             driverAnimation = GetComponents<DrivingAnimation>().Where(d => d.IsDrivingWheels).SingleOrDefault();
             if (!driverAnimation)
             {
@@ -43,19 +46,34 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             Main.LogVerbose("CustomChuffController awakened");
         }
 
+        protected void Start()
+        {
+            
+            Main.LogVerbose($"CustomChuffController: {chuffsPerRevolution} per rev");
+        }
+
         protected void Update()
         {
             chuffPower = loco.GetTotalPowerForcePercentage();
-            float speed = Mathf.Abs((loco.drivingForce.wheelslip > 0f) ? (driverAnimation.defaultRotationSpeed * wheelCircumference) : loco.GetForwardSpeed());
 
-            revolutionPos = (revolutionPos + speed * Time.deltaTime) % wheelCircumference;
-            currentChuff = (int)(revolutionPos / wheelCircumference * chuffsPerRevolution) % chuffsPerRevolution;
-            chuffKmh = speed * MPS_KPH_FACTOR;
+            revolutionPos += driverAnimation.defaultRotationSpeed * Time.deltaTime;
+            currentChuff = Mathf.FloorToInt(revolutionPos * chuffsPerRevolution);
+            chuffKmh = driverAnimation.defaultRotationSpeed * wheelCircumference * MPS_KPH_FACTOR;
 
             if (currentChuff != lastChuff)
             {
                 lastChuff = currentChuff;
                 OnChuff?.Invoke(chuffPower);
+            }
+
+            const float NORM_LIMIT = 10000;
+            if (revolutionPos > NORM_LIMIT)
+            {
+                revolutionPos -= NORM_LIMIT;
+            }
+            else if (revolutionPos < -NORM_LIMIT)
+            {
+                revolutionPos += NORM_LIMIT;
             }
         }
     }

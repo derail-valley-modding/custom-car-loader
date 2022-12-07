@@ -80,6 +80,16 @@ namespace DVCustomCarLoader
         {
             try
             {
+                string carId = jsonFile[CarJSONKeys.IDENTIFIER].str;
+                jsonFile.GetField(out string versionStr, CarJSONKeys.EXPORTER_VERSION, "1.5");
+                var version = new Version(versionStr);
+
+                if (version > TrainCarSetup.ExporterVersion)
+                {
+                    Main.Error($"Car {carId} was built with a newer version of CCL: Current Version = {TrainCarSetup.ExporterVersion}, Car Version = {version}");
+                    return null;
+                }
+
                 var assetBundleName = jsonFile[CarJSONKeys.BUNDLE_NAME].str;
                 var assetBundlePath = Path.Combine(directory, assetBundleName);
 
@@ -110,14 +120,12 @@ namespace DVCustomCarLoader
                     {
                         Main.LogVerbose($"Successfully loaded prefab from asset bundle. Prefab name is {carPrefab.name}");
 
-                        jsonFile.GetField(out string version, CarJSONKeys.EXPORTER_VERSION, "1.5");
-
                         var newCar = new CustomCar()
                         {
                             CarPrefab = carPrefab,
-                            identifier = jsonFile[CarJSONKeys.IDENTIFIER].str,
+                            identifier = carId,
                             BaseCarType = (TrainCarType)jsonFile[CarJSONKeys.CAR_TYPE].i,
-                            ExporterVersion = new Version(version),
+                            ExporterVersion = version,
                         };
 
                         //Bogies

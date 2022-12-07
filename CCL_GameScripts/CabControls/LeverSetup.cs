@@ -122,7 +122,7 @@ namespace CCL_GameScripts.CabControls
             {
 				// draw semi-circle
 				Vector3 lastVector = transform.position;
-				Vector3 lastMassVector = massPivot;
+				Vector3 lastMassVector = transform.TransformPoint(massPivot);
 
 				for( int i = 0; i <= GIZMO_SEGMENTS; i++ )
 				{
@@ -138,7 +138,7 @@ namespace CCL_GameScripts.CabControls
 					if( i == 0 || i == GIZMO_SEGMENTS )
                     {
 						Gizmos.DrawLine(transform.position, nextVector);
-						Gizmos.DrawLine(massPivot, nextMassVector);
+						Gizmos.DrawLine(transform.TransformPoint(massPivot), nextMassVector);
 					}
 					if( i != 0 )
                     {

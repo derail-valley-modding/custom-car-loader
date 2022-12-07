@@ -6,6 +6,7 @@ using Object = UnityEngine.Object;
 using CCL_GameScripts;
 using DV.Logic.Job;
 using DVCustomCarLoader.LocoComponents;
+using DVCustomCarLoader.Effects;
 
 namespace DVCustomCarLoader
 {
@@ -446,8 +447,7 @@ namespace DVCustomCarLoader
                     }
 
                     Main.LogVerbose($"Found cab {cabNumber}");
-                    var teleportDest = cabTform.gameObject.AddComponent<CabTeleportDestination>();
-                    teleportDest.hoverRenderer = cabTform.GetComponentInChildren<Renderer>();
+                    var teleportDest = cabTform.gameObject.AddComponent<ExtendedCabTeleportDestination>();
 
                     if (carSetup.MuffleInteriorAudio)
                     {
@@ -468,7 +468,7 @@ namespace DVCustomCarLoader
 
             #endregion
 
-            if (Main.Settings.ForceShaderOverride || (ExporterVersion > new Version(1, 6)))
+            if (Main.Settings.ForceShaderOverride || (ExporterVersion >= new Version(1, 6)))
             {
                 ApplyDefaultShader(newFab);
             }

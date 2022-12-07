@@ -20,7 +20,7 @@ namespace CCL_GameScripts.CabControls
         [ProxyField("scrollWheelHoverScroll")]
         public float scrollWheelDelta = 0.025f;
         [ProxyField]
-        public float linearLimit = 0.3f;
+        public float linearLimit = 0.003f;
 
         [Header("Window")]
         public bool TrackAsWindow = false;
@@ -36,11 +36,14 @@ namespace CCL_GameScripts.CabControls
 
         [Header("Physics")]
         [ProxyField]
-        public float rigidBodyMass = 5f;
+        public float rigidbodyMass = 5f;
         [ProxyField]
-        public float rigidBodyDrag = 15f;
+        public float rigidbodyDrag = 15f;
 
-        // TODO: Custom connection anchor?
+        [ProxyField]
+        public bool useCustomConnectionAnchor = false;
+        [ProxyField]
+        public Transform connectionAnchor;
         [ProxyField]
         public Transform pivot;
 

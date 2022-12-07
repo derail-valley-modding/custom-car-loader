@@ -25,6 +25,13 @@ namespace CCL_GameScripts.CabControls
         DE6SandMeter,
         DE6FuelMeter,
         DE6OilMeter,
+
+        SH282BrakePipe,
+        SH282BrakeAuxRes,
+        SH282BoilerPressure,
+        SH282Speedometer,
+        SH282Temperature,
+        SH282SandLevel,
     }
 
     public class CopiedGauge : CopiedCabIndicator, IProxyScript
@@ -55,6 +62,13 @@ namespace CCL_GameScripts.CabControls
                 (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I sand_meter"),
                 (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I fuel_meter"),
                 (BaseTrainCarType.LocoDiesel, "offset/I Indicator meters/I oil_meter"),
+
+                (BaseTrainCarType.LocoSteamHeavy, "I brake needle pipe"),
+                (BaseTrainCarType.LocoSteamHeavy, "I brake needle aux"),
+                (BaseTrainCarType.LocoSteamHeavy, "I pressure meter"),
+                (BaseTrainCarType.LocoSteamHeavy, "I speedometer"),
+                (BaseTrainCarType.LocoSteamHeavy, "I temperature meter"),
+                (BaseTrainCarType.LocoSteamHeavy, "I sand meter"),
             };
 
         protected static readonly GaugeGizmoInfo[] GizmoData =
@@ -84,6 +98,16 @@ namespace CCL_GameScripts.CabControls
                 new GaugeGizmoInfo(-15, 115, 0.025f),   // sand
                 new GaugeGizmoInfo(-15, 115, 0.025f),   // fuel
                 new GaugeGizmoInfo(-15, 115, 0.025f),   // oil
+
+                // SH282
+                new GaugeGizmoInfo(-227, 48, 0.025f),   // brake pipe
+                new GaugeGizmoInfo(-227, 48, 0.025f),   // brake res
+
+                new GaugeGizmoInfo(-221, 139, 0.05f),    // pressure
+                new GaugeGizmoInfo(-221, 49, 0.05f),    // speedometer
+
+                new GaugeGizmoInfo(-228, 45, 0.045f),   // temp
+                new GaugeGizmoInfo(-212, 61, 0.025f),   // sand
             };
 
         public CopiedGaugeType GaugeType;
