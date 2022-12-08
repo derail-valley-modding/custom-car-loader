@@ -58,7 +58,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
             revolutionPos += driverAnimation.defaultRotationSpeed * Time.deltaTime;
             currentChuff = Mathf.FloorToInt(revolutionPos * chuffsPerRevolution);
-            chuffKmh = driverAnimation.defaultRotationSpeed * wheelCircumference * MPS_KPH_FACTOR;
+            chuffKmh = Mathf.Abs(driverAnimation.defaultRotationSpeed * wheelCircumference * MPS_KPH_FACTOR);
 
             if (currentChuff != lastChuff)
             {
