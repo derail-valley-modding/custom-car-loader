@@ -7,8 +7,6 @@ namespace DVCustomCarLoader.Effects
 {
     public class SteamParticlesController : MonoBehaviour, IInitSpecFinalizer<SteamEmissionSetup>
     {
-        protected SteamEmissionSetup spec;
-
         public ParticleSystem chimneyParticles;
         public ParticleSystem chuffParticlesLeft;
         public ParticleSystem chuffParticlesRight;
@@ -21,12 +19,19 @@ namespace DVCustomCarLoader.Effects
 
         public ParticleSystem safetyRelease;
 
+        private bool chuffLeftEn = false;
+        private bool chuffRightEn = false;
+        private bool whistleMidEn = false;
+        private bool whistleFrontEn = false;
+        private bool releaseLEn = false;
+        private bool releaseREn = false;
+        private bool safetyEn = false;
+
         protected CustomLocoControllerSteam controller;
         protected CustomChuffController chuffController;
 
         public void FinalizeFromSpec(SteamEmissionSetup spec)
         {
-            this.spec = spec;
             var particles = ParticleInitializer.AddSteamParticles(this, spec);
 
             chimneyParticles = particles.ChimneyParticles;
@@ -39,6 +44,14 @@ namespace DVCustomCarLoader.Effects
             releaseLeft = particles.ReleaseLeft;
             releaseRight = particles.ReleaseRight;
             safetyRelease = particles.SafetyRelease;
+
+            chuffLeftEn = spec.ChuffParticlesLeftLocation;
+            chuffRightEn = spec.ChuffParticlesRightLocation;
+            whistleMidEn = spec.WhistleMidLocation;
+            whistleFrontEn = spec.WhistleFrontLocation;
+            releaseLEn = spec.ReleaseLeftLocation;
+            releaseREn = spec.ReleaseRightLocation;
+            safetyEn = spec.SafetyReleaseLocation;
 
             if (chimneyParticles)
             {
@@ -190,8 +203,8 @@ namespace DVCustomCarLoader.Effects
 
             StartCoroutine(EndChuffCoro());
 
-            if (spec.ChuffParticlesLeftLocation) chuffParticlesLeft.Play();
-            if (spec.ChuffParticlesRightLocation) chuffParticlesRight.Play();
+            if (chuffLeftEn) chuffParticlesLeft.Play();
+            if (chuffRightEn) chuffParticlesRight.Play();
         }
 
         private IEnumerator EndChuffCoro()
@@ -247,7 +260,7 @@ namespace DVCustomCarLoader.Effects
             {
                 float speed = Mathf.Lerp(WHISTLE_START_SPEED_MIN, WHISTLE_START_SPEED_MAX, whistle);
 
-                if (whistleMid && spec.WhistleMidLocation)
+                if (whistleMid && whistleMidEn)
                 {
                     var whistleMainM = whistleMid.main;
                     whistleMainM.startSpeed = speed;
@@ -258,7 +271,7 @@ namespace DVCustomCarLoader.Effects
                     }
                 }
 
-                if (whistleFront && spec.WhistleFrontLocation)
+                if (whistleFront && whistleFrontEn)
                 {
                     var whistleMainF = whistleFront.main;
                     whistleMainF.startSpeed = speed;
@@ -303,7 +316,7 @@ namespace DVCustomCarLoader.Effects
                 float releaseLimit = controller.MaxBoilerPressure * LOW_STEAM_PERCENT_LIMIT;
                 float releaseSpeed = controller.GetSteamDump() * Mathf.Clamp01(controller.BoilerPressure / releaseLimit) + 1;
 
-                if (releaseLeft && spec.ReleaseLeftLocation)
+                if (releaseLeft && releaseLEn)
                 {
                     var leftMain = releaseLeft.main;
                     leftMain.startSpeed = releaseSpeed;
@@ -314,7 +327,7 @@ namespace DVCustomCarLoader.Effects
                     }
                 }
 
-                if (releaseRight && spec.ReleaseRightLocation)
+                if (releaseRight && releaseREn)
                 {
                     var rightMain = releaseRight.main;
                     rightMain.startSpeed = releaseSpeed;
@@ -333,7 +346,7 @@ namespace DVCustomCarLoader.Effects
                 {
                     safetyRelease.Stop();
                 }
-                else if ((controller.SafetyValve > 0) && !safetyRelease.isPlaying && spec.SafetyReleaseLocation)
+                else if ((controller.SafetyValve > 0) && !safetyRelease.isPlaying && safetyEn)
                 {
                     safetyRelease.Play();
                 }
