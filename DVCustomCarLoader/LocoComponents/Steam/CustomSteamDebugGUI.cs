@@ -12,10 +12,12 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 	public class CustomSteamDebugGUI : MonoBehaviour
 	{
 		private CustomLocoSimSteam sim;
+		private CustomChuffController chuffController;
 
 		private void Start()
 		{
 			sim = GetComponent<CustomLocoSimSteam>();
+			chuffController = GetComponent<CustomChuffController>();
 		}
 
 		private void OnGUI()
@@ -25,7 +27,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 				enabled = false;
 				return;
 			}
-			windowRect.height = (sim.components.Length / 2 + 1) * COMPONENT_HEIGHT;
+			windowRect.height = (sim.components.Length / 2 + 3) * COMPONENT_HEIGHT;
 			GUI.skin = DVGUI.skin;
 			windowRect = GUILayout.Window(WINDOW_ID, windowRect, new GUI.WindowFunction(Window), "CCL Steam simulation", Array.Empty<GUILayoutOption>());
 		}
@@ -42,9 +44,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 			GUI.skin.label.normal.textColor = Color.black;
 			GUI.skin.label.fontSize = FONT_SIZE;
 
+			bool rowStart = true;
+
 			for (int i = 0; i < sim.components.Length; i++)
 			{
-				if (i % 2 == 0)
+				if (rowStart)
 				{
 					GUILayout.BeginHorizontal(GUILayout.Width(600f));
 				}
@@ -84,11 +88,20 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 				}
 
 				GUILayout.EndHorizontal();
-				if (i % 2 == 1)
+				if (!rowStart)
 				{
 					GUILayout.EndHorizontal();
 				}
+
+				rowStart = !rowStart;
 			}
+
+			if (!rowStart)
+			{
+				GUILayout.EndHorizontal();
+			}
+
+			GUILayout.BeginHorizontal();
 
 			GUILayout.Label("burnRate", GUILayout.Width(75f));
 			GUILayout.Label(sim.fuelConsumptionRate.ToString(), GUILayout.Width(45f));
@@ -98,6 +111,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
 			GUILayout.Label("blower", GUILayout.Width(75f));
 			GUILayout.Label(sim.GetBlowerFlowPercent().ToString(), GUILayout.Width(45f));
+
+			GUILayout.EndHorizontal();
 
 			GUI.skin.label.wordWrap = true;
 			GUI.skin.label.fontSize = fontSize;
@@ -118,6 +133,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 			}
 
 			GUILayout.EndHorizontal();
+
+			GUILayout.Label($"Chuff: C: {chuffController.chuffsPerRevolution}, R: {chuffController.revolutionPos:f2}, A: {chuffController.revolutionAccumulator:f2}, CC: {chuffController.currentChuff}, E: {chuffController.currentChuff != chuffController.lastChuff}");
+
 			GUILayout.EndVertical();
 			GUILayout.EndHorizontal();
 			GUI.DragWindow();

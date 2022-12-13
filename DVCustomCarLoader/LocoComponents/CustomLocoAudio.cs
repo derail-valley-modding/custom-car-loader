@@ -5,6 +5,7 @@ using System.Reflection;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
 using HarmonyLib;
+using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
@@ -127,6 +128,21 @@ namespace DVCustomCarLoader.LocoComponents
             customDmgController = null;
             dmgController = null;
             simEvents = null;
+        }
+    }
+
+    [HarmonyPatch(typeof(NAudio))]
+    public static class NAudioPatches
+    {
+        [HarmonyPatch("RequestAudioSource")]
+        [HarmonyPostfix]
+        public static void RequestAudioSource(ref AudioSource __result)
+        {
+            if (__result && !__result.isActiveAndEnabled)
+            {
+                Main.LogVerbose("Found disabled audio source");
+                __result.enabled = true;
+            }
         }
     }
 }

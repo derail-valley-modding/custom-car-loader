@@ -89,10 +89,6 @@ namespace DVCustomCarLoader.Effects
             smoothedColor = smokeColorClear;
 
             chuffController = car.GetComponent<CustomChuffController>();
-            if (!chuffController)
-            {
-                chuffController = car.gameObject.AddComponent<CustomChuffController>();
-            }
             chuffController.OnChuff += Chuff;
 
             SteamCoro = StartCoroutine(UpdateSteamParticles(STEAM_UPDATE_PERIOD));

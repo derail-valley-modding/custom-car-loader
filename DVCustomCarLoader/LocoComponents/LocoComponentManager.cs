@@ -135,6 +135,8 @@ namespace DVCustomCarLoader
                 Effects.ParticleInitializer.AddWheelSparks(prefab, sparkSetup, LocoSimTemplate.SH282);
             }
 
+            prefab.AddComponent<CustomChuffController>();
+
             Main.LogVerbose($"Added steam simulation to {prefab.name}");
         }
 
@@ -311,7 +313,7 @@ namespace DVCustomCarLoader
 
         public static void SetInteriorLayers(GameObject interior)
         {
-            interior.SetLayersRecursive("Interactable");
+            ModelUtil.SetLayersRecursiveAndExclude(interior, DVLayer.Interactable, DVLayer.Train_Walkable);
 
             var coalPiles = interior.GetComponentsInChildren<ShovelCoalPile>().Cast<Component>();
             var coalTargets = interior.GetComponentsInChildren<NonPhysicsCoalTarget>();
