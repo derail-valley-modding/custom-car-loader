@@ -86,37 +86,46 @@ namespace CCL_GameScripts
         {
             SetLayersRecursive(go, (int)layer);
         }
+
+        public static void SetLayersRecursiveAndExclude(GameObject go, DVLayer layer, DVLayer exclude)
+        {
+            var toReplace = go.GetComponentsInChildren<Transform>().Where(tform => tform.gameObject.layer != (int)exclude);
+            foreach (var tform in toReplace)
+            {
+                tform.gameObject.layer = (int)layer;
+            }
+        }
     }
 
     public enum DVLayer
     { 
-        Default = 1,
-        TransparentFX = 2,
-        //Ignore Raycast = 3,
+        Default = 0,
+        TransparentFX = 1,
+        //Ignore Raycast = 2,
         //,
-        Water = 5,
-        UI = 6,
+        Water = 4,
+        UI = 5,
         //,
         //,
-        Terrain = 9,
-        Player = 10,
-        Train_Big_Collider = 11,
-        Train_Walkable = 12,
-        Train_Interior = 13,
-        Interactable = 14,
-        Teleport_Destination = 15,
-        Laser_Pointer_Target = 16,
-        Camera_Dampening = 17,
-        Culling_Sleepers = 18,
-        Culling_Anchors = 19,
-        Culling_Rails = 20,
-        Render_Elements = 21,
-        No_Teleport_Interaction = 22,
-        Inventory = 23,
-        Controller = 24,
-        Hazmat = 25,
-        PostProcessing = 26,
-        Grabbed_Item = 27,
-        World_Item = 28,
+        Terrain = 8,
+        Player = 9,
+        Train_Big_Collider = 10,
+        Train_Walkable = 11,
+        Train_Interior = 12,
+        Interactable = 13,
+        Teleport_Destination = 14,
+        Laser_Pointer_Target = 15,
+        Camera_Dampening = 16,
+        Culling_Sleepers = 17,
+        Culling_Anchors = 18,
+        Culling_Rails = 19,
+        Render_Elements = 20,
+        No_Teleport_Interaction = 21,
+        Inventory = 22,
+        Controller = 23,
+        Hazmat = 24,
+        PostProcessing = 25,
+        Grabbed_Item = 26,
+        World_Item = 27,
     }
 }

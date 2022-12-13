@@ -14,7 +14,7 @@ namespace DVCustomCarLoader.Effects
 		public float MaxWheelslipMultiplier = 8f;
 		public bool IsDrivingWheels = false;
 		public float DefaultWheelRadius = 0.7f;
-		protected float defaultCircumference;
+		public float defaultCircumference;
 
 		// Transforms
 		public Transform[] transformsToRotate;

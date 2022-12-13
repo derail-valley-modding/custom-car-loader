@@ -13,7 +13,9 @@ namespace CCL_GameScripts
 
         public override LocoAudioBasis AudioType => LocoAudioBasis.Steam;
 
-        public int ChuffsPerRevolution = 2;
+        public int NumberOfCylinders = 2;
+        [Tooltip("# of crank revolutions per each full driver revolution")]
+        public float DriverGearRatio = 1f;
 
         [Header("Firebox")]
         public float BaseAirMultiplier = 0.1f;
