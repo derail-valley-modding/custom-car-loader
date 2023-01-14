@@ -119,9 +119,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         protected void SetFireIntensity(float tempPercent)
         {
-            fireboxCoalMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
-            fireboxMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
-            fireboxDoorFrameMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
+            if (fireboxCoalMeshRenderer) fireboxCoalMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
+            if (fireboxMeshRenderer) fireboxMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
+            if (fireboxDoorFrameMeshRenderer) fireboxDoorFrameMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
         }
 
         internal void HandleTriggerEnter(Collider other)

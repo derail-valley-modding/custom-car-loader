@@ -44,6 +44,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             {
                 Main.Error("Chuff Controller: No driver animation found, or more than one driver animation found");
                 enabled = false;
+                return;
             }
 
             wheelCircumference = driverAnimation.DefaultWheelRadius * Mathf.PI * 2;

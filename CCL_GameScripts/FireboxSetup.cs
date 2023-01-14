@@ -12,6 +12,9 @@ namespace CCL_GameScripts
         protected static readonly Vector3 FIREBOX_OFFSET = new Vector3(0, -0.282f, -1.335f);
         protected static readonly Vector3 FIREBOX_COLLIDER_CENTER = new Vector3(0, 2.18f, 2.051f);
 
+        public bool HideDefaultWalls = false;
+        public Transform ReplacementCoalMesh = null;
+
         public void OnDrawGizmos()
         {
             // coal collider

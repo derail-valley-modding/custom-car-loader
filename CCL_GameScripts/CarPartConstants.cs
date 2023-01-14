@@ -80,7 +80,10 @@ namespace CCL_GameScripts
 
         // Firebox
         public const string FIREBOX_ROOT = "I firebox";
-        public const string FIREBOX_PARTICLES = "firebox_coal_pivot/fire";
+        public const string FIREBOX_COAL = "firebox_coal_pivot";
+        public const string FIREBOX_FLAMES = "firebox_coal_pivot/fire";
+        public const string FIREBOX_SPARKS = "sparks";
+        public const string FIREBOX_MESH = "Firebox";
     }
 
     public static class CarPartOffset
