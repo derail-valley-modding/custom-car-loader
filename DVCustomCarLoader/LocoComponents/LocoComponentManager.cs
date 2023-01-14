@@ -342,19 +342,60 @@ namespace DVCustomCarLoader
                 var newFire = newFireObj.AddComponent<CustomFire>();
 
                 newFire.InitializeFromOther(baseFire);
-                foreach (var indicator in newFireObj.GetComponents<Indicator>())
-                {
-                    var relay = newFireObj.AddComponent<IndicatorRelay>();
-                    relay.Initialize(SimEventType.FireboxLevel, indicator);
-                }
-
-                var fireParticles = newFireObj.transform.Find(CarPartNames.FIREBOX_PARTICLES).GetComponent<ParticleSystem>();
-                var fpMain = fireParticles.main;
                 var scaleV = newFireObj.transform.localScale;
-                fpMain.startSizeMultiplier = Mathf.Min(scaleV.x, scaleV.y, scaleV.z);
+
+                // scale flames emitter
+                var fireParticlesTform = newFireObj.transform.Find(CarPartNames.FIREBOX_FLAMES);
+                var fireParticles = fireParticlesTform.GetComponent<ParticleSystem>();
+                newFire.fireObj = fireParticles.gameObject;
+
+                // scale spark emitter
+                var sparksTform = newFireObj.transform.Find(CarPartNames.FIREBOX_SPARKS);
+                var sparks = sparksTform.GetComponent<ParticleSystem>();
+                var sparksMain = sparks.main;
+                sparksMain.startSizeMultiplier = Mathf.Min(scaleV.x, scaleV.y, scaleV.z);
+                newFire.sparksObj = sparks.gameObject;
+
+                if (fireSetup.ReplacementCoalMesh)
+                {
+                    var coalRoot = newFireObj.transform.Find(CarPartNames.FIREBOX_COAL);
+                    GameObject.Destroy(coalRoot.GetComponentInChildren<MeshFilter>(true));
+                    GameObject.Destroy(coalRoot.GetComponentInChildren<MeshRenderer>(true));
+
+                    fireParticlesTform.localPosition = Vector3.zero;
+                    var customFireTform = fireSetup.ReplacementCoalMesh.transform.Find("fire");
+                    if (customFireTform)
+                    {
+                        fireParticlesTform.SetParent(customFireTform, false);
+                    }
+                    else
+                    {
+                        fireParticlesTform.SetParent(fireSetup.ReplacementCoalMesh, false);
+                    }
+                }
+                else
+                {
+                    var fpMain = fireParticles.main;
+                    fpMain.startSizeXMultiplier = scaleV.x;
+                    fpMain.startSizeYMultiplier = scaleV.y;
+                    fpMain.startSizeZMultiplier = scaleV.z;
+
+                    foreach (var indicator in newFireObj.GetComponents<Indicator>())
+                    {
+                        var relay = newFireObj.AddComponent<IndicatorRelay>();
+                        relay.Initialize(SimEventType.FireboxLevel, indicator);
+                    }
+                }
 
                 GameObject.Destroy(baseFire);
                 GameObject.Destroy(oldFireObj);
+
+                if (fireSetup.HideDefaultWalls)
+                {
+                    var wallsRoot = newFireObj.transform.Find(CarPartNames.FIREBOX_MESH);
+                    GameObject.Destroy(wallsRoot.GetComponentInChildren<MeshFilter>(true));
+                    GameObject.Destroy(wallsRoot.GetComponentInChildren<MeshRenderer>(true));
+                }
             }
         }
 
