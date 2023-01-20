@@ -407,7 +407,7 @@ namespace DVCustomCarLoader
                 interiorFab.SetActive(false);
                 Object.DontDestroyOnLoad(interiorFab);
 
-                LocoComponentManager.SetupCabComponents(interiorFab, LocoType);
+                LocoComponentManager.SetupCabComponents(interiorFab, simParams);
                 LocoComponentManager.SetInteriorLayers(interiorFab);
                 LocoComponentManager.MakeDoorsCollidable(interiorFab);
 

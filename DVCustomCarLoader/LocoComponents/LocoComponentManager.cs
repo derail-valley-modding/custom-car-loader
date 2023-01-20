@@ -148,18 +148,18 @@ namespace DVCustomCarLoader
             driver.wheelslipToFrictionModifierCurve = simParams.WheelslipToFrictionModifier;
         }
 
-        public static void SetupCabComponents( GameObject interior, LocoParamsType locoType )
+        public static void SetupCabComponents(GameObject interior, SimParamsBase simParams)
         {
             CreateComponentsFromProxies(interior);
             CreateCopiedControls(interior);
 
-            if( locoType == LocoParamsType.DieselElectric )
+            if (simParams.SimType == LocoParamsType.DieselElectric)
             {
                 interior.AddComponent<CustomFuseController>();
             }
-            else if (locoType == LocoParamsType.Steam)
+            else if (simParams.SimType == LocoParamsType.Steam)
             {
-                SetupFirebox(interior);
+                SetupFirebox(interior, simParams as SimParamsSteam);
             }
 
             // add controller/"brain" components
@@ -324,7 +324,7 @@ namespace DVCustomCarLoader
             }
         }
 
-        private static void SetupFirebox(GameObject interior)
+        private static void SetupFirebox(GameObject interior, SimParamsSteam simParams)
         {
             var fireSetup = interior.GetComponentInChildren<FireboxSetup>();
             if (fireSetup)
@@ -349,11 +349,17 @@ namespace DVCustomCarLoader
                 var fireParticles = fireParticlesTform.GetComponent<ParticleSystem>();
                 newFire.fireObj = fireParticles.gameObject;
 
+                var newPos = fireParticlesTform.localPosition + new Vector3(0, 0, 0.3f);
+                fireParticlesTform.localPosition = newPos;
+
+                var main = fireParticles.main;
+                main.duration *= 0.5f;
+
                 // scale spark emitter
                 var sparksTform = newFireObj.transform.Find(CarPartNames.FIREBOX_SPARKS);
                 var sparks = sparksTform.GetComponent<ParticleSystem>();
-                var sparksMain = sparks.main;
-                sparksMain.startSizeMultiplier = Mathf.Min(scaleV.x, scaleV.y, scaleV.z);
+                var sparksShape = sparks.shape;
+                sparksShape.radius *= Mathf.Min(scaleV.x, scaleV.z);
                 newFire.sparksObj = sparks.gameObject;
 
                 if (fireSetup.ReplacementCoalMesh)
@@ -384,6 +390,7 @@ namespace DVCustomCarLoader
                     {
                         var relay = newFireObj.AddComponent<IndicatorRelay>();
                         relay.Initialize(SimEventType.FireboxLevel, indicator);
+                        indicator.maxValue = simParams.FireboxCapacity;
                     }
                 }
 

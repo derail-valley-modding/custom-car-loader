@@ -6,6 +6,7 @@ using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace DVCustomCarLoader.LocoComponents
 {
@@ -98,6 +99,34 @@ namespace DVCustomCarLoader.LocoComponents
             wheelDamageToMasterVolumeCurve = other.wheelDamageToMasterVolumeCurve;
             wheelDamagedAudio1 = other.wheelDamagedAudio1;
             wheelDamagedAudio2 = other.wheelDamagedAudio2;
+        }
+
+        protected AudioSource CreateSource(Vector3 position, float minDistance = 1f, float maxDistance = 500f, AudioMixerGroup mixerGroup = null)
+        {
+            var sourceObj = new GameObject("CCL_AudioSource");
+            sourceObj.transform.SetParent(transform);
+            sourceObj.transform.position = position;
+
+            var source = sourceObj.AddComponent<AudioSource>();
+            source.Stop();
+            source.loop = false;
+            source.playOnAwake = false;
+            source.rolloffMode = AudioRolloffMode.Logarithmic;
+            source.minDistance = minDistance;
+            source.maxDistance = maxDistance;
+            source.spread = 0f;
+            source.pitch = 1f;
+            source.volume = 1f;
+            source.ignoreListenerPause = false;
+            source.outputAudioMixerGroup = mixerGroup;
+
+            return source;
+        }
+
+        protected void PlayRandomOneShot(AudioSource source, AudioClip[] clips, float volume = 1f)
+        {
+            int choice = UnityEngine.Random.Range(0, clips.Length);
+            source.PlayOneShot(clips[choice], volume);
         }
     }
 

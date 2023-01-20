@@ -29,6 +29,14 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             set => isFireOnField.SetValue(this, value);
         }
 
+        protected CustomChuffController chuffController;
+        protected float targetChuffDraftLevel = 0f;
+        protected float chuffDraftLevel = 0f;
+        protected float chuffDraftSlope = 0f;
+
+        protected Coroutine chuffFalloffRoutine = null;
+        protected Vector3 originalFireScale;
+
         public void InitializeFromOther(Fire baseFire)
         {
             fireObj = baseFire.fireObj;
@@ -49,12 +57,20 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         {
             loco = TrainCar.Resolve(gameObject).GetComponent<CustomLocoControllerSteam>();
 
+            if (loco.GetComponentInChildren<CustomChuffController>() is CustomChuffController chuff)
+            {
+                chuffController = chuff;
+                chuffController.OnChuff += OnChuff;
+            }
+
             fireboxCoalMeshRenderer = coalRenderer = fireboxCoalObj.GetComponent<MeshRenderer>();
             fireboxMeshRenderer = fireboxRenderer = fireboxObj.GetComponent<MeshRenderer>();
             fireboxDoorFrameMeshRenderer = doorFrameRenderer = fireboxDoorFrameObj.GetComponent<MeshRenderer>();
 
             fireParticleSystem = fireParticles = fireObj.GetComponent<ParticleSystem>();
             fireParticleSystem.Stop();
+            originalFireScale = fireObj.transform.localScale;
+
             sparksParticleSystem = sparksParticles = sparksObj.GetComponent<ParticleSystem>();
             sparksParticleSystem.Stop();
 
@@ -66,6 +82,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
 
             overlapColliders = colliders;
+        }
+
+        protected void OnDestroy()
+        {
+            chuffController.OnChuff -= OnChuff;
         }
 
         internal IEnumerator CheckFireOnOverride(float timeout)
@@ -98,23 +119,48 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                     IgniteTerrainTile(IGNITION_STRENGTH);
                     IgniteLeakOrCargo(IGNITION_STRENGTH);
 
-                    var main = fireParticleSystem.main;
-                    main.startSizeX = Mathf.Lerp(START_3DSIZE_X_MIN, START_3DSIZE_X_MAX, tempPercent);
-                    main.startSizeY = Mathf.Lerp(START_3DSIZE_Y_MIN, START_3DSIZE_Y_MAX, tempPercent);
-                    main.startSizeZ = Mathf.Lerp(START_3DSIZE_Z_MIN, START_3DSIZE_Z_MAX, tempPercent);
-
-                    var emission = fireParticleSystem.emission;
-                    emission.rateOverTime = Mathf.Lerp(EMISSION_RATE_MIN, EMISSION_RATE_MAX, tempPercent);
-
-                    var shape = fireParticleSystem.shape;
-                    float x = shape.position.x;
-                    float y = shape.position.y;
-                    float z = Mathf.Lerp(SHAPE_POSITION_Z_MIN, SHAPE_POSITION_Z_MAX, tempPercent);
-                    shape.position = new Vector3(x, y, z);
+                    SetFlameScale(tempPercent, loco.BlowerFlow);
                 }
 
                 SetFireIntensity(tempPercent);
             }
+        }
+
+        protected void OnChuff(float power)
+        {
+            targetChuffDraftLevel = power;
+            if (chuffFalloffRoutine == null)
+            {
+                chuffFalloffRoutine = StartCoroutine(ChuffFalloff());
+            }
+        }
+
+        protected IEnumerator ChuffFalloff()
+        {
+            do
+            {
+                yield return null;
+                
+                targetChuffDraftLevel -= CHUFF_FALLOFF_PER_FRAME;
+                if (targetChuffDraftLevel < 0) targetChuffDraftLevel = 0;
+
+                chuffDraftLevel = Mathf.SmoothDamp(chuffDraftLevel, targetChuffDraftLevel, ref chuffDraftSlope, Time.deltaTime * CHUFF_FALLOFF_INERTIA);
+
+                if (chuffDraftLevel < 0.05f) chuffDraftLevel = 0;
+            }
+            while (chuffDraftLevel > 0);
+
+            chuffFalloffRoutine = null;
+        }
+
+        protected void ApplyChuffScale()
+        {
+            float scale = Mathf.Lerp(1f, CHUFF_SCALE_MULTIPLIER, chuffDraftLevel);
+            fireObj.transform.localScale = Vector3.Scale(originalFireScale, new Vector3(1, scale, 1));
+
+            var emission = fireParticleSystem.emission;
+            scale = Mathf.Lerp(1f, CHUFF_RATE_MULTIPLIER, chuffDraftLevel);
+            emission.rateOverTimeMultiplier = scale;
         }
 
         protected void SetFireIntensity(float tempPercent)
@@ -122,6 +168,32 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             if (fireboxCoalMeshRenderer) fireboxCoalMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
             if (fireboxMeshRenderer) fireboxMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
             if (fireboxDoorFrameMeshRenderer) fireboxDoorFrameMeshRenderer.material.SetColor("_EmissionColor", Color.white * tempPercent * MAX_EMISSION_INTENSITY);
+        }
+
+        protected void SetFlameScale(float tempPercent, float blower)
+        {
+            float scale = (tempPercent * 0.7f) + (blower * 0.3f);
+
+            var main = fireParticleSystem.main;
+            main.startSizeX = Mathf.Lerp(START_3DSIZE_X_MIN, START_3DSIZE_X_MAX, scale);
+            main.startSizeY = Mathf.Lerp(START_3DSIZE_Y_MIN, START_3DSIZE_Y_MAX, scale);
+            main.startSizeZ = Mathf.Lerp(START_3DSIZE_Z_MIN, START_3DSIZE_Z_MAX, scale);
+
+            float rateScale = (tempPercent * 0.5f) + (blower * 0.5f);
+
+            var emission = fireParticleSystem.emission;
+            emission.rateOverTime = Mathf.Lerp(EMISSION_RATE_MIN, EMISSION_RATE_MAX, rateScale);
+
+            var shape = fireParticleSystem.shape;
+            float x = shape.position.x;
+            float y = shape.position.y;
+            float z = Mathf.Lerp(SHAPE_POSITION_Z_MIN, SHAPE_POSITION_Z_MAX, rateScale);
+            shape.position = new Vector3(x, y, z);
+        }
+
+        protected void Update()
+        {
+            ApplyChuffScale();
         }
 
         internal void HandleTriggerEnter(Collider other)
@@ -179,17 +251,16 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         private const float IGNITION_STRENGTH = 10;
 
-        private const float START_3DSIZE_X_MIN = 0.8f;
+        private const float START_3DSIZE_X_MIN = 0.5f; //0.8f;
+        private const float START_3DSIZE_Y_MIN = 0.5f; //1.3f;
+        private const float START_3DSIZE_Z_MIN = 0.5f; //0.8f;
+
         private const float START_3DSIZE_X_MAX = 1;
-
-        private const float START_3DSIZE_Y_MIN = 1.3f;
         private const float START_3DSIZE_Y_MAX = 2;
-
-        private const float START_3DSIZE_Z_MIN = 0.8f;
         private const float START_3DSIZE_Z_MAX = 1;
 
-        private const float EMISSION_RATE_MIN = 1;
-        private const float EMISSION_RATE_MAX = 3;
+        private const float EMISSION_RATE_MIN = 2;//1;
+        private const float EMISSION_RATE_MAX = 6;//3;
 
         private const float SHAPE_POSITION_Z_MIN = -0.4f;
         private const float SHAPE_POSITION_Z_MAX = 0;
@@ -197,6 +268,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         private const float FIRE_IGNITION_SPHERE_SIZE = 7;
 
         private const float MAX_EMISSION_INTENSITY = 2;
+
+        private const float CHUFF_FALLOFF_PER_FRAME = 0.02f;
+        private const float CHUFF_FALLOFF_INERTIA = 0.3f;
+        private const float CHUFF_SCALE_MULTIPLIER = 2f;
+        private const float CHUFF_RATE_MULTIPLIER = 10f;
     }
 
     [HarmonyPatch(typeof(Fire))]

@@ -94,10 +94,13 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         internal void OnTriggerStayOverride(Collider other)
         {
-            Shovel shovel = DealWithOverlap(other);
-            if (shovel != null && locoSim.tenderFuel.value > 0f)
+            if (shovelTrigger)
             {
-                shovel.RequestSpawnCoal(this);
+                Shovel shovel = DealWithOverlap(other);
+                if (shovel != null && locoSim.tenderFuel.value > 0f)
+                {
+                    shovel.RequestSpawnCoal(this);
+                }
             }
         }
 
