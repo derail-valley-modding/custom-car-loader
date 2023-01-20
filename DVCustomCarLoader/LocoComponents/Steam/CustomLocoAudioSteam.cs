@@ -1,4 +1,5 @@
 ﻿using CCL_GameScripts.Attributes;
+using DVCustomCarLoader.Effects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,19 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 		[ProxyField]
 		public AudioClip[] cylClipsSlow;
 
+		protected AudioSource leftCylinderSource;
+		protected AudioSource rightCylinderSource;
+
 		// Chimney
 		[ProxyField]
 		public Transform playChimneyAt;
 		[ProxyField]
 		public AudioClip[] chimneyClipsSlow;
 
-		// Chuff
-		[ProxyField]
+        protected AudioSource chimneySource;
+
+        // Chuff
+        [ProxyField]
 		public LayeredAudio valveGearLayered;
 		[ProxyField]
 		public LayeredAudio steamChuffsLayered;
@@ -80,9 +86,17 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 		private bool loopsPlaying;
 		private float chuffCurveScaleFactor;
 
-		private const float DEFAULT_CHUFFS_PER_REV = 2;
+		private const float DEFAULT_CHUFFS_PER_REV = 4;
+		private const float WHEEL_KMH_OFFSET = 10;
 
 		#region Setup & Teardown
+
+		protected void Start()
+		{
+			chimneySource = CreateSource(playChimneyAt.position, 20, 500, AudioManager.e.cabGroup);
+			leftCylinderSource = CreateSource(playLeftCylAt.position, 15, 500, AudioManager.e.cabGroup);
+            rightCylinderSource = CreateSource(playRightCylAt.position, 15, 500, AudioManager.e.cabGroup);
+        }
 
 		protected override void SetupLocoLogic(TrainCar car)
 		{
@@ -90,8 +104,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 			chuffController = car.GetComponent<CustomChuffController>();
 			if (chuffController)
             {
-                chuffCurveScaleFactor = chuffController.chuffsPerRevolution / DEFAULT_CHUFFS_PER_REV;
-                chuffController.OnChuff += OnChuff;
+				chuffCurveScaleFactor = chuffController.chuffsPerRevolution / DEFAULT_CHUFFS_PER_REV;
+                //chuffController.OnChuff += OnChuff;
             }
 		}
 
@@ -259,56 +273,51 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
         }
 
+		private bool _awaitingChuffStart = false;
+
 		protected void OnChuff(float power)
         {
-            int c = 0;
-            try
-			{
-				int currentChuff = chuffController.currentChuff;
-				float wheelKmh = chuffController.chuffKmh * chuffCurveScaleFactor;
-				float individualLvl = individualToFastLoopTransition.Evaluate(wheelKmh);
+			int currentChuff = chuffController.currentChuff;
+			float wheelKmh = Mathf.Min(chuffController.chuffKmh * chuffCurveScaleFactor, 120f);
+			float individualLvl = Mathf.Clamp01(individualToFastLoopTransition.Evaluate(wheelKmh - WHEEL_KMH_OFFSET));
 
-				c = 1;
+			if (individualLvl > 0.01f)
+            {
+                float volume = power * individualLvl;
+                AudioSource cylSource = (currentChuff % 2 == 0) ? leftCylinderSource : rightCylinderSource;
 
-				if (individualLvl > 0.01f)
-				{
-					Transform playLocation = (currentChuff % 2 == 0) ? playLeftCylAt : playRightCylAt;
-
-					float volume = Mathf.Clamp01(power * 2) * individualLvl;
-					cylClipsSlow.Play(playLocation.position, volume, 1, 0, 15, 500, default, AudioManager.e.cabGroup, playLocation);
-
-					c = 2;
-
-					volume = Mathf.Clamp01(power) * individualLvl;
-					chimneyClipsSlow.Play(playChimneyAt.position, volume, 1, 0, 20, 500, default, AudioManager.e.cabGroup, playChimneyAt);
-
-					c = 3;
-				}
+				PlayRandomOneShot(cylSource, cylClipsSlow, volume);
+				PlayRandomOneShot(chimneySource, chimneyClipsSlow, volume);
 			}
-			catch (NullReferenceException e)
+
+			if (_awaitingChuffStart)
 			{
-				Main.LogVerbose($"OnChuff @ pos {c} {e}");
-			}
+				_awaitingChuffStart = false;
+                if (!loopsPlaying)
+                {
+                    StartLoops();
+                }
+            }
 		}
 
 		protected void ChuffUpdate()
         {
 			float power = chuffController.chuffPower;
-			float wheelKmh = chuffController.chuffKmh * chuffCurveScaleFactor;
+			float wheelKmh = Mathf.Min(chuffController.chuffKmh * chuffCurveScaleFactor, 120f);
 
-			float continuousLvl = 1 - individualToFastLoopTransition.Evaluate(wheelKmh);
+			float continuousLvl = Mathf.Clamp01(1 - individualToFastLoopTransition.Evaluate(wheelKmh - WHEEL_KMH_OFFSET));
 			if (continuousLvl > 0.02f)
             {
-				if (!loopsPlaying)
-                {
-					StartLoops();
-                }
+				if (!_awaitingChuffStart && !loopsPlaying)
+				{
+					_awaitingChuffStart = true;
+				}
 
 				valveGearLayered.Set(wheelKmh);
-				valveGearLayered.masterVolume = Mathf.Clamp01(continuousLvl);
+				valveGearLayered.masterVolume = continuousLvl;
 
 				steamChuffsLayered.Set(wheelKmh);
-				steamChuffsLayered.masterVolume = Mathf.Clamp01(continuousLvl * power * 2);
+				steamChuffsLayered.masterVolume = continuousLvl * power;
             }
 			else if (loopsPlaying && (continuousLvl < 0.01f))
             {

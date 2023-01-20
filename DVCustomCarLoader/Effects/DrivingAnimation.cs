@@ -159,7 +159,10 @@ namespace DVCustomCarLoader.Effects
             }
 
 			defaultRotationSpeed = curVelocity / defaultCircumference;
-			defaultRotationSpeed = Mathf.Lerp(defaultRotationSpeed, Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.drivingForce.wheelslip);
+			if (loco.drivingForce.wheelslip > 0)
+			{
+                defaultRotationSpeed = Mathf.Lerp(defaultRotationSpeed, Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.drivingForce.wheelslip);
+            }
 
 			SetRevSpeeds(transformCircumferences, transformRevSpeed);
 			UpdateTransformRotations();

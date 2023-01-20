@@ -53,7 +53,6 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         protected void Update()
         {
-            lastChuff = currentChuff;
             chuffPower = loco.GetTotalPowerForcePercentage();
 
             float delta = driverAnimation.defaultRotationSpeed * Time.deltaTime;
@@ -66,6 +65,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
             if (currentChuff != lastChuff)
             {
+                lastChuff = currentChuff;
                 OnChuff?.Invoke(chuffPower);
             }
 
