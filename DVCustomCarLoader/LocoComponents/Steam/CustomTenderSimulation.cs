@@ -18,8 +18,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float WaterCapacityL;
         public float FuelCapacity;
 
-        private TrainCar train;
-        private CustomTenderDebtTracker tenderDebt;
+        protected TrainCar train;
+        protected CustomTenderDebtTracker tenderDebt;
+        protected CarDamageModel damageModel;
 
         public SimComponent tenderWater;
         public SimComponent tenderFuel;
@@ -42,10 +43,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         private void OnLogicCarInitialized()
         {
             train.LogicCarInitialized -= OnLogicCarInitialized;
-            CarDamageModel component = GetComponent<CarDamageModel>();
+            damageModel = GetComponent<CarDamageModel>();
             if (!train.playerSpawnedCar || Main.Settings.FeesForCCLLocos)
             {
-                tenderDebt = new CustomTenderDebtTracker(this, component, train.ID, train.carType);
+                tenderDebt = new CustomTenderDebtTracker(this, damageModel, train.ID, train.carType);
                 SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(tenderDebt);
             }
             train.OnDestroyCar += OnLocoDestroyed;
@@ -103,6 +104,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         {
             return new[]
             {
+                new PitStopRefillable(this, ResourceType.Car_DMG, damageModel.EffectiveHealthPercentage100Notation, 100f),
                 new PitStopRefillable(this, ResourceType.Water, tenderWater),
                 new PitStopRefillable(this, FuelType, tenderFuel)
             };
@@ -118,6 +120,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             {
                 return tenderWater.value;
             }
+            else if (type == ResourceType.Car_DMG)
+            {
+                return damageModel.EffectiveHealthPercentage100Notation;
+            }
             Main.Warning("Tried to get pit stop value this loco sim doesn't have");
             return 0;
         }
@@ -131,6 +137,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             else if (type == ResourceType.Water)
             {
                 tenderWater.AddValue(changeAmount);
+            }
+            else if (type == ResourceType.Car_DMG)
+            {
+                damageModel.RepairCarEffectivePercentage(changeAmount);
             }
             Main.Warning("Trying to refill/repair something that is not part of this loco");
         }
