@@ -11,7 +11,7 @@ namespace CCL_GameScripts
     /// </summary>
     public class TrainCarSetup : ComponentInitSpec
     {
-        public static readonly System.Version ExporterVersion = new System.Version(1, 7, 1);
+        public static readonly System.Version ExporterVersion = new System.Version(1, 7, 2);
 
         #region Internal
 
@@ -70,6 +70,8 @@ namespace CCL_GameScripts
         [Header("Buffer Replacement")]
         public bool UseCustomBuffers = false;
         public bool UseCustomHosePositions = false;
+        public bool HideFrontCoupler = false;
+        public bool HideBackCoupler = false;
 
         [Header("Physics")]
         public bool OverridePhysics = false; // override flag 1
