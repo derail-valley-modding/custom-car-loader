@@ -117,7 +117,7 @@ namespace DVCustomCarLoader
             Vector3 frontRigPosition, rearRigPosition;
             if (carSetup.UseCustomBuffers)
             {
-                (frontRigPosition, rearRigPosition) = SetupCustomBuffers(newFab, basePrefab, carSetup.UseCustomHosePositions);
+                (frontRigPosition, rearRigPosition) = SetupCustomBuffers(newFab, basePrefab, carSetup);
             }
             else
             {
@@ -637,7 +637,7 @@ namespace DVCustomCarLoader
             return (frontRigPosition, rearRigPosition);
         }
 
-        private (Vector3, Vector3) SetupCustomBuffers(GameObject newPrefab, GameObject basePrefab, bool customHoses)
+        private (Vector3, Vector3) SetupCustomBuffers(GameObject newPrefab, GameObject basePrefab, TrainCarSetup carSetup)
         {
             Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
             Vector3 frontRigPosition = frontCouplerRig.position;
@@ -698,33 +698,51 @@ namespace DVCustomCarLoader
                 }
             }
 
-            if (!newRearBufferRig)
+            // duplicate front rig to replace missing rear
+            if (!carSetup.HideBackCoupler && !newRearBufferRig)
             {
                 newRearBufferRig = GameObject.Instantiate(newFrontBufferRig, newFrontBufferRig.parent);
                 newRearBufferRig.eulerAngles = new Vector3(0, 180, 0);
                 newRearBufferRig.localPosition = rearRigPosition;
             }
-            if (!newFrontBufferRig)
+            
+            // get rid of unwanted rear rig
+            if (carSetup.HideBackCoupler && newRearBufferRig)
+            {
+                GameObject.Destroy(newRearBufferRig.gameObject);
+            }
+
+            // duplicate rear to replace missing front
+            if (!carSetup.HideFrontCoupler && !newFrontBufferRig)
             {
                 newFrontBufferRig = GameObject.Instantiate(newRearBufferRig, newRearBufferRig.parent);
                 newFrontBufferRig.eulerAngles = Vector3.zero;
                 newFrontBufferRig.localPosition = frontRigPosition;
             }
 
+            if (carSetup.HideFrontCoupler && newFrontBufferRig)
+            {
+                GameObject.Destroy(newFrontBufferRig.gameObject);
+            }
+
             // reparent buffer pads to new root & adjust anchor positions
             foreach (Transform rig in new []{ frontCouplerRig, rearCouplerRig })
             {
+                if (!rig) continue;
+
                 string lPadName, rPadName;
                 Transform newBufferRig;
 
                 if (rig == frontCouplerRig)
                 {
+                    if (carSetup.HideFrontCoupler) continue;
                     lPadName = CarPartNames.BUFFER_PAD_FL;
                     rPadName = CarPartNames.BUFFER_PAD_FR;
                     newBufferRig = newFrontBufferRig;
                 }
                 else
                 {
+                    if (carSetup.HideBackCoupler) continue;
                     lPadName = CarPartNames.BUFFER_PAD_RL;
                     rPadName = CarPartNames.BUFFER_PAD_RR;
                     newBufferRig = newRearBufferRig;
@@ -776,7 +794,7 @@ namespace DVCustomCarLoader
                 }
 
                 // Adjust air hose & MU connector positions
-                if (customHoses)
+                if (carSetup.UseCustomHosePositions)
                 {
                     Main.LogVerbose($"Adjust hoses for {newBufferRig?.name}");
 
