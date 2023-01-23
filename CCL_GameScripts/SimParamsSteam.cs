@@ -13,6 +13,8 @@ namespace CCL_GameScripts
 
         public override LocoAudioBasis AudioType => LocoAudioBasis.Steam;
 
+        public override bool AllowRemoteControl => false;
+
         public int NumberOfCylinders = 2;
         [Tooltip("# of crank revolutions per each full driver revolution")]
         public float DriverGearRatio = 1f;

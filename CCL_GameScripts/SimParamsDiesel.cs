@@ -8,6 +8,11 @@ namespace CCL_GameScripts
     {
         public override LocoParamsType SimType => LocoParamsType.DieselElectric;
 
+        [Header("Remote Control")]
+        public bool allowRemoteControl = true;
+
+        public override bool AllowRemoteControl => allowRemoteControl;
+
         [Header("Audio")]
         public bool UseBigDieselAudio = false;
         public override LocoAudioBasis AudioType => UseBigDieselAudio ? LocoAudioBasis.DE6 : LocoAudioBasis.DE2;

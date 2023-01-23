@@ -198,6 +198,7 @@ namespace DVCustomCarLoader.LocoComponents
             {
                 brakePowerCurve = simParams.BrakePowerCurve;
                 tractionTorqueMult = simParams.tractionTorqueMultiplier;
+                allowRemoteControl = simParams.AllowRemoteControl;
             }
             else
             {
