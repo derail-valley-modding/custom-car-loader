@@ -70,6 +70,7 @@
 
         WaterReserve,
         AccessoryPower,
+        MUConnected,
     }
 
     public enum SimThresholdDirection
