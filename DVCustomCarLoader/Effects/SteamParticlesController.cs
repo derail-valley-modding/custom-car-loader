@@ -19,13 +19,20 @@ namespace DVCustomCarLoader.Effects
 
         public ParticleSystem safetyRelease;
 
-        private bool chuffLeftEn = false;
-        private bool chuffRightEn = false;
-        private bool whistleMidEn = false;
-        private bool whistleFrontEn = false;
-        private bool releaseLEn = false;
-        private bool releaseREn = false;
-        private bool safetyEn = false;
+        [SerializeField]
+        protected bool chuffLeftEn = false;
+        [SerializeField]
+        protected bool chuffRightEn = false;
+        [SerializeField]
+        protected bool whistleMidEn = false;
+        [SerializeField]
+        protected bool whistleFrontEn = false;
+        [SerializeField]
+        protected bool releaseLEn = false;
+        [SerializeField]
+        protected bool releaseREn = false;
+        [SerializeField]
+        protected bool safetyEn = false;
 
         protected CustomLocoControllerSteam controller;
         protected CustomChuffController chuffController;
@@ -199,8 +206,14 @@ namespace DVCustomCarLoader.Effects
 
             StartCoroutine(EndChuffCoro());
 
-            if (chuffLeftEn) chuffParticlesLeft.Play();
-            if (chuffRightEn) chuffParticlesRight.Play();
+            if (chuffController.currentChuff % 2 == 0)
+            {
+                if (chuffLeftEn) chuffParticlesLeft.Play();
+            }
+            else
+            {
+                if (chuffRightEn) chuffParticlesRight.Play();
+            }
         }
 
         private IEnumerator EndChuffCoro()

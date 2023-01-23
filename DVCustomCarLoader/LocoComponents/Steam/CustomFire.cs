@@ -37,6 +37,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         protected Coroutine chuffFalloffRoutine = null;
         protected Vector3 originalFireScale;
 
+        protected bool IsDoorOpen => loco.GetFireDoor() >= 0.2f;
+        private bool playSparks = false;
+
         public void InitializeFromOther(Fire baseFire)
         {
             fireObj = baseFire.fireObj;
@@ -104,11 +107,23 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                     if (fireIsOn)
                     {
                         fireParticleSystem.Play();
-                        sparksParticleSystem.Play();
+                        playSparks = true;
                     }
                     else
                     {
                         fireParticleSystem.Stop();
+                        playSparks = false;
+                    }
+                }
+
+                if (playSparks && IsDoorOpen && !sparksParticleSystem.isPlaying)
+                {
+                    sparksParticleSystem.Play();
+                }
+                else
+                {
+                    if (sparksParticleSystem.isPlaying)
+                    {
                         sparksParticleSystem.Stop();
                     }
                 }
