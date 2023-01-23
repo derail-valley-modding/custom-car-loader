@@ -1,24 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CCL_GameScripts.CabControls;
+﻿using CCL_GameScripts.CabControls;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public class IndicatorRelay : MonoBehaviour, ILocoEventAcceptor
+    public class IndicatorRelay : MonoBehaviour, ILocoEventAcceptor, ICabControlAcceptor
     {
-        public SimEventType EventType;
-        public SimEventType[] EventTypes => new[] { EventType };
+        public SimEventType EventBinding;
+        public CabInputType ControlBinding;
+
+        public SimEventType[] EventTypes => new[] { EventBinding };
         public Indicator Indicator;
 
         public bool IsBoundToInterior { get; set; }
 
-        public void Initialize(SimEventType type, Indicator indicator)
+        public void Initialize(OutputBinding binding, Indicator indicator)
         {
-            EventType = type;
+            EventBinding = binding.SimEventType;
+            ControlBinding = binding.CabInputType;
             Indicator = indicator;
         }
 
@@ -27,7 +25,7 @@ namespace DVCustomCarLoader.LocoComponents
         {
             var spawnedObj = realComp.gameObject;
             var indicatorInfo = spawnedObj.AddComponent<IndicatorRelay>();
-            indicatorInfo.Initialize(spec.OutputBinding, realComp);
+            indicatorInfo.Initialize(spec.Binding, realComp);
         }
 
         protected float target = 0;
@@ -51,6 +49,25 @@ namespace DVCustomCarLoader.LocoComponents
             {
                 Indicator.value = target;
             }
+        }
+
+        protected void HandleCabControlUpdated(object sender, float newValue)
+        {
+            target = newValue;
+            if (Indicator)
+            {
+                Indicator.value = newValue;
+            }
+        }
+
+        public void RegisterControl(CabInputRelay controlRelay)
+        {
+            controlRelay.AddListener(HandleCabControlUpdated);
+        }
+
+        public bool AcceptsControlOfType(CabInputType inputType)
+        {
+            return (ControlBinding != CabInputType.None) && (inputType == ControlBinding);
         }
     }
 }

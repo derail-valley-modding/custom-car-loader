@@ -19,8 +19,33 @@ namespace CCL_GameScripts.CabControls
         public bool UseAbsoluteMappedValue = false;
     }
 
-    public abstract class CopiedCabIndicator : CopiedCabDevice
+    public abstract class CopiedCabIndicator : CopiedCabDevice, IBoundIndicator
     {
         public SimEventType OutputBinding;
+        public CabInputType ControlBinding;
+
+        public OutputBinding Binding => new OutputBinding(OutputBinding, ControlBinding);
+
+        [SerializeField]
+        [HideInInspector]
+        private SimEventType _lastEventType;
+        [SerializeField]
+        [HideInInspector]
+        private CabInputType _lastControlBinding;
+
+        public void OnValidate()
+        {
+            if ((OutputBinding != SimEventType.None) && (OutputBinding != _lastEventType))
+            {
+                ControlBinding = CabInputType.None;
+            }
+            else if ((ControlBinding != CabInputType.None) && (ControlBinding != _lastControlBinding))
+            {
+                OutputBinding = SimEventType.None;
+            }
+
+            _lastEventType = OutputBinding;
+            _lastControlBinding = ControlBinding;
+        }
     }
 }

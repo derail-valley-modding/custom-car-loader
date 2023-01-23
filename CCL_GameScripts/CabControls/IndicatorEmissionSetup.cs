@@ -10,9 +10,10 @@ namespace CCL_GameScripts.CabControls
         public override bool DestroyAfterCreation => true;
 
         [ProxyField]
+		[Tooltip("Whether to use a hard valueThreshold for turning on/off")]
 		public bool binary = true;
 		[ProxyField]
-		[Tooltip("if the value is higher than this, lamp will be lit. Only used if binary is on")]
+		[Tooltip("If the value is higher than this, lamp will be lit. Only used if binary is on")]
 		public float valueThreshold = 0.5f;
 
 		[ProxyField]
