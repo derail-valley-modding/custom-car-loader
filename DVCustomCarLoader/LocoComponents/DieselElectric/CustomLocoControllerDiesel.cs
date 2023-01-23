@@ -23,6 +23,40 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 
 		public MultipleUnitModule muModule;
 
+        private LocoSimulationEvents.Amount _muLampState;
+        public LocoSimulationEvents.Amount MULampState
+		{
+			get
+			{
+				bool IsConnectedEngineOn(CouplingHoseMultipleUnitAdapter adapter)
+				{
+					LocoControllerBase ctrl = adapter.muCable.connectedTo.muModule.loco;
+					if (ctrl is CustomLocoControllerDiesel clcd) return clcd.EngineRunning;
+					if (ctrl is LocoControllerDiesel lcd) return lcd.GetEngineRunning();
+					return false;
+				}
+
+				if (!muModule) return LocoSimulationEvents.Amount.Depleted;
+
+				bool frontConnected = muModule.frontCableAdapter.IsConnected;
+				bool rearConnected = muModule.rearCableAdapter.IsConnected;
+				
+				if (!(frontConnected || rearConnected))
+				{
+					return LocoSimulationEvents.Amount.Depleted;
+				}
+				else
+				{
+					if ((frontConnected && !IsConnectedEngineOn(muModule.frontCableAdapter)) ||
+						(rearConnected && !IsConnectedEngineOn(muModule.rearCableAdapter)))
+					{
+						return LocoSimulationEvents.Amount.Full;
+					}
+					return LocoSimulationEvents.Amount.Mid;
+				}
+			}
+		}
+
         public float EngineRPM => sim.engineRPM.value;
 
 		public bool EngineRunning
@@ -100,6 +134,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			EventManager.Dispatch(this, SimEventType.Amperage, _Amperage);
 
 			EventManager.Dispatch(this, SimEventType.Fan, FanOn);
+			EventManager.Dispatch(this, SimEventType.MUConnected, MULampState);
 		}
 
         private void UpdateWatchables()
@@ -110,6 +145,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			EventManager.UpdateValueDispatchOnChange(this, ref _EngineTemp, GetEngineTemp(), SimEventType.EngineTemp);
 			EventManager.UpdateValueDispatchOnChange(this, ref _EngineRPMGauge, GetEngineRPMGauge(), SimEventType.EngineRPMGauge);
 			EventManager.UpdateValueDispatchOnChange(this, ref _Amperage, GetAmperage(), SimEventType.Amperage);
+			EventManager.UpdateValueDispatchOnChange(this, ref _muLampState, MULampState, SimEventType.MUConnected);
         }
 
         public override void RegisterControl( CabInputRelay inputRelay )

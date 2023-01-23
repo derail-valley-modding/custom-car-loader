@@ -70,6 +70,7 @@
 
         WaterReserve,
         AccessoryPower,
+        MUConnected,
     }
 
     public enum SimThresholdDirection
@@ -84,5 +85,36 @@
         Mid = 2,
         High = 3,
         Full = 4
+    }
+
+    [System.Serializable]
+    public struct OutputBinding
+    {
+        public SimEventType SimEventType;
+        public CabInputType CabInputType;
+
+        public OutputBinding(SimEventType eventType, CabInputType cabInputType)
+        {
+            SimEventType = eventType;
+            CabInputType = cabInputType;
+        }
+
+        public OutputBinding(SimEventType eventType) : this(eventType, CabInputType.None) { }
+        public OutputBinding(CabInputType inputType) : this(SimEventType.None, inputType) { }
+
+        public SimEventType[] EventTypes => 
+            (SimEventType != SimEventType.None) 
+                ? new[] { SimEventType }
+                : null;
+
+        public bool HasSimEvent => SimEventType != SimEventType.None;
+        public bool HasControlBinding => CabInputType != CabInputType.None;
+
+        public override string ToString() => $"({SimEventType}, {CabInputType})";
+    }
+
+    public interface IBoundIndicator
+    {
+        OutputBinding Binding { get; }
     }
 }

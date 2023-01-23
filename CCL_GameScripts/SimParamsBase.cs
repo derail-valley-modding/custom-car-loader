@@ -47,6 +47,9 @@ namespace CCL_GameScripts
         [HideInInspector]
         public abstract LocoAudioBasis AudioType { get; }
 
+        [HideInInspector]
+        public abstract bool AllowRemoteControl { get; }
+
         // default values from diesel
         [Header("Basic")]
         public LocoRequiredLicense RequiredLicense = LocoRequiredLicense.None;
