@@ -84,6 +84,11 @@ namespace CCL_GameScripts
         public const string FIREBOX_FLAMES = "firebox_coal_pivot/fire";
         public const string FIREBOX_SPARKS = "sparks";
         public const string FIREBOX_MESH = "Firebox";
+
+        // Caboose
+        public const string CABOOSE_CAREER_MANAGER = "CareerManagerTrainInterior";
+        public const string CABOOSE_REMOTE_CHARGER = "RemoteControllerCharger";
+        public const string CABOOSE_REMOTE_ANTENNA = "RemoteControllerSignalBooster";
     }
 
     public static class CarPartOffset

@@ -1,16 +1,15 @@
 ﻿using CCL_GameScripts.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace CCL_GameScripts
 {
-    public class TenderSetup : ComponentInitSpec
+    public class TenderSetup : ComponentInitSpec, ISimSetup
     {
         public override string TargetTypeName => "CustomTenderSimulation";
         public override bool DestroyAfterCreation => true;
+
+        [HideInInspector]
+        public LocoParamsType SimType => LocoParamsType.Tender;
 
         [ProxyField]
         public SimParamsSteam.SteamFuelType FuelType = SimParamsSteam.SteamFuelType.Coal;

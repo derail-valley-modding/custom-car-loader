@@ -69,43 +69,12 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 		private void ApplyInput(InputDescriptor input)
         {
 			SetTargetValue(
-				input.SetValueFunc,
+				new SetValueDelegate(input.SetValueFunc),
 				input.GetValueFunc(),
 				ref input.CurrentChangeSpeed,
 				input.Min,
 				input.Max,
 				ref input.CurrentChangeDerivative);
-        }
-
-		protected class InputDescriptor
-        {
-			public readonly KeyCode[] IncreaseKeys;
-			public readonly KeyCode[] DecreaseKeys;
-			public readonly float MaxChangeSpeed;
-
-			public readonly Func<float> GetValueFunc;
-			public readonly SetValueDelegate SetValueFunc;
-
-			public readonly float Min;
-			public readonly float Max;
-
-			public float CurrentChangeSpeed = 0;
-			public float CurrentChangeDerivative = 0;
-
-			public InputDescriptor(KeyCode[] increaseKeys, KeyCode[] decreaseKeys, float maxChangeSpeed,
-				Func<float> getValueFunc, SetValueDelegate setValueFunc,
-				float min = 0, float max = 1)
-            {
-                IncreaseKeys = increaseKeys;
-                DecreaseKeys = decreaseKeys;
-                MaxChangeSpeed = maxChangeSpeed;
-
-				GetValueFunc = getValueFunc;
-                SetValueFunc = setValueFunc;
-
-				Min = min;
-				Max = max;
-            }
         }
     }
 }

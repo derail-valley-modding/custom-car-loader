@@ -122,8 +122,10 @@
     <Compile Include="LocoComponents\Steam\CustomTenderDebtTracker.cs" />
     <Compile Include="LocoComponents\Steam\CustomTenderSaveState.cs" />
     <Compile Include="LocoComponents\Steam\CustomTenderSimulation.cs" />
+    <Compile Include="LocoComponents\InputDescriptor.cs" />
     <Compile Include="LocoComponents\Steam\ShovelPatches.cs" />
     <Compile Include="LocoComponents\Steam\SteamKeyboardInput.cs" />
+    <Compile Include="LocoComponents\Utility\BrakeCarKeyboardInputRouter.cs" />
     <Compile Include="LocoComponents\VisitCheckerPatch.cs" />
     <Compile Include="LocoSpawnerInjector.cs" />
     <Compile Include="ModPatches.cs" />
@@ -147,6 +149,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveLoadPatches.cs" />
     <Compile Include="TrainCar_Patches.cs" />
+    <Compile Include="LocoComponents\Utility\BrakeCarController.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CCL_GameScripts\CCL_GameScripts.csproj">

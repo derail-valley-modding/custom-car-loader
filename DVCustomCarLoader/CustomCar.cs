@@ -384,30 +384,25 @@ namespace DVCustomCarLoader
             //==============================================================================================================
             #region Loco Params
 
-            var simParams = newFab.GetComponent<SimParamsBase>();
-            if( simParams )
+            var simSetup = newFab.GetComponentByInterface<ISimSetup>();
+            if (simSetup != null)
             {
-                LocoComponentManager.AddLocoSimulation(newFab, simParams);
-                LocoType = simParams.SimType;
-                LocoAudioType = simParams.AudioType;
-                RequiredLicense = simParams.RequiredLicense;
-            }
-            else
-            {
-                var tenderSetup = newFab.GetComponent<TenderSetup>();
-                if (tenderSetup)
+                LocoType = simSetup.SimType;
+                if (simSetup is SimParamsBase simParams)
                 {
-                    LocoType = LocoParamsType.Tender;
+                    LocoComponentManager.AddLocoSimulation(newFab, simParams);
+                    LocoAudioType = simParams.AudioType;
+                    RequiredLicense = simParams.RequiredLicense;
                 }
             }
 
-            if( carSetup.InteriorPrefab )
+            if (carSetup.InteriorPrefab)
             {
                 GameObject interiorFab = Object.Instantiate(carSetup.InteriorPrefab, null);
                 interiorFab.SetActive(false);
                 Object.DontDestroyOnLoad(interiorFab);
 
-                LocoComponentManager.SetupCabComponents(interiorFab, simParams);
+                LocoComponentManager.SetupCabComponents(interiorFab, simSetup);
                 LocoComponentManager.SetInteriorLayers(interiorFab);
                 LocoComponentManager.MakeDoorsCollidable(interiorFab);
 

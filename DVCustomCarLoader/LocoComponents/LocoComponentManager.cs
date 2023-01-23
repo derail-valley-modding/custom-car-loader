@@ -148,18 +148,27 @@ namespace DVCustomCarLoader
             driver.wheelslipToFrictionModifierCurve = simParams.WheelslipToFrictionModifier;
         }
 
-        public static void SetupCabComponents(GameObject interior, SimParamsBase simParams)
+        public static void SetupCabComponents(GameObject interior, ISimSetup simParams)
         {
             CreateComponentsFromProxies(interior);
             CreateCopiedControls(interior);
 
-            if (simParams.SimType == LocoParamsType.DieselElectric)
+            if (simParams != null)
             {
-                interior.AddComponent<CustomFuseController>();
-            }
-            else if (simParams.SimType == LocoParamsType.Steam)
-            {
-                SetupFirebox(interior, simParams as SimParamsSteam);
+                switch (simParams.SimType)
+                {
+                    case LocoParamsType.DieselElectric:
+                        interior.AddComponent<CustomFuseController>();
+                        break;
+
+                    case LocoParamsType.Steam:
+                        SetupFirebox(interior, simParams as SimParamsSteam);
+                        break;
+
+                    case LocoParamsType.Caboose:
+                        SetupCabooseInterior(interior);
+                        break;
+                }
             }
 
             // add controller/"brain" components
@@ -248,6 +257,8 @@ namespace DVCustomCarLoader
                 }
             }
         }
+
+        #region Interior Manipulation
 
         public static GameObject GetTrainCarInterior( TrainCarType carType )
         {
@@ -405,6 +416,35 @@ namespace DVCustomCarLoader
                 }
             }
         }
+
+        private static void SetupCabooseInterior(GameObject interior)
+        {
+            var spec = interior.GetComponent<BrakeCarInteriorSetup>();
+            var cabooseInterior = GetTrainCarInterior(TrainCarType.CabooseRed);
+
+            if (spec.CareerManagerLocation)
+            {
+                var manager = cabooseInterior.transform.Find(CarPartNames.CABOOSE_CAREER_MANAGER);
+                var newManager = GameObject.Instantiate(manager.gameObject, spec.CareerManagerLocation, false);
+                newManager.transform.localPosition = Vector3.zero;
+            }
+
+            if (spec.RemoteChargerLocation)
+            {
+                var charger = cabooseInterior.transform.Find(CarPartNames.CABOOSE_REMOTE_CHARGER);
+                var newCharger = GameObject.Instantiate(charger.gameObject, spec.RemoteChargerLocation, false);
+                newCharger.transform.localPosition = Vector3.zero;
+            }
+
+            if (spec.RemoteExtenderAntennaLocation)
+            {
+                var antenna = cabooseInterior.transform.Find(CarPartNames.CABOOSE_REMOTE_ANTENNA);
+                var newAntenna = GameObject.Instantiate(antenna.gameObject, spec.RemoteExtenderAntennaLocation, false);
+                newAntenna.transform.localPosition = Vector3.zero;
+            }
+        }
+
+        #endregion
 
         public static T CopyComponent<T>(T original, GameObject destination) where T : Component
         {
