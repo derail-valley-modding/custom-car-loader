@@ -105,7 +105,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 			if (chuffController)
             {
 				chuffCurveScaleFactor = chuffController.chuffsPerRevolution / DEFAULT_CHUFFS_PER_REV;
-                //chuffController.OnChuff += OnChuff;
+                chuffController.OnChuff += OnChuff;
             }
 		}
 
