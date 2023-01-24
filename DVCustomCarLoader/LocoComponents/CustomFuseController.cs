@@ -10,6 +10,8 @@ namespace DVCustomCarLoader.LocoComponents
     public class CustomFuseController : MonoBehaviour, ILocoEventProvider, ICabControlAcceptor
     {
         public LocoEventManager EventManager { get; set; }
+        public IEnumerable<WatchableValue> Watchables => null;
+
         protected IFusedLocoController locoController;
 
         public List<CabInputRelay> SideFuses { get; protected set; } = new List<CabInputRelay>();

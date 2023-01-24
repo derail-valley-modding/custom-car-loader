@@ -7,20 +7,15 @@ namespace DVCustomCarLoader.LocoComponents.Utility
     public class BrakeCarKeyboardInputRouter : CarKeyboardInputBase
     {
 		public BrakeCarController Ctrl = null;
-		protected List<InputDescriptor> Inputs = new List<InputDescriptor>();
+		protected InputDescriptor[] Inputs = null;
 
 		protected virtual void Start()
 		{
-			Inputs.Add(
-				new InputDescriptor(KeyBindings.increaseIndependentBrakeKeys, KeyBindings.decreaseIndependentBrakeKeys, 1, Ctrl.GetTargetIndependentBrake, Ctrl.SetIndependentBrake)
-			);
-
-			if (Ctrl.HasAutomaticBrakeHandle)
+			Inputs = new InputDescriptor[]
 			{
-				Inputs.Add(
-					new InputDescriptor(KeyBindings.increaseBrakeKeys, KeyBindings.decreaseBrakeKeys, 1, Ctrl.GetTargetTrainBrake, Ctrl.SetTrainBrake)
-				);
-			}
+				new InputDescriptor(KeyBindings.increaseIndependentBrakeKeys, KeyBindings.decreaseIndependentBrakeKeys, 1, Ctrl.GetTargetIndependentBrake, Ctrl.SetIndependentBrake),
+				new InputDescriptor(KeyBindings.increaseBrakeKeys, KeyBindings.decreaseBrakeKeys, 1, Ctrl.GetTargetTrainBrake, Ctrl.SetTrainBrake)
+			};
 		}
 
 		protected virtual void Update()

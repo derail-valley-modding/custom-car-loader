@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using CCL_GameScripts.CabControls;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace DVCustomCarLoader.LocoComponents
     public abstract class CustomLocoSimEvents : LocoSimulationEvents, ILocoEventProvider
     {
         public LocoEventManager EventManager { get; set; }
+        public IEnumerable<WatchableValue> Watchables => null;
+
         protected const float FUEL_OIL_DMG_CHECK_PERIOD = 5f;
 
         protected LocoEventWrapper<Amount> SandEvent;

@@ -20,6 +20,12 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         #region Events
 
+        protected override void Awake()
+        {
+            base.Awake();
+            AddWatchables();
+        }
+
         protected override void Start()
         {
             base.Start();
@@ -99,7 +105,6 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         public override void Update()
         {
-            UpdateWatchables();
             base.Update();
             // TODO: Whistle
             sim.speed.SetValue(GetSpeedKmH());
@@ -297,48 +302,21 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
         }
 
-        protected float _SandLevel;
-        protected float _Cutoff;
-        protected float _BoilerPressure;
-        protected float _BoilerWater;
-        protected float _FireTemp;
-        protected float _FireFuelLevel;
-        protected float _InjectorFlow;
-
-        protected float _FuelLevel;
-        protected float _WaterLevel;
-
-        private void UpdateWatchables()
+        private void AddWatchables()
         {
-            EventManager.UpdateValueDispatchOnChange(this, ref _SandLevel, sim.sand.value, SimEventType.Sand);
-            EventManager.UpdateValueDispatchOnChange(this, ref _Cutoff, reverser, SimEventType.Cutoff);
-            EventManager.UpdateValueDispatchOnChange(this, ref _BoilerPressure, sim.boilerPressure.value, SimEventType.BoilerPressure);
-            EventManager.UpdateValueDispatchOnChange(this, ref _BoilerWater, sim.boilerWater.value, SimEventType.WaterLevel);
-            EventManager.UpdateValueDispatchOnChange(this, ref _FireTemp, sim.temperature.value, SimEventType.FireTemp);
-            EventManager.UpdateValueDispatchOnChange(this, ref _FireFuelLevel, sim.fireboxFuel.value, SimEventType.FireboxLevel);
-            EventManager.UpdateValueDispatchOnChange(this, ref _InjectorFlow, sim.injector.value, SimEventType.InjectorFlow);
+            _watchables.AddNew(this, SimEventType.Sand, sim.sand);
+            _watchables.AddNew(this, SimEventType.Cutoff, () => reverser);
+            _watchables.AddNew(this, SimEventType.BoilerPressure, sim.boilerPressure);
+            _watchables.AddNew(this, SimEventType.WaterLevel, sim.boilerWater);
+            _watchables.AddNew(this, SimEventType.FireTemp, sim.temperature);
+            _watchables.AddNew(this, SimEventType.FireboxLevel, sim.fireboxFuel);
+            _watchables.AddNew(this, SimEventType.InjectorFlow, sim.injector);
 
-            EventManager.UpdateValueDispatchOnChange(this, ref _FuelLevel, sim.tenderFuel.value, SimEventType.Fuel);
-            EventManager.UpdateValueDispatchOnChange(this, ref _WaterLevel, sim.tenderWater.value, SimEventType.WaterReserve);
+            _watchables.AddNew(this, SimEventType.Fuel, sim.tenderFuel);
+            _watchables.AddNew(this, SimEventType.WaterReserve, sim.tenderWater);
         }
 
-        public override void ForceDispatchAll()
-        {
-            base.ForceDispatchAll();
-
-            EventManager.Dispatch(this, SimEventType.Sand, sim.sand.value);
-            EventManager.Dispatch(this, SimEventType.Cutoff, reverser);
-            EventManager.Dispatch(this, SimEventType.BoilerPressure, sim.boilerPressure.value);
-            EventManager.Dispatch(this, SimEventType.WaterLevel, sim.boilerWater.value);
-            EventManager.Dispatch(this, SimEventType.FireTemp, sim.temperature.value);
-            EventManager.Dispatch(this, SimEventType.FireboxLevel, sim.fireboxFuel.value);
-            EventManager.Dispatch(this, SimEventType.InjectorFlow, sim.injector.value);
-
-            EventManager.Dispatch(this, SimEventType.Fuel, sim.tenderFuel.value);
-            EventManager.Dispatch(this, SimEventType.WaterReserve, sim.tenderWater.value);
-        }
-
-        public float FireboxLevel => _FireFuelLevel;
+        public float FireboxLevel => sim.fireboxFuel.value;
         public float FireTemp => sim.temperature.value;
         public float MaxFireTemp => sim.temperature.max;
         public float FireTempPercent => sim.temperature.value / sim.temperature.max;
@@ -346,13 +324,13 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float BlowerFlow => sim.GetBlowerFlowPercent();
         public float DraftFlow => sim.GetDraftFlowPercent();
 
-        public float BoilerWater => _BoilerWater;
+        public float BoilerWater => sim.boilerWater.value;
         public float MaxBoilerWater => sim.boilerWater.max;
-        public float BoilerWaterPercent => _BoilerWater / sim.boilerWater.max;
+        public float BoilerWaterPercent => sim.boilerWater.value / sim.boilerWater.max;
 
-        public float BoilerPressure => _BoilerPressure;
+        public float BoilerPressure => sim.boilerPressure.value;
         public float MaxBoilerPressure => sim.boilerPressure.max;
-        public float BoilerPressurePercent => _BoilerPressure / sim.boilerPressure.max;
+        public float BoilerPressurePercent => sim.boilerPressure.value / sim.boilerPressure.max;
 
         public float FuelConsumptionRate => sim.fuelConsumptionRate;
         public float MaxFuelConsumptionRate => sim.maxFuelConsumptionRate;

@@ -1,18 +1,15 @@
 ﻿using CCL_GameScripts.Attributes;
-using System.Collections;
 using UnityEngine;
 
 namespace CCL_GameScripts
 {
+    [RequireComponent(typeof(TrainCarSetup))]
     public class BrakeCarSetup : ComponentInitSpec, ISimSetup
     {
         public LocoParamsType SimType => LocoParamsType.Caboose;
 
         public override string TargetTypeName => "DVCustomCarLoader.LocoComponents.Utility.BrakeCarController";
         public override bool DestroyAfterCreation => true;
-
-        [ProxyField]
-        public bool HasAutomaticBrakeHandle = false;
     }
 
     public class BrakeCarInteriorSetup : MonoBehaviour
@@ -53,38 +50,44 @@ namespace CCL_GameScripts
         private const float ANTENNA_POLE_RADIUS = 0.014f;
         private const float ANTENNA_POLE_HEIGHT = 0.173f;
 
+        private void DrawCubeScaled(Transform pivot, Vector3 center, Vector3 size)
+        {
+            Gizmos.DrawCube(pivot.TransformPoint(center), pivot.TransformVector(size));
+        }
+
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.yellow;
+            Vector3 center;
 
             if (CareerManagerLocation)
             {
-                Vector3 center = CareerManagerLocation.position + new Vector3(0, CM_BOTTOM_HEIGHT / 2, 0);
-                Gizmos.DrawCube(center, new Vector3(CM_DEPTH, CM_BOTTOM_HEIGHT, CM_WIDTH));
+                center = new Vector3(0, CM_BOTTOM_HEIGHT / 2, 0);
+                DrawCubeScaled(CareerManagerLocation, center, new Vector3(CM_DEPTH, CM_BOTTOM_HEIGHT, CM_WIDTH));
 
-                center = CareerManagerLocation.position + new Vector3((CM_TOP_DEPTH / 2) - (CM_DEPTH / 2), CM_HEIGHT - (CM_TOP_HEIGHT / 2), 0);
-                Gizmos.DrawCube(center, new Vector3(CM_TOP_DEPTH, CM_TOP_HEIGHT, CM_WIDTH));
+                center = new Vector3((CM_TOP_DEPTH / 2) - (CM_DEPTH / 2), CM_HEIGHT - (CM_TOP_HEIGHT / 2), 0);
+                DrawCubeScaled(CareerManagerLocation, center, new Vector3(CM_TOP_DEPTH, CM_TOP_HEIGHT, CM_WIDTH));
             }
 
             if (RemoteChargerLocation)
             {
-                Vector3 center = RemoteChargerLocation.position + new Vector3(0, CHARGE_HEIGHT / 2, 0);
-                Gizmos.DrawCube(center, new Vector3(CHARGE_DEPTH, CHARGE_HEIGHT, CHARGE_WIDTH));
+                center = new Vector3(0, CHARGE_HEIGHT / 2, 0);
+                DrawCubeScaled(RemoteChargerLocation, center, new Vector3(CHARGE_DEPTH, CHARGE_HEIGHT, CHARGE_WIDTH));
 
-                center = RemoteChargerLocation.position + new Vector3((CHARGE_BUMP_DEPTH / 2) - (CHARGE_DEPTH / 2), CHARGE_HEIGHT + (CHARGE_BUMP_HEIGHT / 2), 0);
-                Gizmos.DrawCube(center, new Vector3(CHARGE_BUMP_DEPTH, CHARGE_BUMP_HEIGHT, CHARGE_WIDTH));
+                center = new Vector3((CHARGE_BUMP_DEPTH / 2) - (CHARGE_DEPTH / 2), CHARGE_HEIGHT + (CHARGE_BUMP_HEIGHT / 2), 0);
+                DrawCubeScaled(RemoteChargerLocation, center, new Vector3(CHARGE_BUMP_DEPTH, CHARGE_BUMP_HEIGHT, CHARGE_WIDTH));
             }
 
             if (RemoteExtenderAntennaLocation)
             {
-                Vector3 center = RemoteExtenderAntennaLocation.position + new Vector3(0, ANTENNA_HEIGHT / 2, 0);
-                Gizmos.DrawCube(center, new Vector3(ANTENNA_DEPTH, ANTENNA_HEIGHT, ANTENNA_WIDTH));
+                center = new Vector3(0, ANTENNA_HEIGHT / 2, 0);
+                DrawCubeScaled(RemoteExtenderAntennaLocation, center, new Vector3(ANTENNA_DEPTH, ANTENNA_HEIGHT, ANTENNA_WIDTH));
 
-                center = RemoteExtenderAntennaLocation.position + new Vector3(ANTENNA_POLE_X, ANTENNA_POLE_Y, ANTENNA_POLE_Z);
-                Gizmos.DrawCube(center, new Vector3(ANTENNA_POLE_RADIUS, ANTENNA_POLE_HEIGHT, ANTENNA_POLE_RADIUS));
+                center = new Vector3(ANTENNA_POLE_X, ANTENNA_POLE_Y, ANTENNA_POLE_Z);
+                DrawCubeScaled(RemoteExtenderAntennaLocation, center, new Vector3(ANTENNA_POLE_RADIUS, ANTENNA_POLE_HEIGHT, ANTENNA_POLE_RADIUS));
 
-                center = RemoteExtenderAntennaLocation.position + new Vector3(ANTENNA_POLE_X, ANTENNA_POLE_Y, -ANTENNA_POLE_Z);
-                Gizmos.DrawCube(center, new Vector3(ANTENNA_POLE_RADIUS, ANTENNA_POLE_HEIGHT, ANTENNA_POLE_RADIUS));
+                center = new Vector3(ANTENNA_POLE_X, ANTENNA_POLE_Y, -ANTENNA_POLE_Z);
+                DrawCubeScaled(RemoteExtenderAntennaLocation, center, new Vector3(ANTENNA_POLE_RADIUS, ANTENNA_POLE_HEIGHT, ANTENNA_POLE_RADIUS));
             }
         }
     }

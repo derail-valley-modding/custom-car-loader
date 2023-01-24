@@ -26,6 +26,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public SimComponent tenderFuel;
 
         public LocoEventManager EventManager { get; set; }
+        public IEnumerable<WatchableValue> Watchables { get; protected set; }
 
         protected void Awake()
         {
@@ -38,6 +39,12 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
             gameObject.AddComponent<CustomTenderSaveState>().Initialize(this, visitChecker);
             train.LogicCarInitialized += OnLogicCarInitialized;
+
+            Watchables = new WatchableValue[]
+            {
+                new WatchableSimValue(this, SimEventType.Fuel, tenderFuel),
+                new WatchableSimValue(this, SimEventType.WaterReserve, tenderWater),
+            };
         }
 
         private void OnLogicCarInitialized()
@@ -62,20 +69,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
         }
 
-        private float _FuelLevel;
-        private float _WaterLevel;
-
-        protected void Update()
-        {
-            EventManager.UpdateValueDispatchOnChange(this, ref _FuelLevel, tenderFuel.value, SimEventType.Fuel);
-            EventManager.UpdateValueDispatchOnChange(this, ref _WaterLevel, tenderWater.value, SimEventType.WaterReserve);
-        }
-
-        public void ForceDispatchAll()
-        {
-            EventManager.Dispatch(this, SimEventType.Fuel, tenderFuel.value);
-            EventManager.Dispatch(this, SimEventType.WaterReserve, tenderWater.value);
-        }
+        public void ForceDispatchAll() { }
 
         #region Debt/Service
 

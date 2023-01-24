@@ -1,12 +1,18 @@
 using CCL_GameScripts.CabControls;
-using DV;
+using DV.Simulation.Brake;
+using HarmonyLib;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents.Utility
 {
-    public class BrakeCarController : MonoBehaviour, ICabControlAcceptor
+    public class BrakeCarController : MonoBehaviour, ILocoEventProvider, ICabControlAcceptor
     {
-        public bool HasAutomaticBrakeHandle = false;
+        public LocoEventManager EventManager { get; set; }
+
         public bool HasRemoteRangeExtender = false;
 
         protected TrainCar car;
@@ -14,6 +20,7 @@ namespace DVCustomCarLoader.LocoComponents.Utility
 
         protected float targetTrainBrake;
 
+        public IEnumerable<WatchableValue> Watchables { get; protected set; }
 
         protected virtual void Awake()
         {
@@ -23,11 +30,18 @@ namespace DVCustomCarLoader.LocoComponents.Utility
                 Main.Error("TrainCar not attached to BrakeCarController! Destroying self.");
                 Destroy(this);
             }
+
+            Watchables = new[]
+            {
+                new WatchableValue<float>(this, SimEventType.BrakePipe, () => car.brakeSystem.brakePipePressure),
+            };
         }
 
         protected virtual void Start()
         {
             car.brakeSystem.hasIndependentBrake = true;
+            car.brakeSystem.hasCompressor = false;
+            car.brakeSystem.compressorProductionRate = 0;
             car.CarDamage.IgnoreDamage(true);
 
             if (HasRemoteRangeExtender)
@@ -40,6 +54,35 @@ namespace DVCustomCarLoader.LocoComponents.Utility
                 var keyboardInput = gameObject.AddComponent<BrakeCarKeyboardInputRouter>();
                 keyboardInput.Ctrl = this;
             }
+
+            StartCoroutine(EngageBrakesOnStart());
+        }
+
+        private bool IsConnectedToAny()
+        {
+            return car.trainset.cars.Any();
+        }
+
+        private bool IsConnectedToLoco()
+        {
+            return car.trainset.locoIndices.Any();
+        }
+
+        private IEnumerator EngageBrakesOnStart()
+        {
+            SetIndependentBrake(1f);
+            yield return WaitFor.Seconds(1.5f);
+
+            // leave just independent for lone caboose
+            if (!IsConnectedToAny()) yield break;
+
+            SetIndependentBrake(0f);
+
+            // allow loco to take brake control
+            float trainBrakeLevel = IsConnectedToLoco() ? 0f : 1f;
+            SetTrainBrake(trainBrakeLevel);
+
+            yield break;
         }
 
         public void SetIndependentBrake(float newTarget)
@@ -60,8 +103,6 @@ namespace DVCustomCarLoader.LocoComponents.Utility
         
         public void SetTrainBrake(float newTarget)
         {
-            if (!HasAutomaticBrakeHandle) return;
-
             if (targetTrainBrake != newTarget)
             {
                 if (car.isEligibleForSleep)
@@ -78,17 +119,7 @@ namespace DVCustomCarLoader.LocoComponents.Utility
 
         public bool AcceptsControlOfType(CabInputType inputType)
         {
-            switch (inputType)
-            {
-                case CabInputType.IndependentBrake:
-                    return true;
-
-                case CabInputType.TrainBrake:
-                    return HasAutomaticBrakeHandle;
-
-                default:
-                    return false;
-            }
+            return inputType.EqualsOneOf(CabInputType.IndependentBrake, CabInputType.TrainBrake);
         }
 
         public void RegisterControl(CabInputRelay controlRelay)
@@ -100,11 +131,31 @@ namespace DVCustomCarLoader.LocoComponents.Utility
                     break;
 
                 case CabInputType.TrainBrake:
-                    if (HasAutomaticBrakeHandle)
-                    {
-                        controlRelay.SetIOHandlers(SetTrainBrake, GetTargetTrainBrake);
-                    }
+                    controlRelay.SetIOHandlers(SetTrainBrake, GetTargetTrainBrake);
                     break;
+            }
+        }
+
+        public void ForceDispatchAll() { }
+    }
+
+    [HarmonyPatch(typeof(Brakeset))]
+    public static class BrakeSetPatch
+    {
+        [HarmonyTranspiler]
+        [HarmonyPatch(nameof(Brakeset.Update))]
+        public static IEnumerable<CodeInstruction> TranspileUpdate(IEnumerable<CodeInstruction> instructions)
+        {
+            bool firstBrFound = false;
+            foreach (var instruction in instructions)
+            {
+                if (!firstBrFound && (instruction.opcode == OpCodes.Brfalse))
+                {
+                    firstBrFound = true;
+                    continue;
+                }
+
+                yield return instruction;
             }
         }
     }
