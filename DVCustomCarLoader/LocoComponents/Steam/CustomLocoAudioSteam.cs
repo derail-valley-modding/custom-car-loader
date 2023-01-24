@@ -9,8 +9,8 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents.Steam
 {
-    public class CustomLocoAudioSteam : CustomLocoAudio<CustomLocoControllerSteam, CustomLocoSimEventsSteam, CustomDamageControllerSteam>
-    {
+	public class CustomLocoAudioSteam : CustomLocoAudio<CustomLocoControllerSteam, CustomLocoSimEventsSteam, CustomDamageControllerSteam>
+	{
 		protected CustomChuffController chuffController;
 
 		// Cylinders
@@ -30,10 +30,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 		[ProxyField]
 		public AudioClip[] chimneyClipsSlow;
 
-        protected AudioSource chimneySource;
+		protected AudioSource chimneySource;
 
-        // Chuff
-        [ProxyField]
+		// Chuff
+		[ProxyField]
 		public LayeredAudio valveGearLayered;
 		[ProxyField]
 		public LayeredAudio steamChuffsLayered;
@@ -84,10 +84,26 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 		public LayeredAudio sandAudio;
 
 		private bool loopsPlaying;
+
+		// train 1Hz speed = circumference m/s * MPS_KMH_FACTOR / chuffsPerRev
+		// chuff layer conversion = default 1Hz speed / train 1Hz speed
+		// default 1Hz speed = default 4Hz speed / 4 = 16 kmh / 4
+		// eval speed = train speed * conversion factor
+
+		//               16 kmh             chuffsPerRev
+		// conversion = -------- * --------------------------------
+		//                 4        circumference * MPS_KMH_FACTOR
+
+		private const float MPS_KMH_FACTOR = 3.6f;
+		private const float CHUFF_LAYER_1HZ_KMH = 16;
+		private const float DEFAULT_CHUFFS_PER_REV = 4;
+
 		private float chuffCurveScaleFactor;
 
-		private const float DEFAULT_CHUFFS_PER_REV = 4;
-		private const float WHEEL_KMH_OFFSET = 10;
+		private float CurveEvalSpeed(float trainKmh)
+		{
+			return Mathf.Clamp(trainKmh * chuffCurveScaleFactor, 0, 120);
+		}
 
 		#region Setup & Teardown
 
@@ -95,28 +111,31 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 		{
 			chimneySource = CreateSource(playChimneyAt.position, 20, 500, AudioManager.e.cabGroup);
 			leftCylinderSource = CreateSource(playLeftCylAt.position, 15, 500, AudioManager.e.cabGroup);
-            rightCylinderSource = CreateSource(playRightCylAt.position, 15, 500, AudioManager.e.cabGroup);
-        }
+			rightCylinderSource = CreateSource(playRightCylAt.position, 15, 500, AudioManager.e.cabGroup);
+		}
 
 		protected override void SetupLocoLogic(TrainCar car)
 		{
 			base.SetupLocoLogic(car);
 			chuffController = car.GetComponent<CustomChuffController>();
 			if (chuffController)
-            {
-				chuffCurveScaleFactor = chuffController.chuffsPerRevolution / DEFAULT_CHUFFS_PER_REV;
-                chuffController.OnChuff += OnChuff;
-            }
+			{
+				chuffCurveScaleFactor = 
+					(CHUFF_LAYER_1HZ_KMH / (DEFAULT_CHUFFS_PER_REV * MPS_KMH_FACTOR)) *
+					(chuffController.chuffsPerRevolution / chuffController.wheelCircumference);
+
+				chuffController.OnChuff += OnChuff;
+			}
 		}
 
 		protected override void UnsetLocoLogic()
 		{
 			base.UnsetLocoLogic();
 			if (chuffController)
-            {
+			{
 				chuffController.OnChuff -= OnChuff;
 				chuffCurveScaleFactor = 1;
-            }
+			}
 			chuffController = null;
 		}
 
@@ -143,27 +162,27 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 		}
 
 		protected void StopLoops()
-        {
+		{
 			valveGearLayered.Stop();
 			steamChuffsLayered.Stop();
 			loopsPlaying = false;
-        }
+		}
 
 		protected void StartLoops()
-        {
+		{
 			StopLoops();
 			valveGearLayered.Play();
 			steamChuffsLayered.Play();
 			loopsPlaying = true;
-        }
+		}
 
-        #endregion
+		#endregion
 
-        #region Updates
+		#region Updates
 
-        protected override void Update()
-        {
-            base.Update();
+		protected override void Update()
+		{
+			base.Update();
 
 			if (!timeFlow || !Car) return;
 
@@ -174,46 +193,46 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
 			// Injector
 			if (waterInFlowLayered)
-            {
+			{
 				if ((customLocoController.GetInjector() > 0) && (customLocoController.BoilerWater < customLocoController.MaxBoilerWater) && (customLocoController.TenderWater > 0))
-                {
+				{
 					float volume = customLocoController.GetInjector() * waterInVolumeEdgeMultiplier.Evaluate(customLocoController.BoilerWaterPercent);
 					waterInFlowLayered.Set(volume);
-                }
+				}
 				else
-                {
+				{
 					waterInFlowLayered.Set(0);
-                }
-            }
+				}
+			}
 
 			// Water Dump
 			if (waterDumpFlowLayered)
-            {
+			{
 				if ((customLocoController.GetWaterDump() > 0) && (customLocoController.BoilerWater > 0))
-                {
+				{
 					waterDumpFlowLayered.Set(customLocoController.GetWaterDump() * waterDumpVolumeEdgeMultiplier.Evaluate(customLocoController.BoilerWaterPercent));
-                }
+				}
 				else
-                {
+				{
 					waterDumpFlowLayered.Set(0);
-                }
-            }
+				}
+			}
 
 			// Blower
 			if (blowerLayered)
-            {
+			{
 				blowerLayered.Set(customLocoController.BlowerFlow);
-            }
+			}
 
 			// Draft
 			if (draftLayered)
-            {
+			{
 				draftLayered.Set(customLocoController.DraftFlow);
-            }
+			}
 
 			// Steam Dump
 			if (steamReleaseLayeredLeft && steamReleaseLayeredRight)
-            {
+			{
 				if ((customLocoController.GetSteamDump() > 0) && (customLocoController.BoilerPressure > 0))
 				{
 					float volume = customLocoController.GetSteamDump() * steamReleaseVolumeEdgeMultiplier.Evaluate(customLocoController.BoilerPressurePercent);
@@ -221,93 +240,93 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 					steamReleaseLayeredRight.Set(volume);
 				}
 				else
-                {
+				{
 					steamReleaseLayeredLeft.Set(0);
 					steamReleaseLayeredRight.Set(0);
-                }
-            }
+				}
+			}
 
 			// Safety Release
 			if (steamSafetyReleaseLayered)
-            {
+			{
 				steamSafetyReleaseLayered.Set(customLocoController.SafetyValve);
-            }
+			}
 
 			// Pressure Leak
 			if (pressureLeakLayered)
-            {
+			{
 				if (customLocoController.BoilerPressure > 0)
 				{
 					pressureLeakLayered.Set(customLocoController.PressureLeak * steamReleaseVolumeEdgeMultiplier.Evaluate(customLocoController.BoilerPressurePercent));
 				}
 				else
-                {
+				{
 					pressureLeakLayered.Set(0);
-                }
-            }
+				}
+			}
 
 			// Whistle
 			if (whistleAudio)
-            {
+			{
 				if (customLocoController.BoilerPressure > 0)
-                {
+				{
 					whistleAudio.Set(customLocoController.GetWhistle() * whistleVolumeEdgeMultiplier.Evaluate(customLocoController.BoilerPressurePercent));
-                }
+				}
 				else
-                {
+				{
 					whistleAudio.Set(0);
-                }
-            }
+				}
+			}
 
 			// Fire
 			if (fireLayered)
-            {
+			{
 				float volume = (customLocoController.GetFireOn() == 1) ? customLocoController.FireTempPercent : 0;
 				fireLayered.Set(volume);
-            }
+			}
 
 			// Sand
 			if (sandAudio)
-            {
+			{
 				sandAudio.Set(customLocoController.GetSandersFlow());
-            }
-        }
+			}
+		}
 
 		private bool _awaitingChuffStart = false;
 
 		protected void OnChuff(float power)
-        {
+		{
 			int currentChuff = chuffController.currentChuff;
-			float wheelKmh = Mathf.Min(chuffController.chuffKmh * chuffCurveScaleFactor, 120f);
-			float individualLvl = Mathf.Clamp01(individualToFastLoopTransition.Evaluate(wheelKmh - WHEEL_KMH_OFFSET));
+			float wheelKmh = CurveEvalSpeed(chuffController.chuffKmh);
+			float individualLvl = individualToFastLoopTransition.Evaluate(wheelKmh);
 
 			if (individualLvl > 0.01f)
-            {
-                float volume = power * individualLvl;
-                AudioSource cylSource = (currentChuff % 2 == 0) ? leftCylinderSource : rightCylinderSource;
+			{
+				float volume = power * individualLvl;
+				AudioSource cylSource = (currentChuff % 2 == 0) ? leftCylinderSource : rightCylinderSource;
 
-				PlayRandomOneShot(cylSource, cylClipsSlow, volume);
-				PlayRandomOneShot(chimneySource, chimneyClipsSlow, volume);
+				PlayRandomOneShot(cylSource, cylClipsSlow, Mathf.Clamp01(volume * 2));
+				PlayRandomOneShot(chimneySource, chimneyClipsSlow, Mathf.Clamp01(volume));
 			}
 
 			if (_awaitingChuffStart)
 			{
 				_awaitingChuffStart = false;
-                if (!loopsPlaying)
-                {
-                    StartLoops();
-                }
-            }
+				if (!loopsPlaying)
+				{
+					StartLoops();
+				}
+			}
 		}
 
 		protected void ChuffUpdate()
-        {
+		{
 			float power = chuffController.chuffPower;
-			float wheelKmh = Mathf.Min(chuffController.chuffKmh * chuffCurveScaleFactor, 120f);
+			float wheelKmh = CurveEvalSpeed(chuffController.chuffKmh);
 
-			float continuousLvl = Mathf.Clamp01(1 - individualToFastLoopTransition.Evaluate(wheelKmh - WHEEL_KMH_OFFSET));
+			float continuousLvl = Mathf.Clamp01(1 - individualToFastLoopTransition.Evaluate(wheelKmh));
 			if (continuousLvl > 0.02f)
-            {
+			{
 				if (!_awaitingChuffStart && !loopsPlaying)
 				{
 					_awaitingChuffStart = true;
@@ -317,14 +336,14 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 				valveGearLayered.masterVolume = continuousLvl;
 
 				steamChuffsLayered.Set(wheelKmh);
-				steamChuffsLayered.masterVolume = continuousLvl * power;
-            }
+				steamChuffsLayered.masterVolume = Mathf.Clamp01(continuousLvl * power * 2);
+			}
 			else if (loopsPlaying && (continuousLvl < 0.01f))
-            {
+			{
 				StopLoops();
-            }
-        }
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

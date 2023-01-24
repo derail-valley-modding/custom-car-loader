@@ -12,7 +12,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         protected CustomLocoControllerSteam loco;
         protected DrivingAnimation driverAnimation;
 
-        protected float wheelCircumference;
+        public float wheelCircumference;
         public float chuffsPerRevolution = 2;
 
         public int currentChuff { get; protected set; }
