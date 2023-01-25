@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using CCL_GameScripts.CabControls;
 using DV;
@@ -16,6 +17,9 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected DebtTrackerCustomLoco locoDebt;
         protected CarVisitChecker carVisitChecker;
+
+        protected List<WatchableValue> _watchables = new List<WatchableValue>();
+        public IEnumerable<WatchableValue> Watchables => _watchables;
 
         private float GetBrakePipePressure() => train.brakeSystem.brakePipePressure;
         private float GetBrakeResPressure() => train.brakeSystem.mainReservoirPressure;
@@ -76,54 +80,29 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-        protected float _BrakePipePressure;
-        public float BrakePipePressure => _BrakePipePressure;
+        public float BrakePipePressure => GetBrakePipePressure();
 
-        protected float _BrakeResPressure;
-        public float BrakeResPressure => _BrakeResPressure;
+        public float BrakeResPressure => GetBrakeResPressure();
 
-        protected float _IndependentPressure;
-        public float IndependentPressure => _IndependentPressure;
+        public float IndependentPressure => GetIndependentPressure();
 
-        protected float Speed;
-
-        public override void Update()
+        protected override void Awake()
         {
-            EventManager.UpdateValueDispatchOnChange(this, ref Speed, GetSpeedKmH(), SimEventType.Speed);
-            EventManager.UpdateValueDispatchOnChange(this, ref _BrakePipePressure, GetBrakePipePressure(), SimEventType.BrakePipe);
-            EventManager.UpdateValueDispatchOnChange(this, ref _BrakeResPressure, GetBrakeResPressure(), SimEventType.BrakeReservoir);
-            EventManager.UpdateValueDispatchOnChange(this, ref _IndependentPressure, GetIndependentPressure(), SimEventType.IndependentPipe);
+            base.Awake();
 
-            EventManager.UpdateValueDispatchOnChange(this, ref _AccessoryPowerLevel, AccessoryPowerLevel, SimEventType.AccessoryPower);
+            _watchables.AddNew(this, SimEventType.Speed, GetSpeedKmH);
+            _watchables.AddNew(this, SimEventType.BrakePipe, GetBrakePipePressure);
+            _watchables.AddNew(this, SimEventType.BrakeReservoir, GetBrakeResPressure);
+            _watchables.AddNew(this, SimEventType.IndependentPipe, GetIndependentPressure);
 
-            float light = _HeadlightControlLevel * AccessoryPowerLevel;
-            EventManager.UpdateValueDispatchOnChange(this, ref _Headlights, light, SimEventType.Headlights);
-
-            float cab = _CabLightControlLevel * AccessoryPowerLevel;
-            EventManager.UpdateValueDispatchOnChange(this, ref _CabLights, cab, SimEventType.CabLights);
-
-            float fwdLight = Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, 1, reverser));
-            EventManager.UpdateValueDispatchOnChange(this, ref _ForwardLights, fwdLight, SimEventType.LightsForward);
-
-            float revLight = Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, -1, reverser));
-            EventManager.UpdateValueDispatchOnChange(this, ref _RearLights, revLight, SimEventType.LightsReverse);
-
-            base.Update();
+            _watchables.AddNew(this, SimEventType.AccessoryPower, () => AccessoryPowerLevel);
+            _watchables.AddNew(this, SimEventType.Headlights, () => _HeadlightControlLevel * AccessoryPowerLevel);
+            _watchables.AddNew(this, SimEventType.CabLights, () => _CabLightControlLevel * AccessoryPowerLevel);
+            _watchables.AddNew(this, SimEventType.LightsForward, () => Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, 1, reverser)));
+            _watchables.AddNew(this, SimEventType.LightsReverse, () => Mathf.Lerp(0, _Headlights, Mathf.InverseLerp(0, -1, reverser)));
         }
 
-        public virtual void ForceDispatchAll()
-        {
-            EventManager.Dispatch(this, SimEventType.Speed, Speed);
-            EventManager.Dispatch(this, SimEventType.BrakePipe, _BrakePipePressure);
-            EventManager.Dispatch(this, SimEventType.BrakeReservoir, _BrakeResPressure);
-            EventManager.Dispatch(this, SimEventType.IndependentPipe, _IndependentPressure);
-
-            EventManager.Dispatch(this, SimEventType.AccessoryPower, _AccessoryPowerLevel);
-            EventManager.Dispatch(this, SimEventType.Headlights, _Headlights);
-            EventManager.Dispatch(this, SimEventType.CabLights, _CabLights);
-            EventManager.Dispatch(this, SimEventType.LightsForward, _ForwardLights);
-            EventManager.Dispatch(this, SimEventType.LightsReverse, _RearLights);
-        }
+        public virtual void ForceDispatchAll() { }
 
         #region ICabControlAcceptor
 

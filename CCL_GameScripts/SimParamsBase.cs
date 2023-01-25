@@ -38,8 +38,13 @@ namespace CCL_GameScripts
         Steam = 3,
     }
 
+    public interface ISimSetup
+    {
+        LocoParamsType SimType { get; }
+    }
+
     [RequireComponent(typeof(TrainCarSetup))]
-    public abstract class SimParamsBase : MonoBehaviour
+    public abstract class SimParamsBase : MonoBehaviour, ISimSetup
     {
         [HideInInspector]
         public abstract LocoParamsType SimType { get; }

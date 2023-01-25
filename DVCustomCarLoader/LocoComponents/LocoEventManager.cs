@@ -25,6 +25,7 @@ namespace DVCustomCarLoader.LocoComponents
     public interface ILocoEventProvider
     {
         LocoEventManager EventManager { get; set; }
+        IEnumerable<WatchableValue> Watchables { get; }
         void ForceDispatchAll();
     }
 
@@ -60,6 +61,89 @@ namespace DVCustomCarLoader.LocoComponents
             var wrapper = new LocoEventWrapper<T>(parent, eventType);
             e.Register(wrapper.OnChange);
             return wrapper;
+        }
+    }
+
+    public abstract class WatchableValue
+    {
+        public readonly ILocoEventProvider Provider;
+        public readonly SimEventType EventType;
+
+        public LocoEventManager EventManager { get; set; }
+
+        protected WatchableValue(ILocoEventProvider parent, SimEventType eventType)
+        {
+            Provider = parent;
+            EventType = eventType;
+        }
+
+        public abstract void UpdateAndDispatchChanges();
+        public abstract void ForceDispatch();
+    }
+
+    public class WatchableValue<TVal> : WatchableValue
+    {
+        private readonly Func<TVal> getterFunc;
+        public TVal LastValue { get; private set; }
+
+        public WatchableValue(ILocoEventProvider parent, SimEventType eventType, Func<TVal> getter) :
+            base(parent, eventType)
+        {
+            getterFunc = getter;
+        }
+
+        public override void UpdateAndDispatchChanges()
+        {
+            TVal newVal = getterFunc();
+            if (!newVal.Equals(LastValue))
+            {
+                LastValue = newVal;
+                EventManager.Dispatch(Provider, EventType, newVal);
+            }
+        }
+
+        public override void ForceDispatch()
+        {
+            EventManager.Dispatch(Provider, EventType, LastValue);
+        }
+    }
+
+    public class WatchableSimValue : WatchableValue
+    {
+        private readonly SimComponent component;
+        public float LastValue { get; private set; }
+
+        public WatchableSimValue(ILocoEventProvider parent, SimEventType eventType, SimComponent toWatch) :
+            base(parent, eventType)
+        {
+            component = toWatch;
+        }
+
+        public override void UpdateAndDispatchChanges()
+        {
+            if (component.value != LastValue)
+            {
+                LastValue = component.value;
+                EventManager.Dispatch(Provider, EventType, LastValue);
+            }
+        }
+
+        public override void ForceDispatch()
+        {
+            EventManager.Dispatch(Provider, EventType, LastValue);
+        }
+    }
+
+    internal static class WatchableExtensions
+    {
+        public static void AddNew<TVal>(this IList<WatchableValue> list, ILocoEventProvider parent, SimEventType eventType, Func<TVal> getter)
+        {
+            list.Add(new WatchableValue<TVal>(parent, eventType, getter));
+        }
+
+        public static void AddNew(this IList<WatchableValue> list, ILocoEventProvider parent, SimEventType eventType, SimComponent toWatch)
+        {
+            list.Add(new WatchableSimValue(parent, eventType, toWatch));
         }
     }
 
@@ -125,9 +209,31 @@ namespace DVCustomCarLoader.LocoComponents
                 foreach (var provider in providers)
                 {
                     provider.EventManager = dispatcher;
+
+                    if (provider.Watchables.SafeAny())
+                    {
+                        foreach (var watchable in provider.Watchables)
+                        {
+                            watchable.EventManager = dispatcher;
+                        }
+                    }
                 }
                 
                 Main.LogVerbose($"EventManager Start: {Providers.Count} providers, {aCount} acceptors");
+            }
+
+            public void UpdateWatchables()
+            {
+                foreach (var provider in Providers)
+                {
+                    if (provider.Watchables.SafeAny())
+                    {
+                        foreach (var watchable in provider.Watchables)
+                        {
+                            watchable.UpdateAndDispatchChanges();
+                        }
+                    }
+                }
             }
 
             public void ForceDispatchAll()
@@ -135,6 +241,14 @@ namespace DVCustomCarLoader.LocoComponents
                 foreach (var provider in Providers)
                 {
                     provider.ForceDispatchAll();
+
+                    if (provider.Watchables.SafeAny())
+                    {
+                        foreach (var watchable in provider.Watchables)
+                        {
+                            watchable.ForceDispatch();
+                        }
+                    }
                 }
             }
         }
@@ -184,6 +298,12 @@ namespace DVCustomCarLoader.LocoComponents
         public void OnInteriorUnloaded()
         {
             InteriorEvents.Clear();
+        }
+
+        public void Update()
+        {
+            InteriorEvents.UpdateWatchables();
+            ExteriorEvents.UpdateWatchables();
         }
     }
 }

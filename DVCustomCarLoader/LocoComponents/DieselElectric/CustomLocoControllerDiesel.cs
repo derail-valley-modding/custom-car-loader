@@ -23,7 +23,6 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 
 		public MultipleUnitModule muModule;
 
-        private LocoSimulationEvents.Amount _muLampState;
         public LocoSimulationEvents.Amount MULampState
 		{
 			get
@@ -94,59 +93,15 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			return 0.00387571f * traction;
 		}
 
-		protected float _FuelLevel;
-		public float FuelLevel => _FuelLevel;
-
-		protected float _OilLevel;
-		public float OilLevel => _OilLevel;
-
-		protected float _SandLevel;
-		public float SandLevel => _SandLevel;
-
-		protected bool _SandersOn;
-		public bool SandersOn => _SandersOn;
-
-		protected float _EngineTemp;
-		public float EngineTemp => _EngineTemp;
-
-		protected float _EngineRPMGauge;
-		public float EngineRPMGauge => _EngineRPMGauge;
-
-		protected float _Amperage;
-		public float Amperage => _Amperage;
-
+		public float FuelLevel => sim.fuel.value;
+		public float OilLevel => sim.oil.value;
+		public float EngineTemp => sim.engineTemp.value;
 
 		protected bool FanOn;
 		public void SetFanControl(float value)
 		{
 			EventManager.UpdateValueDispatchOnChange(this, ref FanOn, value > 0.5f, SimEventType.Fan);
 		}
-
-        public override void ForceDispatchAll()
-        {
-            base.ForceDispatchAll();
-
-			EventManager.Dispatch(this, SimEventType.Fuel, _FuelLevel);
-			EventManager.Dispatch(this, SimEventType.Oil, _OilLevel);
-			EventManager.Dispatch(this, SimEventType.Sand, _SandLevel);
-			EventManager.Dispatch(this, SimEventType.EngineTemp, _EngineTemp);
-			EventManager.Dispatch(this, SimEventType.EngineRPMGauge, _EngineRPMGauge);
-			EventManager.Dispatch(this, SimEventType.Amperage, _Amperage);
-
-			EventManager.Dispatch(this, SimEventType.Fan, FanOn);
-			EventManager.Dispatch(this, SimEventType.MUConnected, MULampState);
-		}
-
-        private void UpdateWatchables()
-        {
-			EventManager.UpdateValueDispatchOnChange(this, ref _FuelLevel, GetFuel(), SimEventType.Fuel);
-			EventManager.UpdateValueDispatchOnChange(this, ref _OilLevel, GetOil(), SimEventType.Oil);
-			EventManager.UpdateValueDispatchOnChange(this, ref _SandLevel, GetSandLvl(), SimEventType.Sand);
-			EventManager.UpdateValueDispatchOnChange(this, ref _EngineTemp, GetEngineTemp(), SimEventType.EngineTemp);
-			EventManager.UpdateValueDispatchOnChange(this, ref _EngineRPMGauge, GetEngineRPMGauge(), SimEventType.EngineRPMGauge);
-			EventManager.UpdateValueDispatchOnChange(this, ref _Amperage, GetAmperage(), SimEventType.Amperage);
-			EventManager.UpdateValueDispatchOnChange(this, ref _muLampState, MULampState, SimEventType.MUConnected);
-        }
 
         public override void RegisterControl( CabInputRelay inputRelay )
         {
@@ -256,7 +211,16 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			{
 				tractionTorqueCurve = sim.simParams.TractionTorqueCurve;
 			}
-		}
+
+            _watchables.AddNew(this, SimEventType.Fuel, sim.fuel);
+            _watchables.AddNew(this, SimEventType.Oil, sim.oil);
+            _watchables.AddNew(this, SimEventType.Sand, sim.sand);
+            _watchables.AddNew(this, SimEventType.EngineTemp, sim.engineTemp);
+            _watchables.AddNew(this, SimEventType.EngineRPMGauge, GetEngineRPMGauge);
+            _watchables.AddNew(this, SimEventType.Amperage, GetAmperage);
+            //_watchables.AddNew(this, SimEventType.Fan, () => FanOn);
+            _watchables.AddNew(this, SimEventType.MUConnected, () => MULampState);
+        }
 
         private void OnDisable()
 		{
@@ -326,7 +290,6 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 
         public override void Update()
 		{
-			UpdateWatchables();
 			base.Update();
 			UpdateSimSpeed();
 			UpdateSimThrottle();

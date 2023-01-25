@@ -75,6 +75,7 @@
     <Compile Include="CabControls\RotarySetup.cs" />
     <Compile Include="CabControls\ToggleSetup.cs" />
     <Compile Include="CabControls\WheelSetup.cs" />
+    <Compile Include="BrakeCarSetup.cs" />
     <Compile Include="CargoModelSetup.cs" />
     <Compile Include="CarJSONKeys.cs" />
     <Compile Include="CarPartConstants.cs" />
