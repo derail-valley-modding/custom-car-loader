@@ -14,11 +14,25 @@ namespace DVCustomCarLoader.LocoComponents.Utility
         public LocoEventManager EventManager { get; set; }
 
         public bool HasRemoteRangeExtender = false;
+        protected RemoteControllerSignalBooster signalBooster = null;
 
         protected TrainCar car;
         protected float targetIndependentBrake;
 
         protected float targetTrainBrake;
+
+        protected const float MAX_BOOSTER_RANGE = 2000;
+
+        protected float signalBoosterLevel = 1;
+        public void SetSignalBoosterLevel(float level)
+        {
+            signalBoosterLevel = level;
+            if (signalBooster)
+            {
+                signalBooster.range = Mathf.Lerp(0, MAX_BOOSTER_RANGE, signalBoosterLevel);
+            }
+        }
+        public float GetSignalBoosterLevel() => signalBoosterLevel;
 
         public IEnumerable<WatchableValue> Watchables { get; protected set; }
 
@@ -34,6 +48,7 @@ namespace DVCustomCarLoader.LocoComponents.Utility
             Watchables = new[]
             {
                 new WatchableValue<float>(this, SimEventType.BrakePipe, () => car.brakeSystem.brakePipePressure),
+                new WatchableValue<float>(this, SimEventType.SignalBoosterPower, GetSignalBoosterLevel),
             };
         }
 
@@ -46,7 +61,7 @@ namespace DVCustomCarLoader.LocoComponents.Utility
 
             if (HasRemoteRangeExtender)
             {
-                gameObject.AddComponent<RemoteControllerSignalBooster>();
+                signalBooster = gameObject.AddComponent<RemoteControllerSignalBooster>();
             }
 
             if (!VRManager.IsVREnabled())
@@ -60,7 +75,7 @@ namespace DVCustomCarLoader.LocoComponents.Utility
 
         private bool IsConnectedToAny()
         {
-            return car.trainset.cars.Any();
+            return car.trainset.cars.Count > 1;
         }
 
         private bool IsConnectedToLoco()
@@ -119,7 +134,7 @@ namespace DVCustomCarLoader.LocoComponents.Utility
 
         public bool AcceptsControlOfType(CabInputType inputType)
         {
-            return inputType.EqualsOneOf(CabInputType.IndependentBrake, CabInputType.TrainBrake);
+            return inputType.EqualsOneOf(CabInputType.IndependentBrake, CabInputType.TrainBrake, CabInputType.SignalBoosterPower);
         }
 
         public void RegisterControl(CabInputRelay controlRelay)
@@ -132,6 +147,10 @@ namespace DVCustomCarLoader.LocoComponents.Utility
 
                 case CabInputType.TrainBrake:
                     controlRelay.SetIOHandlers(SetTrainBrake, GetTargetTrainBrake);
+                    break;
+
+                case CabInputType.SignalBoosterPower:
+                    controlRelay.SetIOHandlers(SetSignalBoosterLevel, GetSignalBoosterLevel);
                     break;
             }
         }

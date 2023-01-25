@@ -28,6 +28,8 @@
         FireDoor,
         Stoker,
         FireOut,
+
+        SignalBoosterPower,
     }
 
     public enum SimEventType
@@ -71,6 +73,7 @@
         WaterReserve,
         AccessoryPower,
         MUConnected,
+        SignalBoosterPower,
     }
 
     public enum SimThresholdDirection

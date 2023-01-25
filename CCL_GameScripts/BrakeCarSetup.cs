@@ -10,6 +10,9 @@ namespace CCL_GameScripts
 
         public override string TargetTypeName => "DVCustomCarLoader.LocoComponents.Utility.BrakeCarController";
         public override bool DestroyAfterCreation => true;
+
+        [ProxyField]
+        public bool HasRemoteRangeExtender = false;
     }
 
     public class BrakeCarInteriorSetup : MonoBehaviour
@@ -19,8 +22,6 @@ namespace CCL_GameScripts
         [Header("Locomotive Remote Gadgets")]
         public Transform RemoteChargerLocation = null;
 
-        [ProxyField]
-        public bool HasRemoteRangeExtender = false;
         public Transform RemoteExtenderAntennaLocation = null;
 
         // career manager dimensions
@@ -52,7 +53,8 @@ namespace CCL_GameScripts
 
         private void DrawCubeScaled(Transform pivot, Vector3 center, Vector3 size)
         {
-            Gizmos.DrawCube(pivot.TransformPoint(center), pivot.TransformVector(size));
+            Gizmos.matrix = pivot.localToWorldMatrix;
+            Gizmos.DrawWireCube(center, size);
         }
 
         private void OnDrawGizmos()
