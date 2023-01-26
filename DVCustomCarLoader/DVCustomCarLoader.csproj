@@ -144,6 +144,7 @@
     <Compile Include="LocoComponents\DieselElectric\CustomLocoSimDiesel.cs" />
     <Compile Include="LocoComponents\DebtTrackerCustomLoco.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Patches\BrakeSetPatches.cs" />
     <Compile Include="Patches\JobGeneratorPatches.cs" />
     <Compile Include="Patches\JobPaymentPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
