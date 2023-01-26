@@ -1,10 +1,7 @@
 using CCL_GameScripts.CabControls;
-using DV.Simulation.Brake;
-using HarmonyLib;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents.Utility
@@ -156,26 +153,5 @@ namespace DVCustomCarLoader.LocoComponents.Utility
         }
 
         public void ForceDispatchAll() { }
-    }
-
-    [HarmonyPatch(typeof(Brakeset))]
-    public static class BrakeSetPatch
-    {
-        [HarmonyTranspiler]
-        [HarmonyPatch(nameof(Brakeset.Update))]
-        public static IEnumerable<CodeInstruction> TranspileUpdate(IEnumerable<CodeInstruction> instructions)
-        {
-            bool firstBrFound = false;
-            foreach (var instruction in instructions)
-            {
-                if (!firstBrFound && (instruction.opcode == OpCodes.Brfalse))
-                {
-                    firstBrFound = true;
-                    continue;
-                }
-
-                yield return instruction;
-            }
-        }
     }
 }
