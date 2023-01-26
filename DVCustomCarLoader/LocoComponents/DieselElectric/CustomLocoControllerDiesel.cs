@@ -220,6 +220,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
             _watchables.AddNew(this, SimEventType.Amperage, GetAmperage);
             //_watchables.AddNew(this, SimEventType.Fan, () => FanOn);
             _watchables.AddNew(this, SimEventType.MUConnected, () => MULampState);
+			_watchables.AddNew(this, SimEventType.MUConnected, () => (MULampState == LocoSimulationEvents.Amount.Mid) ? 1 : 0);
         }
 
         private void OnDisable()
