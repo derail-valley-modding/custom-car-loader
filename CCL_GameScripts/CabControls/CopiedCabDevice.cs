@@ -24,7 +24,7 @@ namespace CCL_GameScripts.CabControls
         public SimEventType OutputBinding;
         public CabInputType ControlBinding;
 
-        public OutputBinding Binding => new OutputBinding(OutputBinding, ControlBinding);
+        public OutputBinding Binding => new OutputBinding() { SimEventType = OutputBinding, CabInputType = ControlBinding };
 
         [SerializeField]
         [HideInInspector]

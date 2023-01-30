@@ -1,4 +1,6 @@
-﻿namespace CCL_GameScripts.CabControls
+﻿using System;
+
+namespace CCL_GameScripts.CabControls
 {
     public enum CabInputType
     {
@@ -96,15 +98,6 @@
         public SimEventType SimEventType;
         public CabInputType CabInputType;
 
-        public OutputBinding(SimEventType eventType, CabInputType cabInputType)
-        {
-            SimEventType = eventType;
-            CabInputType = cabInputType;
-        }
-
-        public OutputBinding(SimEventType eventType) : this(eventType, CabInputType.None) { }
-        public OutputBinding(CabInputType inputType) : this(SimEventType.None, inputType) { }
-
         public SimEventType[] EventTypes => 
             (SimEventType != SimEventType.None) 
                 ? new[] { SimEventType }
@@ -114,6 +107,19 @@
         public bool HasControlBinding => CabInputType != CabInputType.None;
 
         public override string ToString() => $"({SimEventType}, {CabInputType})";
+
+        public string GetName()
+        {
+            if ((SimEventType != SimEventType.None) && (CabInputType == CabInputType.None))
+            {
+                return Enum.GetName(typeof(SimEventType), SimEventType);
+            }
+            if ((CabInputType != CabInputType.None) && (SimEventType == SimEventType.None))
+            {
+                return Enum.GetName(typeof(CabInputType), CabInputType);
+            }
+            return $"{Enum.GetName(typeof(SimEventType), SimEventType)}, {Enum.GetName(typeof(CabInputType), CabInputType)}";
+        }
     }
 
     public interface IBoundIndicator
