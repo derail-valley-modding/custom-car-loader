@@ -65,7 +65,8 @@ namespace DVCustomCarLoader
                     return;
                 }
 
-                DVOwnership.CommsRadioEquipmentPurchaser.OnRequestModdedCarTypes += () => CustomCarManager.CustomCarTypes.Select(car => car.CarType);
+                // needs separate method to catch dll load exceptions when DVOwnership is not installed
+                RegisterCustomCarTypes();
 
                 isSuccess = true;
             }
@@ -77,6 +78,11 @@ namespace DVCustomCarLoader
             {
                 if (!isSuccess) { Main.LogAlways("Not creating Ownership patch"); }
             }
+        }
+
+        private static void RegisterCustomCarTypes()
+        {
+            DVOwnership.CommsRadioEquipmentPurchaser.OnRequestModdedCarTypes += () => CustomCarManager.CustomCarTypes.Select(car => car.CarType);
         }
     }
 }
