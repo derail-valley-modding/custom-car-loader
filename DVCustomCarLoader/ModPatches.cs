@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using CCL_GameScripts;
-using DVCustomCarLoader.LocoComponents;
-using DVOwnership;
 using HarmonyLib;
 
 namespace DVCustomCarLoader
@@ -58,33 +55,27 @@ namespace DVCustomCarLoader
     {
         public static void TryCreatePatch( Harmony harmony )
         {
+            bool isSuccess = false;
             try
             {
                 Type EquipmentPurchaser = AccessTools.TypeByName("DVOwnership.CommsRadioEquipmentPurchaser");
-                if (EquipmentPurchaser != null)
-                {
-                    var target = AccessTools.Method(EquipmentPurchaser, "GetAllCarTypes");
-                    var postfix = AccessTools.Method(typeof(Ownership_Patch), "Postfix");
-
-                    harmony.Patch(target, postfix: new HarmonyMethod(postfix));
-                }
-                else
+                if (EquipmentPurchaser == null )
                 {
                     Main.LogAlways("Ownership comms radio equipment purchaser not found, skipping");
+                    return;
                 }
+
+                DVOwnership.CommsRadioEquipmentPurchaser.OnRequestModdedCarTypes += () => CustomCarManager.CustomCarTypes.Select(car => car.CarType);
+
+                isSuccess = true;
             }
             catch (Exception ex)
             {
-                Main.LogAlways("Not creating Ownership patch");
                 Main.LogVerbose(ex.ToString());
             }
-        }
-
-        static void PostFix( ref IEnumerable<TrainCarType> __result )
-        {
-            foreach (var car in CustomCarManager.CustomCarTypes)
+            finally
             {
-                __result.AddItem(car.CarType);
+                if (!isSuccess) { Main.LogAlways("Not creating Ownership patch"); }
             }
         }
     }
