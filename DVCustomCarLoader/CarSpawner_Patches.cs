@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DV;
+using DVOwnership;
 using HarmonyLib;
 using UnityEngine;
 
@@ -20,6 +21,18 @@ namespace DVCustomCarLoader
         {
             var customCarTypes = CustomCarManager.CustomCarTypes.Select(car => car.CarType);
             ___carTypesToSpawn.AddRange(customCarTypes);
+        }
+    }
+
+    [HarmonyPatch(typeof(CommsRadioEquipmentPurchaser), "GetAllCarTypes")]
+    public static class CommsRadioEquipmentPurchaser_GetAllCarTypes_Patch
+    {
+        public static void PostFix( ref IEnumerable<TrainCarType> __result )
+        {
+            foreach (var car in CustomCarManager.CustomCarTypes)
+            {
+                __result.AddItem(car.CarType);
+            }
         }
     }
 

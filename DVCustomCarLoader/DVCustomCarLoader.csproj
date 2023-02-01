@@ -53,6 +53,9 @@
     <Reference Include="DV.Utils, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>%ProgramFiles%\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="DVOwnership">
+      <HintPath>..\..\DVOwnership\dv\Mods\DVOwnership\DVOwnership.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NAudio, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>%ProgramFiles%\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\NAudio.dll</HintPath>
