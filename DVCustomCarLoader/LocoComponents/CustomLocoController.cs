@@ -80,6 +80,12 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
+        // Compressor
+        protected float _CompressorControl = 1;
+        public float GetCompressorControl() => _CompressorControl;
+        public void SetCompressorControl(float value) => _CompressorControl = value;
+        public abstract float GetCompressorSpeed();
+
         public float BrakePipePressure => GetBrakePipePressure();
 
         public float BrakeResPressure => GetBrakeResPressure();
@@ -94,6 +100,7 @@ namespace DVCustomCarLoader.LocoComponents
             _watchables.AddNew(this, SimEventType.BrakePipe, GetBrakePipePressure);
             _watchables.AddNew(this, SimEventType.BrakeReservoir, GetBrakeResPressure);
             _watchables.AddNew(this, SimEventType.IndependentPipe, GetIndependentPressure);
+            _watchables.AddNew(this, SimEventType.CompressorSpeed, GetCompressorSpeed);
 
             _watchables.AddNew(this, SimEventType.AccessoryPower, () => AccessoryPowerLevel);
             _watchables.AddNew(this, SimEventType.Headlights, () => _HeadlightControlLevel * AccessoryPowerLevel);
@@ -105,8 +112,9 @@ namespace DVCustomCarLoader.LocoComponents
         public virtual void ForceDispatchAll() { }
 
         #region ICabControlAcceptor
+        public bool HasCompressorControl { get; protected set; } = false;
 
-        public virtual void RegisterControl( CabInputRelay inputRelay )
+        public virtual void RegisterControl(CabInputRelay inputRelay)
         {
             switch( inputRelay.Binding )
             {
@@ -134,12 +142,17 @@ namespace DVCustomCarLoader.LocoComponents
                     inputRelay.SetIOHandlers(SetCabLight, GetCabLightControl);
                     break;
 
+                case CabInputType.Compressor:
+                    HasCompressorControl = true;
+                    inputRelay.SetIOHandlers(SetCompressorControl, GetCompressorControl);
+                    break;
+
                 default:
                     break;
             }
         }
 
-        public virtual bool AcceptsControlOfType( CabInputType inputType )
+        public virtual bool AcceptsControlOfType(CabInputType inputType)
         {
             return inputType.EqualsOneOf(
                 CabInputType.TrainBrake,
@@ -147,7 +160,8 @@ namespace DVCustomCarLoader.LocoComponents
                 CabInputType.Throttle,
                 CabInputType.Reverser,
                 CabInputType.Headlights,
-                CabInputType.CabLights
+                CabInputType.CabLights,
+                CabInputType.Compressor
             );
         }
 

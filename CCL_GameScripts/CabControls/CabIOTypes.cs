@@ -32,6 +32,9 @@ namespace CCL_GameScripts.CabControls
         FireOut,
 
         SignalBoosterPower,
+
+        Dynamo,
+        Compressor,
     }
 
     public enum SimEventType
@@ -76,6 +79,9 @@ namespace CCL_GameScripts.CabControls
         AccessoryPower,
         MUConnected,
         SignalBoosterPower,
+
+        DynamoSpeed,
+        CompressorSpeed,
     }
 
     public enum SimThresholdDirection

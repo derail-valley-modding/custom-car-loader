@@ -58,6 +58,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public SimComponent sandFlow = new SimComponent("SandFlow", 0f, 1f, 0.25f, 0f);
         public SimComponent sandValve = new SimComponent("SandValve", 0f, 1f, 0.25f, 0f);
 
+        public SimComponent dynamoValve = new SimComponent("DynamoValve", 0, 1, 0.1f, 0);
+        public SimComponent dynamoSpeed = new SimComponent("DynamoSpeed", 0, 1, 0.1f, 0);
+
         public SimComponent sand;
 
         public SimComponent tenderWater;
@@ -134,7 +137,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 sandFlow,
                 sandValve,
                 autoFuelFeed,
-                exhaust
+                exhaust,
+                dynamoValve,
+                dynamoSpeed,
             };
         }
 
@@ -297,9 +302,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             float tempDampFactor = (temperature.max - temperature.value) * 2f / tempRange;
             float tempGain = fuelConsumptionRate * TEMP_GAIN_PER_UNIT_FUEL * tempDampFactor;
 
-            float tempLoss =
-                    (temperature.value - AMBIENT_TEMP) *
-                    (AMBIENT_LOSS_MULTIPLIER + DOOR_LOSS_MULTIPLIER * fireDoorOpen.value);
+            float tempLoss = (temperature.value - AMBIENT_TEMP) * AMBIENT_LOSS_MULTIPLIER;
 
             float tempDelta = (tempGain - tempLoss) * delta;
 
@@ -323,6 +326,9 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         }
 
         protected const float PRESSURE_CONST = 875E-5f;
+
+        protected const float DYNAMO_INERTIA = 2000f;
+        private float _dynamoAccel;
 
         protected virtual void SimulateSteam(float delta)
         {
@@ -361,6 +367,10 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             float damageDegree = Mathf.InverseLerp(SteamLocoSimulation.BODY_DAMAGE_PRESSURE_LEAK_THRESHOLD_PERCENTAGE, 1, dmgController.bodyDamage.DamagePercentage);
             pressureLeakMultiplier = Mathf.Lerp(SteamLocoSimulation.PRESSURE_LEAK_MULTIPLIER_MIN, SteamLocoSimulation.PRESSURE_LEAK_MULTIPLIER_MAX, damageDegree);
             boilerPressure.AddNextValue(-SteamLocoSimulation.PRESSURE_LEAK_L * pressureLeakMultiplier * delta);
+
+            // dynamo
+            float dynamoTarget = Mathf.InverseLerp(boilerPressure.min, simParams.SafetyValvePressure / 2, boilerPressure.value) * dynamoValve.value;
+            dynamoSpeed.SetNextValue(Mathf.SmoothDamp(dynamoSpeed.value, dynamoTarget, ref _dynamoAccel, delta * DYNAMO_INERTIA));
         }
 
         private float GetCutoffPowerPercent()
