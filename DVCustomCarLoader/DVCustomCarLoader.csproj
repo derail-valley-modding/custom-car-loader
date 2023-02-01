@@ -1,168 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1380FDD7-0144-49AA-A2CD-BA1EB02EE306}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>DVCustomCarLoader</RootNamespace>
-    <AssemblyName>DVCustomCarLoader</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <LangVersion>7</LangVersion>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="0Harmony, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\Assembly-CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="DV.BrakeSystem, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="DV.Interaction, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="DV.PointSet, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="DV.Utils, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\DV.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="NAudio, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="net.smkd.vector3d, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="System" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AnimationModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="UnityEngine.ParticleSystemModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\..\Program Files\Steam\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityModManager, Version=0.23.4.0, Culture=neutral, processorArchitecture=MSIL" />
-  </ItemGroup>
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BaseInjector.cs" />
-    <Compile Include="CargoModelInjector.cs" />
-    <Compile Include="CarSpawner_Patches.cs" />
-    <Compile Include="CarTypeInjector.cs" />
-    <Compile Include="CCLSettings.cs" />
-    <Compile Include="CustomCargoInjector.cs" />
-    <Compile Include="DebugCommands.cs" />
-    <Compile Include="Effects\BoundAnimation.cs" />
-    <Compile Include="Effects\ControllableLight.cs" />
-    <Compile Include="Effects\EngineSmokeEmitter.cs" />
-    <Compile Include="Effects\ExtendedCabTeleportDestination.cs" />
-    <Compile Include="Effects\ParticleInitializer.cs" />
-    <Compile Include="Effects\SteamParticlesController.cs" />
-    <Compile Include="InitSpecManager.cs" />
-    <Compile Include="LocoComponents\CabControlInitializers.cs" />
-    <Compile Include="LocoComponents\CabInputRelay.cs" />
-    <Compile Include="LocoComponents\CabinSnapshotSwitcher.cs" />
-    <Compile Include="Effects\DrivingAnimation.cs" />
-    <Compile Include="LocoComponents\CustomCabInputController.cs" />
-    <Compile Include="LocoComponents\CustomLocoSaveState.cs" />
-    <Compile Include="LocoComponents\DieselElectric\CustomDieselReverserLock.cs" />
-    <Compile Include="LocoComponents\CustomFuseController.cs" />
-    <Compile Include="LocoComponents\DashboardLampRelay.cs" />
-    <Compile Include="LocoComponents\CustomLocoAudio.cs" />
-    <Compile Include="LocoComponents\DieselElectric\CustomDieselSaveState.cs" />
-    <Compile Include="LocoComponents\DieselElectric\CustomLocoAudioDiesel.cs" />
-    <Compile Include="LocoComponents\DoorAndWindowTracker.cs" />
-    <Compile Include="LocoComponents\ICabControlAcceptor.cs" />
-    <Compile Include="LocoComponents\IFusedLocoController.cs" />
-    <Compile Include="LocoComponents\LocoEventManager.cs" />
-    <Compile Include="LocoComponents\IndicatorRelay.cs" />
-    <Compile Include="LocoComponents\LocoComponentManager.cs" />
-    <Compile Include="LocoComponents\Steam\CustomChuffController.cs" />
-    <Compile Include="LocoComponents\Steam\CustomCoalPile.cs" />
-    <Compile Include="LocoComponents\Steam\CustomDamageControllerSteam.cs" />
-    <Compile Include="LocoComponents\Steam\CustomFire.cs" />
-    <Compile Include="LocoComponents\Steam\CustomLocoAudioSteam.cs" />
-    <Compile Include="LocoComponents\Steam\CustomLocoControllerSteam.cs" />
-    <Compile Include="LocoComponents\Steam\CustomLocoSimEventsSteam.cs" />
-    <Compile Include="LocoComponents\Steam\CustomLocoSimSteam.cs" />
-    <Compile Include="LocoComponents\Steam\CustomSteamDebugGUI.cs" />
-    <Compile Include="LocoComponents\Steam\CustomTenderAutoCouple.cs" />
-    <Compile Include="LocoComponents\Steam\CustomTenderDebtTracker.cs" />
-    <Compile Include="LocoComponents\Steam\CustomTenderSaveState.cs" />
-    <Compile Include="LocoComponents\Steam\CustomTenderSimulation.cs" />
-    <Compile Include="LocoComponents\InputDescriptor.cs" />
-    <Compile Include="LocoComponents\Steam\ShovelPatches.cs" />
-    <Compile Include="LocoComponents\Steam\SteamKeyboardInput.cs" />
-    <Compile Include="LocoComponents\Utility\BrakeCarKeyboardInputRouter.cs" />
-    <Compile Include="LocoComponents\VisitCheckerPatch.cs" />
-    <Compile Include="LocoSpawnerInjector.cs" />
-    <Compile Include="ModPatches.cs" />
-    <Compile Include="CustomCar.cs" />
-    <Compile Include="CustomCarManager.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="LocoComponents\DieselElectric\CustomDieselSimEvents.cs" />
-    <Compile Include="LocoComponents\CustomLocoController.cs" />
-    <Compile Include="LocoComponents\CustomLocoPitStopParams.cs" />
-    <Compile Include="LocoComponents\CustomLocoSimEvents.cs" />
-    <Compile Include="LocoComponents\CustomLocoSimulation.cs" />
-    <Compile Include="LocoComponents\DieselElectric\DamageControllerCustomDiesel.cs" />
-    <Compile Include="LocoComponents\DamageControllerCustomLoco.cs" />
-    <Compile Include="LocoComponents\IServicePenaltyProvider.cs" />
-    <Compile Include="LocoComponents\DieselElectric\CustomLocoControllerDiesel.cs" />
-    <Compile Include="LocoComponents\DieselElectric\CustomLocoSimDiesel.cs" />
-    <Compile Include="LocoComponents\DebtTrackerCustomLoco.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="Patches\BrakeSetPatches.cs" />
-    <Compile Include="Patches\JobGeneratorPatches.cs" />
-    <Compile Include="Patches\JobPaymentPatches.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SaveLoadPatches.cs" />
-    <Compile Include="TrainCar_Patches.cs" />
-    <Compile Include="LocoComponents\Utility\BrakeCarController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CCL_GameScripts\CCL_GameScripts.csproj">
-      <Project>{c191c5ac-990e-4ca6-9847-342b9cd92465}</Project>
-      <Name>CCL_GameScripts</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>setlocal enableextensions
-if not exist $(SolutionDir)$(OutDir) md $(SolutionDir)$(OutDir)
-endlocal
-xcopy /d /y $(TargetPath) $(SolutionDir)$(OutDir)</PostBuildEvent>
-  </PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netframework4.8</TargetFramework>
+		<RootNamespace>DVCustomCarLoader</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\CCL_GameScripts\CCL_GameScripts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="0Harmony" />
+		<Reference Include="Assembly-CSharp" />
+		<Reference Include="DV.BrakeSystem" />
+		<Reference Include="DV.Interaction" />
+		<Reference Include="DV.PointSet" />
+		<Reference Include="DV.Utils" />
+		<Reference Include="NAudio" />
+		<Reference Include="net.smkd.vector3d" />
+		<Reference Include="Newtonsoft.Json" />
+		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.AnimationModule" />
+		<Reference Include="UnityEngine.AssetBundleModule" />
+		<Reference Include="UnityEngine.AudioModule" />
+		<Reference Include="UnityEngine.CoreModule" />
+		<Reference Include="UnityEngine.IMGUIModule" />
+		<Reference Include="UnityEngine.ParticleSystemModule" />
+		<Reference Include="UnityEngine.PhysicsModule" />
+		<Reference Include="UnityEngine.UnityWebRequestModule" />
+		<Reference Include="UnityModManager" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)&quot; md &quot;$(SolutionDir)$(OutDir)&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)&quot;" />
+	</Target>
 </Project>

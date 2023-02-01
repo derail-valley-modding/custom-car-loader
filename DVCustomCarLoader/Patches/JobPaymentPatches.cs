@@ -61,11 +61,14 @@ namespace DVCustomCarLoader.Patches
             }
             else
             {
-                kvpEnum = paymentData.cargoData.Select(kvp => KeyValuePair.Create(kvp.Key, (float)kvp.Value));
+                kvpEnum = paymentData.cargoData.Select(kvp => new KeyValuePair<CargoType, float>(kvp.Key, kvp.Value));
             }
 
-            foreach ((CargoType cargoType, float amount) in kvpEnum)
+            foreach (var kvp in kvpEnum)
             {
+                CargoType cargoType = kvp.Key;
+                float amount = kvp.Value;
+
                 cargoMass += CargoTypes.GetCargoUnitMass(cargoType) * amount;
                 damagePrice += ResourceTypes.GetFullDamagePriceForCargo(cargoType) * amount;
                 environmentPrice += ResourceTypes.GetFullEnvironmentDamagePriceForCargo(cargoType) * amount;
