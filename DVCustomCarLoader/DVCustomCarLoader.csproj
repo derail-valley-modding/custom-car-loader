@@ -179,6 +179,9 @@
       <Name>CCL_GameScripts</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>setlocal enableextensions

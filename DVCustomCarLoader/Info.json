@@ -1,0 +1,9 @@
+{
+  "Id": "DVCustomCarLoader",
+  "Author": "Katycat",
+  "DisplayName": "Custom Car Loader",
+  "Version": "1.7.4",
+  "EntryMethod": "DVCustomCarLoader.Main.Load",
+  "HomePage": "https://www.nexusmods.com/derailvalley/mods/324",
+  "Repository": "https://foxden.cc/static/derail_valley/ccl_repository.json"
+}
