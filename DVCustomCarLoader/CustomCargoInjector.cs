@@ -191,8 +191,9 @@ namespace DVCustomCarLoader
 
         public static void OnLogicControllerInitialized()
         {
-            while (lateInitRoutingInfo.TryDequeue(out var routingInfo))
+            while (lateInitRoutingInfo.Count > 0)
             {
+                var routingInfo = lateInitRoutingInfo.Dequeue();
                 InjectCargoRoutingInfo(routingInfo.Cargo, routingInfo.Name, routingInfo.Sources, routingInfo.Destinations);
             }
         }
