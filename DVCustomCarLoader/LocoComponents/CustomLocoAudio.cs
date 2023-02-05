@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using CCL_GameScripts;
 using CCL_GameScripts.Attributes;
+using CCL_GameScripts.Effects;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -101,36 +102,9 @@ namespace DVCustomCarLoader.LocoComponents
             wheelDamagedAudio2 = other.wheelDamagedAudio2;
         }
 
-        protected AnimationCurve resetCurve = new AnimationCurve(new Keyframe[]
-        {
-            new Keyframe(0f, 0f)
-        });
-
         protected AudioSource CreateSource(Vector3 position, float minDistance = 1f, float maxDistance = 500f, AudioMixerGroup mixerGroup = null)
         {
-            var sourceObj = new GameObject("CCL_AudioSource");
-            sourceObj.transform.SetParent(transform);
-            sourceObj.transform.position = position;
-
-            var source = sourceObj.AddComponent<AudioSource>();
-            source.Stop();
-            source.loop = false;
-            source.playOnAwake = false;
-            source.rolloffMode = AudioRolloffMode.Logarithmic;
-            source.SetCustomCurve(AudioSourceCurveType.ReverbZoneMix, resetCurve);
-            source.SetCustomCurve(AudioSourceCurveType.SpatialBlend, resetCurve);
-            source.SetCustomCurve(AudioSourceCurveType.Spread, resetCurve);
-            source.minDistance = minDistance;
-            source.maxDistance = maxDistance;
-            source.spread = 0f;
-            source.pitch = 1f;
-            source.volume = 1f;
-            source.spatialBlend = 1f;
-            source.dopplerLevel = 0f;
-            source.ignoreListenerPause = false;
-            source.outputAudioMixerGroup = mixerGroup;
-
-            return source;
+            return AudioUtils.CreateSource(transform, position, minDistance, maxDistance, mixerGroup);
         }
 
         protected void PlayRandomOneShot(AudioSource source, AudioClip[] clips, float volume = 1f)

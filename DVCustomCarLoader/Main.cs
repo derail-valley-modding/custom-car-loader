@@ -40,6 +40,7 @@ namespace DVCustomCarLoader
 				harmony = new Harmony(modEntry.Info.Id);
 				harmony.PatchAll(Assembly.GetExecutingAssembly());
 				LocoLights_Patch.TryCreatePatch(harmony);
+				ModLoadWaiter.AddWaiter("AirBrake", AirBrake_Patch.TryCreatePatch);
 
 				DebugCommands.RegisterCommands();
 			}

@@ -92,8 +92,9 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			float traction = (reverser == 0) ? 0 : GetTractionForce();
 			return 0.00387571f * traction;
 		}
+		protected override float GetCompressorSpeed() => train.brakeSystem.compressorRunning ? 1 : 0;
 
-		public float FuelLevel => sim.fuel.value;
+        public float FuelLevel => sim.fuel.value;
 		public float OilLevel => sim.oil.value;
 		public float EngineTemp => sim.engineTemp.value;
 
@@ -220,6 +221,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
             _watchables.AddNew(this, SimEventType.Amperage, GetAmperage);
             //_watchables.AddNew(this, SimEventType.Fan, () => FanOn);
             _watchables.AddNew(this, SimEventType.MUConnected, () => MULampState);
+			_watchables.AddNew(this, SimEventType.MUConnected, () => (MULampState == LocoSimulationEvents.Amount.Mid) ? 1 : 0);
         }
 
         private void OnDisable()
@@ -257,6 +259,11 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			SetReverser(0f);
             SetBrake(0f);
             SetIndependentBrake(1f);
+
+			if (HasCompressorControl)
+			{
+				SetCompressorControl(0f);
+			}
 		}
 
 
@@ -291,7 +298,10 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
         public override void Update()
 		{
 			base.Update();
-			UpdateSimSpeed();
+
+            train.brakeSystem.compressorRunning = (!HasCompressorControl || (_CompressorControl >= 0.5f)) && EngineRunning;
+			
+            UpdateSimSpeed();
 			UpdateSimThrottle();
 			UpdateControls();
 		}

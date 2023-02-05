@@ -1,4 +1,6 @@
 ﻿using CCL_GameScripts.CabControls;
+using DV.JObjectExtstensions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,29 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 {
     public class CustomSteamSaveState : CustomLocoSaveState<CustomLocoSimSteam, CustomDamageControllerSteam, CustomLocoControllerSteam>
     {
+        protected const string COMPRESSOR_VALVE_SAVE_KEY = "compressorValve";
+        protected const string DYNAMO_VALVE_SAVE_KEY = "dynamoValve";
 
+        public override JObject GetLocoStateSaveData()
+        {
+            var data = base.GetLocoStateSaveData();
+            data.SetFloat(COMPRESSOR_VALVE_SAVE_KEY, controller.GetCompressorControl());
+            data.SetFloat(DYNAMO_VALVE_SAVE_KEY, controller.GetDynamoValve());
+            return data;
+        }
+
+        public override void SetLocoStateSaveData(JObject saveData)
+        {
+            base.SetLocoStateSaveData(saveData);
+
+            float fireOn = ((locoSim.fireOn.value > 0.5f) ? 1 : 0);
+            float control = saveData.GetFloat(COMPRESSOR_VALVE_SAVE_KEY) ?? fireOn;
+            controller.SetCompressorControl(control);
+
+            control = saveData.GetFloat(DYNAMO_VALVE_SAVE_KEY) ?? fireOn;
+            controller.SetDynamoValve(control);
+            locoSim.dynamoSpeed.SetValue(control);
+        }
     }
 
     public class CustomLocoControllerSteam :
@@ -41,8 +65,6 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 keyboardCtrl.control = this;
                 keyboardCtrl.Ctrl = this;
             }
-
-            maxPowerPressure = sim.boilerPressure.max / 3f;
         }
 
         private void OnRearCouple(object _, CoupleEventArgs e)
@@ -109,8 +131,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             // TODO: Whistle
             sim.speed.SetValue(GetSpeedKmH());
 
-            float compressorRate = (sim.boilerPressure.value - train.brakeSystem.mainReservoirPressure) * sim.simParams.AirCompressorRate;
-            train.brakeSystem.compressorProductionRate = Mathf.Max(compressorRate, 0);
+            train.brakeSystem.compressorProductionRate = GetCompressorSpeed() * sim.simParams.AirCompressorRate;
         }
 
         #endregion
@@ -221,6 +242,19 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
         }
 
+        public float GetDynamoValve() => sim.dynamoValve.value;
+        public void SetDynamoValve(float value) => sim.dynamoValve.SetValue(value);
+
+        protected override float GetCompressorSpeed()
+        {
+            float boilerMax = Mathf.Lerp(sim.boilerPressure.min, sim.boilerPressure.max, 0.5f);
+            float available = Mathf.InverseLerp(sim.boilerPressure.min, boilerMax, sim.boilerPressure.value);
+            float control = HasCompressorControl ? _CompressorControl : 1;
+            return Mathf.Max(available * control, 0);
+        }
+
+        public bool HasDynamoControl { get; protected set; } = false;
+
         public override bool AcceptsControlOfType(CabInputType inputType)
         {
             return inputType.EqualsOneOf(
@@ -233,7 +267,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 CabInputType.Whistle,
                 CabInputType.FireDoor,
                 CabInputType.Stoker,
-                CabInputType.FireOut
+                CabInputType.FireOut,
+                CabInputType.Dynamo
             ) || base.AcceptsControlOfType(inputType);
         }
 
@@ -281,6 +316,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                     inputRelay.SetIOHandlers(SetFireOut);
                     break;
 
+                case CabInputType.Dynamo:
+                    HasDynamoControl = true;
+                    inputRelay.SetIOHandlers(SetDynamoValve, GetDynamoValve);
+                    break;
+
                 default:
                     base.RegisterControl(inputRelay);
                     break;
@@ -292,13 +332,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         //================================================================================
         #region Watchable Values
 
-        private float maxPowerPressure;
         protected override float AccessoryPowerLevel
         {
             get
             {
-                if (sim.boilerPressure.value > maxPowerPressure) return 1;
-                return Mathf.InverseLerp(0, maxPowerPressure, sim.boilerPressure.value);
+                return sim.dynamoSpeed.value;
             }
         }
 
@@ -314,6 +352,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
             _watchables.AddNew(this, SimEventType.Fuel, sim.tenderFuel);
             _watchables.AddNew(this, SimEventType.WaterReserve, sim.tenderWater);
+            _watchables.AddNew(this, SimEventType.DynamoSpeed, sim.dynamoSpeed);
         }
 
         public float FireboxLevel => sim.fireboxFuel.value;

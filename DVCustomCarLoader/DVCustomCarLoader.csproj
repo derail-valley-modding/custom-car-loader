@@ -23,6 +23,7 @@
 		<Reference Include="NAudio" />
 		<Reference Include="net.smkd.vector3d" />
 		<Reference Include="Newtonsoft.Json" />
+		<Reference Include="Unity.TextMeshPro" />
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AnimationModule" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
@@ -31,6 +32,7 @@
 		<Reference Include="UnityEngine.IMGUIModule" />
 		<Reference Include="UnityEngine.ParticleSystemModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
+		<Reference Include="UnityEngine.UI" />
 		<Reference Include="UnityEngine.UnityWebRequestModule" />
 		<Reference Include="UnityModManager" />
 	</ItemGroup>

@@ -10,13 +10,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Reference Include="Unity.TextMeshPro" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AnimationModule" />
+		<Reference Include="UnityEngine.AudioModule" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.IMGUIModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
+		<Reference Include="UnityEngine.UI" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

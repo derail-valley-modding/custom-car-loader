@@ -400,7 +400,7 @@ namespace DVCustomCarLoader
                     foreach (var indicator in newFireObj.GetComponents<Indicator>())
                     {
                         var relay = newFireObj.AddComponent<IndicatorRelay>();
-                        relay.Initialize(new OutputBinding(SimEventType.FireboxLevel), indicator);
+                        relay.Initialize(new OutputBinding() { SimEventType = SimEventType.FireboxLevel }, indicator);
                         indicator.maxValue = simParams.FireboxCapacity;
                     }
                 }
