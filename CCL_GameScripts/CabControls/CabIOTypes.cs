@@ -35,6 +35,9 @@ namespace CCL_GameScripts.CabControls
 
         Dynamo,
         Compressor,
+        Bell,
+
+        User1 = 1001, User2, User3, User4, User5, User6, User7, User8, User9, User10,
     }
 
     public enum SimEventType
