@@ -327,7 +327,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         protected const float PRESSURE_CONST = 875E-5f;
 
-        protected const float DYNAMO_INERTIA = 2000f;
+        protected const float DYNAMO_INERTIA = 3000f;
         private float _dynamoAccel;
 
         protected virtual void SimulateSteam(float delta)

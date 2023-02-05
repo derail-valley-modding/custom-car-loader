@@ -92,7 +92,7 @@ namespace DVCustomCarLoader.LocoComponents.DieselElectric
 			float traction = (reverser == 0) ? 0 : GetTractionForce();
 			return 0.00387571f * traction;
 		}
-		public override float GetCompressorSpeed() => train.brakeSystem.compressorRunning ? 1 : 0;
+		protected override float GetCompressorSpeed() => train.brakeSystem.compressorRunning ? 1 : 0;
 
         public float FuelLevel => sim.fuel.value;
 		public float OilLevel => sim.oil.value;

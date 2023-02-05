@@ -33,6 +33,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
             control = saveData.GetFloat(DYNAMO_VALVE_SAVE_KEY) ?? fireOn;
             controller.SetDynamoValve(control);
+            locoSim.dynamoSpeed.SetValue(control);
         }
     }
 
@@ -244,10 +245,12 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float GetDynamoValve() => sim.dynamoValve.value;
         public void SetDynamoValve(float value) => sim.dynamoValve.SetValue(value);
 
-        public override float GetCompressorSpeed()
+        protected override float GetCompressorSpeed()
         {
-            float available = (sim.boilerPressure.value - train.brakeSystem.mainReservoirPressure);
-            return Mathf.Max(available * _CompressorControl, 0);
+            float boilerMax = Mathf.Lerp(sim.boilerPressure.min, sim.boilerPressure.max, 0.5f);
+            float available = Mathf.InverseLerp(sim.boilerPressure.min, boilerMax, sim.boilerPressure.value);
+            float control = HasCompressorControl ? _CompressorControl : 1;
+            return Mathf.Max(available * control, 0);
         }
 
         public bool HasDynamoControl { get; protected set; } = false;

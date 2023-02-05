@@ -4,6 +4,7 @@ using System.Reflection;
 using CCL_GameScripts.CabControls;
 using DV;
 using DV.ServicePenalty;
+using DV.Simulation.Brake;
 using DV.Util.EventWrapper;
 using HarmonyLib;
 using UnityEngine;
@@ -84,7 +85,18 @@ namespace DVCustomCarLoader.LocoComponents
         protected float _CompressorControl = 1;
         public float GetCompressorControl() => _CompressorControl;
         public void SetCompressorControl(float value) => _CompressorControl = value;
-        public abstract float GetCompressorSpeed();
+        protected abstract float GetCompressorSpeed();
+
+        public float GetWatchableCompressorSpeed()
+        {
+            float curRes = train.brakeSystem.mainReservoirPressure;
+
+            if (curRes < AirBrake_Patch.MaxMainReservoirPressure * 0.999f)
+            {
+                return GetCompressorSpeed();
+            }
+            return 0;
+        }
 
         public float BrakePipePressure => GetBrakePipePressure();
 
@@ -100,7 +112,7 @@ namespace DVCustomCarLoader.LocoComponents
             _watchables.AddNew(this, SimEventType.BrakePipe, GetBrakePipePressure);
             _watchables.AddNew(this, SimEventType.BrakeReservoir, GetBrakeResPressure);
             _watchables.AddNew(this, SimEventType.IndependentPipe, GetIndependentPressure);
-            _watchables.AddNew(this, SimEventType.CompressorSpeed, GetCompressorSpeed);
+            _watchables.AddNew(this, SimEventType.CompressorSpeed, GetWatchableCompressorSpeed);
 
             _watchables.AddNew(this, SimEventType.AccessoryPower, () => AccessoryPowerLevel);
             _watchables.AddNew(this, SimEventType.Headlights, () => _HeadlightControlLevel * AccessoryPowerLevel);
