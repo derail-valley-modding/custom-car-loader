@@ -245,6 +245,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float GetDynamoValve() => sim.dynamoValve.value;
         public void SetDynamoValve(float value) => sim.dynamoValve.SetValue(value);
 
+        public float GetDynamoSpeed() => sim.dynamoSpeed.value;
+
         protected float GetDenormedCompressorSpeed()
         {
             return sim.boilerPressure.value - train.brakeSystem.mainReservoirPressure;

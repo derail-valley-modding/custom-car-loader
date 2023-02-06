@@ -38,5 +38,8 @@ namespace CCL_GameScripts.Effects
         public Transform ReleaseLeftLocation;
         public Transform ReleaseRightLocation;
         public Transform SafetyReleaseLocation;
+
+        public Transform DynamoLocation;
+        public Transform CompressorLocation;
     }
 }
