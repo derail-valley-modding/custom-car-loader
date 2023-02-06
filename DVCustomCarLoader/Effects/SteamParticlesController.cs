@@ -19,6 +19,9 @@ namespace DVCustomCarLoader.Effects
 
         public ParticleSystem safetyRelease;
 
+        public ParticleSystem dynamo;
+        public ParticleSystem compressor;
+
         [SerializeField]
         protected bool chuffLeftEn = false;
         [SerializeField]
@@ -51,6 +54,9 @@ namespace DVCustomCarLoader.Effects
             releaseLeft = particles.ReleaseLeft;
             releaseRight = particles.ReleaseRight;
             safetyRelease = particles.SafetyRelease;
+
+            dynamo = particles.Dynamo;
+            compressor = particles.Compressor;
 
             chuffLeftEn = spec.ChuffParticlesLeftLocation;
             chuffRightEn = spec.ChuffParticlesRightLocation;
@@ -259,6 +265,9 @@ namespace DVCustomCarLoader.Effects
 
                 UpdateWhistle();
                 UpdateSteamRelease();
+
+                if (dynamo) UpdateDynamo();
+                if (compressor) UpdateCompressor();
             }
         }
 
@@ -359,6 +368,38 @@ namespace DVCustomCarLoader.Effects
                 {
                     safetyRelease.Play();
                 }
+            }
+        }
+
+        private void UpdateDynamo()
+        {
+            float rate = controller.GetDynamoSpeed();
+
+            if (rate < 0.01f)
+            {
+                if (dynamo.isPlaying) dynamo.Stop();
+            }
+            else
+            {
+                var main = dynamo.main;
+                main.startSpeed = rate * 0.5f;
+                main.startSizeMultiplier = rate;
+
+                if (!dynamo.isPlaying) dynamo.Play();
+            }
+        }
+
+        private void UpdateCompressor()
+        {
+            bool running = controller.GetWatchableCompressorSpeed() > 0.01;
+
+            if (running && !compressor.isPlaying)
+            {
+                compressor.Play();
+            }
+            if (!running && compressor.isPlaying)
+            {
+                compressor.Stop();
             }
         }
 

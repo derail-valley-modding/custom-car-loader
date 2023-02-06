@@ -204,7 +204,7 @@ namespace DVCustomCarLoader.Effects
         }
     }
 
-    public struct SteamParticles
+    public class SteamParticles
     {
         public GameObject Root;
 
@@ -220,6 +220,10 @@ namespace DVCustomCarLoader.Effects
 
         public ParticleSystem SafetyRelease;
 
+        // optional
+        public ParticleSystem Dynamo;
+        public ParticleSystem Compressor;
+
         public SteamParticles(GameObject root)
         {
             Root = root;
@@ -229,8 +233,9 @@ namespace DVCustomCarLoader.Effects
             ChuffParticlesLeft = t.Find(CarPartNames.STEAM_CHUFF_L).GetComponentInChildren<ParticleSystem>();
             ChuffParticlesRight = t.Find(CarPartNames.STEAM_CHUFF_R).GetComponentInChildren<ParticleSystem>();
 
+            var whistleTform = t.Find(CarPartNames.STEAM_WHISTLE_F);
             WhistleMid = t.Find(CarPartNames.STEAM_WHISTLE_M).GetComponentInChildren<ParticleSystem>();
-            WhistleFront = t.Find(CarPartNames.STEAM_WHISTLE_F).GetComponentInChildren<ParticleSystem>();
+            WhistleFront = whistleTform.GetComponentInChildren<ParticleSystem>();
 
             ReleaseLeft = t.Find(CarPartNames.STEAM_RELEASE_L).GetComponentInChildren<ParticleSystem>();
             ReleaseRight = t.Find(CarPartNames.STEAM_RELEASE_R).GetComponentInChildren<ParticleSystem>();
@@ -242,6 +247,10 @@ namespace DVCustomCarLoader.Effects
             var parent = particles.transform.parent;
             Vector3 offset = tform ? Root.transform.InverseTransformPoint(tform.position) : Vector3.zero;
             parent.localPosition = offset;
+            if (tform)
+            {
+                parent.localRotation *= tform.localRotation;
+            }
             particles.transform.localPosition = Vector3.zero;
         }
 
@@ -257,6 +266,50 @@ namespace DVCustomCarLoader.Effects
             ApplyOffset(spec.ReleaseLeftLocation, ReleaseLeft);
             ApplyOffset(spec.ReleaseRightLocation, ReleaseRight);
             ApplyOffset(spec.SafetyReleaseLocation, SafetyRelease);
+
+            
+
+            if (spec.DynamoLocation)
+            {
+                CreateDynamoParticles();
+                ApplyOffset(spec.DynamoLocation, Dynamo);
+            }
+
+            if (spec.CompressorLocation)
+            {
+                CreateCompressorParticles();
+                ApplyOffset(spec.CompressorLocation, Compressor);
+            }
+        }
+
+        private void CreateDynamoParticles()
+        {
+            var whistleObj = Root.transform.Find(CarPartNames.STEAM_WHISTLE_F).gameObject;
+            var dynamoObj = GameObject.Instantiate(whistleObj, Root.transform, false);
+            Dynamo = dynamoObj.GetComponentInChildren<ParticleSystem>();
+
+            var main = Dynamo.main;
+            main.gravityModifier = -0.1f;
+
+            var emission = Dynamo.emission;
+            emission.rateOverTimeMultiplier *= 0.5f;
+        }
+
+        private void CreateCompressorParticles()
+        {
+            var chuffObj = Root.transform.Find(CarPartNames.STEAM_WHISTLE_F).gameObject;
+            var compressorObj = GameObject.Instantiate(chuffObj, Root.transform, false);
+            Compressor = compressorObj.GetComponentInChildren<ParticleSystem>();
+
+            var main = Compressor.main;
+            main.startSpeed = 0.0f;
+            main.gravityModifier = -0.01f;
+            main.startLifetimeMultiplier *= 2;
+
+            var emission = Compressor.emission;
+            emission.rateOverTime = 2;
+            emission.rateOverTimeMultiplier = 1;
+
         }
     }
 }

@@ -131,7 +131,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             // TODO: Whistle
             sim.speed.SetValue(GetSpeedKmH());
 
-            train.brakeSystem.compressorProductionRate = GetCompressorSpeed() * sim.simParams.AirCompressorRate;
+            train.brakeSystem.compressorProductionRate = GetDenormedCompressorSpeed() * sim.simParams.AirCompressorRate;
         }
 
         #endregion
@@ -245,12 +245,18 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         public float GetDynamoValve() => sim.dynamoValve.value;
         public void SetDynamoValve(float value) => sim.dynamoValve.SetValue(value);
 
+        public float GetDynamoSpeed() => sim.dynamoSpeed.value;
+
+        protected float GetDenormedCompressorSpeed()
+        {
+            return sim.boilerPressure.value - train.brakeSystem.mainReservoirPressure;
+        }
+
         protected override float GetCompressorSpeed()
         {
-            float boilerMax = Mathf.Lerp(sim.boilerPressure.min, sim.boilerPressure.max, 0.5f);
-            float available = Mathf.InverseLerp(sim.boilerPressure.min, boilerMax, sim.boilerPressure.value);
+            float available = GetDenormedCompressorSpeed() / (sim.simParams.SafetyValvePressure - sim.boilerPressure.min);
             float control = HasCompressorControl ? _CompressorControl : 1;
-            return Mathf.Max(available * control, 0);
+            return Mathf.Clamp01(available * control);
         }
 
         public bool HasDynamoControl { get; protected set; } = false;
