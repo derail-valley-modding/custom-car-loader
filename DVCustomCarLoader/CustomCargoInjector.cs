@@ -41,6 +41,37 @@ namespace DVCustomCarLoader
         public static bool IsCustomTypeRegistered(CargoType cargoType) => cargoTypeToDefinition.ContainsKey(cargoType);
         public static bool IsCustomTypeRegistered(string identifier) => idToCargoType.ContainsKey(identifier);
 
+
+        private static readonly List<CustomCargo> pendingDefinitions = new List<CustomCargo>();
+
+        public static void AddCargoDefinitionToPending(CustomCargo definition)
+        {
+            var alreadyPending = pendingDefinitions.FirstOrDefault(d => d.Identifier == definition.Identifier);
+            if ((alreadyPending != null) || IsCustomTypeRegistered(definition.Identifier))
+            {
+                Main.Warning($"Cargo {definition.Identifier} is defined more than once, skipping extra definition");
+                return;
+            }
+
+            pendingDefinitions.Add(definition);
+        }
+
+        public static bool RequestCargoTypeFinalization(string cargoId)
+        {
+            if (IsCustomTypeRegistered(cargoId)) return true;
+
+            var pending = pendingDefinitions.FirstOrDefault(d => d.Identifier == cargoId);
+            if (pending == null)
+            {
+                return false;
+            }
+            else
+            {
+                InjectCargoDefinition(pending);
+                return true;
+            }
+        }
+
         static CustomCargoInjector()
         {
             AccessTools.Field(typeof(ResourceTypes), "cargoToFullCargoDamagePrice")
@@ -81,7 +112,8 @@ namespace DVCustomCarLoader
 
                                 if (newCargo != null)
                                 {
-                                    InjectCargoDefinition(newCargo);
+                                    Main.LogVerbose($"Loaded cargo definition {newCargo.Identifier}");
+                                    AddCargoDefinitionToPending(newCargo);
                                 }
                             }
                         }
@@ -96,12 +128,6 @@ namespace DVCustomCarLoader
 
         private static void InjectCargoDefinition(CustomCargo cargo)
         {
-            if (IsCustomTypeRegistered(cargo.Identifier))
-            {
-                Main.Warning($"Cargo {cargo.Identifier} is defined more than once, skipping extra definition");
-                return;
-            }
-
             CargoType newType = BaseInjector.GenerateUniqueType<CargoType>(cargo.Identifier, IsCustomTypeRegistered);
 
             idToCargoType.Add(cargo.Identifier, newType);
