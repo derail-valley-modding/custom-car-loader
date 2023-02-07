@@ -74,6 +74,8 @@ namespace DVCustomCarLoader
                     CargoType cargoType;
                     if (model.CargoType == BaseCargoType.Custom)
                     {
+                        CustomCargoInjector.RequestCargoTypeFinalization(model.CustomCargo);
+
                         if (!CustomCargoInjector.TryGetCargoTypeById(model.CustomCargo, out cargoType))
                         {
                             Main.Error($"Cargo model for {car.identifier} references missing custom cargo {model.CustomCargo}");
@@ -232,7 +234,11 @@ namespace DVCustomCarLoader
                 // override all base types
                 if (__result.Any(CargoModelInjector.IsInCustomRange))
                 {
-                    __result = __result.Where(CargoModelInjector.IsInCustomRange).ToList();
+                    var customTypes = __result.Where(CargoModelInjector.IsInCustomRange).ToList();
+                    if (customTypes.Any())
+                    {
+                        __result = customTypes;
+                    }
                 }
             }
         }
