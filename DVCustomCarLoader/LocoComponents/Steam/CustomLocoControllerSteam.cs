@@ -254,7 +254,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
 
         protected override float GetCompressorSpeed()
         {
-            float available = GetDenormedCompressorSpeed() / (sim.simParams.SafetyValvePressure - sim.boilerPressure.min);
+            float available = GetDenormedCompressorSpeed() / (sim.simParams.SafetyValvePressure - AirBrake_Patch.MaxMainReservoirPressure);
             float control = HasCompressorControl ? _CompressorControl : 1;
             return Mathf.Clamp01(available * control);
         }
