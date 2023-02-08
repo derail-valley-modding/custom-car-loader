@@ -24,6 +24,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         [NonSerialized]
         public float pressureLeakMultiplier = 1f;
 
+        [NonSerialized]
+        public float injectorFlowRate;
+        [NonSerialized]
+        public float stokerFlowRate;
+
         private float tempRange;
 
         #region SimComponents
@@ -317,8 +322,14 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         {
             if (injector.value > 0f && tenderWater.value > 0f && boilerWater.value < boilerWater.max)
             {
-                tenderWater.PassValueToNext(boilerWater, simParams.InjectorMaxFlowLPS * injector.value * delta);
+                injectorFlowRate = simParams.InjectorMaxFlowLPS * injector.value;
+                tenderWater.PassValueToNext(boilerWater, injectorFlowRate * delta);
             }
+            else
+            {
+                injectorFlowRate = 0;
+            }
+
             if (waterDump.value > 0f && boilerWater.value > boilerWater.min)
             {
                 boilerWater.AddNextValue(-SteamLocoSimulation.WATER_DUMP_STREAM_L * waterDump.value * delta);

@@ -354,7 +354,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             _watchables.AddNew(this, SimEventType.WaterLevel, sim.boilerWater);
             _watchables.AddNew(this, SimEventType.FireTemp, sim.temperature);
             _watchables.AddNew(this, SimEventType.FireboxLevel, sim.fireboxFuel);
-            _watchables.AddNew(this, SimEventType.InjectorFlow, sim.injector);
+            _watchables.AddNew(this, SimEventType.InjectorFlow, () => sim.injectorFlowRate);
+            _watchables.AddNew(this, SimEventType.StokerFlow, sim.autoFuelFeed);
 
             _watchables.AddNew(this, SimEventType.Fuel, sim.tenderFuel);
             _watchables.AddNew(this, SimEventType.WaterReserve, sim.tenderWater);
