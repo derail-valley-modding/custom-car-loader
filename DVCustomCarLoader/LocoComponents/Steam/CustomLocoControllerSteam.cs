@@ -65,6 +65,8 @@ namespace DVCustomCarLoader.LocoComponents.Steam
                 keyboardCtrl.control = this;
                 keyboardCtrl.Ctrl = this;
             }
+
+            maxDynamoPressure = Mathf.Lerp(sim.boilerPressure.min, sim.simParams.SafetyValvePressure, 0.5f);
         }
 
         private void OnRearCouple(object _, CoupleEventArgs e)
@@ -149,6 +151,11 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             SetReverser(0f);
             SetBrake(0f);
             SetIndependentBrake(1f);
+
+            if (HasDynamoControl)
+            {
+                SetDynamoValve(0);
+            }
         }
 
         public float GetTotalPowerForcePercentage()
@@ -242,10 +249,21 @@ namespace DVCustomCarLoader.LocoComponents.Steam
             }
         }
 
+        private float maxDynamoPressure;
         public float GetDynamoValve() => sim.dynamoValve.value;
         public void SetDynamoValve(float value) => sim.dynamoValve.SetValue(value);
 
-        public float GetDynamoSpeed() => sim.dynamoSpeed.value;
+        public float GetDynamoSpeed()
+        {
+            if (HasDynamoControl)
+            {
+                return sim.dynamoSpeed.value;
+            }
+            else
+            {
+                return Mathf.InverseLerp(sim.boilerPressure.min, maxDynamoPressure, sim.boilerPressure.value);
+            }
+        }
 
         protected float GetDenormedCompressorSpeed()
         {
@@ -342,7 +360,7 @@ namespace DVCustomCarLoader.LocoComponents.Steam
         {
             get
             {
-                return sim.dynamoSpeed.value;
+                return GetDynamoSpeed();
             }
         }
 
