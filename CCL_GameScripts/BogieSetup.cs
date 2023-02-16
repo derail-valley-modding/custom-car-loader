@@ -15,9 +15,6 @@ namespace CCL_GameScripts
         [Range(0, 10)]
         public float AxleSeparation = 1.5f;
 
-        [Tooltip("The gauge of the bogies in millimeters. Used by the Gauge mod.")]
-        public float Gauge = 1435f;
-
         [Header("Physics")]
         [Range(0, 100000)]
         public float BrakingForcePerBar = 10000f;
@@ -28,7 +25,6 @@ namespace CCL_GameScripts
         public JSONObject GetJSON()
         {
             var repr = new JSONObject();
-            repr.AddField("gauge", Gauge);
             repr.AddField("axleCount", AxleCount);
             repr.AddField("axleSeparation", AxleSeparation);
             repr.AddField("brakingForcePerBar", BrakingForcePerBar);

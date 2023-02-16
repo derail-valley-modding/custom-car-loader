@@ -64,6 +64,8 @@ namespace CCL_GameScripts
         public float FullDamagePrice = 10000f;
 
         [Header("Bogie Replacement")]
+        [Tooltip("The gauge of the bogies in millimeters. Used by the Gauge mod.")]
+        public float Gauge = 1435f;
         public bool UseCustomFrontBogie;
         public bool UseCustomRearBogie;
 
