@@ -865,6 +865,7 @@ namespace DVCustomCarLoader
     {
         public int AxleCount;
         public float AxleSeparation;
+        public float Gauge; // Used by the Gauge mod
         public float BrakingForcePerBar;
         public float RollingResistanceCoefficient;
 
@@ -874,6 +875,7 @@ namespace DVCustomCarLoader
             {
                 AxleCount = (int)json.GetField("axleCount").i,
                 AxleSeparation = json.GetField("axleSeparation").n,
+                Gauge = json.GetField("gauge").n,
                 BrakingForcePerBar = json.GetField("brakingForcePerBar").n,
                 RollingResistanceCoefficient = json.GetField("rollingResistance").n
             };
