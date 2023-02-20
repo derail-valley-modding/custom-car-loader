@@ -299,6 +299,17 @@ namespace CCL_GameScripts
                     {
                         yield return Result.Failed($"Missing {CarPartNames.BOGIE_CAR} child for custom front bogie");
                     }
+                    foreach (MeshFilter filter in bogieCar.GetComponentsInChildren<MeshFilter>(true))
+                    {
+                        if (filter.sharedMesh == null)
+                        {
+                            yield return Result.Warning($"{filter.name} is missing a mesh");
+                        } 
+                        else if (!filter.sharedMesh.isReadable)
+                        {
+                            yield return Result.Warning($"Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled");
+                        }
+                    }
                 }
             }
 
@@ -320,6 +331,17 @@ namespace CCL_GameScripts
                     if (!bogieCar)
                     {
                         yield return Result.Failed($"Missing {CarPartNames.BOGIE_CAR} child for custom rear bogie");
+                    }
+                    foreach (MeshFilter filter in bogieCar.GetComponentsInChildren<MeshFilter>(true))
+                    {
+                        if (filter.sharedMesh == null)
+                        {
+                            yield return Result.Warning($"{filter.name} is missing a mesh");
+                        } 
+                        else if (!filter.sharedMesh.isReadable)
+                        {
+                            yield return Result.Warning($"Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled");
+                        }
                     }
                 }
             }
