@@ -40,6 +40,7 @@ namespace DVCustomCarLoader
         public string TenderID { get; protected set; }
 
         //Bogies
+        public float Gauge; // Used by the Gauge mod.
         public CustomBogieParams FrontBogieConfig = null;
         public CustomBogieParams RearBogieConfig = null;
         
@@ -347,6 +348,8 @@ namespace DVCustomCarLoader
 
             CargoClass = (CargoContainerType)carSetup.CargoClass;
             CargoCapacity = carSetup.CargoCapacity;
+
+            Gauge = carSetup.Gauge;
 
             var cargoSetups = newFab.GetComponentsInChildren<CargoModelSetup>(true);
             if (cargoSetups.Length > 0)
