@@ -47,6 +47,8 @@ namespace DVCustomCarLoader.LocoComponents.Utility
                 new WatchableValue<float>(this, SimEventType.BrakePipe, () => car.brakeSystem.brakePipePressure),
                 new WatchableValue<float>(this, SimEventType.SignalBoosterPower, GetSignalBoosterLevel),
             };
+
+            car.OnRerailed += OnCarRerailed;
         }
 
         protected virtual void Start()
@@ -70,6 +72,12 @@ namespace DVCustomCarLoader.LocoComponents.Utility
             StartCoroutine(EngageBrakesOnStart());
         }
 
+        protected virtual void OnCarRerailed()
+        {
+            SetTrainBrake(0);
+            SetIndependentBrake(1);
+        }
+
         private bool IsConnectedToAny()
         {
             return car.trainset.cars.Count > 1;
@@ -83,6 +91,7 @@ namespace DVCustomCarLoader.LocoComponents.Utility
         private IEnumerator EngageBrakesOnStart()
         {
             SetIndependentBrake(1f);
+            SetTrainBrake(0);
             yield return WaitFor.Seconds(1.5f);
 
             // leave just independent for lone caboose
