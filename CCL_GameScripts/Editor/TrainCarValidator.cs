@@ -164,6 +164,7 @@ namespace CCL_GameScripts
             Run(CheckCouplers);
             Run(CheckCabTransform);
             Run(CheckCargoSettings);
+            Run(CheckProjectSettings);
         }
 
         private void Run(Func<Result> test)
@@ -469,6 +470,35 @@ namespace CCL_GameScripts
             {
                 return Result.Warning("Car is set to custom cargo container, but no cargo models are set up - will not be able to carry cargo");
             }
+
+            return Result.Pass();
+        }
+        
+        [CarPrefabTest("Project Settings")]
+        private Result CheckProjectSettings()
+        {
+// Obsolete VR settings.
+#pragma warning disable 0618
+            if (!PlayerSettings.virtualRealitySupported)
+            {
+                return Result.Warning("VR support isn't enabled");
+            }
+
+            string[] sdks = PlayerSettings.GetVirtualRealitySDKs(BuildTargetGroup.Standalone);
+            if (!sdks.Contains("Oculus"))
+            {
+                return Result.Warning("Oculus support isn't enabled");
+            }
+            if (!sdks.Contains("OpenVR"))
+            {
+                return Result.Warning("OpenVR support isn't enabled");
+            }
+
+            if (!PlayerSettings.singlePassStereoRendering)
+            {
+                return Result.Warning("VR Stereo Rendering Mode isn't set to Single Pass");
+            }
+#pragma warning restore 0618
 
             return Result.Pass();
         }
