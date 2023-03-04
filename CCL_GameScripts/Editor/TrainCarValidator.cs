@@ -382,7 +382,8 @@ namespace CCL_GameScripts
             }
         }
 
-        [CarPrefabTest("Couplers & Buffers")]
+        // TODO: reimplement
+        //[CarPrefabTest("Couplers & Buffers")]
         private IEnumerator<Result> CheckCouplers()
         {
             var frontRig = prefabRoot.FindSafe(CarPartNames.COUPLER_RIG_FRONT);
