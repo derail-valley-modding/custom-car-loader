@@ -9,7 +9,8 @@ namespace CCL_GameScripts
         DieselElectric = 1,
         Steam = 2,
         Tender = 3,
-        Caboose = 4
+        Caboose = 4,
+        DummySegment = 5,
     }
 
     public static class LocoParamsExtensions

@@ -427,7 +427,14 @@ namespace DVCustomCarLoader
                 InitSpecManager.CreateRealComponent(spec);
             }
 
-            newFab.AddComponent<LocoEventManager>();
+            if (LocoType == LocoParamsType.DummySegment)
+            {
+                newFab.AddComponent<BridgedEventManager>();
+            }
+            else
+            {
+                newFab.AddComponent<LocoEventManager>();
+            }
 
             #endregion
 

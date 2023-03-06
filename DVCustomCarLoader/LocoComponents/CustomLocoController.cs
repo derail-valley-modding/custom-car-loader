@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace DVCustomCarLoader.LocoComponents
 {
-    public abstract class CustomLocoController : LocoControllerBase, ILocoEventProvider, ICabControlAcceptor
+    public abstract class CustomLocoController : LocoControllerBase, ILocoEventProvider, ICabControlAcceptor, IProvidesDriver
     {
         public AnimationCurve tractionTorqueCurve;
         public LocoEventManager EventManager { get; set; }
@@ -21,6 +21,8 @@ namespace DVCustomCarLoader.LocoComponents
 
         protected List<WatchableValue> _watchables = new List<WatchableValue>();
         public IEnumerable<WatchableValue> Watchables => _watchables;
+
+        public float wheelslip => drivingForce.wheelslip;
 
         private float GetBrakePipePressure() => train.brakeSystem.brakePipePressure;
         private float GetBrakeResPressure() => train.brakeSystem.mainReservoirPressure;

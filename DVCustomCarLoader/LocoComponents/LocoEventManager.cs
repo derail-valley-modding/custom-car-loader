@@ -256,7 +256,9 @@ namespace DVCustomCarLoader.LocoComponents
         public EventCollection ExteriorEvents = new EventCollection();
         public EventCollection InteriorEvents = new EventCollection();
 
-        public void Dispatch(ILocoEventProvider provider, SimEventType eventType, object newVal)
+        public event Action<ILocoEventProvider, SimEventType, object> OnDispatch;
+
+        public virtual void Dispatch(ILocoEventProvider provider, SimEventType eventType, object newVal)
         {
             var acceptors = ExteriorEvents.GetAcceptors(eventType);
             foreach (var acceptor in acceptors)
@@ -269,6 +271,8 @@ namespace DVCustomCarLoader.LocoComponents
             {
                 acceptor.HandleEvent(new LocoEventInfo(provider, eventType, newVal));
             }
+
+            OnDispatch?.Invoke(provider, eventType, newVal);
         }
 
         public void UpdateValueDispatchOnChange<TVal>(ILocoEventProvider provider, ref TVal value, TVal newVal, SimEventType eventType)
@@ -280,7 +284,7 @@ namespace DVCustomCarLoader.LocoComponents
             }
         }
 
-        public void Start()
+        public virtual void Start()
         {
             ExteriorEvents.Initialize(gameObject, this);
 

@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>netframework4.8</TargetFramework>
 		<RootNamespace>DVCustomCarLoader</RootNamespace>
+		<LangVersion>9.0</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

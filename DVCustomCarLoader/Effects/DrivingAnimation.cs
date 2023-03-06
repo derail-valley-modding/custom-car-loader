@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 using CCL_GameScripts.Effects;
+using DVCustomCarLoader.LocoComponents;
 
 namespace DVCustomCarLoader.Effects
 {
@@ -34,7 +33,7 @@ namespace DVCustomCarLoader.Effects
 		protected float[] animatorCircumferences;
 
 		protected TrainCar trainCar;
-		protected LocoControllerBase loco;
+		protected IProvidesDriver loco;
 		protected float curVelocity;
 		protected bool allBogiesStopped;
 
@@ -71,7 +70,7 @@ namespace DVCustomCarLoader.Effects
 
 			Main.LogVerbose($"DrivingAnimation start, bogie state: {allBogiesStopped}");
 
-			loco = gameObject.GetComponent<LocoControllerBase>();
+			loco = gameObject.GetComponentByInterface<IProvidesDriver>();
 
 			for (int i = 0; i < animators.Length; i++)
 			{
@@ -108,9 +107,9 @@ namespace DVCustomCarLoader.Effects
 			for (int i = 0; i < c.Length; i++)
 			{
 				dest[i] = curVelocity / c[i];
-				if (loco && (loco.drivingForce.wheelslip > 0))
+				if (loco.wheelslip > 0)
                 {
-					dest[i] = Mathf.Lerp(dest[i], Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.drivingForce.wheelslip);
+					dest[i] = Mathf.Lerp(dest[i], Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.wheelslip);
 				}
             }
 		}
@@ -159,9 +158,9 @@ namespace DVCustomCarLoader.Effects
             }
 
 			defaultRotationSpeed = curVelocity / defaultCircumference;
-			if (loco.drivingForce.wheelslip > 0)
+			if (loco.wheelslip > 0)
 			{
-                defaultRotationSpeed = Mathf.Lerp(defaultRotationSpeed, Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.drivingForce.wheelslip);
+                defaultRotationSpeed = Mathf.Lerp(defaultRotationSpeed, Mathf.Sign(loco.reverser) * MaxWheelslipMultiplier, loco.wheelslip);
             }
 
 			SetRevSpeeds(transformCircumferences, transformRevSpeed);
