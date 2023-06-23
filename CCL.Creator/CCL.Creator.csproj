@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<LangVersion>8</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="DV.ThingTypes" />
+		<Reference Include="DV.Simulation" />
+		<Reference Include="I2.Localization" />
+		<Reference Include="Newtonsoft.Json" />
+		<Reference Include="UnityEditor" />
+		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.CoreModule" />
+		<Reference Include="UnityEngine.PhysicsModule" />
+		<Reference Include="UnityEngine.UI" />
+		<Reference Include="UnityEngine.IMGUIModule" />
+		<Reference Include="UnityEngine.AssetBundleModule" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Editor\CCBootstrapper.cs">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Compile>
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)&quot; md &quot;$(SolutionDir)$(OutDir)&quot;&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)Editor\&quot; md &quot;$(SolutionDir)$(OutDir)Editor\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)&quot;&#xD;&#xA;echo F|xcopy /d /y &quot;$(TargetDir)Editor\CCBootstrapper.cs&quot; &quot;$(SolutionDir)$(OutDir)Editor\CCBootstrapper.cs&quot;" />
+	</Target>
+</Project>
