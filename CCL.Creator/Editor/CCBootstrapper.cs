@@ -19,7 +19,6 @@ namespace CCL.Creator
             "DV.Simulation",
             "DV.ThingTypes",
             "DV.Utils",
-            "Newtonsoft.Json",
         };
 
         private static string LastDLLPath

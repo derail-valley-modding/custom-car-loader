@@ -3,6 +3,7 @@ using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -352,6 +353,46 @@ namespace CCL.Creator.Validators
             {
                 yield return Result.Failed($"Cargo {model.name} bounding {CarPartNames.COLLISION_ROOT} collider is missing");
             }
+        }
+
+        [CarValidator("Project Settings")]
+        public static IEnumerable<Result> CheckProjectSettings(CustomCarType _)
+        {
+            // Obsolete VR settings.
+#pragma warning disable 0618
+
+            bool anyIssues = false;
+
+            if (!PlayerSettings.virtualRealitySupported)
+            {
+                anyIssues = true;
+                yield return Result.Warning("VR support isn't enabled");
+            }
+
+            string[] sdks = PlayerSettings.GetVirtualRealitySDKs(BuildTargetGroup.Standalone);
+            if (!sdks.Contains("Oculus"))
+            {
+                anyIssues = true;
+                yield return Result.Warning("Oculus support isn't enabled");
+            }
+            if (!sdks.Contains("OpenVR"))
+            {
+                anyIssues = true;
+                yield return Result.Warning("OpenVR support isn't enabled");
+            }
+
+            if (!PlayerSettings.singlePassStereoRendering)
+            {
+                anyIssues = true;
+                yield return Result.Warning("VR Stereo Rendering Mode isn't set to Single Pass");
+            }
+
+            if (!anyIssues)
+            {
+                yield return Result.Pass();
+            }
+
+#pragma warning restore 0618
         }
     }
 }
