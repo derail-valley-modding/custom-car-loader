@@ -73,24 +73,29 @@ namespace CCL.Types
             return null;
         }
 
-        public static void SetLayersRecursive(GameObject go, int layer)
+        public static void SetLayer(this GameObject go, DVLayer layer)
+        {
+            go.layer = (int)layer;
+        }
+
+        public static void SetLayersRecursive(this GameObject go, int layer)
         {
             go.layer = layer;
-            Transform[] componentsInChildren = go.GetComponentsInChildren<Transform>();
+            Transform[] componentsInChildren = go.GetComponentsInChildren<Transform>(true);
             for (int i = 0; i < componentsInChildren.Length; i++)
             {
                 componentsInChildren[i].gameObject.layer = layer;
             }
         }
 
-        public static void SetLayersRecursive(GameObject go, DVLayer layer)
+        public static void SetLayersRecursive(this GameObject go, DVLayer layer)
         {
             SetLayersRecursive(go, (int)layer);
         }
 
         public static void SetLayersRecursiveAndExclude(GameObject go, DVLayer layer, DVLayer exclude)
         {
-            var toReplace = go.GetComponentsInChildren<Transform>().Where(tform => tform.gameObject.layer != (int)exclude);
+            var toReplace = go.GetComponentsInChildren<Transform>(true).Where(tform => tform.gameObject.layer != (int)exclude);
             foreach (var tform in toReplace)
             {
                 tform.gameObject.layer = (int)layer;
@@ -128,5 +133,6 @@ namespace CCL.Types
         PostProcessing = 25,
         Grabbed_Item = 26,
         World_Item = 27,
+        Reflection_Probe_Only = 28,
     }
 }

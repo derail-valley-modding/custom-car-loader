@@ -120,11 +120,12 @@ namespace CCL.Creator
         {
             Debug.Log($"Creating temp prefab from car object {Livery.prefab.name}");
 
-            if (Livery.interiorPrefab)
-            {
-                string interiorPath = AssetDatabase.GetAssetPath(Livery.interiorPrefab);
-                AssetImporter.GetAtPath(interiorPath).SetAssetBundleNameAndVariant(Parent.BundleName, "");
-            }
+            Livery.interiorPrefab.SetAssetBundle(Parent.BundleName);
+            Livery.explodedInteriorPrefab.SetAssetBundle(Parent.BundleName);
+            Livery.externalInteractablesPrefab.SetAssetBundle(Parent.BundleName);
+            Livery.explodedExternalInteractablesPrefab.SetAssetBundle(Parent.BundleName);
+
+            Livery.icon.SetAssetBundle(Parent.BundleName);
 
             // Create prefabs for cargo models
             //var modelSetupScripts = exportInfo.Livery.gameObject.GetComponents<CargoModelSetup>();
@@ -160,11 +161,9 @@ namespace CCL.Creator
                 Debug.LogError($"Missing prefab for livery {Livery.name}, abandoning build");
                 return false;
             }
-            string prefabPath = AssetDatabase.GetAssetPath(Livery.prefab);
-            AssetImporter.GetAtPath(prefabPath).SetAssetBundleNameAndVariant(Parent.BundleName, "");
 
-            string liveryPath = AssetDatabase.GetAssetPath(Livery);
-            AssetImporter.GetAtPath(liveryPath).SetAssetBundleNameAndVariant(Parent.BundleName, "");
+            Livery.prefab.SetAssetBundle(Parent.BundleName);
+            Livery.SetAssetBundle(Parent.BundleName);
 
             return true;
         }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFramework>netframework4.8</TargetFramework>
 		<Nullable>enable</Nullable>
 		<LangVersion>8</LangVersion>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>

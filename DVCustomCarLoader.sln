@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCL.Creator", "CCL.Creator\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCL.Importer", "CCL.Importer\CCL.Importer.csproj", "{16ACD5DC-F102-438F-AC7D-10FA1B1EBC38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCL.Types", "CCL.Types\CCL.Types.csproj", "{DFD99231-9023-4844-9702-A19B7757430F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCL.Types", "CCL.Types\CCL.Types.csproj", "{DFD99231-9023-4844-9702-A19B7757430F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

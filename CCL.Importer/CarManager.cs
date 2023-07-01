@@ -93,6 +93,7 @@ namespace CCL.Importer
                 }
 
                 carType.AfterAssetLoad();
+                CarTypeInjector.SetupTypeLinks(carType);
 
                 // Finalize model & inject
                 if (!PrefabWrangler.FinalizeCarTypePrefabs(carType))

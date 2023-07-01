@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEditor;
 using UnityEngine;
@@ -15,8 +16,9 @@ namespace CCL.Creator
 
         private static readonly string[] DLLNames =
         {
+            "DV.Simulation",
             "DV.ThingTypes",
-            //"I2.Localization",
+            "DV.Utils",
             "Newtonsoft.Json",
         };
 
@@ -61,6 +63,8 @@ namespace CCL.Creator
                 EnableMainAssembly();
                 CreateCarFolders();
             }
+            
+            AssetDatabase.Refresh();
 
             EditorUtility.ClearProgressBar();
         }
@@ -69,6 +73,14 @@ namespace CCL.Creator
         {
             string localDLLFolder = Path.Combine(Application.dataPath, DLL_FOLDER);
             Directory.CreateDirectory(localDLLFolder);
+
+            foreach (var file in Directory.EnumerateFiles(localDLLFolder))
+            {
+                if ((Path.GetExtension(file) != ".meta") && !DLLNames.Contains(Path.GetFileNameWithoutExtension(file)))
+                {
+                    File.Delete(file);
+                }
+            }
 
             for (int i = 0; i < DLLNames.Length; i++)
             {

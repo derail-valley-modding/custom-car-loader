@@ -8,6 +8,8 @@ namespace CCL.Types
     [CreateAssetMenu(menuName = "CCL/Custom Livery (Car Variant)")]
     public class CustomLivery : TrainCarLivery
     {
+        public CustomCarType CustomParentType => (CustomCarType)parentType;
+
         [Header("CCL Extended Properties")]
         public TrainCarType BaseCarType;
 

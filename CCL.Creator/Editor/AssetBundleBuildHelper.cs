@@ -55,5 +55,14 @@ namespace CCL.Creator
 				assetNames = AssetDatabase.GetAssetPathsFromAssetBundle(bundleName)
 			};
 		}
+
+		public static void SetAssetBundle(this Object? asset, string bundleName)
+		{
+			if (asset != null && asset)
+			{
+				string assetPath = AssetDatabase.GetAssetPath(asset);
+				AssetImporter.GetAtPath(assetPath).SetAssetBundleNameAndVariant(bundleName, "");
+			}
+        }
 	}
 }

@@ -12,7 +12,7 @@ namespace CCL.Importer
     [HarmonyPatch(typeof(Bootstrap))]
     public static class StartupInitializer
     {
-        private static List<StartupAction> _startupActions;
+        private static readonly List<StartupAction> _startupActions;
 
         static StartupInitializer()
         {
@@ -24,13 +24,18 @@ namespace CCL.Importer
                 {
                     if (method.GetCustomAttribute<AfterStartupAttribute>() is AfterStartupAttribute attr)
                     {
-                        CCLPlugin.Log($"Registered startup method {type.Name}.{method.Name}");
                         actions.Add(new StartupAction(attr.Priority, AccessTools.MethodDelegate<Action>(method)));
                     }
                 }
             }
 
             _startupActions = actions.OrderBy(a => a.Key).ToList();
+
+            CCLPlugin.Log("Startup sequence:");
+            foreach (var action in _startupActions)
+            {
+                CCLPlugin.Log($"{action.Key, 5} - {action.Value.Method.FullDescription()}");
+            }
         }
 
         [HarmonyPatch("Start")]

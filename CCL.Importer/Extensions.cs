@@ -1,4 +1,5 @@
-﻿using DV.ThingTypes;
+﻿using DV.Simulation.Controllers;
+using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,12 @@ namespace CCL.Importer
             return gameObject.GetComponentsInChildren<MonoBehaviour>(true)
                 .Where(comp => comp && comp.GetType().GetInterfaces().Contains(typeof(T)))
                 .Cast<T>();
+        }
+
+        public static void RefreshChildren<T>(this ARefreshableChildrenController<T> controller)
+            where T : MonoBehaviour
+        {
+            controller.entries = controller.gameObject.GetComponentsInChildren<T>(true);
         }
 
         public static bool EqualsOneOf<T>(this T compare, params T[] values)
