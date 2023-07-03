@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using System.Collections;
+using System.IO;
 using System.Reflection;
 
 namespace CCL.Importer
@@ -32,6 +33,19 @@ namespace CCL.Importer
         {
             _instance = this;
             Path = System.IO.Path.GetDirectoryName(Info.Location);
+
+            try
+            {
+                if (!Directory.Exists(CarFolderPath))
+                {
+                    Directory.CreateDirectory(CarFolderPath);
+                }
+            }
+            catch (IOException ex)
+            {
+                Error("Exception while trying to create cars folder:");
+                Error(ex.ToString());
+            }
 
             var harmony = new Harmony(CCLPluginInfo.Guid);
             harmony.PatchAll(Assembly.GetExecutingAssembly());

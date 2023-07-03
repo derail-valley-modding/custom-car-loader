@@ -10,9 +10,12 @@ namespace CCL.Creator
     public class CCBootstrapper
     {
         private const string DLL_FOLDER = "DLL_Links";
-        private const string PACKAGE_FOLDER = "CarCreator";
-        private const string EXPORTER_DLL = "CCL.Creator.dll";
         private const string CAR_FOLDER = "_CCL_CARS";
+
+        private const string PACKAGE_FOLDER = "CarCreator";
+
+        private const string EXPORTER_FOLDER_DISABLED = "Bin~";
+        private const string EXPORTER_FOLDER = "Bin";
 
         private static readonly string[] DLLNames =
         {
@@ -27,9 +30,79 @@ namespace CCL.Creator
             set => EditorPrefs.SetString("CCL_LastDVDLLPath", value);
         }
 
-        [MenuItem("CCL/Initialize Project")]
-        public static void Initialize(MenuCommand command)
+        private static string GetDisabledBinPath() => Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER_DISABLED);
+        private static string GetEnabledBinPath() => Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER);
+
+        [MenuItem("CCL/Initialize Creator Package")]
+        public static void Initialize(MenuCommand _)
         {
+            if (!SetupDLLs())
+            {
+                EditorUtility.DisplayDialog(
+                    "DV DLLs not linked",
+                    "Derail Valley libraries were not linked - you will not be able to build cars until they are. " +
+                    "Select CCL -> Initialize Creator Package from the menu bar to try again.",
+                    "OK");
+                return;
+            }
+
+            if (AssemblyCanUpdate())
+            {
+                EnableMainAssembly();
+            }
+            else if (Directory.Exists(GetDisabledBinPath()))
+            {
+                Directory.Delete(GetDisabledBinPath(), true);
+            }
+
+            CreateCarFolders();
+
+            AssetDatabase.Refresh();
+
+            EditorUtility.ClearProgressBar();
+        }
+
+        [MenuItem("CCL/Disable Creator Package (dev only)")]
+        public static void DeInitialize(MenuCommand _)
+        {
+            DisableMainAssembly();
+
+            AssetDatabase.Refresh();
+        }
+
+        private static bool DLLsNeedUpdated()
+        {
+            string localDLLFolder = Path.Combine(Application.dataPath, DLL_FOLDER);
+            if (!Directory.Exists(localDLLFolder))
+            {
+                return true;
+            }
+
+            foreach (string dllName in DLLNames)
+            {
+                string destination = Path.Combine(localDLLFolder, $"{dllName}.dll");
+
+                if (!File.Exists(destination))
+                {
+                    return true;
+                }
+            }
+
+            foreach (string file in Directory.EnumerateFiles(localDLLFolder))
+            {
+                if ((Path.GetExtension(file) != ".meta") && !DLLNames.Contains(Path.GetFileNameWithoutExtension(file)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool SetupDLLs()
+        {
+            if (!DLLsNeedUpdated()) return true;
+
             bool result;
 
             result = EditorUtility.DisplayDialog("Setup DV References",
@@ -38,7 +111,7 @@ namespace CCL.Creator
                 "Once you are in the installation path, select the DerailValley_Data/Managed folder.",
                 "Proceed");
 
-            if (!result) return;
+            if (!result) return false;
 
             string startingPath, folderName;
             string lastPath = LastDLLPath;
@@ -59,13 +132,10 @@ namespace CCL.Creator
             {
                 LastDLLPath = dllPath;
                 LinkDLLs(dllPath);
-                EnableMainAssembly();
-                CreateCarFolders();
+                return true;
             }
-            
-            AssetDatabase.Refresh();
 
-            EditorUtility.ClearProgressBar();
+            return false;
         }
 
         private static void LinkDLLs(string dllPath)
@@ -124,14 +194,64 @@ namespace CCL.Creator
             return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         }
 
+        private static DateTime GetFolderLastModified(string dirPath)
+        {
+            if (!Directory.Exists(dirPath)) return DateTime.MinValue;
+
+            DateTime lastModified = DateTime.MinValue;
+            foreach (string file in Directory.EnumerateFiles(dirPath))
+            {
+                DateTime fileModified = File.GetLastWriteTime(file);
+                if (fileModified > lastModified)
+                {
+                    lastModified = fileModified;
+                }
+            }
+            return lastModified;
+        }
+
+        private static bool AssemblyCanUpdate()
+        {
+            string hiddenName = GetDisabledBinPath();
+            string enabledName = GetEnabledBinPath();
+
+            var hiddenTime = GetFolderLastModified(hiddenName);
+            var enabledTime = GetFolderLastModified(enabledName);
+
+            return hiddenTime > enabledTime;
+        }
+
         private static void EnableMainAssembly()
         {
-            string hiddenName = Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_DLL + "~");
-            string newName = Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_DLL);
+            string hiddenName = GetDisabledBinPath();
+            string newName = GetEnabledBinPath();
 
-            if (File.Exists(hiddenName) && !File.Exists(newName))
+            if (Directory.Exists(hiddenName))
             {
-                File.Move(hiddenName, newName);
+                if (Directory.Exists(newName))
+                {
+                    Directory.Delete(newName, true);
+                }
+
+                Directory.Move(hiddenName, newName);
+            }
+        }
+
+        private static void DisableMainAssembly()
+        {
+            string hiddenName = Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER_DISABLED);
+            string newName = Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER);
+
+            if (Directory.Exists(newName))
+            {
+                if (!Directory.Exists(hiddenName))
+                {
+                    Directory.Move(newName, hiddenName);
+                }
+                else
+                {
+                    Directory.Delete(newName);
+                }
             }
         }
 

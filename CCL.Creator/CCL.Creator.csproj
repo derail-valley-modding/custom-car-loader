@@ -7,6 +7,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Editor\CCBootstrapper.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Editor\CCBootstrapper.cs">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
 	</ItemGroup>
 
@@ -21,12 +31,6 @@
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="UnityEngine.IMGUIModule" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Compile Update="Editor\CCBootstrapper.cs">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Compile>
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
