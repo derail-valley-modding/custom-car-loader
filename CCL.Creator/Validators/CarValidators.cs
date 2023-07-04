@@ -300,14 +300,14 @@ namespace CCL.Creator.Validators
         [CarValidator("Cargo Settings")]
         public static IEnumerable<Result> CheckCargoSettings(CustomCarType carType)
         {
-            if (carType.CargoTypes.Length == 0)
+            if (carType.CargoTypes.IsEmpty)
             {
                 yield return Result.Skipped();
                 yield break;
             }
 
             bool any = false;
-            foreach (var cargo in carType.CargoTypes)
+            foreach (var cargo in carType.CargoTypes.Entries)
             {
                 if (cargo.AmountPerCar <= 0)
                 {

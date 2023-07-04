@@ -11,13 +11,13 @@ namespace CCL.Importer
     {
         public static void InjectLoadableCargos(CustomCarType carType)
         {
-            CCLPlugin.LogVerbose($"Add cargos for {carType.id} - {carType.CargoTypes?.Length}");
-            if (carType.CargoTypes == null || carType.CargoTypes.Length == 0)
+            CCLPlugin.LogVerbose($"Add cargos for {carType.id} - {carType.CargoTypes?.Entries?.Count}");
+            if (carType.CargoTypes == null || carType.CargoTypes.IsEmpty)
             {
                 return;
             }
 
-            foreach (var loadableCargo in carType.CargoTypes)
+            foreach (var loadableCargo in carType.CargoTypes.Entries)
             {
                 CCLPlugin.LogVerbose($"Loadable cargo {carType.id} - {loadableCargo.AmountPerCar} {loadableCargo.CargoType}, {loadableCargo.ModelVariants?.Length} models");
                 if (!Globals.G.Types.CargoType_to_v2.TryGetValue(loadableCargo.CargoType, out var matchCargo))

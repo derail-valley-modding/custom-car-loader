@@ -29,14 +29,16 @@ namespace CCL.Types
         public string? NameTranslationJson = null;
         public TranslationData NameTranslations;
 
-        public LoadableCargo[] CargoTypes;
+        [SerializeField, HideInInspector]
+        public string? CargoTypeJson = null;
+        public LoadableCargo CargoTypes;
 
         public IEnumerable<CustomLivery> CustomLiveries => liveries.Cast<CustomLivery>();
 
         public CustomCarType() : base()
         {
             NameTranslations = new TranslationData();
-            CargoTypes = Array.Empty<LoadableCargo>();
+            CargoTypes = new LoadableCargo();
         }
 
         [RenderMethodButtons]
@@ -61,6 +63,16 @@ namespace CCL.Types
             }
 
             NameTranslationJson = JsonConvert.SerializeObject(NameTranslations);
+            CargoTypeJson = JsonConvert.SerializeObject(CargoTypes);
+        }
+
+        public void ForceValidation()
+        {
+            OnValidate();
+            foreach (var child in CustomLiveries)
+            {
+                child.ForceValidation();
+            }
         }
 
         public void AfterAssetLoad()
@@ -74,6 +86,18 @@ namespace CCL.Types
                 NameTranslations = new TranslationData()
                 {
                     Items = new List<TranslationItem>()
+                };
+            }
+
+            if (!string.IsNullOrEmpty(CargoTypeJson))
+            {
+                CargoTypes = JsonConvert.DeserializeObject<LoadableCargo>(CargoTypeJson!)!;
+            }
+            else
+            {
+                CargoTypes = new LoadableCargo()
+                {
+                    Entries = new List<LoadableCargoEntry>()
                 };
             }
 

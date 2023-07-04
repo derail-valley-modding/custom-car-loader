@@ -50,10 +50,6 @@ namespace CCL.Creator
             {
                 EnableMainAssembly();
             }
-            else if (Directory.Exists(GetDisabledBinPath()))
-            {
-                Directory.Delete(GetDisabledBinPath(), true);
-            }
 
             CreateCarFolders();
 
@@ -223,17 +219,21 @@ namespace CCL.Creator
 
         private static void EnableMainAssembly()
         {
-            string hiddenName = GetDisabledBinPath();
-            string newName = GetEnabledBinPath();
+            string hiddenPath = GetDisabledBinPath();
+            string enabledPath = GetEnabledBinPath();
 
-            if (Directory.Exists(hiddenName))
+            if (Directory.Exists(hiddenPath))
             {
-                if (Directory.Exists(newName))
+                if (!Directory.Exists(enabledPath))
                 {
-                    Directory.Delete(newName, true);
+                    Directory.CreateDirectory(enabledPath);
                 }
 
-                Directory.Move(hiddenName, newName);
+                foreach (var file in Directory.GetFiles(hiddenPath))
+                {
+                    string newFile = Path.Combine(enabledPath, Path.GetFileName(file));
+                    File.Copy(file, newFile, true);
+                }
             }
         }
 

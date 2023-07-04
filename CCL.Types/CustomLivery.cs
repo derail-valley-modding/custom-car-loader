@@ -43,6 +43,11 @@ namespace CCL.Types
             NameTranslationJson = JsonConvert.SerializeObject(NameTranslations);
         }
 
+        public void ForceValidation()
+        {
+            OnValidate();
+        }
+
         public void AfterAssetLoad()
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))

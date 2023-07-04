@@ -20,6 +20,14 @@ namespace CCL.Types
                 Items = new List<TranslationItem>() { new TranslationItem() };
             }
         }
+
+        public static TranslationData Default(string englishName = "") => new TranslationData()
+        {
+            Items = new List<TranslationItem>() 
+            { 
+                new TranslationItem() { Value = englishName } 
+            }
+        };
     }
 
     [Serializable]
