@@ -11,7 +11,7 @@
 
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" />
-		<Reference Include="BepInEx" />
+		<Reference Include="UnityModManager" />
 		<Reference Include="0Harmony" />
 		<Reference Include="I2.Localization" />
 		<Reference Include="Newtonsoft.Json" />

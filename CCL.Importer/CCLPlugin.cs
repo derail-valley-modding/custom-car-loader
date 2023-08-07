@@ -1,4 +1,4 @@
-﻿using BepInEx;
+﻿using UnityModManagerNet;
 using HarmonyLib;
 using System.Collections;
 using System.IO;
@@ -16,59 +16,46 @@ namespace CCL.Importer
         public const string CarFolderName = "cars";
     }
 
-    [BepInPlugin(CCLPluginInfo.Guid, CCLPluginInfo.Name, CCLPluginInfo.Version)]
-    public class CCLPlugin : BaseUnityPlugin
+    public static class CCLPlugin
     {
-        private static CCLPlugin? _instance;
-        public static CCLPlugin Instance => _instance!;
-        public string Path = null!;
+        public static UnityModManager.ModEntry Instance = null!;
+        public static bool Enabled => Instance.Active;
+        public static string Path = null!;
 
-
-        private string? _carFolderPath;
-        public string CarFolderPath => 
-            Extensions.GetCached(ref _carFolderPath, 
-                () => System.IO.Path.Combine(Paths.BepInExRootPath, CCLPluginInfo.ContentFolderName, CCLPluginInfo.CarFolderName));
-
-        public void Awake()
+        public static bool Load(UnityModManager.ModEntry modEntry)
         {
-            _instance = this;
-            Path = System.IO.Path.GetDirectoryName(Info.Location);
+            Instance = modEntry;
 
-            try
-            {
-                if (!Directory.Exists(CarFolderPath))
-                {
-                    Directory.CreateDirectory(CarFolderPath);
-                }
-            }
-            catch (IOException ex)
-            {
-                Error("Exception while trying to create cars folder:");
-                Error(ex.ToString());
-            }
+            TranslationInjector.Initialize();
+            PrefabWrangler.FetchInteractables();
+
+            CarManager.ScanLoadedMods();
+            UnityModManager.toggleModsListen += CarManager.HandleModToggled;
 
             var harmony = new Harmony(CCLPluginInfo.Guid);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            return true;
         }
 
         public static void Log(string message)
         {
-            Instance.Logger.LogInfo(message);
+            Instance.Logger.Log(message);
         }
 
         public static void LogVerbose(string message)
         {
-            Instance.Logger.LogDebug(message);
+            Instance.Logger.Log(message);
         }
 
         public static void Error(string message)
         {
-            Instance.Logger.LogError(message);
+            Instance.Logger.Error(message);
         }
 
         public static void Warning(string message)
         {
-            Instance.Logger.LogWarning(message);
+            Instance.Logger.Warning(message);
         }
     }
 }

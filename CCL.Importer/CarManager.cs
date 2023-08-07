@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityModManagerNet;
 
 namespace CCL.Importer
 {
@@ -13,16 +14,30 @@ namespace CCL.Importer
     {
         public static readonly List<CustomCarType> CustomCarTypes = new List<CustomCarType>();
 
-        [AfterStartup]
-        public static void LoadCarDefinitions()
+        public static void ScanLoadedMods()
         {
-            CCLPlugin.Log($"Loading cars from {CCLPlugin.Instance.CarFolderPath}");
-
-            foreach (var carFolder in Directory.GetDirectories(CCLPlugin.Instance.CarFolderPath))
+            foreach (var mod in UnityModManager.modEntries)
             {
-                string jsonPath = Path.Combine(carFolder, ExporterConstants.JSON_FILENAME);
-                if (!File.Exists(jsonPath)) continue;
+                if (mod.Active)
+                {
+                    LoadCarDefinitions(mod);
+                }
+            }
+        }
 
+        public static void HandleModToggled(UnityModManager.ModEntry modEntry, bool newState)
+        {
+            if (newState)
+            {
+                LoadCarDefinitions(modEntry);
+            }
+        }
+
+        private static void LoadCarDefinitions(UnityModManager.ModEntry mod)
+        {
+            int loadedCount = 0;
+            foreach (string jsonPath in Directory.EnumerateFiles(mod.Path, ExporterConstants.JSON_FILENAME, SearchOption.AllDirectories))
+            {
                 JObject json;
                 try
                 {
@@ -35,14 +50,20 @@ namespace CCL.Importer
                     continue;
                 }
 
+                string carFolder = Path.GetDirectoryName(jsonPath);
                 var carType = LoadCarDefinition(carFolder, json);
                 if (carType != null)
                 {
                     CustomCarTypes.Add(carType);
+                    loadedCount += 1;
                 }
             }
 
-            CarTypeInjector.ForceObjectModelUpdate();
+            if (loadedCount > 0)
+            {
+                CCLPlugin.LogVerbose($"Loaded {loadedCount} cars from {mod.Path}");
+                CarTypeInjector.ForceObjectModelUpdate();
+            }
         }
 
         private static CustomCarType? LoadCarDefinition(string directory, JObject jsonFile)
@@ -92,7 +113,7 @@ namespace CCL.Importer
                     return null;
                 }
 
-                carType.AfterAssetLoad();
+                carType.AfterAssetLoad(assetBundle);
                 CarTypeInjector.SetupTypeLinks(carType);
 
                 // Finalize model & inject

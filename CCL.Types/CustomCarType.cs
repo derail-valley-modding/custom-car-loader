@@ -17,13 +17,16 @@ namespace CCL.Types
     }
 
     [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
-    public class CustomCarType : TrainCarType_v2
+    public class CustomCarType : TrainCarType_v2, IAssetLoadCallback
     {
         [NonSerialized]
         public Version ExporterVersion = ExporterConstants.ExporterVersion;
 
         [Header("CCL Extended Properties")]
         public DVTrainCarKind KindSelection = DVTrainCarKind.Car;
+
+        public string Version = "1.0.0";
+        public string Author = "";
 
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
@@ -75,7 +78,7 @@ namespace CCL.Types
             }
         }
 
-        public void AfterAssetLoad()
+        public void AfterAssetLoad(AssetBundle bundle)
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
@@ -92,6 +95,7 @@ namespace CCL.Types
             if (!string.IsNullOrEmpty(CargoTypeJson))
             {
                 CargoTypes = JsonConvert.DeserializeObject<LoadableCargo>(CargoTypeJson!)!;
+                CargoTypes.AfterAssetLoad(bundle);
             }
             else
             {
@@ -106,5 +110,10 @@ namespace CCL.Types
                 livery.AfterAssetLoad();
             }
         }
+    }
+
+    public interface IAssetLoadCallback
+    {
+        void AfterAssetLoad(AssetBundle bundle);
     }
 }

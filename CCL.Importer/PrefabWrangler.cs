@@ -625,7 +625,6 @@ namespace CCL.Importer
         private static GameObject _flatbedHandbrake = null!;
         private static GameObject _flatbedBrakeRelease = null!;
 
-        [AfterStartup(StartupPriority.Early)]
         public static void FetchInteractables()
         {
             var flatbedInteractables = TrainCarType.FlatbedEmpty.ToV2().externalInteractablesPrefab;

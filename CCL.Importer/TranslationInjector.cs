@@ -16,7 +16,6 @@ namespace CCL.Importer
         private static LanguageSource _source = null!;
         internal static LanguageSourceData _langData = null!;
 
-        [AfterStartup(StartupPriority.Critical)]
         public static void Initialize()
         {
             _sourceHolder = new GameObject("CCL_Translations");

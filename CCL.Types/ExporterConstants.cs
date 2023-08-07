@@ -4,9 +4,11 @@ namespace CCL.Types
 {
     public static class ExporterConstants
     {
+        public const string MOD_ID = "DVCustomCarLoader";
         public static readonly Version ExporterVersion = new Version(2, 0, 0);
         public static readonly Version MinimumCompatibleVersion = new Version(2, 0, 0);
 
+        public const string MOD_INFO_FILENAME = "Info.json";
         public const string JSON_FILENAME = "car.json";
         public const string BUNDLE_NAME = "assetBundleName";
         public const string PREFAB_NAME = "carPrefabName";

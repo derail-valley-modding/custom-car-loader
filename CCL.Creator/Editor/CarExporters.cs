@@ -47,6 +47,20 @@ namespace CCL.Creator
                     LiveryExporters[i].PrepareForExport();
                 }
 
+                // Prep cargo models
+                foreach (var cargoEntry in CarType.CargoTypes.Entries)
+                {
+                    if (cargoEntry.ModelVariants == null) continue;
+                    cargoEntry.ModelPaths = new string[cargoEntry.ModelVariants.Length];
+
+                    for (int i = 0; i < cargoEntry.ModelVariants.Length; i++)
+                    {
+                        cargoEntry.ModelPaths[i] = AssetDatabase.GetAssetPath(cargoEntry.ModelVariants[i]);
+                        AssetImporter.GetAtPath(cargoEntry.ModelPaths[i]).SetAssetBundleNameAndVariant(BundleName, "");
+                    }
+                }
+
+                CarType.ForceValidation();
                 string carTypePath = AssetDatabase.GetAssetPath(CarType);
                 AssetImporter.GetAtPath(carTypePath).SetAssetBundleNameAndVariant(BundleName, "");
 
@@ -68,6 +82,7 @@ namespace CCL.Creator
                 // Create car.json file.
                 if (Progress("Writing car properties...", 0.80f)) return;
                 WriteCarSettingsFile();
+                WriteModInfoFile();
             }
             catch (Exception ex)
             {
@@ -102,6 +117,24 @@ namespace CCL.Creator
             //Write data to JSON file
             using StreamWriter newTask = new StreamWriter(outFilePath, false);
             newTask.Write(fullJson);
+        }
+
+        private void WriteModInfoFile()
+        {
+            var outFilePath = Path.Combine(ExportFolderPath, ExporterConstants.MOD_INFO_FILENAME);
+
+            var jsonFile = new JObject
+            {
+                { "Id", CarType.id },
+                { "DisplayName", CarType.NameTranslations.Items[0].Value },
+                { "Version", CarType.Version },
+                { "Author", CarType.Author },
+                { "ManagerVersion", "0.27.3" },
+                { "Requirements", new JArray { ExporterConstants.MOD_ID } },
+            };
+
+            using StreamWriter stream = new StreamWriter(outFilePath, false);
+            stream.Write(jsonFile.ToString());
         }
     }
 

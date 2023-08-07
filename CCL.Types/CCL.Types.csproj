@@ -10,6 +10,7 @@
 		<Reference Include="DV.ThingTypes" />
 		<Reference Include="Newtonsoft.Json" />
 		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="UnityEngine.IMGUIModule" />

@@ -57,6 +57,10 @@ namespace CCL.Creator
                 "Pick an in-game name for your car - you will be able to add translations later",
                 "Car Name", _carSettings.Name);
 
+            _carSettings.Author = RenderTextbox(
+                "Your (user)name for publishing the car pack",
+                "Author", _carSettings.Author);
+
             _carSettings.BaseCarType = RenderEnum(
                 "Pick the base car type that you would like to use bogies and buffers from",
                 "Base Type", _carSettings.BaseCarType);
@@ -132,6 +136,7 @@ namespace CCL.Creator
             var carType = CreateInstance<CustomCarType>();
             carType.id = settings.ID;
             carType.name = $"{settings.ID}_cartype";
+            carType.Author = settings.Author!;
             carType.KindSelection = settings.Kind;
             carType.NameTranslations = TranslationData.Default(settings.Name!);
 
@@ -172,12 +177,14 @@ namespace CCL.Creator
             public DVTrainCarKind Kind;
             public string? ID;
             public string? Name;
+            public string? Author;
             public TrainCarType BaseCarType;
 
             public bool IsValid =>
                 (Kind == DVTrainCarKind.Car) &&
                 !string.IsNullOrWhiteSpace(ID) &&
                 !string.IsNullOrWhiteSpace(Name) &&
+                !string.IsNullOrWhiteSpace(Author) &&
                 (BaseCarType != TrainCarType.NotSet);
         }
     }
