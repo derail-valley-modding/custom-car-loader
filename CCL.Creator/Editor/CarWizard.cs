@@ -3,6 +3,7 @@ using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace CCL.Creator
         private static string GetCarFolder() => Path.Combine(Application.dataPath, CAR_FOLDER);
 
         private CarSettings _carSettings = new CarSettings();
+        private Vector2 _scrollPosition = Vector2.zero;
 
         [MenuItem("CCL/Create New Car Type")]
         static void AddCarType()
@@ -37,6 +39,7 @@ namespace CCL.Creator
         private void OnGUI()
         {
             EditorGUILayout.BeginVertical("box");
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
             EditorStyles.label.wordWrap = true;
             EditorGUILayout.LabelField(
@@ -64,6 +67,8 @@ namespace CCL.Creator
             _carSettings.BaseCarType = RenderEnum(
                 "Pick the base car type that you would like to use bogies and buffers from",
                 "Base Type", _carSettings.BaseCarType);
+
+            EditorGUILayout.EndScrollView();
 
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
@@ -139,6 +144,9 @@ namespace CCL.Creator
             carType.Author = settings.Author!;
             carType.KindSelection = settings.Kind;
             carType.NameTranslations = TranslationData.Default(settings.Name!);
+            carType.carInstanceIdGenBase = $"{GetInitials(settings.Name!)}-";
+            carType.mass = 25000;
+            carType.wheelRadius = 0.459f;
 
             // create livery
             var livery = CreateInstance<CustomLivery>();
@@ -171,6 +179,13 @@ namespace CCL.Creator
             return prefab;
         }
 
+        private static string GetInitials(string value)
+        {
+            return string.Concat(value
+                .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(x => x.Length >= 1 && char.IsLetter(x[0]))
+                .Select(x => char.ToUpper(x[0])));
+        }
 
         private class CarSettings
         {
