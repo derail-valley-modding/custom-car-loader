@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netframework4.8</TargetFramework>
+		<Nullable>enable</Nullable>
+		<LangVersion>8</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="DV.ThingTypes" />
+		<Reference Include="DV.Simulation" />
+		<Reference Include="Newtonsoft.Json" />
+		<Reference Include="UnityEditor" />
+		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.CoreModule" />
+		<Reference Include="UnityEngine.PhysicsModule" />
+		<Reference Include="UnityEngine.UI" />
+		<Reference Include="UnityEngine.IMGUIModule" />
+		<Reference Include="UnityEngine.AssetBundleModule" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot;" />
+	</Target>
+</Project>
