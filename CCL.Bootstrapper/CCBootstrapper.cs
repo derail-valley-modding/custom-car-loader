@@ -1,27 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEditor;
+using UnityEditor.PackageManager;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
-namespace CCL.Creator
+namespace CCL.Bootstrapper
 {
+    internal class Constants
+    {
+        public const string DLL_FOLDER = "DLL_Links";
+        public const string CAR_FOLDER = "_CCL_CARS";
+        
+        public const string PACKAGE_FOLDER = "CarCreator";
+
+        public const string BIN_ZIP_FILE = "CCL.Creator.zip";
+        public const string BIN_FOLDER = "Bin";
+    }
+
+    [InitializeOnLoad]
     public class CCBootstrapper
     {
-        private const string DLL_FOLDER = "DLL_Links";
-        private const string CAR_FOLDER = "_CCL_CARS";
-
-        private const string PACKAGE_FOLDER = "CarCreator";
-
-        private const string EXPORTER_FOLDER_DISABLED = "Bin~";
-        private const string EXPORTER_FOLDER = "Bin";
-
-        private static readonly string[] DLLNames =
+        private static readonly string[] _dllNames =
         {
             "DV.Simulation",
             "DV.ThingTypes",
             "DV.Utils",
+        };
+
+        private static readonly string[] _packages =
+        {
+            "com.unity.collections@0.9.0-preview.6",
+            "com.unity.nuget.newtonsoft-json@3.0",
         };
 
         private static string LastDLLPath
@@ -30,11 +43,64 @@ namespace CCL.Creator
             set => EditorPrefs.SetString("CCL_LastDVDLLPath", value);
         }
 
-        private static string GetDisabledBinPath() => Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER_DISABLED);
-        private static string GetEnabledBinPath() => Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER);
+        private static AddRequest _packageRequest = null;
+        private const string PACKAGE_RUN_KEY = "CCL_packageInstalling";
+        private const string PACKAGE_IDX_KEY = "CCL_packageIdx";
+
+        static CCBootstrapper()
+        {
+            bool installingPkgs = EditorPrefs.GetBool(PACKAGE_RUN_KEY, false);
+            if (installingPkgs)
+            {
+                EditorApplication.update += WaitForPackageInstall;
+            }
+        }
+
+        private static void Progress(string message, float progress) => EditorUtility.DisplayProgressBar("Initializing CCL Creator...", message, progress);
 
         [MenuItem("CCL/Initialize Creator Package")]
         public static void Initialize(MenuCommand _)
+        {
+            _packageRequest = null;
+            EditorPrefs.SetBool(PACKAGE_RUN_KEY, true);
+            EditorPrefs.SetInt(PACKAGE_IDX_KEY, 0);
+            EditorApplication.update += WaitForPackageInstall;
+        }
+
+        private static void WaitForPackageInstall()
+        {
+            int currentIdx = EditorPrefs.GetInt(PACKAGE_IDX_KEY, 0);
+
+            // no active request
+            if (_packageRequest == null)
+            {
+                if (currentIdx < _packages.Length)
+                {
+                    string pkg = _packages[currentIdx];
+                    Progress($"Installing required package: {pkg}", (float)(currentIdx + 1) / (_packages.Length + 1));
+
+                    _packageRequest = Client.Add(pkg);
+                    Debug.Log($"Add package {pkg}");
+                }
+                else
+                {
+                    EditorPrefs.SetBool(PACKAGE_RUN_KEY, false);
+                    EditorApplication.update -= WaitForPackageInstall;
+                    _packageRequest = null;
+
+                    AssetDatabase.Refresh();
+                    FinishInitialization();
+                }
+            }
+            // request in flight
+            else if (_packageRequest.IsCompleted)
+            {
+                _packageRequest = null;
+                EditorPrefs.SetInt(PACKAGE_IDX_KEY, currentIdx + 1);
+            }
+        }
+
+        private static void FinishInitialization()
         {
             if (!SetupDLLs())
             {
@@ -46,35 +112,37 @@ namespace CCL.Creator
                 return;
             }
 
-            if (AssemblyCanUpdate())
+            if (CCAssemblyManager.ZippedBinIsNewer())
             {
-                EnableMainAssembly();
+                Progress("Enabling CCL Binaries...", 0.8f);
+                CCAssemblyManager.EnableMainAssembly();
             }
 
             CreateCarFolders();
 
+            Progress("Refreshing Assets...", 0.9f);
             AssetDatabase.Refresh();
 
             EditorUtility.ClearProgressBar();
         }
 
-        [MenuItem("CCL/Disable Creator Package (dev only)")]
+        [MenuItem("CCL/Repack Creator Package (dev only)")]
         public static void DeInitialize(MenuCommand _)
         {
-            DisableMainAssembly();
+            CCAssemblyManager.DisableMainAssembly();
 
             AssetDatabase.Refresh();
         }
 
         private static bool DLLsNeedUpdated()
         {
-            string localDLLFolder = Path.Combine(Application.dataPath, DLL_FOLDER);
+            string localDLLFolder = Path.Combine(Application.dataPath, Constants.DLL_FOLDER);
             if (!Directory.Exists(localDLLFolder))
             {
                 return true;
             }
 
-            foreach (string dllName in DLLNames)
+            foreach (string dllName in _dllNames)
             {
                 string destination = Path.Combine(localDLLFolder, $"{dllName}.dll");
 
@@ -86,7 +154,7 @@ namespace CCL.Creator
 
             foreach (string file in Directory.EnumerateFiles(localDLLFolder))
             {
-                if ((Path.GetExtension(file) != ".meta") && !DLLNames.Contains(Path.GetFileNameWithoutExtension(file)))
+                if ((Path.GetExtension(file) != ".meta") && !_dllNames.Contains(Path.GetFileNameWithoutExtension(file)))
                 {
                     return true;
                 }
@@ -136,22 +204,22 @@ namespace CCL.Creator
 
         private static void LinkDLLs(string dllPath)
         {
-            string localDLLFolder = Path.Combine(Application.dataPath, DLL_FOLDER);
+            string localDLLFolder = Path.Combine(Application.dataPath, Constants.DLL_FOLDER);
             Directory.CreateDirectory(localDLLFolder);
 
             foreach (var file in Directory.EnumerateFiles(localDLLFolder))
             {
-                if ((Path.GetExtension(file) != ".meta") && !DLLNames.Contains(Path.GetFileNameWithoutExtension(file)))
+                if ((Path.GetExtension(file) != ".meta") && !_dllNames.Contains(Path.GetFileNameWithoutExtension(file)))
                 {
                     File.Delete(file);
                 }
             }
 
-            for (int i = 0; i < DLLNames.Length; i++)
+            for (int i = 0; i < _dllNames.Length; i++)
             {
-                EditorUtility.DisplayProgressBar("Linking DLLs...", DLLNames[i], (float)i / DLLNames.Length);
+                Progress($"Linking DLL: {_dllNames[i]}", (float)i / _dllNames.Length);
 
-                string dllName = $"{DLLNames[i]}.dll";
+                string dllName = $"{_dllNames[i]}.dll";
                 string source = Path.Combine(dllPath, dllName);
                 string destination = Path.Combine(localDLLFolder, dllName);
 
@@ -164,100 +232,15 @@ namespace CCL.Creator
 
         private static string GetDefaultDLLFolder()
         {
-            string dllPath = "Steam/steamapps/common/Derail Valley/DerailValley_Data/Managed";
-
-            // search for the user's DV install
-            foreach (var drive in DriveInfo.GetDrives())
-            {
-                try
-                {
-                    string driveRoot = drive.RootDirectory.FullName;
-                    string potentialPath = Path.Combine(driveRoot, "Program Files", dllPath);
-                    if (Directory.Exists(potentialPath))
-                    {
-                        return potentialPath;
-                    }
-
-                    potentialPath = Path.Combine(driveRoot, "Program Files (x86)", dllPath);
-                    if (Directory.Exists(potentialPath))
-                    {
-                        return potentialPath;
-                    }
-                }
-                catch (Exception) { }
-            }
+            string dllPath = SteamHelper.GetDLLDirectory();
+            if (dllPath != null) return dllPath;
 
             return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         }
 
-        private static DateTime GetFolderLastModified(string dirPath)
-        {
-            if (!Directory.Exists(dirPath)) return DateTime.MinValue;
-
-            DateTime lastModified = DateTime.MinValue;
-            foreach (string file in Directory.EnumerateFiles(dirPath))
-            {
-                DateTime fileModified = File.GetLastWriteTime(file);
-                if (fileModified > lastModified)
-                {
-                    lastModified = fileModified;
-                }
-            }
-            return lastModified;
-        }
-
-        private static bool AssemblyCanUpdate()
-        {
-            string hiddenName = GetDisabledBinPath();
-            string enabledName = GetEnabledBinPath();
-
-            var hiddenTime = GetFolderLastModified(hiddenName);
-            var enabledTime = GetFolderLastModified(enabledName);
-
-            return hiddenTime > enabledTime;
-        }
-
-        private static void EnableMainAssembly()
-        {
-            string hiddenPath = GetDisabledBinPath();
-            string enabledPath = GetEnabledBinPath();
-
-            if (Directory.Exists(hiddenPath))
-            {
-                if (!Directory.Exists(enabledPath))
-                {
-                    Directory.CreateDirectory(enabledPath);
-                }
-
-                foreach (var file in Directory.GetFiles(hiddenPath))
-                {
-                    string newFile = Path.Combine(enabledPath, Path.GetFileName(file));
-                    File.Copy(file, newFile, true);
-                }
-            }
-        }
-
-        private static void DisableMainAssembly()
-        {
-            string hiddenName = Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER_DISABLED);
-            string newName = Path.Combine(Application.dataPath, PACKAGE_FOLDER, EXPORTER_FOLDER);
-
-            if (Directory.Exists(newName))
-            {
-                if (!Directory.Exists(hiddenName))
-                {
-                    Directory.Move(newName, hiddenName);
-                }
-                else
-                {
-                    Directory.Delete(newName);
-                }
-            }
-        }
-
         private static void CreateCarFolders()
         {
-            string carFolder = Path.Combine(Application.dataPath, CAR_FOLDER);
+            string carFolder = Path.Combine(Application.dataPath, Constants.CAR_FOLDER);
             Directory.CreateDirectory(carFolder);
         }
 

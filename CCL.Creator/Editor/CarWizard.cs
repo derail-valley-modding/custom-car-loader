@@ -121,7 +121,6 @@ namespace CCL.Creator
             // create scene
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             string scenePath = Path.Combine(relativeCarFolder, $"{settings.ID}_create.unity");
-            EditorSceneManager.SaveScene(scene, scenePath);
 
             // create prefab
             string carPrefabPath = Path.Combine(relativeCarFolder, $"{settings.ID}_template.prefab");
@@ -165,6 +164,7 @@ namespace CCL.Creator
             string liveryPath = Path.Combine(relativeCarFolder, $"{settings.ID}_livery.asset");
             AssetDatabase.CreateAsset(carType, carTypePath);
             AssetDatabase.CreateAsset(livery, liveryPath);
+            EditorSceneManager.SaveScene(scene, scenePath);
 
             Selection.activeObject = carType;
         }

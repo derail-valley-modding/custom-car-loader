@@ -7,16 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Editor\CCBootstrapper.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="Editor\CCBootstrapper.cs">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
 	</ItemGroup>
 
@@ -34,6 +24,6 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)&quot; md &quot;$(SolutionDir)$(OutDir)&quot;&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)Editor\&quot; md &quot;$(SolutionDir)$(OutDir)Editor\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)&quot;&#xD;&#xA;echo F|xcopy /d /y &quot;$(TargetDir)Editor\CCBootstrapper.cs&quot; &quot;$(SolutionDir)$(OutDir)Editor\CCBootstrapper.cs&quot;" />
+		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot;" />
 	</Target>
 </Project>
