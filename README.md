@@ -6,7 +6,7 @@ The [original project](https://github.com/Freznosis/DVCustomCarLoader) was creat
 
 ## Car Creation
 
-Content authors can find a [guide to car creation](https://github.com/katycat5e/DVCustomCarLoader/wiki) in the Wiki.
+Content authors can find a [guide to car creation](https://foxden.cc/articles/read/car-loader) on the FoxDen website.
 
 ## Improving CCL
 
