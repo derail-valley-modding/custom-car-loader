@@ -28,6 +28,10 @@ namespace CCL.Types
         public bool HideFrontCoupler = false;
         public bool HideBackCoupler = false;
 
+        [RenderMethodButtons]
+        [MethodButton("CCL.Creator.Editor.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
+        public bool buttonRender;
+
         private void OnValidate()
         {
             localizationKey = $"ccl/livery/{id}";

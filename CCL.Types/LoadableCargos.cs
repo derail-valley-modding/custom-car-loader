@@ -31,6 +31,7 @@ namespace CCL.Types
 
         [JsonIgnore]
         public GameObject[]? ModelVariants;
+        [HideInInspector]
         public string[]? ModelPaths;
 
         public void AfterAssetLoad(AssetBundle bundle)

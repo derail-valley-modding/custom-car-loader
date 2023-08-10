@@ -120,8 +120,8 @@ namespace CCL.Creator
 				//How to export
 				"[HOW TO EXPORT] \n \n" +
 				"-The tool will attempt to find your Derail Valley installation. If the tool can't find your install path, navigate to it manually. \n" +
-				"-Once you are in the installation path, navigate to BepInEx/content/cars \n" +
-				"-When you are in the Cars folder, create a new folder for your new car, name doesn't matter. (Example: Explody Boy Tanker) \n" +
+				"-Once you are in the installation path, navigate to the Mods/ folder \n" +
+				"-When you are in the Mods folder, create a new folder for your car, name doesn't matter. (Example: Explody Boy Tanker) \n" +
 				"-After creating that new folder, make sure to select it and click 'Save'. \n \n" +
 
 				//How to avoid errors
