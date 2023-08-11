@@ -223,9 +223,14 @@ namespace CCL.Bootstrapper
                 string source = Path.Combine(dllPath, dllName);
                 string destination = Path.Combine(localDLLFolder, dllName);
 
-                if (!File.Exists(destination))
+                if (!File.Exists(destination) || (File.GetLastWriteTime(source) > File.GetLastWriteTime(destination)))
                 {
-                    CreateSymbolicLink(destination, source, SYMBOLIC_LINK_FLAG.File);
+                    if (File.Exists(destination)) 
+                    {
+                        File.Delete(destination);
+                    }
+
+                    File.Copy(source, destination, true);
                 }
             }
         }
@@ -243,17 +248,5 @@ namespace CCL.Bootstrapper
             string carFolder = Path.Combine(Application.dataPath, Constants.CAR_FOLDER);
             Directory.CreateDirectory(carFolder);
         }
-
-        [Flags]
-        enum SYMBOLIC_LINK_FLAG
-        {
-            File = 0,
-            Directory = 1,
-            AllowUnprivilegedCreate = 2
-        }
-
-        [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.I1)]
-        static extern bool CreateSymbolicLink(string lpSymlinkFileName, string lpTargetFileName, SYMBOLIC_LINK_FLAG dwFlags);
     }
 }
