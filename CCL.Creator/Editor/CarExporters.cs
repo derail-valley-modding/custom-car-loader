@@ -1,12 +1,11 @@
 ﻿using UnityEditor;
 using UnityEngine;
-using DV.ThingTypes;
 using System.IO;
 using System.Linq;
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using CCL.Types;
+using CCL.Types.Json;
 
 namespace CCL.Creator
 {
@@ -34,7 +33,6 @@ namespace CCL.Creator
 
         public void Export()
         {
-            CarType.ExporterVersion = ExporterConstants.ExporterVersion;
             int liveryCount = LiveryExporters.Length;
 
             try
@@ -48,6 +46,8 @@ namespace CCL.Creator
                 }
 
                 // Prep cargo models
+                CarType.CargoTypes ??= new LoadableCargo(); // sanity check
+
                 foreach (var cargoEntry in CarType.CargoTypes.Entries)
                 {
                     if (cargoEntry.ModelVariants == null) continue;
@@ -104,7 +104,7 @@ namespace CCL.Creator
             var outFilePath = Path.Combine(ExportFolderPath, ExporterConstants.JSON_FILENAME);
 
             //Create master JSONObject
-            var jsonfile = new JObject
+            var jsonfile = new JSONObject
             {
                 { ExporterConstants.IDENTIFIER, CarType.id },
                 { ExporterConstants.BUNDLE_NAME, BundleName },
@@ -123,27 +123,27 @@ namespace CCL.Creator
         {
             var outFilePath = Path.Combine(ExportFolderPath, ExporterConstants.MOD_INFO_FILENAME);
 
-            var jsonFile = new JObject
+            var jsonFile = new JSONObject
             {
                 { "Id", CarType.id },
                 { "DisplayName", CarType.NameTranslations.Items[0].Value },
-                { "Version", CarType.Version },
-                { "Author", CarType.Author },
+                { "Version", CarType.version },
+                { "Author", CarType.author },
                 { "ManagerVersion", "0.27.3" },
-                { "Requirements", new JArray { ExporterConstants.MOD_ID } },
+                { "Requirements", new JSONObject { ExporterConstants.MOD_ID } },
             };
 
             using StreamWriter stream = new StreamWriter(outFilePath, false);
-            stream.Write(jsonFile.ToString());
+            stream.Write(jsonFile.ToString(true));
         }
     }
 
     internal class CarLiveryExporter
 	{
 		public readonly CarTypeExporter Parent;
-		public readonly TrainCarLivery Livery;
+		public readonly CustomCarVariant Livery;
 
-		public CarLiveryExporter(CarTypeExporter parent, TrainCarLivery livery)
+		public CarLiveryExporter(CarTypeExporter parent, CustomCarVariant livery)
 		{
 			Parent = parent;
 			Livery = livery;
@@ -151,14 +151,14 @@ namespace CCL.Creator
 
         public bool PrepareForExport()
         {
-            Debug.Log($"Creating temp prefab from car object {Livery.prefab.name}");
+            Debug.Log($"Creating temp prefab from car object {Livery.prefab!.name}");
 
-            Livery.interiorPrefab.SetAssetBundle(Parent.BundleName);
-            Livery.explodedInteriorPrefab.SetAssetBundle(Parent.BundleName);
-            Livery.externalInteractablesPrefab.SetAssetBundle(Parent.BundleName);
-            Livery.explodedExternalInteractablesPrefab.SetAssetBundle(Parent.BundleName);
+            Livery.interiorPrefab?.SetAssetBundle(Parent.BundleName);
+            Livery.explodedInteriorPrefab?.SetAssetBundle(Parent.BundleName);
+            Livery.externalInteractablesPrefab?.SetAssetBundle(Parent.BundleName);
+            Livery.explodedExternalInteractablesPrefab?.SetAssetBundle(Parent.BundleName);
 
-            Livery.icon.SetAssetBundle(Parent.BundleName);
+            Livery.icon?.SetAssetBundle(Parent.BundleName);
 
             // Create prefabs for cargo models
             //var modelSetupScripts = exportInfo.Livery.gameObject.GetComponents<CargoModelSetup>();

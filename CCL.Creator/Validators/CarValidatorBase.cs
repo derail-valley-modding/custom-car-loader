@@ -17,7 +17,7 @@ namespace CCL.Creator.Validators
 
     internal enum ResultStatus
     {
-        Pass, Warning, Failed, Skipped
+        Pass, Warning, Failed, Skipped, Critical
     }
 
     internal class Result
@@ -36,7 +36,15 @@ namespace CCL.Creator.Validators
         public static Result Pass() => new Result(null, ResultStatus.Pass);
         public static Result Warning(string message) => new Result(null, ResultStatus.Warning, message);
         public static Result Failed(string message) => new Result(null, ResultStatus.Failed, message);
+        public static Result Critical(string message) => new Result(null, ResultStatus.Critical, message);
         public static Result Skipped() => new Result(null, ResultStatus.Skipped);
+
+        private static readonly ResultStatus[] correctable =
+        {
+            ResultStatus.Warning, ResultStatus.Failed, ResultStatus.Critical
+        };
+
+        public bool IsCorrectable => correctable.Contains(Status);
 
         public Color StatusColor
         {
@@ -47,6 +55,7 @@ namespace CCL.Creator.Validators
                     ResultStatus.Pass => Color.green,
                     ResultStatus.Warning => Color.yellow,
                     ResultStatus.Failed => Color.red,
+                    ResultStatus.Critical => Color.red,
                     _ => Color.black,
                 };
             }

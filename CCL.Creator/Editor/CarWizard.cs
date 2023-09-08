@@ -1,5 +1,4 @@
 ﻿using CCL.Types;
-using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -138,17 +137,17 @@ namespace CCL.Creator
 
             // create car type
             var carType = CreateInstance<CustomCarType>();
-            carType.id = settings.ID;
+            carType.id = settings.ID!;
             carType.name = $"{settings.ID}_cartype";
-            carType.Author = settings.Author!;
+            carType.author = settings.Author!;
             carType.KindSelection = settings.Kind;
             carType.NameTranslations = TranslationData.Default(settings.Name!);
-            carType.carInstanceIdGenBase = $"{GetInitials(settings.Name!)}-";
+            carType.carIdPrefix = $"{GetInitials(settings.Name!)}-";
             carType.mass = 25000;
             carType.wheelRadius = 0.459f;
 
             // create livery
-            var livery = CreateInstance<CustomLivery>();
+            var livery = CreateInstance<CustomCarVariant>();
             livery.id = settings.ID;
             livery.name = $"{settings.ID}_livery";
             livery.parentType = carType;
@@ -157,7 +156,7 @@ namespace CCL.Creator
             livery.prefab = prefab;
             livery.externalInteractablesPrefab = interactables;
 
-            carType.liveries = new List<TrainCarLivery>() { livery };
+            carType.liveries = new List<CustomCarVariant>() { livery };
             carType.ForceValidation();
 
             string carTypePath = Path.Combine(relativeCarFolder, $"{settings.ID}_cartype.asset");
@@ -193,14 +192,14 @@ namespace CCL.Creator
             public string? ID;
             public string? Name;
             public string? Author;
-            public TrainCarType BaseCarType;
+            public BaseTrainCarType BaseCarType;
 
             public bool IsValid =>
                 (Kind == DVTrainCarKind.Car) &&
                 !string.IsNullOrWhiteSpace(ID) &&
                 !string.IsNullOrWhiteSpace(Name) &&
                 !string.IsNullOrWhiteSpace(Author) &&
-                (BaseCarType != TrainCarType.NotSet);
+                (BaseCarType != BaseTrainCarType.NotSet);
         }
     }
 }

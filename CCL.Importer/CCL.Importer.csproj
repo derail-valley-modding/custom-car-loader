@@ -2,9 +2,12 @@
 	<PropertyGroup>
 		<TargetFramework>netframework4.8</TargetFramework>
 		<Nullable>enable</Nullable>
-		<LangVersion>8</LangVersion>
+		<LangVersion>9</LangVersion>
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="10.1.1" />
+	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
 	</ItemGroup>

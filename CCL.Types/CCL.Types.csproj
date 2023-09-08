@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>netframework4.8</TargetFramework>
@@ -7,8 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="DV.ThingTypes" />
-		<Reference Include="Newtonsoft.Json" />
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.CoreModule" />
@@ -17,6 +15,6 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot;&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)Mod\&quot; md &quot;$(SolutionDir)$(OutDir)Mod\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\Bin\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)Mod\&quot;" />
+		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)Mod\&quot; md &quot;$(SolutionDir)$(OutDir)Mod\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)Mod\&quot;" />
 	</Target>
 </Project>

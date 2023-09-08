@@ -1,5 +1,4 @@
 ﻿using CCL.Types;
-using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,9 +48,13 @@ namespace CCL.Creator.Validators
         [CarValidator("Car Setup")]
         public static IEnumerable<Result> CheckCarSetup(CustomCarType carType)
         {
-            return CheckEachOrPass(carType.CustomLiveries, livery =>
+            return CheckEachOrPass(carType.liveries, livery =>
             {
-                if (livery.BaseCarType == TrainCarType.NotSet)
+                if (!livery.prefab)
+                {
+                    return Result.Critical("Livery must have a prefab assigned!");
+                }
+                if (livery.BaseCarType == BaseTrainCarType.NotSet)
                 {
                     return Result.Failed("Base car type must be set");
                 }
@@ -62,9 +65,9 @@ namespace CCL.Creator.Validators
         [CarValidator("Root Transform")]
         public static IEnumerable<Result> CheckTransform(CustomCarType carType)
         {
-            return CheckEachOrPass(carType.CustomLiveries, livery =>
+            return CheckEachOrPass(carType.liveries, livery =>
             {
-                if (livery.prefab.transform.position != Vector3.zero)
+                if (livery.prefab!.transform.position != Vector3.zero)
                 {
                     return Result.Failed($"{livery.id} - Not at (0,0,0)");
                 }
@@ -83,9 +86,9 @@ namespace CCL.Creator.Validators
         [CarValidator("LOD Group")]
         public static IEnumerable<Result> CheckLOD(CustomCarType carType)
         {
-            return CheckEachOrPass(carType.CustomLiveries, livery =>
+            return CheckEachOrPass(carType.liveries, livery =>
             {
-                var lodGroup = livery.prefab.GetComponent<LODGroup>();
+                var lodGroup = livery.prefab!.GetComponent<LODGroup>();
                 if (lodGroup)
                 {
                     foreach (var lod in lodGroup.GetLODs())
@@ -103,12 +106,12 @@ namespace CCL.Creator.Validators
         [CarValidator("Bogie Transforms")]
         public static IEnumerable<Result> CheckBogies(CustomCarType carType)
         {
-            return CheckEachOrPass(carType.CustomLiveries, CheckLiveryBogies);
+            return CheckEachOrPass(carType.liveries, CheckLiveryBogies);
         }
 
-        private static IEnumerable<Result> CheckLiveryBogies(CustomLivery livery)
+        private static IEnumerable<Result> CheckLiveryBogies(CustomCarVariant livery)
         {
-            var bogieF = livery.prefab.transform.FindSafe(CarPartNames.BOGIE_FRONT);
+            var bogieF = livery.prefab!.transform.FindSafe(CarPartNames.BOGIE_FRONT);
             if (!bogieF)
             {
                 yield return Result.Failed($"{livery.id} - Missing front bogie transform");
@@ -184,13 +187,13 @@ namespace CCL.Creator.Validators
         [CarValidator("Colliders")]
         public static IEnumerable<Result> CheckColliders(CustomCarType carType)
         {
-            return CheckEachOrPass(carType.CustomLiveries, CheckLiveryColliders);
+            return CheckEachOrPass(carType.liveries, CheckLiveryColliders);
         }
 
-        private static IEnumerable<Result> CheckLiveryColliders(CustomLivery livery)
+        private static IEnumerable<Result> CheckLiveryColliders(CustomCarVariant livery)
         {
             // root
-            var collidersRoot = livery.prefab.transform.FindSafe(CarPartNames.COLLIDERS_ROOT);
+            var collidersRoot = livery.prefab!.transform.FindSafe(CarPartNames.COLLIDERS_ROOT);
             if (!collidersRoot)
             {
                 yield return Result.Failed($"{livery.id} - {CarPartNames.COLLIDERS_ROOT} root is missing entirely!");
@@ -225,12 +228,12 @@ namespace CCL.Creator.Validators
         [CarValidator("Couplers & Buffers")]
         public static IEnumerable<Result> CheckCouplers(CustomCarType carType)
         {
-            return CheckEachOrPass(carType.CustomLiveries, CheckLiveryCouplers);
+            return CheckEachOrPass(carType.liveries, CheckLiveryCouplers);
         }
 
-        private static IEnumerable<Result> CheckLiveryCouplers(CustomLivery livery)
+        private static IEnumerable<Result> CheckLiveryCouplers(CustomCarVariant livery)
         {
-            var frontRig = livery.prefab.transform.FindSafe(CarPartNames.COUPLER_RIG_FRONT);
+            var frontRig = livery.prefab!.transform.FindSafe(CarPartNames.COUPLER_RIG_FRONT);
             if (!frontRig)
             {
                 yield return Result.Failed("Missing front coupler rig " + CarPartNames.COUPLER_RIG_FRONT);
@@ -284,11 +287,11 @@ namespace CCL.Creator.Validators
         [CarValidator("Interior")]
         public static IEnumerable<Result> CheckInteriorTransform(CustomCarType carType)
         {
-            return CheckEachOrPass(carType.CustomLiveries, livery =>
+            return CheckEachOrPass(carType.liveries, livery =>
             {
                 if (livery.interiorPrefab)
                 {
-                    if (livery.interiorPrefab.transform.position != Vector3.zero)
+                    if (livery.interiorPrefab!.transform.position != Vector3.zero)
                     {
                         return Result.Warning("Interior is not centered at (0,0,0)");
                     }
@@ -314,7 +317,7 @@ namespace CCL.Creator.Validators
                     any = true;
                     yield return Result.Failed("Cannot have 0 or negative cargo amount per car");
                 }
-                if (cargo.CargoType == CargoType.None)
+                if (cargo.CargoType == BaseCargoType.None)
                 {
                     any = true;
                     yield return Result.Failed("Cannot load cargo of type None");

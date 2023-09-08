@@ -8,7 +8,7 @@ namespace CCL.Creator.Editor
 {
     public static class CarPrefabManipulators
     {
-        public static void AlignBogieColliders(CustomLivery carType)
+        public static void AlignBogieColliders(CustomCarVariant carType)
         {
             if (!carType.prefab)
             {
@@ -21,7 +21,7 @@ namespace CCL.Creator.Editor
                 return;
             }
 
-            float wheelRadius = carType.parentType.wheelRadius;
+            float wheelRadius = carType.parentType!.wheelRadius;
             string prefabPath = AssetDatabase.GetAssetPath(carType.prefab);
             var tempPrefab = PrefabUtility.LoadPrefabContents(prefabPath);
 

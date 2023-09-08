@@ -51,8 +51,6 @@ namespace CCL.Creator
                 {
                     yield return new ButtonInfo(attr.TextOverride!, action);
                 }
-
-                Debug.LogWarning($"Failed to find button method {attr.MethodName}");
             }
         }
 

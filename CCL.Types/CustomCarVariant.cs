@@ -1,21 +1,33 @@
-﻿using DV.ThingTypes;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types
 {
-    [CreateAssetMenu(menuName = "CCL/Custom Livery (Car Variant)")]
-    public class CustomLivery : TrainCarLivery
+    [CreateAssetMenu(menuName = "CCL/Car Variant")]
+    public class CustomCarVariant : ScriptableObject
     {
-        public CustomCarType CustomParentType => (CustomCarType)parentType;
-
-        [Header("CCL Extended Properties")]
-        public TrainCarType BaseCarType;
+        [Header("Basic Properties")]
+        public CustomCarType? parentType;
+        public string? id;
+        public BaseTrainCarType BaseCarType;
 
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
         public TranslationData NameTranslations = new TranslationData();
+
+        public Sprite? icon;
+
+        [HideInInspector]
+        public string? localizationKey = null;
+
+        [Header("Models")]
+        public GameObject? prefab;
+        [Header("Optional Models")]
+        public GameObject? interiorPrefab;
+        public GameObject? explodedInteriorPrefab;
+        [Space]
+        public GameObject? externalInteractablesPrefab;
+        public GameObject? explodedExternalInteractablesPrefab;
 
         [Header("Bogies")]
         public bool UseCustomFrontBogie = false;
@@ -44,7 +56,7 @@ namespace CCL.Types
                 };
             }
 
-            NameTranslationJson = JsonConvert.SerializeObject(NameTranslations);
+            NameTranslationJson = NameTranslations.ToJson();
         }
 
         public void ForceValidation()
@@ -56,7 +68,7 @@ namespace CCL.Types
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
-                NameTranslations = JsonConvert.DeserializeObject<TranslationData>(NameTranslationJson!)!;
+                NameTranslations = TranslationData.FromJson(NameTranslationJson!);
             }
             else
             {
