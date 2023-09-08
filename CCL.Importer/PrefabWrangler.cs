@@ -54,6 +54,8 @@ namespace CCL.Importer
             CleanInfoPlates(newFab.transform);
             WrangleExternalInteractables(livery);
 
+            UpdateLiveryShaders(livery);
+
             // Create new TrainCar script
             var newTrainCar = newFab.AddComponent<TrainCar>();
             newTrainCar.carLivery = livery;
@@ -181,6 +183,11 @@ namespace CCL.Importer
                     // rear hook plate
                     child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
                 }
+                else if (CarPartNames.BUFFER_STEMS.Equals(childName))
+                {
+                    // stems
+                    continue;
+                }
                 else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName))
                 {
                     // front buffer pads
@@ -250,6 +257,12 @@ namespace CCL.Importer
                     // rear hook plate
                     child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
                     CCLPlugin.LogVerbose("Adjust Hook Plate R");
+                }
+                else if (CarPartNames.BUFFER_STEMS.Equals(childName))
+                {
+                    // destroy stems
+                    Object.Destroy(child.gameObject);
+                    CCLPlugin.LogVerbose("Destroy buffer stems");
                 }
                 else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName) || CarPartNames.BUFFER_REAR_PADS.Contains(childName))
                 {
@@ -697,6 +710,54 @@ namespace CCL.Importer
             foreach (var control in controls)
             {
                 control.isTrigger = true;
+            }
+        }
+
+        #endregion
+
+        //==============================================================================================================
+        #region Shaders
+
+        private static Shader? _engineShader = null;
+
+        private static Shader EngineShader
+        {
+            get
+            {
+                if (!_engineShader)
+                {
+                    var prefab = GetBaseType(TrainCarType.LocoShunter).prefab;
+                    var exterior = prefab.transform.Find("shunter_ext/ext 621_exterior");
+                    var material = exterior.GetComponent<MeshRenderer>().material;
+                    _engineShader = material.shader;
+                }
+                return _engineShader!;
+            }
+        }
+
+        private static void UpdateLiveryShaders(CCL_CarVariant livery)
+        {
+            ApplyDefaultShader(livery.prefab);
+
+            if (livery.interiorPrefab) ApplyDefaultShader(livery.interiorPrefab);
+            if (livery.explodedInteriorPrefab) ApplyDefaultShader(livery.explodedInteriorPrefab);
+
+            if (livery.externalInteractablesPrefab) ApplyDefaultShader(livery.externalInteractablesPrefab);
+            if (livery.explodedExternalInteractablesPrefab) ApplyDefaultShader(livery.explodedExternalInteractablesPrefab);
+        }
+
+        private static void ApplyDefaultShader(GameObject prefab)
+        {
+            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+            {
+                foreach (var material in renderer.materials)
+                {
+                    // replace opaque material shader
+                    if ((material.shader.name == "Standard") && (material.GetFloat("_Mode") == 0))
+                    {
+                        material.shader = EngineShader;
+                    }
+                }
             }
         }
 
