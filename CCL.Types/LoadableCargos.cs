@@ -1,5 +1,4 @@
-﻿using DV.ThingTypes;
-using Newtonsoft.Json;
+﻿using CCL.Types.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace CCL.Types
     [Serializable]
     public class LoadableCargo : IAssetLoadCallback
     {
-        public List<LoadableCargoEntry> Entries;
+        public List<LoadableCargoEntry> Entries = new List<LoadableCargoEntry>();
 
         public bool IsEmpty => Entries == null || Entries.Count == 0;
 
@@ -21,13 +20,28 @@ namespace CCL.Types
                 entry.AfterAssetLoad(bundle);
             }
         }
+
+        public string ToJson()
+        {
+            return JSONObject.CreateFromObject(Entries).ToString();
+        }
+
+        public static LoadableCargo FromJson(string json)
+        {
+            var parsed = JSONObject.Create(json);
+            var entries = parsed.ToObject<List<LoadableCargoEntry>>();
+            return new LoadableCargo()
+            {
+                Entries = entries
+            };
+        }
     }
 
     [Serializable]
     public class LoadableCargoEntry : IAssetLoadCallback
     {
         public float AmountPerCar = 1f;
-        public CargoType CargoType;
+        public BaseCargoType CargoType;
 
         [JsonIgnore]
         public GameObject[]? ModelVariants;

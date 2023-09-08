@@ -80,25 +80,29 @@ namespace CCL.Types
 
         public static void SetLayersRecursive(this GameObject go, int layer)
         {
-            go.layer = layer;
-            Transform[] componentsInChildren = go.GetComponentsInChildren<Transform>(true);
-            for (int i = 0; i < componentsInChildren.Length; i++)
-            {
-                componentsInChildren[i].gameObject.layer = layer;
-            }
+            SetLayerRecursiveInternal(go.transform, layer);
         }
 
         public static void SetLayersRecursive(this GameObject go, DVLayer layer)
         {
-            SetLayersRecursive(go, (int)layer);
+            SetLayerRecursiveInternal(go.transform, (int)layer);
         }
 
         public static void SetLayersRecursiveAndExclude(GameObject go, DVLayer layer, DVLayer exclude)
         {
-            var toReplace = go.GetComponentsInChildren<Transform>(true).Where(tform => tform.gameObject.layer != (int)exclude);
-            foreach (var tform in toReplace)
+            SetLayerRecursiveInternal(go.transform, (int)layer, (int)exclude);
+        }
+
+        private static void SetLayerRecursiveInternal(Transform tform, int layer, int? exclude = null)
+        {
+            if (!exclude.HasValue || exclude.Value != tform.gameObject.layer)
             {
-                tform.gameObject.layer = (int)layer;
+                tform.gameObject.layer = layer;
+            }
+
+            for (int i = 0; i < tform.childCount; i++)
+            {
+                SetLayerRecursiveInternal(tform.GetChild(i), layer, exclude);
             }
         }
     }

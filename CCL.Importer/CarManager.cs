@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Importer.Types;
+using CCL.Types;
 using DV.JObjectExtstensions;
 using Newtonsoft.Json.Linq;
 using System;
@@ -12,7 +13,7 @@ namespace CCL.Importer
 {
     public static class CarManager
     {
-        public static readonly List<CustomCarType> CustomCarTypes = new List<CustomCarType>();
+        public static readonly List<CCL_CarType> CustomCarTypes = new();
 
         public static void ScanLoadedMods()
         {
@@ -66,7 +67,7 @@ namespace CCL.Importer
             }
         }
 
-        private static CustomCarType? LoadCarDefinition(string directory, JObject jsonFile)
+        private static CCL_CarType? LoadCarDefinition(string directory, JObject jsonFile)
         {
             try
             {
@@ -106,14 +107,17 @@ namespace CCL.Importer
                 }
 
                 // Fetch car types from bundle
-                var carType = assetBundle.LoadAllAssets<CustomCarType>().SingleOrDefault();
-                if (carType == null)
+                var serializedCar = assetBundle.LoadAllAssets<CustomCarType>().SingleOrDefault();
+                if (serializedCar == null)
                 {
                     CCLPlugin.Error($"Could not load any car types from AssetBundle {assetBundlePath}");
                     return null;
                 }
 
-                carType.AfterAssetLoad(assetBundle);
+                serializedCar.AfterAssetLoad(assetBundle);
+                var carType = ScriptableObject.CreateInstance<CCL_CarType>();
+                Mapper.M.Map(serializedCar, carType);
+
                 CarTypeInjector.SetupTypeLinks(carType);
 
                 // Finalize model & inject

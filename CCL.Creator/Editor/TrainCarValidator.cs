@@ -16,6 +16,7 @@ namespace CCL.Creator
         private readonly List<Result> results = new List<Result>();
         private CustomCarType? carType = null;
         private bool validationPassed = false;
+        private bool correctionsNeeded = false;
 
         Vector2 scrollPos = Vector2.zero;
 
@@ -88,6 +89,15 @@ namespace CCL.Creator
             GUILayout.EndHorizontal();
             GUILayout.EndScrollView();
 
+            if (correctionsNeeded)
+            {
+                if (GUILayout.Button("Open CCL Documentation"))
+                {
+                    Application.OpenURL("https://foxden.cc/articles/read/car-loader");
+                }
+            }
+
+            GUILayout.Space(GUI.skin.button.lineHeight);
             if (validationPassed)
             {
                 GUILayout.Label("Validation passed :)");
@@ -105,7 +115,6 @@ namespace CCL.Creator
             else
             {
                 GUILayout.Label("Validation failed - correct errors and try again");
-                GUILayout.Label("CCL Wiki: https://github.com/katycat5e/DVCustomCarLoader/wiki");
 
                 if (GUILayout.Button("OK"))
                 {
@@ -135,15 +144,34 @@ namespace CCL.Creator
         {
             results.Clear();
             validationPassed = true;
+            correctionsNeeded = false;
             carType = carSetup;
+            bool criticalFail = false;
 
-            foreach (var result in _validators.SelectMany(RunTest))
+            foreach (var validator in _validators)
             {
-                results.Add(result);
-                if (result.Status == ResultStatus.Failed)
+                var tests = RunTest(validator).ToList();
+                foreach (var result in tests)
                 {
-                    validationPassed = false;
+                    results.Add(result);
+
+                    if (result.IsCorrectable)
+                    {
+                        correctionsNeeded = true;
+                    }
+
+                    if (result.Status == ResultStatus.Failed)
+                    {
+                        validationPassed = false;
+                    }
+                    else if (result.Status == ResultStatus.Critical)
+                    {
+                        validationPassed = false;
+                        criticalFail = true;
+                    }
                 }
+
+                if (criticalFail) return;
             }
         }
 

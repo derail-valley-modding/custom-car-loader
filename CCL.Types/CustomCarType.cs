@@ -1,7 +1,4 @@
-﻿using DV.ThingTypes;
-using Newtonsoft.Json;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,31 +14,50 @@ namespace CCL.Types
     }
 
     [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
-    public class CustomCarType : TrainCarType_v2, IAssetLoadCallback
+    public class CustomCarType : ScriptableObject, IAssetLoadCallback
     {
-        [NonSerialized]
-        public Version ExporterVersion = ExporterConstants.ExporterVersion;
-
-        [Header("CCL Extended Properties")]
+        [Header("Basic Properties")]
         public DVTrainCarKind KindSelection = DVTrainCarKind.Car;
 
-        public string Version = "1.0.0";
-        public string Author = "";
+        public string id = string.Empty;
+        public string carIdPrefix = "-";
+        public string version = "1.0.0";
+        public string author = string.Empty;
+
+        [HideInInspector]
+        public string? localizationKey;
 
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
         public TranslationData NameTranslations;
 
+        public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
+
+        [Header("Physics")]
+        public float mass;
+        public float bogieSuspensionMultiplier = 1;
+        public float rollingResistanceMultiplier = 1;
+        public float wheelSlidingFrictionMultiplier = 1;
+        public float wheelslipFrictionMultiplier = 1;
+
+        [Header("Wheels")]
+        public float wheelRadius;
+        public bool useDefaultWheelRotation = true;
+
+        [Header("Cargo")]
         [SerializeField, HideInInspector]
         public string? CargoTypeJson = null;
         public LoadableCargo CargoTypes;
 
-        public IEnumerable<CustomLivery> CustomLiveries => liveries.Cast<CustomLivery>();
+        public BrakesSetup brakes;
+        public DamageSetup damage;
 
-        public CustomCarType() : base()
+        public CustomCarType()
         {
             NameTranslations = new TranslationData();
             CargoTypes = new LoadableCargo();
+            brakes = new BrakesSetup();
+            damage = new DamageSetup();
         }
 
         [RenderMethodButtons]
@@ -52,11 +68,6 @@ namespace CCL.Types
         {
             localizationKey = $"ccl/car/{id}";
 
-            if (liveries.Any(l => l && !(l is CustomLivery)))
-            {
-                liveries.RemoveAll(l => l && !(l is CustomLivery));
-            }
-
             if (NameTranslations == null || NameTranslations.Items == null || NameTranslations.Items.Count == 0)
             {
                 NameTranslations = new TranslationData()
@@ -65,16 +76,19 @@ namespace CCL.Types
                 };
             }
 
-            NameTranslationJson = JsonConvert.SerializeObject(NameTranslations);
-            CargoTypeJson = JsonConvert.SerializeObject(CargoTypes);
+            NameTranslationJson = NameTranslations.ToJson();
+            CargoTypeJson = CargoTypes.ToJson();
         }
 
         public void ForceValidation()
         {
             OnValidate();
-            foreach (var child in CustomLiveries)
+            if (liveries != null)
             {
-                child.ForceValidation();
+                foreach (var child in liveries)
+                {
+                    child.ForceValidation();
+                }
             }
         }
 
@@ -82,7 +96,7 @@ namespace CCL.Types
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
-                NameTranslations = JsonConvert.DeserializeObject<TranslationData>(NameTranslationJson!)!;
+                NameTranslations = TranslationData.FromJson(NameTranslationJson!);
             }
             else
             {
@@ -94,7 +108,7 @@ namespace CCL.Types
 
             if (!string.IsNullOrEmpty(CargoTypeJson))
             {
-                CargoTypes = JsonConvert.DeserializeObject<LoadableCargo>(CargoTypeJson!)!;
+                CargoTypes = LoadableCargo.FromJson(CargoTypeJson!);
                 CargoTypes.AfterAssetLoad(bundle);
             }
             else
@@ -105,10 +119,46 @@ namespace CCL.Types
                 };
             }
 
-            foreach (var livery in CustomLiveries)
+            if (liveries != null)
             {
-                livery.AfterAssetLoad();
+                foreach (var livery in liveries)
+                {
+                    livery.AfterAssetLoad();
+                }
             }
+        }
+
+        [Serializable]
+        public class BrakesSetup
+        {
+            public bool hasCompressor;
+            public TrainBrakeType brakeValveType;
+            public bool hasIndependentBrake;
+            public bool hasHandbrake = true;
+            public bool ignoreOverheating;
+            public float brakingForcePerBogieMultiplier = 1;
+
+            public enum TrainBrakeType
+            {
+                None,
+                SelfLap,
+                ManualLap
+            }
+        }
+
+        [Serializable]
+        public class DamageSetup
+        {
+            [Header("HP - leave at 0 if unused")]
+            public float wheelsHP;
+            public float mechanicalPowertrainHP;
+            public float electricalPowertrainHP;
+
+            [Header("Price (cars not using wheels price currently")]
+            public float bodyPrice = -1f;
+            public float wheelsPrice = -1f;
+            public float electricalPowertrainPrice = -1f;
+            public float mechanicalPowertrainPrice = -1f;
         }
     }
 

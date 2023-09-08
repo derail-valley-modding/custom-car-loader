@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Importer.Types;
+using CCL.Types;
 using DV;
 using DV.CabControls;
 using DV.CabControls.Spec;
@@ -20,9 +21,9 @@ namespace CCL.Importer
             return Globals.G.Types.TrainCarType_to_v2[baseType];
         }
 
-        public static bool FinalizeCarTypePrefabs(CustomCarType carType)
+        public static bool FinalizeCarTypePrefabs(CCL_CarType carType)
         {
-            foreach (var livery in carType.CustomLiveries)
+            foreach (var livery in carType.Variants)
             {
                 if (!FinalizeLiveryPrefab(livery))
                 {
@@ -33,7 +34,7 @@ namespace CCL.Importer
             return true;
         }
 
-        private static bool FinalizeLiveryPrefab(CustomLivery livery)
+        private static bool FinalizeLiveryPrefab(CCL_CarVariant livery)
         {
             CCLPlugin.Log($"Augmenting prefab for {livery.id}");
 
@@ -81,7 +82,7 @@ namespace CCL.Importer
             }
         }
 
-        private static PositionPair WrangleBuffers(GameObject newFab, TrainCarLivery baseCar, CustomLivery newCar)
+        private static PositionPair WrangleBuffers(GameObject newFab, TrainCarLivery baseCar, CCL_CarVariant newCar)
         {
             // copy main buffer part cohort
             GameObject bufferRoot = baseCar.prefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
@@ -201,7 +202,7 @@ namespace CCL.Importer
             return new PositionPair(frontRigPosition, rearRigPosition);
         }
 
-        private static PositionPair SetupCustomBuffers(GameObject newPrefab, GameObject basePrefab, CustomLivery carSetup)
+        private static PositionPair SetupCustomBuffers(GameObject newPrefab, GameObject basePrefab, CCL_CarVariant carSetup)
         {
             Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
             Vector3 frontRigPosition = frontCouplerRig.position;
@@ -524,7 +525,7 @@ namespace CCL.Importer
         //==============================================================================================================
         #region Bogies
 
-        private static void WrangleBogies(GameObject newFab, CustomLivery newCar, TrainCarLivery baseCar, ColliderData colliders)
+        private static void WrangleBogies(GameObject newFab, CCL_CarVariant newCar, TrainCarLivery baseCar, ColliderData colliders)
         {
             Bogie frontBogie, rearBogie;
 
@@ -632,9 +633,9 @@ namespace CCL.Importer
             _flatbedBrakeRelease = flatbedInteractables.transform.Find(CarPartNames.BRAKE_CYL_RELEASE).gameObject;
         }
 
-        private static void WrangleExternalInteractables(CustomLivery livery)
+        private static void WrangleExternalInteractables(CCL_CarVariant livery)
         {
-            if (livery.CustomParentType.KindSelection == DVTrainCarKind.Car)
+            if (CarTypes.IsRegularCar(livery))
             {
                 var newFab = SetupFreightInteractables(livery.externalInteractablesPrefab);
 
@@ -692,13 +693,10 @@ namespace CCL.Importer
 
         private static void FixControlColliders(GameObject root)
         {
-            var controls = root.GetComponentsInChildren<ControlSpec>(true);
+            var controls = root.GetComponentsInChildren<Collider>(true);
             foreach (var control in controls)
             {
-                foreach (var colliderObj in control.colliderGameObjects)
-                {
-                    colliderObj.GetComponentInChildren<Collider>(true).isTrigger = true;
-                }
+                control.isTrigger = true;
             }
         }
 

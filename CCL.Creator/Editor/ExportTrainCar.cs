@@ -2,6 +2,8 @@
 using UnityEditor;
 using UnityEngine;
 using CCL.Types;
+using CCL.Creator.Utility;
+using System;
 
 namespace CCL.Creator
 {
@@ -75,7 +77,7 @@ namespace CCL.Creator
 					}
 					else
 					{
-						startingPath = EditorHelpers.GetDefaultSavePath();
+						startingPath = SteamHelper.GetModsDirectory() ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 						folderName = carSetup.id;
 					}
 

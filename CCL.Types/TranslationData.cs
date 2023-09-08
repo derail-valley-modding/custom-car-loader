@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CCL.Types.Json;
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types
 {
@@ -23,6 +25,18 @@ namespace CCL.Types
                 new TranslationItem() { Value = englishName } 
             }
         };
+
+        public string ToJson()
+        {
+            return JSONObject.CreateFromObject(Items).ToString();
+        }
+
+        public static TranslationData FromJson(string json)
+        {
+            var parsed = JSONObject.Create(json);
+            var items = parsed.ToObject<List<TranslationItem>>();
+            return new TranslationData() { Items = items! };
+        }
     }
 
     [Serializable]

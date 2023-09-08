@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using CCL.Types;
+using CCL.Importer.Types;
 using DV.JObjectExtstensions;
 using DV.ThingTypes;
 using HarmonyLib;
@@ -23,7 +23,7 @@ namespace CCL.Importer.Patches
         [HarmonyPatch("GetCarSaveData")]
         public static void AugmentCarSaveData(TrainCar car, ref JObject __result)
         {
-            if (car.carLivery is CustomLivery customCar)
+            if (car.carLivery is CCL_CarVariant customCar)
             {
                 __result.SetString(SaveConstants.CUSTOM_CAR_KEY, customCar.id);
             }
@@ -79,7 +79,7 @@ namespace CCL.Importer.Patches
             }
 
             string carId = carData.GetString(SaveConstants.CUSTOM_CAR_KEY);
-            if (carId != null && CarTypeInjector.IdToLiveryMap.TryGetValue(carId, out CustomLivery livery))
+            if (carId != null && CarTypeInjector.IdToLiveryMap.TryGetValue(carId, out CCL_CarVariant livery))
             {
                 return livery.prefab;
             }
