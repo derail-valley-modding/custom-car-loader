@@ -727,7 +727,7 @@ namespace CCL.Importer
                 if (!_engineShader)
                 {
                     var prefab = GetBaseType(TrainCarType.LocoShunter).prefab;
-                    var exterior = prefab.transform.Find("shunter_ext/ext 621_exterior");
+                    var exterior = prefab.transform.Find("LocoDE2_Body/ext 621_exterior");
                     var material = exterior.GetComponent<MeshRenderer>().material;
                     _engineShader = material.shader;
                 }
