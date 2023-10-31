@@ -39,8 +39,8 @@ namespace CCL.Creator.Editor
 
             if (_showPrefabs)
             {
-                // Size selector.
-                int length = Mathf.Max(0, EditorGUILayout.IntField("Size", _picker.Prefabs.Length));
+                // Size selector, using delayed field to not lose data accidentally.
+                int length = Mathf.Max(0, EditorGUILayout.DelayedIntField("Size", _picker.Prefabs.Length));
 
                 // Resize array if the length has changed or they're mismatched.
                 if (length != _picker.Prefabs.Length || length != _picker.Weights.Length)
@@ -56,7 +56,7 @@ namespace CCL.Creator.Editor
 
                     _picker.Prefabs[i] = (GameObject)EditorGUILayout.ObjectField(new GUIContent($"Prefab {i}",
                         "The prefab and its relative weight of being selected"), _picker.Prefabs[i], typeof(GameObject), false);
-                    _picker.Weights[i] = EditorGUILayout.FloatField(_picker.Weights[i], GUILayout.MaxWidth(65));
+                    _picker.Weights[i] = Mathf.Max(0, EditorGUILayout.FloatField(_picker.Weights[i], GUILayout.MaxWidth(65)));
 
                     EditorGUILayout.EndHorizontal();
                 }
@@ -90,10 +90,20 @@ namespace CCL.Creator.Editor
                 EditorGUI.indentLevel++;
 
                 float[] percents = _picker.GetPercentagesFromWeights();
+                bool hasZero = false;
 
                 for (int i = 0; i < percents.Length; i++)
                 {
+                    // Rounded to make it easier on the eyes.
                     EditorGUILayout.LabelField($"Prefab {i}", $"{percents[i] * 100.0f:F2}%");
+                    hasZero |= _picker.Weights[i] <= 0;
+                }
+
+                // Warn the user if this is intentional or not.
+                if (hasZero)
+                {
+                    EditorGUILayout.Space();
+                    EditorGUILayout.HelpBox("At least one choice has a weight of 0!", MessageType.Warning);
                 }
 
                 EditorGUI.indentLevel--;
