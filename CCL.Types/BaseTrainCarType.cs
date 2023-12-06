@@ -123,6 +123,7 @@
         EmptyNovae,
         EmptyTraeg,
         EmptyChemlek,
-        EmptyNeoGamma
+        EmptyNeoGamma,
+        Passengers = 1000
     }
 }
