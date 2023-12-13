@@ -353,6 +353,13 @@ namespace CCL.Creator.Validators
             var collision = collidersRoot.FindSafe(CarPartNames.COLLISION_ROOT);
             var collisionComp = collision ? collision!.GetComponent<BoxCollider>() : null;
 
+            if (!collisionComp)
+            {
+                // If the root does not have a collider itself, accept it anyways if any of its
+                // children have one.
+                collisionComp = collision ? collision!.GetComponentInChildren<BoxCollider>() : null;
+            }
+
             if (!(collision && collisionComp))
             {
                 yield return Result.Warning($"Cargo {model.name} bounding {CarPartNames.COLLISION_ROOT} collider is missing");
