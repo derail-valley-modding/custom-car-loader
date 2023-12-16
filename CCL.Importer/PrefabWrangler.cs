@@ -53,7 +53,6 @@ namespace CCL.Importer
             WrangleBogies(newFab, livery, baseLivery, colliders);
             CleanInfoPlates(newFab.transform);
             WrangleExternalInteractables(livery);
-            SetupBrakeGlows(newFab, baseLivery);
 
             UpdateLiveryShaders(livery);
 
@@ -584,6 +583,9 @@ namespace CCL.Importer
             }
 
             // TODO: apply rear bogie config
+
+            // Setup brake glows.
+            SetupBrakeGlows(newFab, frontBogie, rearBogie, baseCar);
         }
 
         private static Bogie StealBaseCarBogie(Transform carRoot, Transform newBogieTransform, Transform bogieColliderRoot,
@@ -610,14 +612,14 @@ namespace CCL.Importer
             return newBogie;
         }
 
-        private static void SetupBrakeGlows(GameObject newFab, TrainCarLivery baseLivery)
+        private static void SetupBrakeGlows(GameObject newFab, Bogie front, Bogie rear, TrainCarLivery baseLivery)
         {
             var brakeGlow = newFab.AddComponent<BrakesOverheatingController>();
             List<Renderer> brakeRenderers = new();
 
             // Front bogie pads.
-            Transform padsF = newFab.transform.Find(
-                $"{CarPartNames.BOGIE_FRONT}/{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
+            Transform padsF = front.transform.Find(
+                $"{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
 
             if (padsF != null)
             {
@@ -627,8 +629,8 @@ namespace CCL.Importer
             }
 
             // Rear bogie pads.
-            Transform padsR = newFab.transform.Find(
-                $"{CarPartNames.BOGIE_REAR}/{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
+            Transform padsR = rear.transform.Find(
+                $"{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
 
             if (padsR != null)
             {
