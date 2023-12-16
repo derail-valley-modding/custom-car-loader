@@ -53,6 +53,7 @@ namespace CCL.Importer
             WrangleBogies(newFab, livery, baseLivery, colliders);
             CleanInfoPlates(newFab.transform);
             WrangleExternalInteractables(livery);
+            SetupBrakeGlows(newFab, baseLivery);
 
             UpdateLiveryShaders(livery);
 
@@ -607,6 +608,49 @@ namespace CCL.Importer
             newCollider.height = baseBogieCollider.height;
 
             return newBogie;
+        }
+
+        private static void SetupBrakeGlows(GameObject newFab, TrainCarLivery baseLivery)
+        {
+            var brakeGlow = newFab.AddComponent<BrakesOverheatingController>();
+            List<Renderer> brakeRenderers = new();
+
+            // Front bogie pads.
+            Transform padsF = newFab.transform.Find(
+                $"{CarPartNames.BOGIE_FRONT}/{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
+
+            if (padsF != null)
+            {
+                // Grab ALL the renderers.
+                brakeRenderers.AddRange(padsF.GetComponents<Renderer>());
+                brakeRenderers.AddRange(padsF.GetComponentsInChildren<Renderer>());
+            }
+
+            // Rear bogie pads.
+            Transform padsR = newFab.transform.Find(
+                $"{CarPartNames.BOGIE_REAR}/{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
+
+            if (padsR != null)
+            {
+                brakeRenderers.AddRange(padsR.GetComponents<Renderer>());
+                brakeRenderers.AddRange(padsR.GetComponentsInChildren<Renderer>());
+            }
+
+            brakeGlow.brakeRenderers = brakeRenderers.ToArray();
+
+            // Gradient.
+            brakeGlow.overheatColor = ScriptableObject.CreateInstance<BrakesOverheatingColorGradient>();
+
+            if (newFab.TryGetComponent(out CustomBrakeGlow customGlow))
+            {
+                // Use a custom one if available.
+                brakeGlow.overheatColor.colorGradient = customGlow.ColourGradient;
+            }
+            else
+            {
+                // Or just use the same one as the base car type.
+                brakeGlow.overheatColor.colorGradient = baseLivery.prefab.GetComponent<BrakesOverheatingController>().overheatColor.colorGradient;
+            }
         }
 
         #endregion
