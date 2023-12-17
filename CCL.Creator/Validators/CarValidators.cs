@@ -351,7 +351,7 @@ namespace CCL.Creator.Validators
 
             // bounding collider
             var collision = collidersRoot.FindSafe(CarPartNames.COLLISION_ROOT);
-            var collisionComp = collision ? collision!.GetComponentInChildren<BoxCollider>() : null;
+            var collisionComp = collision ? collision!.GetComponentInChildren<Collider>() : null;
 
             if (!(collision && collisionComp))
             {
