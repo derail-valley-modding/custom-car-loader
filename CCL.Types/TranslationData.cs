@@ -1,34 +1,15 @@
 ﻿using CCL.Types.Json;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using DVLangHelper.Data;
 
 namespace CCL.Types
 {
-    [Serializable]
-    public class TranslationData
+    public static class TranslationDataExtensions
     {
-        public List<TranslationItem> Items;
-
-        public void Validate()
+        public static string ToJson(this TranslationData data)
         {
-            if (Items == null || Items.Count == 0)
-            {
-                Items = new List<TranslationItem>() { new TranslationItem() };
-            }
-        }
-
-        public static TranslationData Default(string englishName = "") => new TranslationData()
-        {
-            Items = new List<TranslationItem>() 
-            { 
-                new TranslationItem() { Value = englishName } 
-            }
-        };
-
-        public string ToJson()
-        {
-            return JSONObject.CreateFromObject(Items).ToString();
+            return JSONObject.CreateFromObject(data.Items).ToString();
         }
 
         public static TranslationData FromJson(string json)
@@ -37,12 +18,5 @@ namespace CCL.Types
             var items = parsed.ToObject<List<TranslationItem>>();
             return new TranslationData() { Items = items! };
         }
-    }
-
-    [Serializable]
-    public class TranslationItem
-    {
-        public DVLanguage Language = DVLanguage.English;
-        public string Value = "";
     }
 }

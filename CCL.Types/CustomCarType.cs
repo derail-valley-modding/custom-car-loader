@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using DVLangHelper.Data;
 
 namespace CCL.Types
 {
@@ -70,10 +71,7 @@ namespace CCL.Types
 
             if (NameTranslations == null || NameTranslations.Items == null || NameTranslations.Items.Count == 0)
             {
-                NameTranslations = new TranslationData()
-                {
-                    Items = new List<TranslationItem>() { new TranslationItem() }
-                };
+                NameTranslations = TranslationData.Default();
             }
 
             NameTranslationJson = NameTranslations.ToJson();
@@ -96,14 +94,11 @@ namespace CCL.Types
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
-                NameTranslations = TranslationData.FromJson(NameTranslationJson!);
+                NameTranslations = TranslationDataExtensions.FromJson(NameTranslationJson!);
             }
             else
             {
-                NameTranslations = new TranslationData()
-                {
-                    Items = new List<TranslationItem>()
-                };
+                NameTranslations = TranslationData.Default();
             }
 
             if (!string.IsNullOrEmpty(CargoTypeJson))

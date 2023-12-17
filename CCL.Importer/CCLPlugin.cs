@@ -3,6 +3,7 @@ using HarmonyLib;
 using System.Collections;
 using System.IO;
 using System.Reflection;
+using DVLangHelper.Runtime;
 
 namespace CCL.Importer
 {
@@ -22,11 +23,13 @@ namespace CCL.Importer
         public static bool Enabled => Instance.Active;
         public static string Path = null!;
 
+        public static TranslationInjector Translations { get; private set; } = null!;
+
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Instance = modEntry;
 
-            TranslationInjector.Initialize();
+            Translations = new TranslationInjector(CCLPluginInfo.Guid);
             PrefabWrangler.FetchInteractables();
 
             CarManager.ScanLoadedMods();

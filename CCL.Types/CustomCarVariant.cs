@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using DVLangHelper.Data;
 
 namespace CCL.Types
 {
@@ -68,14 +69,11 @@ namespace CCL.Types
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
-                NameTranslations = TranslationData.FromJson(NameTranslationJson!);
+                NameTranslations = TranslationDataExtensions.FromJson(NameTranslationJson!);
             }
             else
             {
-                NameTranslations = new TranslationData()
-                {
-                    Items = new List<TranslationItem>()
-                };
+                NameTranslations = TranslationData.Default();
             }
         }
     }
