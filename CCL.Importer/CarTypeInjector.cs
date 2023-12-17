@@ -24,12 +24,12 @@ namespace CCL.Importer
         {
             Globals.G.Types.carTypes.Add(carType);
 
-            TranslationInjector.AddTranslations(carType.localizationKey, carType.NameTranslations);
+            CCLPlugin.Translations.AddTranslations(carType.localizationKey, carType.NameTranslations);
             
             foreach (var livery in carType.Variants)
             {
                 IdToLiveryMap.Add(livery.id, livery);
-                TranslationInjector.AddTranslations(livery.localizationKey, livery.NameTranslations);
+                CCLPlugin.Translations.AddTranslations(livery.localizationKey, livery.NameTranslations);
             }
 
             CargoInjector.InjectLoadableCargos(carType);
