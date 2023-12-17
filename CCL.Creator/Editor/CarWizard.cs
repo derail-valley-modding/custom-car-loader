@@ -142,7 +142,7 @@ namespace CCL.Creator
             carType.author = settings.Author!;
             carType.KindSelection = settings.Kind;
             carType.NameTranslations = TranslationData.Default(settings.Name!);
-            carType.carIdPrefix = $"{GetInitials(settings.Name!)}-";
+            carType.carInstanceIdGenBase = $"{GetInitials(settings.Name!)}-";
             carType.mass = 25000;
             carType.wheelRadius = 0.459f;
 

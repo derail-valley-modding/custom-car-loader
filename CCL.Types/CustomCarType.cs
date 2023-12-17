@@ -20,7 +20,7 @@ namespace CCL.Types
         public DVTrainCarKind KindSelection = DVTrainCarKind.Car;
 
         public string id = string.Empty;
-        public string carIdPrefix = "-";
+        public string carInstanceIdGenBase = "-";
         public string version = "1.0.0";
         public string author = string.Empty;
 
