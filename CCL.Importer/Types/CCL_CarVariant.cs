@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using DV.ThingTypes;
+using DVLangHelper.Data;
 
 namespace CCL.Importer.Types
 {
