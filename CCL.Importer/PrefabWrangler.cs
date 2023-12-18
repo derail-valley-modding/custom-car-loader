@@ -186,7 +186,7 @@ namespace CCL.Importer
                 else if (CarPartNames.BUFFER_STEMS.Equals(childName))
                 {
                     // stems
-                    continue;
+                    Object.Destroy(child.gameObject);
                 }
                 else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName))
                 {
