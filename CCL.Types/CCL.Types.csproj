@@ -12,6 +12,7 @@
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="UnityEngine.IMGUIModule" />
+		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="DVLangHelper.Data" />
 	</ItemGroup>
 

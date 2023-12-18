@@ -514,6 +514,16 @@ namespace CCL.Importer
                         newCollisionBox.size = boundBox.size;
                     }
                 }
+
+                // Setup pass through colliders.
+                var passthru = walkable.GetComponentsInChildren<CCL.Types.Effects.TeleportArcPassThrough>();
+
+                for (int i = 0; i < passthru.Length; i++)
+                {
+                    var temp = passthru[i].gameObject.AddComponent<TeleportArcPassThrough>();
+                    Mapper.M.Map(passthru[i], temp);
+                    Object.Destroy(passthru[i]);
+                }
             }
 
             // [bogies]
