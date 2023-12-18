@@ -624,8 +624,7 @@ namespace CCL.Importer
             if (padsF != null)
             {
                 // Grab ALL the renderers.
-                brakeRenderers.AddRange(padsF.GetComponents<Renderer>());
-                brakeRenderers.AddRange(padsF.GetComponentsInChildren<Renderer>());
+                brakeRenderers.AddRange(padsF.GetComponentsInChildren<Renderer>(true));
             }
 
             // Rear bogie pads.
@@ -634,8 +633,7 @@ namespace CCL.Importer
 
             if (padsR != null)
             {
-                brakeRenderers.AddRange(padsR.GetComponents<Renderer>());
-                brakeRenderers.AddRange(padsR.GetComponentsInChildren<Renderer>());
+                brakeRenderers.AddRange(padsR.GetComponentsInChildren<Renderer>(true));
             }
 
             brakeGlow.brakeRenderers = brakeRenderers.ToArray();
