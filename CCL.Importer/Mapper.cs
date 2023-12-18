@@ -21,6 +21,7 @@ namespace CCL.Importer
                 .ForMember(c => c.parentType, o => o.Ignore());
 
             cfg.CreateMap<CustomCarType, CCL_CarType>()
+                .ForMember(c => c.carInstanceIdGenBase, o => o.MapFrom(ccl => ccl.carIdPrefix))
                 .ForMember(c => c.liveries, o => o.ConvertUsing(new LiveriesConverter()));
 
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
