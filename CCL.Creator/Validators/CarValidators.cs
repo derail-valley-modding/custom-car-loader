@@ -351,10 +351,11 @@ namespace CCL.Creator.Validators
 
             // bounding collider
             var collision = collidersRoot.FindSafe(CarPartNames.COLLISION_ROOT);
-            var collisionComp = collision ? collision!.GetComponent<BoxCollider>() : null;
+            var collisionComp = collision ? collision!.GetComponentInChildren<Collider>() : null;
+
             if (!(collision && collisionComp))
             {
-                yield return Result.Failed($"Cargo {model.name} bounding {CarPartNames.COLLISION_ROOT} collider is missing");
+                yield return Result.Warning($"Cargo {model.name} bounding {CarPartNames.COLLISION_ROOT} collider is missing");
             }
         }
 
