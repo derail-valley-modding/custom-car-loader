@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Effects;
 using DV.ThingTypes;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace CCL.Importer
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
 
-            cfg.CreateMap<CCL.Types.Effects.TeleportArcPassThrough, TeleportArcPassThrough>();
+            cfg.CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
         }
 
         public static void MapComponent<TSource, TDestination>(TSource source, out TDestination destination)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Effects
 {
-    public class TeleportArcPassThrough : MonoBehaviour
+    public class TeleportArcPassThroughProxy : MonoBehaviour
     {
         public bool twoSided = true;
 

@@ -517,7 +517,7 @@ namespace CCL.Importer
                 }
 
                 // Setup pass through colliders.
-                var passthru = walkable.GetComponentsInChildren<CCL.Types.Effects.TeleportArcPassThrough>();
+                var passthru = walkable.GetComponentsInChildren<TeleportArcPassThroughProxy>();
 
                 for (int i = 0; i < passthru.Length; i++)
                 {
@@ -664,57 +664,52 @@ namespace CCL.Importer
 
         private static void SetupWheelSlideSparks(GameObject newFab, Bogie front, Bogie rear)
         {
-            CCL.Types.Effects.WheelSlideSparksController controller = newFab.GetComponentInChildren<CCL.Types.Effects.WheelSlideSparksController>();
+            WheelSlideSparksControllerProxy controller = newFab.GetComponentInChildren<WheelSlideSparksControllerProxy>();
 
+            // If the prefab has no proxy component, add one anyways and use it to automatically
+            // setup the sparks, then treat it as usual.
             if (controller == null)
             {
                 var sparks = new GameObject(CarPartNames.WHEEL_SPARKS);
                 sparks.transform.parent = newFab.transform;
                 sparks.transform.localPosition = Vector3.zero;
-                controller = sparks.gameObject.AddComponent<CCL.Types.Effects.WheelSlideSparksController>();
+                controller = sparks.gameObject.AddComponent<WheelSlideSparksControllerProxy>();
                 controller.AutoSetupWithBogies(front.transform.Find(CarPartNames.BOGIE_CAR), rear.transform.Find(CarPartNames.BOGIE_CAR));
             }
 
-            List<Transform> newAnchors = new List<Transform>();
+            var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
+            temp.sparkAnchors = controller.sparkAnchors.Where(x => ProcessSparkAnchor(x, front.transform, rear.transform)).ToArray();
+            Object.Destroy(controller);
+        }
 
-            for (int i = 0; i < controller.sparkAnchors.Length; i++)
+        private static bool ProcessSparkAnchor(Transform anchor, Transform frontBogie, Transform rearBogie)
+        {
+            Transform parent = anchor.parent;
+
+            if (parent.parent == frontBogie || parent.parent == rearBogie)
             {
-                Transform parent = controller.sparkAnchors[i].parent;
-
-                if (parent.parent == front)
-                {
-                    goto Add;
-                }
-
-                if (parent.parent == rear)
-                {
-                    goto Add;
-                }
-
-                if (parent.parent.name.Equals(CarPartNames.BOGIE_CAR))
-                {
-                    if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_FRONT))
-                    {
-                        parent.parent = front.transform;
-                        goto Add;
-                    }
-
-                    if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_REAR))
-                    {
-                        parent.parent = rear.transform;
-                        goto Add;
-                    }
-
-                    continue;
-                }
-
-                Add:
-                newAnchors.Add(controller.sparkAnchors[i]);
+                return true;
             }
 
-            var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
-            temp.sparkAnchors = newAnchors.ToArray();
-            Object.Destroy(controller);
+            // Try to reparent if the anchors are in the fake bogies.
+            if (parent.parent.name.Equals(CarPartNames.BOGIE_CAR))
+            {
+                if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_FRONT))
+                {
+                    parent.parent = frontBogie;
+                    return true;
+                }
+                if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_REAR))
+                {
+                    parent.parent = rearBogie;
+                    return true;
+                }
+
+                return false;
+            }
+
+            // Not part of a bogie, take it.
+            return true;
         }
 
         #endregion
