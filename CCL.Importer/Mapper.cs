@@ -28,6 +28,7 @@ namespace CCL.Importer
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
 
             cfg.CreateMap<CCL.Types.Effects.TeleportArcPassThrough, TeleportArcPassThrough>();
+            cfg.CreateMap<CCL.Types.Effects.WheelSlideSparksController, DV.Wheels.WheelSlideSparksController>();
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>

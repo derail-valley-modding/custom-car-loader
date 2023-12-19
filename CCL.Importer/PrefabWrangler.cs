@@ -594,8 +594,8 @@ namespace CCL.Importer
 
             // TODO: apply rear bogie config
 
-            // Setup brake glows.
             SetupBrakeGlows(newFab, frontBogie, rearBogie, baseCar);
+            SetupWheelSlideSparks(newFab, frontBogie, rearBogie);
         }
 
         private static Bogie StealBaseCarBogie(Transform carRoot, Transform newBogieTransform, Transform bogieColliderRoot,
@@ -661,6 +661,24 @@ namespace CCL.Importer
                 // Or just use the same one as the base car type.
                 brakeGlow.overheatColor.colorGradient = baseLivery.prefab.GetComponent<BrakesOverheatingController>().overheatColor.colorGradient;
             }
+        }
+
+        private static void SetupWheelSlideSparks(GameObject newFab, Bogie front, Bogie rear)
+        {
+            CCL.Types.Effects.WheelSlideSparksController controller = newFab.GetComponentInChildren<CCL.Types.Effects.WheelSlideSparksController>();
+
+            if (controller == null)
+            {
+                var sparks = new GameObject(CarPartNames.WHEEL_SPARKS);
+                sparks.transform.parent = newFab.transform;
+                sparks.transform.localPosition = Vector3.zero;
+                controller = sparks.gameObject.AddComponent<CCL.Types.Effects.WheelSlideSparksController>();
+                controller.AutoSetupWithBogies(front.transform.Find(CarPartNames.BOGIE_CAR), rear.transform.Find(CarPartNames.BOGIE_CAR));
+            }
+
+            //var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
+            //temp.sparkAnchors = controller.sparkAnchors;
+            //Object.Destroy(controller);
         }
 
         #endregion
