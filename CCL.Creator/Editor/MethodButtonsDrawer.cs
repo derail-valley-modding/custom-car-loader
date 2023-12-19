@@ -28,7 +28,7 @@ namespace CCL.Creator
                 var button = buttons[i];
                 Rect buttonRect = new Rect(position.x, position.y + ((i + 1) * (buttonHeight + 1)), position.width, buttonHeight - 1);
 
-                if (GUI.Button(buttonRect, button.Text))
+                if (GUI.Button(buttonRect, new GUIContent(button.Text, button.Tooltip ?? string.Empty)))
                 {
                     button.Action.Invoke(null, new object[] { targetProp.serializedObject.targetObject });
                 }
@@ -49,7 +49,7 @@ namespace CCL.Creator
 
                 if (action != null)
                 {
-                    yield return new ButtonInfo(attr.TextOverride!, action);
+                    yield return new ButtonInfo(attr.TextOverride!, action, attr.Tooltip);
                 }
             }
         }
@@ -105,11 +105,13 @@ namespace CCL.Creator
         {
             public readonly string Text;
             public readonly MethodInfo Action;
+            public readonly string? Tooltip;
 
-            public ButtonInfo(string text, MethodInfo action)
+            public ButtonInfo(string text, MethodInfo action, string? tooltip)
             {
                 Text = text;
                 Action = action;
+                Tooltip = tooltip;
             }
         }
     }
