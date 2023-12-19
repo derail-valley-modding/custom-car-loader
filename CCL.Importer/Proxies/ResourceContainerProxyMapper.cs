@@ -10,8 +10,8 @@ using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
-    [Export(typeof(IProxyMapper))]
-    internal class ResourceContainerProxyMapper : IProxyMapper
+    [Export(typeof(IProxyReplacer))]
+    internal class ResourceContainerProxyMapper : IProxyReplacer
     {
         public void ReplaceProxies(GameObject prefab)
         {

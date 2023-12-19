@@ -13,7 +13,7 @@ namespace CCL.Importer.Proxies
     internal class ProxyWrangler
     {
         [ImportMany]
-        public IEnumerable<IProxyMapper> proxyMappers;
+        public IEnumerable<IProxyReplacer> proxyMappers;
 
         private CompositionContainer _container;
         public static ProxyWrangler Instance = new ProxyWrangler();

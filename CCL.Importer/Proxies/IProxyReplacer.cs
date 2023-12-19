@@ -2,7 +2,7 @@
 
 namespace CCL.Importer.Proxies
 {
-    public interface IProxyMapper
+    public interface IProxyReplacer
     {
         void ReplaceProxies(GameObject prefab);
     }
