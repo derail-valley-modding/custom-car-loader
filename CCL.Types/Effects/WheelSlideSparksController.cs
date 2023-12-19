@@ -14,7 +14,9 @@ namespace CCL.Types.Effects
         public Transform[] sparkAnchors;
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Effects.WheelSlideSparksController:AutoSetup", "Auto setup")]
+        [MethodButton("CCL.Types.Effects.WheelSlideSparksController:AutoSetup", "Auto setup",
+            "This will auto setup contact points on the bogies. If you are only using default bogies, and no extra wheels, " +
+            "you do not need to include this component at all.")]
         public bool buttonRender;
 
         [ContextMenu("Auto Setup")]
