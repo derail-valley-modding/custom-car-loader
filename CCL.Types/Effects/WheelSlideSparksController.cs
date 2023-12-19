@@ -69,10 +69,23 @@ namespace CCL.Types.Effects
 
         private List<Transform> SetupBogie(Transform bogie)
         {
-            GameObject contacts = new GameObject(CarPartNames.BOGIE_CONTACT_POINTS);
+            Transform contacts = bogie.Find(CarPartNames.BOGIE_CONTACT_POINTS);
             List<Transform> points = new List<Transform>();
-            contacts.transform.parent = bogie;
-            contacts.transform.localPosition = Vector3.zero;
+
+            // Contact point objects already exist.
+            if (contacts != null)
+            {
+                foreach (Transform contact in contacts)
+                {
+                    points.Add(contact);
+                }
+
+                return points;
+            }
+
+            contacts = new GameObject(CarPartNames.BOGIE_CONTACT_POINTS).transform;
+            contacts.parent = bogie;
+            contacts.localPosition = Vector3.zero;
 
             int i = 0;
 

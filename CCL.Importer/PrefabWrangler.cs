@@ -676,9 +676,46 @@ namespace CCL.Importer
                 controller.AutoSetupWithBogies(front.transform.Find(CarPartNames.BOGIE_CAR), rear.transform.Find(CarPartNames.BOGIE_CAR));
             }
 
-            //var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
-            //temp.sparkAnchors = controller.sparkAnchors;
-            //Object.Destroy(controller);
+            List<Transform> newAnchors = new List<Transform>();
+
+            for (int i = 0; i < controller.sparkAnchors.Length; i++)
+            {
+                Transform parent = controller.sparkAnchors[i].parent;
+
+                if (parent.parent == front)
+                {
+                    goto Add;
+                }
+
+                if (parent.parent == rear)
+                {
+                    goto Add;
+                }
+
+                if (parent.parent.name.Equals(CarPartNames.BOGIE_CAR))
+                {
+                    if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_FRONT))
+                    {
+                        parent.parent = front.transform;
+                        goto Add;
+                    }
+
+                    if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_REAR))
+                    {
+                        parent.parent = rear.transform;
+                        goto Add;
+                    }
+
+                    continue;
+                }
+
+                Add:
+                newAnchors.Add(controller.sparkAnchors[i]);
+            }
+
+            var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
+            temp.sparkAnchors = newAnchors.ToArray();
+            Object.Destroy(controller);
         }
 
         #endregion
