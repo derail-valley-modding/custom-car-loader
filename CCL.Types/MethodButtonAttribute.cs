@@ -8,11 +8,17 @@ namespace CCL.Types
     {
         public readonly string MethodName;
         public readonly string TextOverride;
+        public readonly string? Tooltip;
 
         public MethodButtonAttribute(string methodName, string buttonText)
         {
             MethodName = methodName;
             TextOverride = buttonText;
+        }
+
+        public MethodButtonAttribute(string methodName, string buttonText, string tooltip) : this(methodName, buttonText)
+        {
+            Tooltip = tooltip;
         }
     }
 
