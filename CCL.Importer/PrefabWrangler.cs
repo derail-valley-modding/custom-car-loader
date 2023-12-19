@@ -5,9 +5,13 @@ using DV.CabControls;
 using DV.CabControls.Spec;
 using DV.Optimizers;
 using DV.Simulation.Brake;
+using DV.Simulation.Cars;
+using DV.Simulation.Controllers;
+using DV.Simulation.Ports;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using DV.Utils;
+using LocoSim.Definitions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -72,7 +76,55 @@ namespace CCL.Importer
 
         //==============================================================================================================
         #region SimulationComponents - SimController and friends
-        p
+        private static void BuildSimulationElements(TrainCarLivery livery)
+        {
+            AddAdditionalControllers(livery.prefab);
+            if (livery.interiorPrefab != null)
+            {
+                AddAdditionalControllers(livery.interiorPrefab);
+            }
+            if (livery.externalInteractablesPrefab != null)
+            {
+                AddAdditionalControllers(livery.externalInteractablesPrefab);
+            }
+            var hasSimConnections = livery.prefab.GetComponentsInChildren<SimComponentDefinition>().Length > 0 ||
+                livery.prefab.GetComponentsInChildren<Connection>().Length > 0 ||
+                livery.prefab.GetComponentsInChildren<PortReferenceConnection>().Length > 0;
+            if (hasSimConnections)
+            {
+                AttachSimConnectionsToPrefab(livery.prefab);
+            }
+            if (livery.prefab.GetComponentInChildren<SimConnectionDefinition>() != null || livery.prefab.GetComponentsInChildren<ASimInitializedController>().Length > 0)
+            {
+                var simController = livery.prefab.AddComponent<SimController>();
+                simController.connectionsDefinition = livery.prefab.GetComponent<SimConnectionDefinition>() ?? AttachSimConnectionsToPrefab(livery.prefab);
+                simController.otherSimControllers = livery.prefab.GetComponentsInChildren<ASimInitializedController>();
+            }
+        }
+
+        private static void AddAdditionalControllers(GameObject prefab)
+        {
+            if (prefab.GetComponentsInChildren<InteractablePortFeeder>().Length > 0)
+            {
+                var controller = prefab.AddComponent<InteractablePortFeedersController> ();
+                controller.entries = prefab.GetComponentsInChildren <InteractablePortFeeder>();
+            }
+            if (prefab.GetComponentsInChildren<IndicatorPortReader>().Length > 0)
+            {
+                var controller = prefab.AddComponent<IndicatorPortReadersController> ();
+                controller.entries = prefab.GetComponentsInChildren<IndicatorPortReader>();
+            }
+            // Add more wrapper controllers here
+        }
+
+        private static SimConnectionDefinition AttachSimConnectionsToPrefab(GameObject prefab)
+        {
+            var simConnections = prefab.AddComponent<SimConnectionDefinition>();
+            simConnections.executionOrder = prefab.GetComponentsInChildren<SimComponentDefinition>();
+            simConnections.connections = prefab.GetComponentsInChildren<Connection>();
+            simConnections.portReferenceConnections = prefab.GetComponentsInChildren<PortReferenceConnection>();
+            return simConnections;
+        }
         #endregion
 
         //==============================================================================================================
