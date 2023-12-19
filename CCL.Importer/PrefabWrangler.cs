@@ -53,6 +53,7 @@ namespace CCL.Importer
             WrangleBogies(newFab, livery, baseLivery, colliders);
             CleanInfoPlates(newFab.transform);
             WrangleExternalInteractables(livery);
+            BuildSimulationElements(livery);
 
             UpdateLiveryShaders(livery);
 
@@ -68,6 +69,11 @@ namespace CCL.Importer
             CCLPlugin.Log($"Finalized prefab for {livery.id}");
             return true;
         }
+
+        //==============================================================================================================
+        #region SimulationComponents - SimController and friends
+        p
+        #endregion
 
         //==============================================================================================================
         #region Buffer horrors beyond comprehension
