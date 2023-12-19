@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CCL.Importer.Proxies;
 using CCL.Importer.Types;
 using CCL.Types;
 using DV.ThingTypes;
@@ -26,6 +27,7 @@ namespace CCL.Importer
 
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
+            cfg.AddProfile<ResourceContainerProxyAutoMapper>();
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>

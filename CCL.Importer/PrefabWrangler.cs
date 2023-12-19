@@ -1,4 +1,5 @@
-﻿using CCL.Importer.Types;
+﻿using CCL.Importer.Proxies;
+using CCL.Importer.Types;
 using CCL.Types;
 using DV;
 using DV.CabControls;
@@ -57,6 +58,7 @@ namespace CCL.Importer
             WrangleBogies(newFab, livery, baseLivery, colliders);
             CleanInfoPlates(newFab.transform);
             WrangleExternalInteractables(livery);
+            WrangleProxies(livery);
             BuildSimulationElements(livery);
 
             UpdateLiveryShaders(livery);
@@ -73,6 +75,22 @@ namespace CCL.Importer
             CCLPlugin.Log($"Finalized prefab for {livery.id}");
             return true;
         }
+
+        //==============================================================================================================
+        #region Proxies
+        private static void WrangleProxies(TrainCarLivery livery)
+        {
+            if (livery.interiorPrefab != null)
+            {
+                ProxyWrangler.Instance.MapProxiesOnPrefab(livery.interiorPrefab);
+            }
+            if (livery.externalInteractablesPrefab != null)
+            {
+                ProxyWrangler.Instance.MapProxiesOnPrefab(livery.externalInteractablesPrefab);
+            }
+            ProxyWrangler.Instance.MapProxiesOnPrefab(livery.prefab);
+        }
+        #endregion
 
         //==============================================================================================================
         #region SimulationComponents - SimController and friends
