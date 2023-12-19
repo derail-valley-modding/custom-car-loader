@@ -57,7 +57,6 @@ namespace CCL.Importer
             WrangleBogies(newFab, livery, baseLivery, colliders);
             CleanInfoPlates(newFab.transform);
             WrangleExternalInteractables(livery);
-            BuildSimulationElements(livery);
 
             UpdateLiveryShaders(livery);
 
@@ -69,6 +68,9 @@ namespace CCL.Importer
 
             newFab.name = livery.id;
             livery.prefab = newFab;
+
+
+            BuildSimulationElements(livery);
 
             CCLPlugin.Log($"Finalized prefab for {livery.id}");
             return true;
