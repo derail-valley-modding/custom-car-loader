@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Effects;
 using DV;
 using DV.CabControls;
 using DV.CabControls.Spec;
@@ -520,9 +521,7 @@ namespace CCL.Importer
 
                 for (int i = 0; i < passthru.Length; i++)
                 {
-                    var temp = passthru[i].gameObject.AddComponent<TeleportArcPassThrough>();
-                    Mapper.M.Map(passthru[i], temp);
-                    Object.Destroy(passthru[i]);
+                    Mapper.MapComponent(passthru[i], out TeleportArcPassThrough _);
                 }
             }
 

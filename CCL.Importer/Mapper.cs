@@ -28,7 +28,15 @@ namespace CCL.Importer
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
 
             cfg.CreateMap<CCL.Types.Effects.TeleportArcPassThrough, TeleportArcPassThrough>();
-            cfg.CreateMap<CCL.Types.Effects.WheelSlideSparksController, DV.Wheels.WheelSlideSparksController>();
+        }
+
+        public static void MapComponent<TSource, TDestination>(TSource source, out TDestination destination)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            destination = source.gameObject.AddComponent<TDestination>();
+            M.Map(source, destination);
+            Object.Destroy(source);
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
