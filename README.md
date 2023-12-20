@@ -33,3 +33,17 @@ Below is an example of the necessary structure. When creating your targets file,
 ### Build Output
 
 The output DLLs will need to be copied into `Derail Valley install directory > Mods > DVCustomCarLoader` each time the solution is built. Copy them from `bin\Debug` or `bin\Release` depending on the selected build configuration.
+
+### Proxy Configuration
+
+The simplest way to bring standard vanilla configurations into CCL is through Proxies.  Proxies are types in CCL.Types that implement the same parameters as the serialized public attributes of a vanilla behaviour.  Once that proxy exists, you can tell importer how to convert it into a vanilla behaviour with a simple class:
+```cs
+using CCL.Importer.Proxies;
+using System.ComponentModel.Composition;
+
+namespace CCL.Importer.Proxies.MyCategoryOfProxies {
+  [Export(typeof(IProxyReplacer))]
+  public class MyProxyReplacer : ProxyReplacer<ProxyType, VanillaType> {}
+}
+```
+In the event you need further control you can implement IProxyReplacer directly, but remember to include the Export annotation, and remember that it must be a public class.  You also will need to either implement an AutoMapper Profile for your type or manually map your types.  AutoMapper is pretty powerful and can do most of what you are going to need to do.  If you only need to customize the mapper itself (perhaps there are nested proxies) then you can implement the Configure method from ProxyReplacer.  This method receives an AutoMapper `IMappingExpression<ProxyType, VanillaType>` which you can use to customize nested mappings.  You will also find some utility methods in `Mapper` for replacing components with their proxies - these are implemented as extension methods - so they are simply called on GameObject or MonoBehaviours.
