@@ -867,29 +867,6 @@ namespace CCL.Importer
             }
         }
 
-        #endregion
-
-        //==============================================================================================================
-        #region Other Effects
-
-        private static void MapOtherEffects(GameObject newFab)
-        {
-            // Windows
-            WindowProxy[] windows = newFab.GetComponentsInChildren<WindowProxy>();
-            DV.Rain.Window[] newWindows = new DV.Rain.Window[windows.Length];
-
-            for (int i = 0; i < windows.Length; i++)
-            {
-                Mapper.MapComponent(windows[i], out DV.Rain.Window temp);
-                newWindows[i] = temp;
-            }
-
-            for (int i = 0; i < windows.Length; i++)
-            {
-                newWindows[i].duplicates = windows[i].duplicates.Select(x => x.GetComponent<DV.Rain.Window>()).ToArray();
-            }
-        }
-
         private static Dictionary<ShaderGrabber.GrabbableShaders, Shader> s_shaderCache = new();
 
         private static void ReplaceShaders(GameObject newFab)
@@ -946,6 +923,29 @@ namespace CCL.Importer
 
             s_shaderCache.Add(shader, s);
             return s;
+        }
+
+        #endregion
+
+        //==============================================================================================================
+        #region Other Effects
+
+        private static void MapOtherEffects(GameObject newFab)
+        {
+            // Windows
+            WindowProxy[] windows = newFab.GetComponentsInChildren<WindowProxy>();
+            DV.Rain.Window[] newWindows = new DV.Rain.Window[windows.Length];
+
+            for (int i = 0; i < windows.Length; i++)
+            {
+                Mapper.MapComponent(windows[i], out DV.Rain.Window temp);
+                newWindows[i] = temp;
+            }
+
+            for (int i = 0; i < windows.Length; i++)
+            {
+                newWindows[i].duplicates = windows[i].duplicates.Select(x => x.GetComponent<DV.Rain.Window>()).ToArray();
+            }
         }
 
         #endregion
