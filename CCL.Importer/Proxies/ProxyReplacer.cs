@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies
@@ -14,6 +10,16 @@ namespace CCL.Importer.Proxies
     {
         public ProxyReplacer() : base() {
             Customize(CreateMap<TSource, TDestination>());
+            AddAdditionalMappings();
+        }
+
+        /// <summary>
+        /// Replace this in a concrete implementation if you need to add additional mappers - In this function you will have access
+        /// to all instance functionality on Profile to create mappers and it is guaranteed to be called before mappers are finalized
+        /// </summary>
+        protected virtual void AddAdditionalMappings()
+        {
+            return;
         }
 
         /// <summary>
@@ -27,7 +33,7 @@ namespace CCL.Importer.Proxies
 
         public void ReplaceProxies(GameObject prefab)
         {
-            prefab.MapComponents<TSource, TDestination>();
+            prefab.MapComponentsInChildren<TSource, TDestination>();
         }
     }
 }

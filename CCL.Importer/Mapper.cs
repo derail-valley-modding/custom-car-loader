@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CCL.Importer.Proxies.Resources;
 using CCL.Importer.Types;
 using CCL.Types;
 using DV.ThingTypes;
@@ -31,7 +30,13 @@ namespace CCL.Importer
             cfg.AddMaps(Assembly.GetExecutingAssembly());
         }
 
-        public static void MapComponents<TSource, TDestination>(this GameObject prefab)
+        /// <summary>
+        /// Replaces TSource with TDestination using AutoMapper
+        /// </summary>
+        /// <typeparam name="TSource">The MonoBehaviour script to replace</typeparam>
+        /// <typeparam name="TDestination">The MonoBehaviour script that will replace it</typeparam>
+        /// <param name="prefab">The game object on which to conduct replacements - operates recursively</param>
+        public static void MapComponentsInChildren<TSource, TDestination>(this GameObject prefab)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
@@ -41,6 +46,25 @@ namespace CCL.Importer
                 M.Map(source, destination);
                 Object.Destroy(source);
             }
+        }
+
+        /// <summary>
+        /// Replaces TSource with TDestination using AutoMapper
+        /// 
+        /// Unlike MapComponentsInChildren this will only map one and targets a *source* instead of a *prefab*
+        /// </summary>
+        /// <typeparam name="TSource">Type of the component being replaced</typeparam>
+        /// <typeparam name="TDestination">Type of component to replace with</typeparam>
+        /// <param name="source">Component being replaced, will be destroyed before this returns</param>
+        /// <returns>The replaced component which can be used in other mappers</returns>
+        public static TDestination MapComponent<TSource, TDestination>(this TSource source)
+            where TSource : MonoBehaviour
+            where TDestination: MonoBehaviour
+        {
+            var destination = source.gameObject.AddComponent<TDestination>();
+            M.Map(source, destination);
+            Object.Destroy(source);
+            return destination;
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
