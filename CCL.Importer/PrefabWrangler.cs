@@ -82,11 +82,11 @@ namespace CCL.Importer
         #region Proxies
         private static void WrangleProxies(TrainCarLivery livery)
         {
-            if (livery.interiorPrefab != null)
+            if (livery.interiorPrefab)
             {
                 ProxyWrangler.Instance.MapProxiesOnPrefab(livery.interiorPrefab);
             }
-            if (livery.externalInteractablesPrefab != null)
+            if (livery.externalInteractablesPrefab)
             {
                 ProxyWrangler.Instance.MapProxiesOnPrefab(livery.externalInteractablesPrefab);
             }
