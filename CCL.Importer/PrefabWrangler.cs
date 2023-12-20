@@ -56,6 +56,7 @@ namespace CCL.Importer
             WrangleExternalInteractables(livery);
 
             UpdateLiveryShaders(livery);
+            ReplaceShaders(newFab);
 
             // Create new TrainCar script
             var newTrainCar = newFab.AddComponent<TrainCar>();
@@ -63,7 +64,6 @@ namespace CCL.Importer
 
             // TODO: loco params, cab
 
-            //ReplaceMaterials(newFab);
             MapOtherEffects(newFab);
 
             newFab.name = livery.id;
@@ -890,75 +890,63 @@ namespace CCL.Importer
             }
         }
 
-        //private static Dictionary<MaterialGrabber.GrabbableMaterials, Material> s_materialCache = new();
+        private static Dictionary<ShaderGrabber.GrabbableShaders, Shader> s_shaderCache = new();
 
-        //private static void ReplaceMaterials(GameObject newFab)
-        //{
-        //    var replacers = newFab.GetComponentsInChildren<MaterialGrabber>();
+        private static void ReplaceShaders(GameObject newFab)
+        {
+            var replacers = newFab.GetComponentsInChildren<ShaderGrabber>();
 
-        //    // Process each replacer.
-        //    foreach (var replacer in replacers)
-        //    {
-        //        // Affect all renderers the same way.
-        //        foreach (var renderer in replacer.RenderersToAffect)
-        //        {
-        //            // Affect only matching lengths.
-        //            for (int i = 0; i < renderer.materials.Length && i < replacer.MaterialsToReplace.Length; i++)
-        //            {
-        //                if (replacer.MaterialsToReplace[i] == MaterialGrabber.GrabbableMaterials.DoNotReplace)
-        //                {
-        //                    continue;
-        //                }
+            // Process each replacer.
+            foreach (var replacer in replacers)
+            {
+                // Affect all renderers the same way.
+                foreach (var renderer in replacer.RenderersToAffect)
+                {
+                    // Affect only matching lengths.
+                    for (int i = 0; i < renderer.sharedMaterials.Length && i < replacer.ShadersToReplace.Length; i++)
+                    {
+                        if (replacer.ShadersToReplace[i] == ShaderGrabber.GrabbableShaders.DoNotReplace)
+                        {
+                            continue;
+                        }
 
-        //                CCLPlugin.Log($"Replacing material {renderer.materials[i]} with {GetMaterial(replacer.MaterialsToReplace[i])}");
-        //                renderer.materials[i] = GetMaterial(replacer.MaterialsToReplace[i]);
-        //            }
-        //        }
+                        renderer.sharedMaterials[i].shader = GetShader(replacer.ShadersToReplace[i]);
+                    }
+                }
 
-        //        // No need to keep the replacer anymore.
-        //        Object.Destroy(replacer);
-        //    }
-        //}
+                // No need to keep the replacer anymore.
+                Object.Destroy(replacer);
+            }
+        }
 
-        //private static Material GetMaterial(MaterialGrabber.GrabbableMaterials gMat)
-        //{
-        //    Material mat;
+        private static Shader GetShader(ShaderGrabber.GrabbableShaders shader)
+        {
+            Shader s;
 
-        //    if (s_materialCache.TryGetValue(gMat, out mat))
-        //    {
-        //        return mat;
-        //    }
+            if (s_shaderCache.TryGetValue(shader, out s))
+            {
+                return s;
+            }
 
-        //    switch (gMat)
-        //    {
-        //        case MaterialGrabber.GrabbableMaterials.DoNotReplace:
-        //            CCLPlugin.Log("DoNotReplace material not handled correctly!");
-        //            return null!;
-        //        case MaterialGrabber.GrabbableMaterials.Glass_0:
-        //            mat = TrainCarType.PassengerBlue.ToV2().prefab.transform.Find("CarPassenger/CarPassengerWindowsSide")
-        //                .GetComponent<Renderer>().material;
-        //            break;
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_PaintBeige:
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_PlasticWhite:
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_Metal:
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_MetalTrim:
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_RubberFloor:
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_MetalDirty:
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_Seats:
-        //        case MaterialGrabber.GrabbableMaterials.TT_CP_Curtains:
-        //            // Group all into 1 switch statement.
-        //            int index = (int)gMat - (int)MaterialGrabber.GrabbableMaterials.TT_CP_PaintBeige;
-        //            mat = TrainCarType.PassengerBlue.ToV2().prefab.transform.Find("CarPassenger/CarPassengerInterior_LOD0")
-        //                .GetComponent<Renderer>().materials[index];
-        //            break;
-        //        default:
-        //            CCLPlugin.Log($"Invalid material requested '{gMat}'.");
-        //            return null!;
-        //    }
+            switch (shader)
+            {
+                case ShaderGrabber.GrabbableShaders.DoNotReplace:
+                    CCLPlugin.Error("DoNotReplace shader not handled correctly!");
+                    return null!;
+                case ShaderGrabber.GrabbableShaders.TransparencyWithFog:
+                    s = Shader.Find("TransparencyWithFog");
+                    break;
+                case ShaderGrabber.GrabbableShaders.DVModularBuildings:
+                    s = Shader.Find("Derail Valley/Modular Buildings");
+                    break;
+                default:
+                    CCLPlugin.Error($"Invalid shader requested '{shader}'.");
+                    return null!;
+            }
 
-        //    s_materialCache.Add(gMat, mat);
-        //    return mat;
-        //}
+            s_shaderCache.Add(shader, s);
+            return s;
+        }
 
         #endregion
     }
