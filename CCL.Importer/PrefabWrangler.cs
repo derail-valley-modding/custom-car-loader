@@ -4,6 +4,7 @@ using CCL.Types;
 using DV;
 using DV.CabControls;
 using DV.CabControls.Spec;
+using DV.Damage;
 using DV.Optimizers;
 using DV.Simulation.Brake;
 using DV.Simulation.Cars;
@@ -130,8 +131,32 @@ namespace CCL.Importer
                 simController.connectionsDefinition = livery.prefab.GetComponent<SimConnectionDefinition>() ?? AttachSimConnectionsToPrefab(livery.prefab);
                 simController.otherSimControllers = livery.prefab.GetComponentsInChildren<ASimInitializedController>();
             }
+
+            // In the event we have a sim controller and *not* a damage controller, we need to add a dummy damage controller
+            var needsDamageController = livery.prefab.GetComponentInChildren<SimController>() && 
+                !livery.prefab.GetComponentInChildren<DamageController>();
+            if (needsDamageController)
+            {
+                AttachDummyDamageController(livery.prefab);
+            }
         }
 
+        private static void AttachDummyDamageController(GameObject prefab)
+        {
+            if (!prefab.GetComponentInChildren<DamageController>())
+            {
+                var damageController = prefab.AddComponent<DamageController>();
+                damageController.windows = null;
+                damageController.bodyDamagerPortIds = new string[0];
+                damageController.bodyHealthStateExternalInPortIds = new string[0];
+                damageController.mechanicalPTDamagerPortIds = new string[0];
+                damageController.mechanicalPTHealthStateExternalInPortIds = new string[0];
+                damageController.mechanicalPTOffExternalInPortIds = new string[0];
+                damageController.electricalPTDamagerPortIds = new string[0];
+                damageController.electricalPTHealthStateExternalInPortIds = new string[0];
+                damageController.electricalPTOffExternalInPortIds = new string[0];
+            }
+        }
         
         private static void AddAdditionalControllers(GameObject prefab)
         {
