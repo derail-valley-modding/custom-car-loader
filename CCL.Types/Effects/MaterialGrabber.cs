@@ -11,8 +11,18 @@ namespace CCL.Types.Effects
     {
         public enum GrabbableMaterials
         {
-            DoNotReplace,
-            Glass_0
+            DoNotReplace = -1,
+            // Glasses and windows
+            Glass_0 = 0,
+            // Passenger car interiors
+            TT_CP_PaintBeige = 7000,
+            TT_CP_PlasticWhite,
+            TT_CP_Metal,
+            TT_CP_MetalTrim,
+            TT_CP_RubberFloor,
+            TT_CP_MetalDirty,
+            TT_CP_Seats,
+            TT_CP_Curtains,
         }
 
         [Tooltip("Which renderers will be affected by the material replacer.")]

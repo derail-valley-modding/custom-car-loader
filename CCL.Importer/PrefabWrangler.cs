@@ -63,6 +63,7 @@ namespace CCL.Importer
 
             // TODO: loco params, cab
 
+            //ReplaceMaterials(newFab);
             MapOtherEffects(newFab);
 
             newFab.name = livery.id;
@@ -889,63 +890,75 @@ namespace CCL.Importer
             }
         }
 
-        private static Dictionary<MaterialGrabber.GrabbableMaterials, Material> s_materialCache = new();
+        //private static Dictionary<MaterialGrabber.GrabbableMaterials, Material> s_materialCache = new();
 
-        private static void ReplaceMaterials(GameObject newFab)
-        {
-            var replacers = newFab.GetComponentsInChildren<MaterialGrabber>();
+        //private static void ReplaceMaterials(GameObject newFab)
+        //{
+        //    var replacers = newFab.GetComponentsInChildren<MaterialGrabber>();
 
-            // Process each replacer.
-            foreach (var replacer in replacers)
-            {
-                // Affect all renderers the same way.
-                foreach (var renderer in replacer.RenderersToAffect)
-                {
-                    // Affect only matching lengths.
-                    for (int i = 0; i < renderer.materials.Length && i < replacer.MaterialsToReplace.Length; i++)
-                    {
-                        if (replacer.MaterialsToReplace[i] == MaterialGrabber.GrabbableMaterials.DoNotReplace)
-                        {
-                            continue;
-                        }
+        //    // Process each replacer.
+        //    foreach (var replacer in replacers)
+        //    {
+        //        // Affect all renderers the same way.
+        //        foreach (var renderer in replacer.RenderersToAffect)
+        //        {
+        //            // Affect only matching lengths.
+        //            for (int i = 0; i < renderer.materials.Length && i < replacer.MaterialsToReplace.Length; i++)
+        //            {
+        //                if (replacer.MaterialsToReplace[i] == MaterialGrabber.GrabbableMaterials.DoNotReplace)
+        //                {
+        //                    continue;
+        //                }
 
-                        renderer.materials[i] = GetMaterial(replacer.MaterialsToReplace[i]);
-                    }
-                }
+        //                CCLPlugin.Log($"Replacing material {renderer.materials[i]} with {GetMaterial(replacer.MaterialsToReplace[i])}");
+        //                renderer.materials[i] = GetMaterial(replacer.MaterialsToReplace[i]);
+        //            }
+        //        }
 
-                // No need to keep the replacer anymore.
-                Object.Destroy(replacer);
-            }
-        }
+        //        // No need to keep the replacer anymore.
+        //        Object.Destroy(replacer);
+        //    }
+        //}
 
-        private static Material GetMaterial(MaterialGrabber.GrabbableMaterials gMat)
-        {
-            Material mat;
+        //private static Material GetMaterial(MaterialGrabber.GrabbableMaterials gMat)
+        //{
+        //    Material mat;
 
-            if (s_materialCache.TryGetValue(gMat, out mat))
-            {
-                return mat;
-            }
+        //    if (s_materialCache.TryGetValue(gMat, out mat))
+        //    {
+        //        return mat;
+        //    }
 
-            Shader s;
+        //    switch (gMat)
+        //    {
+        //        case MaterialGrabber.GrabbableMaterials.DoNotReplace:
+        //            CCLPlugin.Log("DoNotReplace material not handled correctly!");
+        //            return null!;
+        //        case MaterialGrabber.GrabbableMaterials.Glass_0:
+        //            mat = TrainCarType.PassengerBlue.ToV2().prefab.transform.Find("CarPassenger/CarPassengerWindowsSide")
+        //                .GetComponent<Renderer>().material;
+        //            break;
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_PaintBeige:
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_PlasticWhite:
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_Metal:
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_MetalTrim:
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_RubberFloor:
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_MetalDirty:
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_Seats:
+        //        case MaterialGrabber.GrabbableMaterials.TT_CP_Curtains:
+        //            // Group all into 1 switch statement.
+        //            int index = (int)gMat - (int)MaterialGrabber.GrabbableMaterials.TT_CP_PaintBeige;
+        //            mat = TrainCarType.PassengerBlue.ToV2().prefab.transform.Find("CarPassenger/CarPassengerInterior_LOD0")
+        //                .GetComponent<Renderer>().materials[index];
+        //            break;
+        //        default:
+        //            CCLPlugin.Log($"Invalid material requested '{gMat}'.");
+        //            return null!;
+        //    }
 
-            switch (gMat)
-            {
-                case MaterialGrabber.GrabbableMaterials.DoNotReplace:
-                    CCLPlugin.Log("DoNotReplace material not handled correctly!");
-                    return null!;
-                case MaterialGrabber.GrabbableMaterials.Glass_0:
-                    s = Shader.Find("TransparencyWithFog");
-                    mat = TrainCarType.PassengerBlue.ToV2().prefab.transform.Find("CarPassenger/CarPassengerWindowsSide").GetComponent<Renderer>().material;
-                    break;
-                default:
-                    CCLPlugin.Log($"Invalid material requested '{gMat}'.");
-                    return null!;
-            }
-
-            s_materialCache.Add(gMat, mat);
-            return mat;
-        }
+        //    s_materialCache.Add(gMat, mat);
+        //    return mat;
+        //}
 
         #endregion
     }
