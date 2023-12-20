@@ -27,16 +27,19 @@ namespace CCL.Importer
 
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
-            cfg.AddProfile<ResourceContainerProxyAutoMapper>();
+            cfg.AddMaps(typeof(Mapper).Assembly);
         }
 
-        public static void MapComponent<TSource, TDestination>(TSource source, out TDestination destination)
+        public static void MapComponents<TSource, TDestination>(GameObject prefab)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            destination = source.gameObject.AddComponent<TDestination>();
-            M.Map(source, destination);
-            Object.Destroy(source);
+            foreach (var source in prefab.GetComponentsInChildren<TSource>())
+            {
+                var destination = source.gameObject.AddComponent<TDestination>();
+                M.Map(source, destination);
+                Object.Destroy(source);
+            }
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>

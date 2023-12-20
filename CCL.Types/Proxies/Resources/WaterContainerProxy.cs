@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace CCL.Types.Proxies
+namespace CCL.Types.Proxies.Resources
 {
     public class WaterContainerProxy : MonoBehaviour
     {
