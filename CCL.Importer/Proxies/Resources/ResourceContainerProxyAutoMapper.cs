@@ -12,16 +12,24 @@ using UnityEngine;
 namespace CCL.Importer.Proxies.Resources
 {
     [Export(typeof(IProxyReplacer))]
-    internal class ResourceContainerProxyAutoMapper : Profile, IProxyReplacer
+    public class ResourceContainerProxyAutoMapper : Profile, IProxyReplacer
     {
         public ResourceContainerProxyAutoMapper() : base("Resource Container Proxies")
         {
-            CreateMap<WaterContainerProxy, WaterContainerDefinition>();
+            CreateMap<CoalContainerDefinitionProxy, CoalContainerDefinition>();
+            CreateMap<FuelContainerDefinitionProxy, FuelContainerDefinition>();
+            CreateMap<OilContainerDefinitionProxy, OilContainerDefinition>();
+            CreateMap<SandContainerDefinitionProxy, SandContainerDefinition>();
+            CreateMap<WaterContainerDefinitionProxy, WaterContainerDefinition>();
         }
 
         public void ReplaceProxies(GameObject prefab)
         {
-            Mapper.MapComponents<WaterContainerProxy, WaterContainerDefinition>(prefab);
+            prefab.MapComponents<CoalContainerDefinitionProxy, CoalContainerDefinition>();
+            prefab.MapComponents<FuelContainerDefinitionProxy, FuelContainerDefinition>();
+            prefab.MapComponents<OilContainerDefinitionProxy, OilContainerDefinition>();
+            prefab.MapComponents<SandContainerDefinitionProxy, SandContainerDefinition>();
+            prefab.MapComponents<WaterContainerDefinitionProxy, WaterContainerDefinition>();
         }
     }
 }

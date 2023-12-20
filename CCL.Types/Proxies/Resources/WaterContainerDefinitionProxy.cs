@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Resources
 {
-    public class WaterContainerProxy : MonoBehaviour
+    public class WaterContainerDefinitionProxy : MonoBehaviour
     {
-        public string ID;
+        public string ID = "water";
         public float capacity = 100f;
         public float defaultValue = 100f;
     }

@@ -5,6 +5,7 @@ using CCL.Types;
 using DV.ThingTypes;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace CCL.Importer
@@ -27,10 +28,10 @@ namespace CCL.Importer
 
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
-            cfg.AddMaps(typeof(Mapper).Assembly);
+            cfg.AddMaps(Assembly.GetExecutingAssembly());
         }
 
-        public static void MapComponents<TSource, TDestination>(GameObject prefab)
+        public static void MapComponents<TSource, TDestination>(this GameObject prefab)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
