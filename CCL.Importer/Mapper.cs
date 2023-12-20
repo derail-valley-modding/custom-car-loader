@@ -29,6 +29,8 @@ namespace CCL.Importer
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
 
             cfg.CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
+            cfg.CreateMap<WindowProxy, DV.Rain.Window>()
+                .ForMember(x => x.duplicates, options => options.Ignore());
         }
 
         public static void MapComponent<TSource, TDestination>(TSource source, out TDestination destination)

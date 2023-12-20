@@ -63,6 +63,8 @@ namespace CCL.Importer
 
             // TODO: loco params, cab
 
+            MapOtherEffects(newFab);
+
             newFab.name = livery.id;
             livery.prefab = newFab;
 
@@ -860,6 +862,36 @@ namespace CCL.Importer
                     {
                         material.shader = EngineShader;
                     }
+                }
+            }
+        }
+
+        #endregion
+
+        //==============================================================================================================
+        #region Other Effects
+
+        private static void MapOtherEffects(GameObject newFab)
+        {
+            // Windows
+            WindowProxy[] windows = newFab.GetComponentsInChildren<WindowProxy>();
+            DV.Rain.Window[] newWindows = new DV.Rain.Window[windows.Length];
+
+            for (int i = 0; i < windows.Length; i++)
+            {
+                Mapper.MapComponent(windows[i], out DV.Rain.Window temp);
+                newWindows[i] = temp;
+            }
+
+            Shader s = Shader.Find("TransparencyWithFog");
+
+            for (int i = 0; i < windows.Length; i++)
+            {
+                newWindows[i].duplicates = windows[i].duplicates.Select(x => x.GetComponent<DV.Rain.Window>()).ToArray();
+
+                for (int j = 0; j < newWindows[i].visuals.Length; j++)
+                {
+                    newWindows[i].visuals[j].sharedMaterial.shader = s;
                 }
             }
         }
