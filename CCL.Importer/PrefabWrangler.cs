@@ -883,17 +883,68 @@ namespace CCL.Importer
                 newWindows[i] = temp;
             }
 
-            Shader s = Shader.Find("TransparencyWithFog");
-
             for (int i = 0; i < windows.Length; i++)
             {
                 newWindows[i].duplicates = windows[i].duplicates.Select(x => x.GetComponent<DV.Rain.Window>()).ToArray();
-
-                for (int j = 0; j < newWindows[i].visuals.Length; j++)
-                {
-                    newWindows[i].visuals[j].sharedMaterial.shader = s;
-                }
             }
+        }
+
+        private static Dictionary<MaterialGrabber.GrabbableMaterials, Material> s_materialCache = new();
+
+        private static void ReplaceMaterials(GameObject newFab)
+        {
+            var replacers = newFab.GetComponentsInChildren<MaterialGrabber>();
+
+            // Process each replacer.
+            foreach (var replacer in replacers)
+            {
+                // Affect all renderers the same way.
+                foreach (var renderer in replacer.RenderersToAffect)
+                {
+                    // Affect only matching lengths.
+                    for (int i = 0; i < renderer.materials.Length && i < replacer.MaterialsToReplace.Length; i++)
+                    {
+                        if (replacer.MaterialsToReplace[i] == MaterialGrabber.GrabbableMaterials.DoNotReplace)
+                        {
+                            continue;
+                        }
+
+                        renderer.materials[i] = GetMaterial(replacer.MaterialsToReplace[i]);
+                    }
+                }
+
+                // No need to keep the replacer anymore.
+                Object.Destroy(replacer);
+            }
+        }
+
+        private static Material GetMaterial(MaterialGrabber.GrabbableMaterials gMat)
+        {
+            Material mat;
+
+            if (s_materialCache.TryGetValue(gMat, out mat))
+            {
+                return mat;
+            }
+
+            Shader s;
+
+            switch (gMat)
+            {
+                case MaterialGrabber.GrabbableMaterials.DoNotReplace:
+                    CCLPlugin.Log("DoNotReplace material not handled correctly!");
+                    return null!;
+                case MaterialGrabber.GrabbableMaterials.Glass_0:
+                    s = Shader.Find("TransparencyWithFog");
+                    mat = TrainCarType.PassengerBlue.ToV2().prefab.transform.Find("CarPassenger/CarPassengerWindowsSide").GetComponent<Renderer>().material;
+                    break;
+                default:
+                    CCLPlugin.Log($"Invalid material requested '{gMat}'.");
+                    return null!;
+            }
+
+            s_materialCache.Add(gMat, mat);
+            return mat;
         }
 
         #endregion
