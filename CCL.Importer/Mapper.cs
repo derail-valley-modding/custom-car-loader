@@ -42,6 +42,29 @@ namespace CCL.Importer
             Object.Destroy(source);
         }
 
+        public static void MapMultipleComponents<TSource, TDestination>(IEnumerable<TSource> source, out IEnumerable<TDestination> destination)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            List<(TSource Source, TDestination Destination)> destinationList = new();
+
+            // Start by adding all components.
+            foreach (var item in source)
+            {
+                destinationList.Add((item, item.gameObject.AddComponent<TDestination>()));
+            }
+
+            // Once all components are added, it's safe to map them.
+            foreach (var item in destinationList)
+            {
+                M.Map(item.Source, item.Destination);
+                Object.Destroy(item.Source);
+            }
+
+            // Return only the new components.
+            destination = destinationList.Select(x => x.Destination);
+        }
+
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
         {
             public List<TrainCarLivery> Convert(List<CustomCarVariant> sourceMember, ResolutionContext context)
