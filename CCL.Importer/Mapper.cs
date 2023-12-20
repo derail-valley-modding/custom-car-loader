@@ -4,6 +4,7 @@ using CCL.Types;
 using DV.ThingTypes;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace CCL.Importer
@@ -26,6 +27,55 @@ namespace CCL.Importer
 
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
+            cfg.AddMaps(Assembly.GetExecutingAssembly());
+        }
+
+        /// <summary>
+        /// Replaces TSource with TDestination using AutoMapper
+        /// </summary>
+        /// <typeparam name="TSource">The MonoBehaviour script to replace</typeparam>
+        /// <typeparam name="TDestination">The MonoBehaviour script that will replace it</typeparam>
+        /// <param name="prefab">The game object on which to conduct replacements - operates recursively</param>
+        public static void MapComponentsInChildren<TSource, TDestination>(this GameObject prefab)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            prefab.MapComponentsInChildren<TSource, TDestination>((source) => true);
+        }
+
+        public static void MapComponentsInChildren<TSource, TDestination>(this GameObject prefab, System.Func<TSource, bool> canReplace)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            foreach (var source in prefab.GetComponentsInChildren<TSource>())
+            {
+                if (canReplace(source))
+                {
+                    var destination = source.gameObject.AddComponent<TDestination>();
+                    M.Map(source, destination);
+                    Object.Destroy(source);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Replaces TSource with TDestination using AutoMapper
+        /// 
+        /// Unlike MapComponentsInChildren this will only map one and targets a *source* instead of a *prefab*
+        /// </summary>
+        /// <typeparam name="TSource">Type of the component being replaced</typeparam>
+        /// <typeparam name="TDestination">Type of component to replace with</typeparam>
+        /// <param name="source">Component being replaced, will be destroyed before this returns</param>
+        /// <returns>The replaced component which can be used in other mappers</returns>
+        public static TDestination MapComponent<TSource, TDestination>(this TSource source)
+            where TSource : MonoBehaviour
+            where TDestination: MonoBehaviour
+        {
+            var destination = source.gameObject.AddComponent<TDestination>();
+            M.Map(source, destination);
+            Object.Destroy(source);
+            return destination;
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
