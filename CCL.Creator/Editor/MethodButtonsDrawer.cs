@@ -30,7 +30,14 @@ namespace CCL.Creator
 
                 if (GUI.Button(buttonRect, new GUIContent(button.Text, button.Tooltip ?? string.Empty)))
                 {
-                    button.Action.Invoke(null, new object[] { targetProp.serializedObject.targetObject });
+                    if (button.Action.IsStatic)
+                    {
+                        button.Action.Invoke(null, new object[] { targetProp.serializedObject.targetObject });
+                    }
+                    else
+                    {
+                        button.Action.Invoke(targetProp.serializedObject.targetObject, new object[0]);
+                    }
                 }
             }
         }
@@ -64,6 +71,10 @@ namespace CCL.Creator
                 if (type.GetMethod(parts[1], ALL_STATIC) is MethodInfo methodInfo)
                 {
                     return methodInfo;
+                }
+                else if (type.GetMethod(parts[1], ALL_INSTANCE) is MethodInfo instanceMethod)
+                {
+                    return instanceMethod;
                 }
             }
             return null;
