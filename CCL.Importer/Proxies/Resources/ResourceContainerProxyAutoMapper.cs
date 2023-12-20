@@ -12,24 +12,13 @@ using UnityEngine;
 namespace CCL.Importer.Proxies.Resources
 {
     [Export(typeof(IProxyReplacer))]
-    public class ResourceContainerProxyAutoMapper : Profile, IProxyReplacer
-    {
-        public ResourceContainerProxyAutoMapper() : base("Resource Container Proxies")
-        {
-            CreateMap<CoalContainerDefinitionProxy, CoalContainerDefinition>();
-            CreateMap<FuelContainerDefinitionProxy, FuelContainerDefinition>();
-            CreateMap<OilContainerDefinitionProxy, OilContainerDefinition>();
-            CreateMap<SandContainerDefinitionProxy, SandContainerDefinition>();
-            CreateMap<WaterContainerDefinitionProxy, WaterContainerDefinition>();
-        }
-
-        public void ReplaceProxies(GameObject prefab)
-        {
-            prefab.MapComponents<CoalContainerDefinitionProxy, CoalContainerDefinition>();
-            prefab.MapComponents<FuelContainerDefinitionProxy, FuelContainerDefinition>();
-            prefab.MapComponents<OilContainerDefinitionProxy, OilContainerDefinition>();
-            prefab.MapComponents<SandContainerDefinitionProxy, SandContainerDefinition>();
-            prefab.MapComponents<WaterContainerDefinitionProxy, WaterContainerDefinition>();
-        }
-    }
+    public class CoalContainerProxyReplacer : ProxyReplacer<CoalContainerDefinitionProxy, CoalContainerDefinition> { }
+    [Export(typeof(IProxyReplacer))]
+    public class FuelContainerProxyReplacer : ProxyReplacer<FuelContainerDefinitionProxy, FuelContainerDefinition> { }
+    [Export(typeof(IProxyReplacer))]
+    public class OilContainerProxyReplacer : ProxyReplacer<OilContainerDefinitionProxy, OilContainerDefinition> { }
+    [Export(typeof(IProxyReplacer))]
+    public class SandContainerProxyReplacer : ProxyReplacer<SandContainerDefinitionProxy, SandContainerDefinition> { }
+    [Export(typeof(IProxyReplacer))]
+    public class WaterContainerProxyReplacer : ProxyReplacer<WaterContainerDefinitionProxy, WaterContainerDefinition> { }
 }
