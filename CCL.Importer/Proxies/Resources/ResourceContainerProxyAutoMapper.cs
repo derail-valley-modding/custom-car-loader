@@ -5,13 +5,43 @@ using System.ComponentModel.Composition;
 namespace CCL.Importer.Proxies.Resources
 {
     [Export(typeof(IProxyReplacer))]
-    public class CoalContainerProxyReplacer : ProxyReplacer<CoalContainerDefinitionProxy, CoalContainerDefinition> { }
+    public class CoalContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, CoalContainerDefinition> {
+        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
+        {
+            return sourceComponent.type == ResourceContainerType.Coal;
+        }
+    }
+
     [Export(typeof(IProxyReplacer))]
-    public class FuelContainerProxyReplacer : ProxyReplacer<FuelContainerDefinitionProxy, FuelContainerDefinition> { }
+    public class FuelContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, FuelContainerDefinition> {
+        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
+        {
+            return sourceComponent.type == ResourceContainerType.Fuel;
+        }
+    }
+
     [Export(typeof(IProxyReplacer))]
-    public class OilContainerProxyReplacer : ProxyReplacer<OilContainerDefinitionProxy, OilContainerDefinition> { }
+    public class OilContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, OilContainerDefinition>
+    {
+        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
+        {
+            return sourceComponent.type == ResourceContainerType.Oil;
+        }
+    }
+
     [Export(typeof(IProxyReplacer))]
-    public class SandContainerProxyReplacer : ProxyReplacer<SandContainerDefinitionProxy, SandContainerDefinition> { }
+    public class SandContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, SandContainerDefinition> {
+        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
+        {
+            return sourceComponent.type == ResourceContainerType.Sand;
+        }
+    }
+
     [Export(typeof(IProxyReplacer))]
-    public class WaterContainerProxyReplacer : ProxyReplacer<WaterContainerDefinitionProxy, WaterContainerDefinition> { }
+    public class WaterContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, WaterContainerDefinition> {
+        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
+        {
+            return sourceComponent.type == ResourceContainerType.Water;
+        }
+    }
 }

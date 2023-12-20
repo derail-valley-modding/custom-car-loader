@@ -40,13 +40,24 @@ namespace CCL.Importer
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
+            prefab.MapComponentsInChildren<TSource, TDestination>((source) => true);
+        }
+
+        public static void MapComponentsInChildren<TSource, TDestination>(this GameObject prefab, System.Func<TSource, bool> canReplace)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
             foreach (var source in prefab.GetComponentsInChildren<TSource>())
             {
-                var destination = source.gameObject.AddComponent<TDestination>();
-                M.Map(source, destination);
-                Object.Destroy(source);
+                if (canReplace(source))
+                {
+                    var destination = source.gameObject.AddComponent<TDestination>();
+                    M.Map(source, destination);
+                    Object.Destroy(source);
+                }
             }
         }
+
 
         /// <summary>
         /// Replaces TSource with TDestination using AutoMapper

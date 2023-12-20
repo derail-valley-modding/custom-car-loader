@@ -31,9 +31,14 @@ namespace CCL.Importer.Proxies
             return;
         }
 
+        protected virtual bool CanReplace(TSource sourceComponent)
+        {
+            return true;
+        }
+
         public void ReplaceProxies(GameObject prefab)
         {
-            prefab.MapComponentsInChildren<TSource, TDestination>();
+            prefab.MapComponentsInChildren<TSource, TDestination>(this.CanReplace);
         }
     }
 }
