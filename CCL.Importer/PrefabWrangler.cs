@@ -932,7 +932,27 @@ namespace CCL.Importer
 
         private static void MapOtherEffects(GameObject newFab)
         {
-            // Windows
+            Windows(newFab);
+
+            foreach (var item in newFab.GetComponentsInChildren<InternalExternalSnapshotSwitcherProxy>())
+            {
+                Mapper.MapComponent(item, out InternalExternalSnapshotSwitcher _);
+            }
+
+            foreach (var item in newFab.GetComponentsInChildren<PlayerDistanceGameObjectsDisablerProxy>())
+            {
+                Mapper.MapComponent(item, out PlayerDistanceGameObjectsDisabler _);
+            }
+
+            // KEEP LAST
+            foreach (var item in newFab.GetComponentsInChildren<PlayerDistanceMultipleGameObjectsOptimizerProxy>())
+            {
+                Mapper.MapComponent(item, out PlayerDistanceMultipleGameObjectsOptimizer _);
+            }
+        }
+
+        private static void Windows(GameObject newFab)
+        {
             WindowProxy[] windows = newFab.GetComponentsInChildren<WindowProxy>();
             DV.Rain.Window[] newWindows = new DV.Rain.Window[windows.Length];
 

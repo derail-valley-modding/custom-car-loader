@@ -31,6 +31,14 @@ namespace CCL.Importer
             cfg.CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             cfg.CreateMap<WindowProxy, DV.Rain.Window>()
                 .ForMember(x => x.duplicates, options => options.Ignore());
+            cfg.CreateMap<InternalExternalSnapshotSwitcherProxy, DV.InternalExternalSnapshotSwitcher>();
+
+            cfg.CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
+                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance));
+            // Make sure these maps are run LAST.
+            cfg.CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
+                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
+                .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => s.scriptsToDisable.Select(x => GetMappedComponent(x))));
         }
 
         public static void MapComponent<TSource, TDestination>(TSource source, out TDestination destination)
@@ -63,6 +71,14 @@ namespace CCL.Importer
 
             // Return only the new components.
             destination = destinationList.Select(x => x.Destination);
+        }
+
+        private static Component GetMappedComponent<TSource>(TSource source)
+            where TSource : Component
+        {
+            // https://www.youtube.com/watch?v=rmQFcVR6vEs
+            return source.gameObject.GetComponent(M.ConfigurationProvider.GetAllTypeMaps()
+                    .First(map => map.SourceType == source.GetType()).DestinationType);
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
