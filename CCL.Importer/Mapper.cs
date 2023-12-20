@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CCL.Importer.Proxies;
+using CCL.Importer.Proxies.Resources;
 using CCL.Importer.Types;
 using CCL.Types;
 using DV.ThingTypes;
@@ -28,6 +28,15 @@ namespace CCL.Importer
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
             cfg.AddProfile<ResourceContainerProxyAutoMapper>();
+        }
+
+        public static void MapComponent<TSource, TDestination>(TSource source, out TDestination destination)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            destination = source.gameObject.AddComponent<TDestination>();
+            M.Map(source, destination);
+            Object.Destroy(source);
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace CCL.Importer.Proxies
+namespace CCL.Importer.Proxies.Resources
 {
     [Export(typeof(IProxyReplacer))]
     internal class ResourceContainerProxyMapper : IProxyReplacer

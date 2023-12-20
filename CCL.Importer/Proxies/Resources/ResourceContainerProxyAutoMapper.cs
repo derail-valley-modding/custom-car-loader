@@ -7,11 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CCL.Importer.Proxies
+namespace CCL.Importer.Proxies.Resources
 {
     internal class ResourceContainerProxyAutoMapper : Profile
     {
-        public ResourceContainerProxyAutoMapper() : base("Resource Container Proxies") {
+        public ResourceContainerProxyAutoMapper() : base("Resource Container Proxies")
+        {
             CreateMap<WaterContainerProxy, WaterContainerDefinition>();
         }
     }

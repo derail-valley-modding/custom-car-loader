@@ -15,8 +15,8 @@ namespace CCL.Importer.Proxies
         [ImportMany]
         public IEnumerable<IProxyReplacer> proxyMappers;
 
-        private CompositionContainer _container;
-        public static ProxyWrangler Instance = new ProxyWrangler();
+        private readonly CompositionContainer _container;
+        public static ProxyWrangler Instance = new();
         private ProxyWrangler() {
             try
             {
@@ -31,7 +31,7 @@ namespace CCL.Importer.Proxies
             }
             catch (CompositionException compositionException)
             {
-                CCLPlugin.Error("Error loading proxy mappers");
+                CCLPlugin.Error("Error loading proxy mappers " + compositionException.Message);
             }
         }
         public void MapProxiesOnPrefab(GameObject prefab)
