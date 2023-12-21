@@ -48,6 +48,8 @@
         public const string BOGIE_CAR = "bogie_car";
         public const string BOGIE_BRAKE_ROOT = "bogie2brakes";
         public const string BOGIE_BRAKE_PADS = "Bogie2BrakePads";
+        public const string BOGIE_CONTACT_POINTS = "ContactPoints";
+        public const string AXLE = "[axle]";
 
         // Info Plates
         public static readonly string[] INFO_PLATES = { "[car plate anchor1]", "[car plate anchor2]" };
