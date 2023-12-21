@@ -6,7 +6,7 @@
         public const string BUFFERS_ROOT = "[buffers]";
         public const string BUFFER_PLATE_FRONT = "HookPlate_F";
         public const string BUFFER_PLATE_REAR = "HookPlate_R";
-        public const string BUFFER_STEMS = "BufferStems";
+        public static readonly string[] BUFFER_STEMS = { "BufferStems", "CabooseExteriorBufferStems" };
 
         public const string BUFFER_PAD_FL = "Buffer_FL";
         public const string BUFFER_PAD_FR = "Buffer_FR";

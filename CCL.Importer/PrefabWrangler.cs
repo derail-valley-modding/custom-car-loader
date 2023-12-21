@@ -50,6 +50,18 @@ namespace CCL.Importer
             newFab.SetActive(false);
             Object.DontDestroyOnLoad(newFab);
 
+            // create modifiable interior
+            if (livery.interiorPrefab)
+            {
+                var newInterior = Object.Instantiate(livery.interiorPrefab, null);
+                newInterior.SetActive(false);
+                Object.DontDestroyOnLoad(newInterior);
+
+                ModelUtil.SetLayersRecursiveAndExclude(newInterior, DVLayer.Interactable, DVLayer.Train_Walkable);
+
+                livery.interiorPrefab = newInterior;
+            }
+
             // Fetch the base type prefab for this car
             TrainCarLivery baseLivery = GetBaseType(livery.BaseCarType);
 
@@ -306,7 +318,7 @@ namespace CCL.Importer
                     // rear hook plate
                     child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
                 }
-                else if (CarPartNames.BUFFER_STEMS.Equals(childName))
+                else if (CarPartNames.BUFFER_STEMS.Contains(childName))
                 {
                     // stems
                     Object.Destroy(child.gameObject);
@@ -381,7 +393,7 @@ namespace CCL.Importer
                     child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
                     CCLPlugin.LogVerbose("Adjust Hook Plate R");
                 }
-                else if (CarPartNames.BUFFER_STEMS.Equals(childName))
+                else if (CarPartNames.BUFFER_STEMS.Contains(childName))
                 {
                     // destroy stems
                     Object.Destroy(child.gameObject);
@@ -745,28 +757,30 @@ namespace CCL.Importer
 
         private static void SetupBrakeGlows(GameObject newFab, Bogie front, Bogie rear, TrainCarLivery baseLivery)
         {
-            var brakeGlow = newFab.AddComponent<BrakesOverheatingController>();
             List<Renderer> brakeRenderers = new();
 
             // Front bogie pads.
-            Transform padsF = front.transform.Find(
+            Transform? padsF = front.transform.FindSafe(
                 $"{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
 
-            if (padsF != null)
+            if (padsF)
             {
                 // Grab ALL the renderers.
-                brakeRenderers.AddRange(padsF.GetComponentsInChildren<Renderer>(true));
+                brakeRenderers.AddRange(padsF!.GetComponentsInChildren<Renderer>(true));
             }
 
             // Rear bogie pads.
-            Transform padsR = rear.transform.Find(
+            Transform? padsR = rear.transform.FindSafe(
                 $"{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
 
-            if (padsR != null)
+            if (padsR)
             {
-                brakeRenderers.AddRange(padsR.GetComponentsInChildren<Renderer>(true));
+                brakeRenderers.AddRange(padsR!.GetComponentsInChildren<Renderer>(true));
             }
 
+            if (!brakeRenderers.Any()) return;
+
+            var brakeGlow = newFab.AddComponent<BrakesOverheatingController>();
             brakeGlow.brakeRenderers = brakeRenderers.ToArray();
 
             // Gradient.
@@ -780,7 +794,10 @@ namespace CCL.Importer
             else
             {
                 // Or just use the same one as the base car type.
-                brakeGlow.overheatColor.colorGradient = baseLivery.prefab.GetComponent<BrakesOverheatingController>().overheatColor.colorGradient;
+                if (baseLivery.prefab.TryGetComponent(out BrakesOverheatingController baseGlow))
+                {
+                    brakeGlow.overheatColor.colorGradient = baseGlow.overheatColor.colorGradient;
+                }
             }
         }
 
@@ -885,6 +902,14 @@ namespace CCL.Importer
 
                 var optimizer = newFab.AddComponent<PlayerOnCarScriptsOptimizer>();
                 optimizer.scriptsToDisable = new MonoBehaviour[] { keyboardCtrl };
+
+                livery.externalInteractablesPrefab = newFab;
+            }
+            else
+            {
+                var newFab = Object.Instantiate(livery.externalInteractablesPrefab, null);
+                newFab.SetActive(false);
+                Object.DontDestroyOnLoad(newFab);
 
                 livery.externalInteractablesPrefab = newFab;
             }
