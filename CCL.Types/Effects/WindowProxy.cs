@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Effects
 {
+    [DisallowMultipleComponent]
     public class WindowProxy : MonoBehaviour
     {
         public bool simulate;
