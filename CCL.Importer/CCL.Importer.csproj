@@ -14,6 +14,7 @@
 
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" />
+		<Reference Include="System.ComponentModel.Composition" />
 		<Reference Include="UnityModManager" />
 		<Reference Include="0Harmony" />
 		<Reference Include="I2.Localization" />

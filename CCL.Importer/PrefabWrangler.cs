@@ -1,14 +1,20 @@
-﻿using CCL.Importer.Types;
+﻿using CCL.Importer.Proxies;
+using CCL.Importer.Types;
 using CCL.Types;
 using CCL.Types.Effects;
 using DV;
 using DV.CabControls;
 using DV.CabControls.Spec;
+using DV.Damage;
 using DV.Optimizers;
 using DV.Simulation.Brake;
+using DV.Simulation.Cars;
+using DV.Simulation.Controllers;
+using DV.Simulation.Ports;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using DV.Utils;
+using LocoSim.Definitions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -53,6 +59,7 @@ namespace CCL.Importer
 
             WrangleBogies(newFab, livery, baseLivery, colliders);
             CleanInfoPlates(newFab.transform);
+
             WrangleExternalInteractables(livery);
 
             UpdateLiveryShaders(livery);
@@ -69,9 +76,121 @@ namespace CCL.Importer
             newFab.name = livery.id;
             livery.prefab = newFab;
 
+            WrangleProxies(livery);
+            BuildSimulationElements(livery);
+
             CCLPlugin.Log($"Finalized prefab for {livery.id}");
             return true;
         }
+
+        //==============================================================================================================
+        #region Proxies
+        private static void WrangleProxies(TrainCarLivery livery)
+        {
+            if (livery.interiorPrefab)
+            {
+                ProxyWrangler.Instance.MapProxiesOnPrefab(livery.interiorPrefab);
+            }
+            if (livery.externalInteractablesPrefab)
+            {
+                ProxyWrangler.Instance.MapProxiesOnPrefab(livery.externalInteractablesPrefab);
+            }
+            ProxyWrangler.Instance.MapProxiesOnPrefab(livery.prefab);
+        }
+        #endregion
+
+        //==============================================================================================================
+        #region SimulationComponents - SimController and friends
+
+        private static void BuildSimulationElements(TrainCarLivery livery)
+        {
+            // Map additional controllers for all prefab parts
+            AddAdditionalControllers(livery.prefab);
+            if (livery.interiorPrefab)
+            {
+                AddAdditionalControllers(livery.interiorPrefab);
+            }
+            if (livery.externalInteractablesPrefab)
+            {
+                AddAdditionalControllers(livery.externalInteractablesPrefab);
+            }
+
+            // If we have something that gets referenced through the simConnections decoupling mechanism - these are generally things
+            // that make ports exist.
+            var hasSimConnections = livery.prefab.GetComponentsInChildren<SimComponentDefinition>().Length > 0 ||
+                livery.prefab.GetComponentsInChildren<Connection>().Length > 0 ||
+                livery.prefab.GetComponentsInChildren<PortReferenceConnection>().Length > 0;
+            if (hasSimConnections)
+            {
+                AttachSimConnectionsToPrefab(livery.prefab);
+            }
+
+            // If we have something that can use a sim controller and don't already have a sim controller
+            var needsSimController = livery.prefab.GetComponentInChildren<SimConnectionDefinition>() || 
+                livery.prefab.GetComponentsInChildren<ASimInitializedController>().Length > 0 && 
+                !livery.prefab.GetComponentInChildren<SimController>();
+            if (needsSimController)
+            {
+                var simController = livery.prefab.AddComponent<SimController>();
+                simController.connectionsDefinition = livery.prefab.GetComponent<SimConnectionDefinition>() ?? AttachSimConnectionsToPrefab(livery.prefab);
+                simController.otherSimControllers = livery.prefab.GetComponentsInChildren<ASimInitializedController>();
+            }
+
+            // In the event we have a sim controller and *not* a damage controller, we need to add a dummy damage controller
+            var needsDamageController = livery.prefab.GetComponentInChildren<SimController>() && 
+                !livery.prefab.GetComponentInChildren<DamageController>();
+            if (needsDamageController)
+            {
+                AttachDummyDamageController(livery.prefab);
+            }
+        }
+
+        private static void AttachDummyDamageController(GameObject prefab)
+        {
+            if (!prefab.GetComponentInChildren<DamageController>())
+            {
+                var damageController = prefab.AddComponent<DamageController>();
+                damageController.windows = null;
+                damageController.bodyDamagerPortIds = new string[0];
+                damageController.bodyHealthStateExternalInPortIds = new string[0];
+                damageController.mechanicalPTDamagerPortIds = new string[0];
+                damageController.mechanicalPTHealthStateExternalInPortIds = new string[0];
+                damageController.mechanicalPTOffExternalInPortIds = new string[0];
+                damageController.electricalPTDamagerPortIds = new string[0];
+                damageController.electricalPTHealthStateExternalInPortIds = new string[0];
+                damageController.electricalPTOffExternalInPortIds = new string[0];
+            }
+        }
+        
+        private static void AddAdditionalControllers(GameObject prefab)
+        {
+            if (prefab.GetComponentsInChildren<InteractablePortFeeder>().Length > 0)
+            {
+                var controller = prefab.AddComponent<InteractablePortFeedersController> ();
+                controller.entries = prefab.GetComponentsInChildren <InteractablePortFeeder>();
+            }
+
+            if (prefab.GetComponentsInChildren<IndicatorPortReader>().Length > 0)
+            {
+                var controller = prefab.AddComponent<IndicatorPortReadersController> ();
+                controller.entries = prefab.GetComponentsInChildren<IndicatorPortReader>();
+            }
+            // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
+        }
+
+        private static SimConnectionDefinition AttachSimConnectionsToPrefab(GameObject prefab)
+        {
+            // SimConnectionDefinition is a structure that holds all of the magical port generating items
+            var simConnections = prefab.AddComponent<SimConnectionDefinition>();
+
+            simConnections.executionOrder = prefab.GetComponentsInChildren<SimComponentDefinition>();
+            simConnections.connections = prefab.GetComponentsInChildren<Connection>();
+            simConnections.portReferenceConnections = prefab.GetComponentsInChildren<PortReferenceConnection>();
+
+            return simConnections;
+        }
+
+        #endregion
 
         //==============================================================================================================
         #region Buffer horrors beyond comprehension
