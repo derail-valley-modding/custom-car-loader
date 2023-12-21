@@ -16,6 +16,8 @@ namespace CCL.Importer
         private static IMapper? _map;
         public static IMapper M => _map ??= _config.CreateMapper();
 
+        private static Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
+
         private static void Configure(IMapperConfigurationExpression cfg)
         {
             cfg.CreateMap<CustomCarVariant, CCL_CarVariant>()
@@ -73,12 +75,24 @@ namespace CCL.Importer
             destination = destinationList.Select(x => x.Destination);
         }
 
-        private static Component GetMappedComponent<TSource>(TSource source)
-            where TSource : Component
+        private static MonoBehaviour GetMappedComponent<TSource>(TSource source)
+            where TSource : MonoBehaviour
         {
-            // https://www.youtube.com/watch?v=rmQFcVR6vEs
-            return source.gameObject.GetComponent(M.ConfigurationProvider.GetAllTypeMaps()
-                    .First(map => map.SourceType == source.GetType()).DestinationType);
+            //// https://www.youtube.com/watch?v=rmQFcVR6vEs
+            //return source.gameObject.GetComponent(M.ConfigurationProvider.GetAllTypeMaps()
+            //        .First(map => map.SourceType == source.GetType()).DestinationType);
+
+            if (s_componentMapCache.TryGetValue(source, out MonoBehaviour mapped))
+            {
+                return mapped;
+            }
+
+            return source;
+        }
+
+        public static void ClearCache()
+        {
+            s_componentMapCache.Clear();
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
