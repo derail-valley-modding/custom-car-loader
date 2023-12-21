@@ -743,6 +743,11 @@ namespace CCL.Importer
             return newBogie;
         }
 
+        private static BrakesOverheatingColorGradient? _defaultBrakeGradient = null;
+        private static BrakesOverheatingColorGradient DefaultBrakeGradient =>
+            Extensions.GetCached(ref _defaultBrakeGradient,
+                () => Resources.FindObjectsOfTypeAll<BrakesOverheatingColorGradient>().FirstOrDefault(g => g.name == "BrakeShoeOverheatColorGradient"));
+
         private static void SetupBrakeGlows(GameObject newFab, Bogie front, Bogie rear, TrainCarLivery baseLivery)
         {
             List<Renderer> brakeRenderers = new();
@@ -785,6 +790,11 @@ namespace CCL.Importer
                 if (baseLivery.prefab.TryGetComponent(out BrakesOverheatingController baseGlow))
                 {
                     brakeGlow.overheatColor.colorGradient = baseGlow.overheatColor.colorGradient;
+                }
+                else
+                {
+                    brakeGlow.overheatColor.colorGradient = DefaultBrakeGradient.colorGradient;
+                    CCLPlugin.LogVerbose($"Apply default brake gradient to {newFab.name}");
                 }
             }
         }
