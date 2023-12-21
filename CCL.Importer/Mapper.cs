@@ -115,19 +115,19 @@ namespace CCL.Importer
             destination = destinationList.Select(x => x.Destination);
         }
 
-        private static MonoBehaviour GetMappedComponent<TSource>(TSource source)
+        private static Component GetMappedComponent<TSource>(TSource source)
             where TSource : MonoBehaviour
         {
-            //// https://www.youtube.com/watch?v=rmQFcVR6vEs
-            //return source.gameObject.GetComponent(M.ConfigurationProvider.GetAllTypeMaps()
-            //        .First(map => map.SourceType == source.GetType()).DestinationType);
+            // https://www.youtube.com/watch?v=rmQFcVR6vEs
+            return source.gameObject.GetComponent(M.ConfigurationProvider.GetAllTypeMaps()
+                    .First(map => map.SourceType == source.GetType()).DestinationType);
 
-            if (s_componentMapCache.TryGetValue(source, out MonoBehaviour mapped))
-            {
-                return mapped;
-            }
+            //if (s_componentMapCache.TryGetValue(source, out MonoBehaviour mapped))
+            //{
+            //    return mapped;
+            //}
 
-            return source;
+            //return source;
         }
 
         public static void ClearCache()
