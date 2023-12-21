@@ -91,7 +91,23 @@ namespace CCL.Importer
             Object.Destroy(source);
             return destination;
         }
-      
+
+        /// <summary>
+        /// Replaces TSource with TDestination using AutoMapper
+        /// 
+        /// Unlike MapComponentsInChildren this will only map one and targets a *source* instead of a *prefab*
+        /// </summary>
+        /// <typeparam name="TSource">Type of the component being replaced</typeparam>
+        /// <typeparam name="TDestination">Type of component to replace with</typeparam>
+        /// <param name="source">Component being replaced, will be destroyed before this returns</param>
+        /// <param name="destination">The component added to replace the original</param>
+        public static void MapComponent<TSource, TDestination>(TSource source, out TDestination destination)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            destination = MapComponent<TSource, TDestination>(source);
+        }
+
         public static void MapMultipleComponents<TSource, TDestination>(IEnumerable<TSource> source, out IEnumerable<TDestination> destination)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
