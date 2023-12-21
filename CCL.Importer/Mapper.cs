@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Effects;
 using DV.ThingTypes;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace CCL.Importer
         private static IMapper? _map;
         public static IMapper M => _map ??= _config.CreateMapper();
 
+        private static Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
+
         private static void Configure(IMapperConfigurationExpression cfg)
         {
             cfg.CreateMap<CustomCarVariant, CCL_CarVariant>()
@@ -28,6 +31,18 @@ namespace CCL.Importer
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
             cfg.AddMaps(Assembly.GetExecutingAssembly());
+
+            cfg.CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
+            cfg.CreateMap<WindowProxy, DV.Rain.Window>()
+                .ForMember(x => x.duplicates, options => options.Ignore());
+            cfg.CreateMap<InternalExternalSnapshotSwitcherProxy, DV.InternalExternalSnapshotSwitcher>();
+
+            cfg.CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
+                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance));
+            // Make sure these maps are run LAST.
+            cfg.CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
+                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
+                .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => s.scriptsToDisable.Select(x => GetMappedComponent(x))));
         }
 
         /// <summary>
@@ -58,7 +73,6 @@ namespace CCL.Importer
             }
         }
 
-
         /// <summary>
         /// Replaces TSource with TDestination using AutoMapper
         /// 
@@ -76,6 +90,49 @@ namespace CCL.Importer
             M.Map(source, destination);
             Object.Destroy(source);
             return destination;
+        }
+      
+        public static void MapMultipleComponents<TSource, TDestination>(IEnumerable<TSource> source, out IEnumerable<TDestination> destination)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            List<(TSource Source, TDestination Destination)> destinationList = new();
+
+            // Start by adding all components.
+            foreach (var item in source)
+            {
+                destinationList.Add((item, item.gameObject.AddComponent<TDestination>()));
+            }
+
+            // Once all components are added, it's safe to map them.
+            foreach (var item in destinationList)
+            {
+                M.Map(item.Source, item.Destination);
+                Object.Destroy(item.Source);
+            }
+
+            // Return only the new components.
+            destination = destinationList.Select(x => x.Destination);
+        }
+
+        private static MonoBehaviour GetMappedComponent<TSource>(TSource source)
+            where TSource : MonoBehaviour
+        {
+            //// https://www.youtube.com/watch?v=rmQFcVR6vEs
+            //return source.gameObject.GetComponent(M.ConfigurationProvider.GetAllTypeMaps()
+            //        .First(map => map.SourceType == source.GetType()).DestinationType);
+
+            if (s_componentMapCache.TryGetValue(source, out MonoBehaviour mapped))
+            {
+                return mapped;
+            }
+
+            return source;
+        }
+
+        public static void ClearCache()
+        {
+            s_componentMapCache.Clear();
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>

@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Proxies;
 using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Effects;
 using DV;
 using DV.CabControls;
 using DV.CabControls.Spec;
@@ -62,12 +63,15 @@ namespace CCL.Importer
             WrangleExternalInteractables(livery);
 
             UpdateLiveryShaders(livery);
+            ReplaceShaders(newFab);
 
             // Create new TrainCar script
             var newTrainCar = newFab.AddComponent<TrainCar>();
             newTrainCar.carLivery = livery;
 
             // TODO: loco params, cab
+
+            MapOtherEffects(newFab);
 
             newFab.name = livery.id;
             livery.prefab = newFab;
@@ -633,6 +637,14 @@ namespace CCL.Importer
                         newCollisionBox.size = boundBox.size;
                     }
                 }
+
+                // Setup pass through colliders.
+                var passthru = walkable.GetComponentsInChildren<TeleportArcPassThroughProxy>();
+
+                for (int i = 0; i < passthru.Length; i++)
+                {
+                    Mapper.MapComponent(passthru[i], out TeleportArcPassThrough _);
+                }
             }
 
             // [bogies]
@@ -703,8 +715,8 @@ namespace CCL.Importer
 
             // TODO: apply rear bogie config
 
-            // Setup brake glows.
             SetupBrakeGlows(newFab, frontBogie, rearBogie, baseCar);
+            SetupWheelSlideSparks(newFab, frontBogie, rearBogie);
         }
 
         private static Bogie StealBaseCarBogie(Transform carRoot, Transform newBogieTransform, Transform bogieColliderRoot,
@@ -770,6 +782,56 @@ namespace CCL.Importer
                 // Or just use the same one as the base car type.
                 brakeGlow.overheatColor.colorGradient = baseLivery.prefab.GetComponent<BrakesOverheatingController>().overheatColor.colorGradient;
             }
+        }
+
+        private static void SetupWheelSlideSparks(GameObject newFab, Bogie front, Bogie rear)
+        {
+            WheelSlideSparksControllerProxy controller = newFab.GetComponentInChildren<WheelSlideSparksControllerProxy>();
+
+            // If the prefab has no proxy component, add one anyways and use it to automatically
+            // setup the sparks, then treat it as usual.
+            if (controller == null)
+            {
+                var sparks = new GameObject(CarPartNames.WHEEL_SPARKS);
+                sparks.transform.parent = newFab.transform;
+                sparks.transform.localPosition = Vector3.zero;
+                controller = sparks.gameObject.AddComponent<WheelSlideSparksControllerProxy>();
+                controller.AutoSetupWithBogies(front.transform.Find(CarPartNames.BOGIE_CAR), rear.transform.Find(CarPartNames.BOGIE_CAR));
+            }
+
+            var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
+            temp.sparkAnchors = controller.sparkAnchors.Where(x => ProcessSparkAnchor(x, front.transform, rear.transform)).ToArray();
+            Object.Destroy(controller);
+        }
+
+        private static bool ProcessSparkAnchor(Transform anchor, Transform frontBogie, Transform rearBogie)
+        {
+            Transform parent = anchor.parent;
+
+            if (parent.parent == frontBogie || parent.parent == rearBogie)
+            {
+                return true;
+            }
+
+            // Try to reparent if the anchors are in the fake bogies.
+            if (parent.parent.name.Equals(CarPartNames.BOGIE_CAR))
+            {
+                if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_FRONT))
+                {
+                    parent.parent = frontBogie;
+                    return true;
+                }
+                if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_REAR))
+                {
+                    parent.parent = rearBogie;
+                    return true;
+                }
+
+                return false;
+            }
+
+            // Not part of a bogie, take it.
+            return true;
         }
 
         #endregion
@@ -921,6 +983,107 @@ namespace CCL.Importer
                         material.shader = EngineShader;
                     }
                 }
+            }
+        }
+
+        private static Dictionary<ShaderGrabber.GrabbableShaders, Shader> s_shaderCache = new();
+
+        private static void ReplaceShaders(GameObject newFab)
+        {
+            var replacers = newFab.GetComponentsInChildren<ShaderGrabber>();
+
+            // Process each replacer.
+            foreach (var replacer in replacers)
+            {
+                // Affect all renderers the same way.
+                foreach (var renderer in replacer.RenderersToAffect)
+                {
+                    // Affect only matching lengths.
+                    for (int i = 0; i < renderer.sharedMaterials.Length && i < replacer.ShadersToReplace.Length; i++)
+                    {
+                        if (replacer.ShadersToReplace[i] == ShaderGrabber.GrabbableShaders.DoNotReplace)
+                        {
+                            continue;
+                        }
+
+                        renderer.sharedMaterials[i].shader = GetShader(replacer.ShadersToReplace[i]);
+                    }
+                }
+
+                // No need to keep the replacer anymore.
+                Object.Destroy(replacer);
+            }
+        }
+
+        private static Shader GetShader(ShaderGrabber.GrabbableShaders shader)
+        {
+            Shader s;
+
+            if (s_shaderCache.TryGetValue(shader, out s))
+            {
+                return s;
+            }
+
+            switch (shader)
+            {
+                case ShaderGrabber.GrabbableShaders.DoNotReplace:
+                    CCLPlugin.Error("DoNotReplace shader not handled correctly!");
+                    return null!;
+                case ShaderGrabber.GrabbableShaders.TransparencyWithFog:
+                    s = Shader.Find("TransparencyWithFog");
+                    break;
+                case ShaderGrabber.GrabbableShaders.DVModularBuildings:
+                    s = Shader.Find("Derail Valley/Modular Buildings");
+                    break;
+                default:
+                    CCLPlugin.Error($"Invalid shader requested '{shader}'.");
+                    return null!;
+            }
+
+            s_shaderCache.Add(shader, s);
+            return s;
+        }
+
+        #endregion
+
+        //==============================================================================================================
+        #region Other Effects
+
+        private static void MapOtherEffects(GameObject newFab)
+        {
+            Windows(newFab);
+
+            foreach (var item in newFab.GetComponentsInChildren<InternalExternalSnapshotSwitcherProxy>())
+            {
+                Mapper.MapComponent(item, out InternalExternalSnapshotSwitcher _);
+            }
+
+            foreach (var item in newFab.GetComponentsInChildren<PlayerDistanceGameObjectsDisablerProxy>())
+            {
+                Mapper.MapComponent(item, out PlayerDistanceGameObjectsDisabler _);
+            }
+
+            // KEEP LAST
+            foreach (var item in newFab.GetComponentsInChildren<PlayerDistanceMultipleGameObjectsOptimizerProxy>())
+            {
+                Mapper.MapComponent(item, out PlayerDistanceMultipleGameObjectsOptimizer _);
+            }
+        }
+
+        private static void Windows(GameObject newFab)
+        {
+            WindowProxy[] windows = newFab.GetComponentsInChildren<WindowProxy>();
+            DV.Rain.Window[] newWindows = new DV.Rain.Window[windows.Length];
+
+            for (int i = 0; i < windows.Length; i++)
+            {
+                Mapper.MapComponent(windows[i], out DV.Rain.Window temp);
+                newWindows[i] = temp;
+            }
+
+            for (int i = 0; i < windows.Length; i++)
+            {
+                newWindows[i].duplicates = windows[i].duplicates.Select(x => x.GetComponent<DV.Rain.Window>()).ToArray();
             }
         }
 
