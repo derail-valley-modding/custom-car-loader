@@ -1,4 +1,5 @@
-﻿using CCL.Importer.Proxies;
+﻿using CCL.Importer.Processing;
+using CCL.Importer.Proxies;
 using CCL.Importer.Types;
 using CCL.Types;
 using CCL.Types.Effects;
@@ -43,6 +44,10 @@ namespace CCL.Importer
 
         private static bool FinalizeLiveryPrefab(CCL_CarVariant livery)
         {
+            var processor = new ModelProcessor(livery);
+            processor.ExecuteSteps();
+            return true;
+
             CCLPlugin.Log($"Augmenting prefab for {livery.id}");
 
             // Create a modifiable copy of the prefab
