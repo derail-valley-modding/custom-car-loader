@@ -91,6 +91,8 @@ namespace CCL.Importer
             WrangleProxies(livery);
             BuildSimulationElements(livery);
 
+            // last step - clear the component cache to allow to be used by the next gameobject
+            Mapper.ClearCache();
             CCLPlugin.Log($"Finalized prefab for {livery.id}");
             return true;
         }

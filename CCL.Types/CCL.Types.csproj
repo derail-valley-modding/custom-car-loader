@@ -9,6 +9,7 @@
 	<ItemGroup>
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
+    <Reference Include="UnityEngine.AudioModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="UnityEngine.IMGUIModule" />

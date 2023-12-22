@@ -17,7 +17,7 @@ namespace CCL.Importer
         private static IMapper? _map;
         public static IMapper M => _map ??= _config.CreateMapper();
 
-        private static Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
+        private static readonly Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
 
         private static void Configure(IMapperConfigurationExpression cfg)
         {
@@ -42,7 +42,7 @@ namespace CCL.Importer
             // Make sure these maps are run LAST.
             cfg.CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
-                .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => s.scriptsToDisable.Select(x => GetMappedComponent(x))));
+                .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => s.scriptsToDisable.Select(x => GetFromCache(x))));
         }
 
         /// <summary>
@@ -67,8 +67,42 @@ namespace CCL.Importer
                 if (canReplace(source))
                 {
                     var destination = source.gameObject.AddComponent<TDestination>();
+                    s_componentMapCache.Add(source, destination);
                     M.Map(source, destination);
                     Object.Destroy(source);
+                }
+            }
+        }
+
+        public static void StoreComponentsInChildrenInCache<TSource, TDestination>(this GameObject prefab, System.Func<TSource, bool> canReplace)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            foreach (var source in prefab.GetComponentsInChildren<TSource>())
+            {
+                if (canReplace(source))
+                {
+                    var destination = source.gameObject.AddComponent<TDestination>();
+                    s_componentMapCache.Add(source, destination);
+                }
+            }
+        }
+
+        public static void ConvertFromCache<TSource, TDestination>(this GameObject prefab, System.Func<TSource, bool> canReplace)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            foreach (var source in prefab.GetComponentsInChildren<TSource>())
+            {
+                if (canReplace(source))
+                {
+                    MonoBehaviour storedValue;
+                    s_componentMapCache.TryGetValue(source, out storedValue);
+                    if (null != storedValue)
+                    {
+                        Mapper.M.Map(source, (TDestination)storedValue);
+                        GameObject.Destroy(source);
+                    }
                 }
             }
         }
@@ -87,6 +121,7 @@ namespace CCL.Importer
             where TDestination: MonoBehaviour
         {
             var destination = source.gameObject.AddComponent<TDestination>();
+            s_componentMapCache.Add(source, destination);
             M.Map(source, destination);
             Object.Destroy(source);
             return destination;
@@ -124,6 +159,7 @@ namespace CCL.Importer
             foreach (var item in destinationList)
             {
                 M.Map(item.Source, item.Destination);
+                s_componentMapCache.Add(item.Source, item.Destination);
                 Object.Destroy(item.Source);
             }
 
@@ -131,24 +167,16 @@ namespace CCL.Importer
             destination = destinationList.Select(x => x.Destination);
         }
 
-        private static Component GetMappedComponent<TSource>(TSource source)
-            where TSource : MonoBehaviour
-        {
-            // https://www.youtube.com/watch?v=rmQFcVR6vEs
-            return source.gameObject.GetComponent(M.ConfigurationProvider.GetAllTypeMaps()
-                    .First(map => map.SourceType == source.GetType()).DestinationType);
-
-            //if (s_componentMapCache.TryGetValue(source, out MonoBehaviour mapped))
-            //{
-            //    return mapped;
-            //}
-
-            //return source;
-        }
-
         public static void ClearCache()
         {
             s_componentMapCache.Clear();
+        }
+
+        internal static MonoBehaviour GetFromCache(MonoBehaviour source)
+        {
+            MonoBehaviour output = null;
+            s_componentMapCache.TryGetValue(source, out output);
+            return output;
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
