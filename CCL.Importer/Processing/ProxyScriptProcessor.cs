@@ -1,5 +1,5 @@
 ﻿using CCL.Importer.Proxies;
-using CCL.Types.Effects;
+using CCL.Types.Proxies;
 using DV;
 using DV.CabControls.Spec;
 using System;

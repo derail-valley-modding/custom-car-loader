@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Importer.Types;
 using CCL.Types;
-using CCL.Types.Effects;
+using CCL.Types.Proxies;
 using DV.ThingTypes;
 using System.Collections.Generic;
 using System.Linq;
