@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace CCL.Types.Effects
+namespace CCL.Types.Components
 {
     public class ShaderGrabber : MonoBehaviour
     {

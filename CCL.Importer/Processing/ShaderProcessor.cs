@@ -1,4 +1,4 @@
-﻿using CCL.Types.Effects;
+﻿using CCL.Types.Components;
 using DV;
 using DV.ThingTypes;
 using System.Collections.Generic;

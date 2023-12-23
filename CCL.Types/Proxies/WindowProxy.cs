@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace CCL.Types.Effects
+namespace CCL.Types.Proxies
 {
     [DisallowMultipleComponent]
     public class WindowProxy : MonoBehaviour
@@ -59,8 +59,8 @@ namespace CCL.Types.Effects
         {
             return Matrix4x4.TRS(
                 transform.TransformPoint(
-                    new Vector3((0f - sizeInMeters.x) * 0.5f * ((!mirrorX) ? 1 : (-1)),
-                    (0f - sizeInMeters.y) * 0.5f * ((!mirrorY) ? 1 : (-1)), 0f)),
+                    new Vector3((0f - sizeInMeters.x) * 0.5f * (!mirrorX ? 1 : -1),
+                    (0f - sizeInMeters.y) * 0.5f * (!mirrorY ? 1 : -1), 0f)),
                 transform.rotation * Quaternion.Euler(mirrorY ? 180 : 0, mirrorX ? 180 : 0, 0f),
                 new Vector3(sizeInMeters.x, sizeInMeters.y, 0.1f));
         }

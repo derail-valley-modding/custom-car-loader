@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CCL.Types.Effects
+namespace CCL.Types.Proxies
 {
     public class TeleportArcPassThroughProxy : MonoBehaviour
     {
