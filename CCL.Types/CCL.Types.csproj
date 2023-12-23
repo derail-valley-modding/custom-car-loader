@@ -11,9 +11,9 @@
 		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.AnimationModule" />
 		<Reference Include="UnityEngine.CoreModule" />
-		<Reference Include="UnityEngine.UI" />
-		<Reference Include="UnityEngine.IMGUIModule" />
-		<Reference Include="UnityEngine.PhysicsModule" />
+    <Reference Include="UnityEngine.IMGUIModule" />
+    <Reference Include="UnityEngine.PhysicsModule" />
+    <Reference Include="UnityEngine.UI" />
 		<Reference Include="DVLangHelper.Data" />
 	</ItemGroup>
 

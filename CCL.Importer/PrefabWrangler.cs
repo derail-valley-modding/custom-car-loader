@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Proxies;
 using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.CCLComponents;
 using CCL.Types.Effects;
 using DV;
 using DV.CabControls;
