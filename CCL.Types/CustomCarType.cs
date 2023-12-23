@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DVLangHelper.Data;
+using CCL.Types.Json;
 
 namespace CCL.Types
 {
@@ -74,7 +75,7 @@ namespace CCL.Types
                 NameTranslations = TranslationData.Default();
             }
 
-            NameTranslationJson = NameTranslations.ToJson();
+            NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
             CargoTypeJson = CargoTypes.ToJson();
         }
 
@@ -94,7 +95,8 @@ namespace CCL.Types
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
-                NameTranslations = TranslationDataExtensions.FromJson(NameTranslationJson!);
+                var items = JSONObject.FromJson<List<TranslationItem>>(NameTranslationJson);
+                NameTranslations = new TranslationData() { Items = items! };
             }
             else
             {

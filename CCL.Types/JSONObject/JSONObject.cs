@@ -286,6 +286,12 @@ namespace CCL.Types.Json
 			return obj;
 		}
 
+		public static T FromJson<T>(string val, int maxDepth = -2, bool storeExcessLevels = false, bool strict = false)
+			where T : class
+		{
+			return Create(val, maxDepth, storeExcessLevels, strict).ToObject<T>();
+		}
+
 		public JSONObject() { }
 		#region PARSE
 		public JSONObject(string str, int maxDepth = -2, bool storeExcessLevels = false, bool strict = false)
