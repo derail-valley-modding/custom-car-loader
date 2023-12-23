@@ -11,6 +11,11 @@ namespace CCL.Types.Json
 {
     partial class JSONObject
     {
+        public static string ToJson(object obj)
+        {
+            return CreateFromObject(obj).ToString();
+        }
+
         public static JSONObject CreateFromObject(object obj)
         {
             if (obj is ICollection arrayObj)

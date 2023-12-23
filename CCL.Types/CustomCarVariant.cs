@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using DVLangHelper.Data;
+using CCL.Types.Json;
 
 namespace CCL.Types
 {
@@ -57,7 +58,7 @@ namespace CCL.Types
                 };
             }
 
-            NameTranslationJson = NameTranslations.ToJson();
+            NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
         }
 
         public void ForceValidation()
@@ -69,7 +70,8 @@ namespace CCL.Types
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
-                NameTranslations = TranslationDataExtensions.FromJson(NameTranslationJson!);
+                var items = JSONObject.FromJson<List<TranslationItem>>(NameTranslationJson);
+                NameTranslations = new TranslationData() { Items = items! };
             }
             else
             {
