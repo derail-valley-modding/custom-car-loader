@@ -1,4 +1,5 @@
-﻿using CCL.Importer.Types;
+﻿using CCL.Importer.Processing;
+using CCL.Importer.Types;
 using CCL.Types;
 using DV.JObjectExtstensions;
 using Newtonsoft.Json.Linq;
@@ -121,7 +122,7 @@ namespace CCL.Importer
                 CarTypeInjector.SetupTypeLinks(carType);
 
                 // Finalize model & inject
-                if (!PrefabWrangler.FinalizeCarTypePrefabs(carType))
+                if (!FinalizeCarTypePrefabs(carType))
                 {
                     CCLPlugin.Error($"Failed to wrangle prefab for {carId}");
                     return null;
@@ -142,6 +143,26 @@ namespace CCL.Importer
                 CCLPlugin.Error($"Error loading car from {directory}:\n{ex}");
                 return null;
             }
+        }
+
+        private static bool FinalizeCarTypePrefabs(CCL_CarType carType)
+        {
+            foreach (var livery in carType.Variants)
+            {
+                if (!FinalizeLiveryPrefab(livery))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool FinalizeLiveryPrefab(CCL_CarVariant livery)
+        {
+            var processor = new ModelProcessor(livery);
+            processor.ExecuteSteps();
+            return true;
         }
     }
 }
