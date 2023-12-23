@@ -26,7 +26,7 @@ namespace CCL.Importer.Processing
         }
 
         [ImportMany]
-        private readonly IEnumerable<IModelProcessorStep>? _steps;
+        private IEnumerable<IModelProcessorStep>? _steps = new IModelProcessorStep[0];
 
         public readonly List<IModelProcessorStep> SortedSteps;
         private readonly List<IModelProcessorStep> _completedSteps;
@@ -41,7 +41,7 @@ namespace CCL.Importer.Processing
             // Fetch the base type prefab for this car
             BaseLivery = Globals.G.Types.TrainCarType_to_v2[car.BaseCarType];
 
-            var container = new CompositionContainer(_catalog, car); ;
+            var container = new CompositionContainer(_catalog, car);
             container.ComposeParts(this);
 
             SortedSteps = new List<IModelProcessorStep>(_steps);
@@ -60,6 +60,7 @@ namespace CCL.Importer.Processing
             {
                 CCLPlugin.LogVerbose($"Execute step {step.GetType().Name}");
                 step.ExecuteStep(this);
+                _completedSteps.Add(step);
             }
 
             CCLPlugin.Log($"Finalized prefab for {Car.id}");

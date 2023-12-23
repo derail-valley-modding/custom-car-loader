@@ -13,8 +13,8 @@ namespace CCL.Importer.Processing
     [Export(typeof(IModelProcessorStep))]
     internal class ExternalInteractableProcessor : ModelProcessorStep
     {
-        private static GameObject _flatbedHandbrake;
-        private static GameObject _flatbedBrakeRelease;
+        private static readonly GameObject _flatbedHandbrake;
+        private static readonly GameObject _flatbedBrakeRelease;
 
         static ExternalInteractableProcessor()
         {

@@ -6,10 +6,9 @@ using UnityEngine;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
+    [RequiresStep(typeof(BufferProcessor))]
     internal class CouplerProcessor : ModelProcessorStep
     {
-        public override Type[] RequiredSteps => new[] { typeof(BufferProcessor) };
-
         public override void ExecuteStep(ModelProcessor context)
         {
             var buffers = context.GetCompletedStep<BufferProcessor>();

@@ -15,10 +15,10 @@ using UnityEngine;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
+    [RequiresStep(typeof(ExternalInteractableProcessor))]
+    [RequiresStep(typeof(ProxyScriptProcessor))]
     internal class SimulationProcessor : ModelProcessorStep
     {
-        public override Type[] RequiredSteps => new[] { typeof(ExternalInteractableProcessor), typeof(ProxyScriptProcessor) };
-
         public override void ExecuteStep(ModelProcessor context)
         {
             var livery = context.Car;

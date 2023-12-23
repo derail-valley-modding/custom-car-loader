@@ -11,10 +11,9 @@ using UnityEngine;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
+    [RequiresStep(typeof(ColliderProcessor))]
     internal class BogieProcessor : ModelProcessorStep
     {
-        public override Type[] RequiredSteps => new[] { typeof(ColliderProcessor) };
-
         public override void ExecuteStep(ModelProcessor context)
         {
             var newFab = context.Car.prefab;
