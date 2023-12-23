@@ -21,6 +21,7 @@
 		<Reference Include="Newtonsoft.Json" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.AnimationModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="UnityEngine.IMGUIModule" />
