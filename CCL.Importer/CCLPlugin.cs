@@ -30,7 +30,6 @@ namespace CCL.Importer
             Instance = modEntry;
 
             Translations = new TranslationInjector(CCLPluginInfo.Guid);
-            PrefabWrangler.FetchInteractables();
 
             CarManager.ScanLoadedMods();
             UnityModManager.toggleModsListen += CarManager.HandleModToggled;
