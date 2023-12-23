@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CCL.Types.CCLComponents
+namespace CCL.Types.Components
 {
     public class CustomBrakeGlow : MonoBehaviour
     {
