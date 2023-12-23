@@ -1,9 +1,9 @@
-﻿using CCL.Types.Effects;
-using CCL.Types;
+﻿using CCL.Types;
 using System.Linq;
 using UnityEngine;
 using System.ComponentModel.Composition;
 using System;
+using CCL.Types.Proxies;
 
 namespace CCL.Importer.Processing
 {

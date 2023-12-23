@@ -1,6 +1,6 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
-using CCL.Types.Effects;
+using CCL.Types.Proxies.Wheels;
 using DV.Simulation.Brake;
 using DV.ThingTypes;
 using System;
