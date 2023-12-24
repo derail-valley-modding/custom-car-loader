@@ -8,7 +8,7 @@ using UnityEngine;
 namespace CCL.Importer.Proxies
 {
     [Export(typeof(IProxyReplacer))]
-    public class CabooseDeviceReplacer : ProxyReplacerBase
+    public class CabooseDeviceReplacer : IProxyReplacer
     {
         private static GameObject? _cabooseInterior;
         private static GameObject CabooseInterior =>
@@ -30,7 +30,7 @@ namespace CCL.Importer.Proxies
             Extensions.GetCached(ref _remoteAntenna, () => CabooseInterior.transform.Find(CarPartNames.CABOOSE_REMOTE_ANTENNA).gameObject);
 
 
-        public override void ReplaceProxies(GameObject prefab)
+        public void ReplaceProxies(GameObject prefab)
         {
             foreach (var cmProxy in prefab.GetComponentsInChildren<CareerManagerProxy>(true))
             {
@@ -52,6 +52,11 @@ namespace CCL.Importer.Proxies
                 newAntenna.transform.localPosition = Vector3.zero;
                 Object.Destroy(antennaProxy);
             }
+        }
+
+        public void ReplaceProxiesFromCache(GameObject prefab)
+        {
+            return;
         }
     }
 }
