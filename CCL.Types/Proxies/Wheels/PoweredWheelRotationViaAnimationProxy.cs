@@ -1,9 +1,10 @@
-﻿using System;
+﻿using CCL.Types.Json;
+using System;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
-    public class PoweredWheelRotationViaAnimationProxy : PoweredWheelRotationBaseProxy
+    public class PoweredWheelRotationViaAnimationProxy : PoweredWheelRotationBaseProxy, ICustomSerialized
     {
         [Serializable]
         public class AnimatorStartTimeOffsetPair
@@ -15,5 +16,25 @@ namespace CCL.Types.Proxies.Wheels
         }
 
         public AnimatorStartTimeOffsetPair[] animatorSetups;
+
+        [HideInInspector]
+        public string? Json;
+
+        public void OnValidate()
+        {
+            Json = JSONObject.ToJson(animatorSetups);
+        }
+
+        public void AfterImport()
+        {
+            if (Json != null)
+            {
+                animatorSetups = JSONObject.FromJson<AnimatorStartTimeOffsetPair[]>(Json);
+            }
+            else
+            {
+                animatorSetups = new AnimatorStartTimeOffsetPair[0];
+            }
+        }
     }
 }

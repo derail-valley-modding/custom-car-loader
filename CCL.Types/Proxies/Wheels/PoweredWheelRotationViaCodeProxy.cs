@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CCL.Types.Json;
+using System;
 using UnityEngine;
+using static CCL.Types.Proxies.Wheels.PoweredWheelRotationViaAnimationProxy;
 
 namespace CCL.Types.Proxies.Wheels
 {
@@ -20,5 +22,25 @@ namespace CCL.Types.Proxies.Wheels
         }
 
         public TransformRotationConfig[] additionalTransformsToRotate;
+
+        [HideInInspector]
+        public string? Json;
+
+        public void OnValidate()
+        {
+            Json = JSONObject.ToJson(additionalTransformsToRotate);
+        }
+
+        public void AfterImport()
+        {
+            if (Json != null)
+            {
+                additionalTransformsToRotate = JSONObject.FromJson<TransformRotationConfig[]>(Json);
+            }
+            else
+            {
+                additionalTransformsToRotate = new TransformRotationConfig[0];
+            }
+        }
     }
 }
