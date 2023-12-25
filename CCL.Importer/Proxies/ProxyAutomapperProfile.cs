@@ -18,7 +18,7 @@ namespace CCL.Importer.Proxies
                 foreach(var cacheMapField in attribute.FieldsFromCache)
                 {
                     map.ForMember(cacheMapField, cfg => {
-                        cfg.ConvertUsing(typeof(CacheConverter<,>));
+                        cfg.ConvertUsing(typeof(CacheConverter), cacheMapField);
                     });
                 }
             }
@@ -27,14 +27,20 @@ namespace CCL.Importer.Proxies
         {
             return from t in Assembly.GetExecutingAssembly().GetTypes()
                    from a in t.GetCustomAttributes<ProxyMapAttribute>()
-                   where t.Namespace.StartsWith("CCL.Importer.Proxies")
                    select a;
         }
     }
-    public class CacheConverter<TSourceType, TDestinationType> : IValueConverter<TSourceType, TDestinationType>
-        where TSourceType : MonoBehaviour
-        where TDestinationType : MonoBehaviour
+    public class CacheConverter : IValueConverter<object, object>
     {
-        public TDestinationType Convert(TSourceType sourceMember, ResolutionContext context) => Mapper.GetFromCache(sourceMember) as TDestinationType;
+        public object Convert(object sourceMember, ResolutionContext context)
+        {
+            if (!typeof(MonoBehaviour).IsInstanceOfType(sourceMember))
+            {
+                CCLPlugin.Warning("Attempted to map a non-monobehaviour");
+                return sourceMember;
+            }
+            var result = Mapper.GetFromCache(sourceMember as MonoBehaviour);
+            return result;
+        }
     }
 }

@@ -14,8 +14,7 @@ namespace CCL.Importer.Proxies
     public abstract class ProxyReplacer : IProxyReplacer
     {
         private bool _NeedsCache = false;
-        private IEnumerable<ProxyMapAttribute> proxyAttributesWithoutCache;
-        private IEnumerable<ProxyMapAttribute> proxyAttributesWithCache;
+        private IEnumerable<ProxyMapAttribute> proxyAttributes;
 
         protected bool NeedsCache
         {
@@ -29,29 +28,23 @@ namespace CCL.Importer.Proxies
             }
         }
         public ProxyReplacer() : base() {
-            this.proxyAttributesWithoutCache = from a in this.GetType().GetCustomAttributes<ProxyMapAttribute>()
-                                   where a.FieldsFromCache.Count() == 0
-                                   select a;
-            this.proxyAttributesWithCache = from a in this.GetType().GetCustomAttributes<ProxyMapAttribute>()
-                                            where a.FieldsFromCache.Count() > 0
-                                            select a;
-
+            this.proxyAttributes = this.GetType().GetCustomAttributes<ProxyMapAttribute>();
         }
-        public void ReplaceProxies(GameObject prefab)
+        public virtual void CacheAndReplaceProxies(GameObject prefab)
         {
-            foreach (var proxy in this.proxyAttributesWithoutCache)
-            {
-                prefab.MapComponentsInChildren(proxy.SourceType, proxy.DestinationType, proxy.Predicate);
-            }
-            foreach (var proxy in this.proxyAttributesWithCache)
+            foreach (var proxy in this.proxyAttributes)
             {
                 prefab.StoreComponentsInChildrenInCache(proxy.SourceType, proxy.DestinationType, proxy.Predicate);
             }
         }
-
-        public void ReplaceProxiesFromCache(GameObject prefab)
+        //By default, this does nothing - custom implementations might want to use this step
+        public virtual void ReplaceProxiesUncached(GameObject prefab)
         {
-            foreach (var proxy in this.proxyAttributesWithCache)
+            return;
+        }
+        public virtual void MapProxies(GameObject prefab)
+        {
+            foreach (var proxy in this.proxyAttributes)
             {
                 prefab.ConvertFromCache(proxy.SourceType, proxy.DestinationType, proxy.Predicate);
             }
