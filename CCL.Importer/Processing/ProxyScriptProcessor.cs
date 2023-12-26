@@ -17,6 +17,18 @@ namespace CCL.Importer.Processing
     {
         public override void ExecuteStep(ModelProcessor context)
         {
+
+            // Standard proxy scripts
+            if (context.Car.interiorPrefab)
+            {
+                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.interiorPrefab);
+            }
+            if (context.Car.externalInteractablesPrefab)
+            {
+                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.externalInteractablesPrefab);
+            }
+            ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.prefab);
+
             var newFab = context.Car.prefab;
             Windows(newFab);
 
@@ -36,17 +48,6 @@ namespace CCL.Importer.Processing
             {
                 Mapper.MapComponent(item, out PlayerDistanceMultipleGameObjectsOptimizer _);
             }
-
-            // Standard proxy scripts
-            if (context.Car.interiorPrefab)
-            {
-                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.interiorPrefab);
-            }
-            if (context.Car.externalInteractablesPrefab)
-            {
-                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.externalInteractablesPrefab);
-            }
-            ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.prefab);
         }
 
         private static void Windows(GameObject newFab)
