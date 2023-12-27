@@ -10,15 +10,16 @@ namespace CCL.Types.Proxies
     [DisallowMultipleComponent]
     public class WindowProxy : MonoBehaviour
     {
-        public bool simulate;
+        public bool simulate = true;
 
-        public MeshRenderer[] visuals;
+        public MeshRenderer[] visuals = new MeshRenderer[0];
 
+        // To replace with WiperProxy.
         //public Wiper[] wipers;
 
-        public WindowProxy[] duplicates;
+        public WindowProxy[] duplicates = new WindowProxy[0];
 
-        public Transform[] windowEdges;
+        public Transform[] windowEdges = new Transform[0];
 
         public Vector2 sizeInMeters;
 
@@ -33,7 +34,7 @@ namespace CCL.Types.Proxies
         //public Rigidbody rb;
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Effects.WindowProxy:SetupDuplicates", "Setup duplicates")]
+        [MethodButton("CCL.Types.Proxies.WindowProxy:SetupDuplicates", "Setup duplicates")]
         public bool buttonRender;
 
         private void OnDrawGizmosSelected()

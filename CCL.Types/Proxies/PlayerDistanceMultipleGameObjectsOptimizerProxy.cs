@@ -5,11 +5,11 @@ namespace CCL.Types.Proxies
 {
     public class PlayerDistanceMultipleGameObjectsOptimizerProxy : MonoBehaviour
     {
-        public GameObject gameObjectToCheckDistance;
+        public GameObject gameObjectToCheckDistance = null!;
 
-        public List<GameObject> gameObjectsToDisable;
+        public List<GameObject> gameObjectsToDisable = new List<GameObject>();
 
-        public List<MonoBehaviour> scriptsToDisable;
+        public List<MonoBehaviour> scriptsToDisable = new List<MonoBehaviour>();
 
         public float disableDistance = 500f;
 

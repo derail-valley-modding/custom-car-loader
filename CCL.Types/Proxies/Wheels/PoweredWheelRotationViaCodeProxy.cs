@@ -21,7 +21,7 @@ namespace CCL.Types.Proxies.Wheels
             }
         }
 
-        public TransformRotationConfig[] additionalTransformsToRotate;
+        public TransformRotationConfig[] additionalTransformsToRotate = new TransformRotationConfig[0];
 
         [HideInInspector]
         public string? Json;
@@ -36,10 +36,6 @@ namespace CCL.Types.Proxies.Wheels
             if (Json != null)
             {
                 additionalTransformsToRotate = JSONObject.FromJson<TransformRotationConfig[]>(Json);
-            }
-            else
-            {
-                additionalTransformsToRotate = new TransformRotationConfig[0];
             }
         }
     }

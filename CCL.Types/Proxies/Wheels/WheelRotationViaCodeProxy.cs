@@ -6,6 +6,6 @@ namespace CCL.Types.Proxies.Wheels
     {
         public Vector3 rotationAxis = Vector3.right;
 
-        public Transform[] transformsToRotate;
+        public Transform[] transformsToRotate = new Transform[0];
     }
 }

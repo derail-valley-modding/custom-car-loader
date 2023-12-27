@@ -151,6 +151,11 @@ namespace CCL.Importer
             s_componentMapCache.Clear();
         }
 
+        public static IEnumerable<MonoBehaviour> GetEnumerableFromCache(IEnumerable<MonoBehaviour> source)
+        {
+            return source.Select(scr => Mapper.GetFromCache(scr));
+        }
+
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
         {
             public List<TrainCarLivery> Convert(List<CustomCarVariant> sourceMember, ResolutionContext context)

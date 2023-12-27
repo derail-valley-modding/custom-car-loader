@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Wheels
 {
     public class WheelRotationViaAnimationProxy : WheelRotationBaseProxy
     {
-        public AnimatorStartTimeOffsetPair[] animatorSetups;
+        public AnimatorStartTimeOffsetPair[] animatorSetups = new AnimatorStartTimeOffsetPair[0];
 
         [HideInInspector]
         public string? Json;
@@ -21,10 +21,6 @@ namespace CCL.Types.Proxies.Wheels
             if (Json != null)
             {
                 animatorSetups = JSONObject.FromJson<AnimatorStartTimeOffsetPair[]>(Json);
-            }
-            else
-            {
-                animatorSetups = new AnimatorStartTimeOffsetPair[0];
             }
         }
     }

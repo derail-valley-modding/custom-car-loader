@@ -5,7 +5,7 @@ namespace CCL.Types.Proxies
 {
     public class PlayerDistanceGameObjectsDisablerProxy : MonoBehaviour
     {
-        public List<GameObject> optimizingGameObjects;
+        public List<GameObject> optimizingGameObjects = new List<GameObject>();
 
         public float disableDistance = 500f;
 
