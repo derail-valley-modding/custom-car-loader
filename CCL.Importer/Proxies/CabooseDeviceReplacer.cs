@@ -30,7 +30,7 @@ namespace CCL.Importer.Proxies
             Extensions.GetCached(ref _remoteAntenna, () => CabooseInterior.transform.Find(CarPartNames.CABOOSE_REMOTE_ANTENNA).gameObject);
 
 
-        public void ReplaceProxies(GameObject prefab)
+        public void ReplaceProxiesUncached(GameObject prefab)
         {
             foreach (var cmProxy in prefab.GetComponentsInChildren<CareerManagerProxy>(true))
             {
@@ -52,6 +52,16 @@ namespace CCL.Importer.Proxies
                 newAntenna.transform.localPosition = Vector3.zero;
                 Object.Destroy(antennaProxy);
             }
+        }
+
+        public void CacheAndReplaceProxies(GameObject prefab)
+        {
+            return; //Not needed
+        }
+
+        public void MapProxies(GameObject prefab)
+        {
+            return; //Not needed
         }
     }
 }

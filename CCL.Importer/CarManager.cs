@@ -59,8 +59,8 @@ namespace CCL.Importer
                     CustomCarTypes.Add(carType);
                     loadedCount += 1;
                 }
+                Mapper.ClearCache();
             }
-
             if (loadedCount > 0)
             {
                 CCLPlugin.LogVerbose($"Loaded {loadedCount} cars from {mod.Path}");
