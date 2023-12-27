@@ -10,6 +10,7 @@
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.AnimationModule" />
+    <Reference Include="UnityEngine.AudioModule" />
 		<Reference Include="UnityEngine.CoreModule" />
     <Reference Include="UnityEngine.IMGUIModule" />
     <Reference Include="UnityEngine.PhysicsModule" />

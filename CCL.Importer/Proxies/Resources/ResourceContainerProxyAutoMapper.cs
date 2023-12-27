@@ -4,44 +4,12 @@ using System.ComponentModel.Composition;
 
 namespace CCL.Importer.Proxies.Resources
 {
-    [Export(typeof(IProxyReplacer))]
-    public class CoalContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, CoalContainerDefinition> {
-        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
-        {
-            return sourceComponent.type == ResourceContainerType.Coal;
-        }
-    }
-
-    [Export(typeof(IProxyReplacer))]
-    public class FuelContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, FuelContainerDefinition> {
-        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
-        {
-            return sourceComponent.type == ResourceContainerType.Fuel;
-        }
-    }
-
-    [Export(typeof(IProxyReplacer))]
-    public class OilContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, OilContainerDefinition>
+    [ProxyMap(typeof(ResourceContainerProxy), typeof(CoalContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Coal)]
+    [ProxyMap(typeof(ResourceContainerProxy), typeof(FuelContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Fuel)]
+    [ProxyMap(typeof(ResourceContainerProxy), typeof(OilContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Oil)]
+    [ProxyMap(typeof(ResourceContainerProxy), typeof(SandContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Sand)]
+    [ProxyMap(typeof(ResourceContainerProxy), typeof(WaterContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Water)]
+    public class CoalContainerProxyReplacer : ProxyReplacer
     {
-        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
-        {
-            return sourceComponent.type == ResourceContainerType.Oil;
-        }
-    }
-
-    [Export(typeof(IProxyReplacer))]
-    public class SandContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, SandContainerDefinition> {
-        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
-        {
-            return sourceComponent.type == ResourceContainerType.Sand;
-        }
-    }
-
-    [Export(typeof(IProxyReplacer))]
-    public class WaterContainerProxyReplacer : ProxyReplacer<ResourceContainerProxy, WaterContainerDefinition> {
-        protected override bool CanReplace(ResourceContainerProxy sourceComponent)
-        {
-            return sourceComponent.type == ResourceContainerType.Water;
-        }
     }
 }
