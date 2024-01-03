@@ -9,13 +9,13 @@ namespace CCL.Types.Proxies.Ports
 {
     public class PortIdAttribute : PropertyAttribute
     {
-        public DVPortType[] typeFilters;
+        public DVPortType[]? typeFilters;
 
-        public DVPortValueType[] valueTypeFilters;
+        public DVPortValueType[]? valueTypeFilters;
 
         public bool local;
 
-        public PortIdAttribute(DVPortType[] typeFilters = null, DVPortValueType[] valueTypeFilters = null, bool local = false)
+        public PortIdAttribute(DVPortType[]? typeFilters = null, DVPortValueType[]? valueTypeFilters = null, bool local = false)
         {
             this.typeFilters = typeFilters;
             this.valueTypeFilters = valueTypeFilters;
