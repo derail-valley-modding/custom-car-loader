@@ -10,13 +10,11 @@ using UnityEngine;
 
 namespace CCL.Creator.Editor
 {
-    [CustomPropertyDrawer(typeof(PortIdAttribute))]
-    public class PortIdEditor : PropertyDrawer
+    [CustomPropertyDrawer(typeof(PortReferenceIdAttribute))]
+    public class PortReferenceIdEditor : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var portData = (PortIdAttribute)attribute;
-            
             string? currentValue = property.stringValue;
             if (string.IsNullOrEmpty(currentValue))
             {
@@ -30,32 +28,24 @@ namespace CCL.Creator.Editor
 
             IEnumerable<GameObject> sources;
 
-            if (portData.local)
+            // otherwise we want to list ports on all parts of the car
+            string? prefabAssetPath = GetCurrentPrefabPath(component);
+            if (prefabAssetPath != null)
             {
-                // if local, only look at ports on the current prefab
-                sources = new GameObject[] { ((Component)component).transform.root.gameObject };
+                sources = GetSiblingPrefabs(prefabAssetPath);
             }
             else
             {
-                // otherwise we want to list ports on all parts of the car
-                string? prefabAssetPath = GetCurrentPrefabPath(component);
-                if (prefabAssetPath != null)
-                {
-                    sources = GetSiblingPrefabs(prefabAssetPath);
-                }
-                else
-                {
-                    var scene = EditorSceneManager.GetActiveScene();
-                    sources = scene.GetRootGameObjects();
-                }
+                var scene = EditorSceneManager.GetActiveScene();
+                sources = scene.GetRootGameObjects();
             }
 
-            var options = GetPortOptions(portData, sources);
+            var options = GetPortOptions(sources);
             int selected = options.FindIndex(p => p.ID == currentValue);
 
             if ((selected < 0) && !string.IsNullOrEmpty(currentValue))
             {
-                options.Add(new PortOption(currentValue));
+                options.Add(new PortReferenceOption(currentValue));
                 selected = options.Count - 1;
             }
 
@@ -98,68 +88,46 @@ namespace CCL.Creator.Editor
                 .Select(AssetDatabase.LoadAssetAtPath<GameObject>);
         }
 
-        private static List<PortOption> GetPortOptions(PortIdAttribute filter, IEnumerable<GameObject> sources)
+        private static List<PortReferenceOption> GetPortOptions(IEnumerable<GameObject> sources)
         {
-            var ids = new List<PortOption>
+            var ids = new List<PortReferenceOption>
             {
-                new PortOption(null, "Not Set")
+                new PortReferenceOption(null, "Not Set")
             };
 
             foreach (var source in sources)
             {
-                foreach (PortOption port in GetPortsInObject(source))
-                {
-                    if (port.MatchesType(filter.typeFilters) && port.MatchesValueType(filter.valueTypeFilters))
-                    {
-                        ids.Add(port);
-                    }
-                }
+                ids.AddRange(GetPortsInObject(source));
             }
             return ids;
         }
 
-        private static IEnumerable<PortOption> GetPortsInObject(GameObject root)
+        private static IEnumerable<PortReferenceOption> GetPortsInObject(GameObject root)
         {
             foreach (var component in root.GetComponentsInChildren<SimComponentDefinitionProxy>())
             {
-                foreach (var portDef in component.ExposedPorts)
+                foreach (var portDef in component.ExposedPortReferences)
                 {
-                    yield return new PortOption(root.name, component.ID, portDef.ID, portDef.type, portDef.valueType);
+                    yield return new PortReferenceOption(root.name, component.ID, portDef.ID);
                 }
             }
         }
 
-        private readonly struct PortOption
+        private readonly struct PortReferenceOption
         {
             public readonly string PrefabName;
             public readonly string? ID;
-            public readonly DVPortType PortType;
-            public readonly DVPortValueType PortValueType;
 
-            public PortOption(string prefabName, string compId, string portId, DVPortType portType, DVPortValueType valueType)
+            public PortReferenceOption(string prefabName, string compId, string portId)
             {
                 PrefabName = prefabName;
                 ID = $"{compId}.{portId}";
-                PortType = portType;
-                PortValueType = valueType;
             }
 
-            public PortOption(string? fullId, string prefabName = "Unknown")
+            public PortReferenceOption(string? fullId, string prefabName = "Unknown")
             {
                 PrefabName = prefabName;
                 ID = fullId;
-                PortType = DVPortType.IN;
-                PortValueType = DVPortValueType.GENERIC;
-            }
-
-            public bool MatchesType(DVPortType[]? filters)
-            {
-                return (filters == null) || (filters.Length == 0) || filters.Contains(PortType);
-            }
-
-            public bool MatchesValueType(DVPortValueType[]? filters)
-            {
-                return (filters == null) || (filters.Length == 0) || filters.Contains(PortValueType);
             }
 
             public string Description => $"{ID} ({PrefabName})";

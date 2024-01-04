@@ -46,6 +46,8 @@ namespace CCL.Importer
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
                 .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => s.scriptsToDisable.Select(x => GetFromCache(x) ?? x)));
         }
+
+        public static bool ReplaceAll<T>(T _) => true;
        
         public static void StoreComponentsInChildrenInCache<TSource, TDestination>(this GameObject prefab, System.Func<TSource, bool> canReplace)
             where TSource : MonoBehaviour

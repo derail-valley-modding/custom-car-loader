@@ -9,5 +9,7 @@ namespace CCL.Types.Proxies.Ports
         public string ID;
 
         public virtual IEnumerable<PortDefinition> ExposedPorts => Enumerable.Empty<PortDefinition>();
+
+        public virtual IEnumerable<PortReferenceDefinition> ExposedPortReferences => Enumerable.Empty<PortReferenceDefinition>();
     }
 }
