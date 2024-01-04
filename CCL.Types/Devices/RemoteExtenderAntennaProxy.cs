@@ -4,6 +4,10 @@ namespace CCL.Types.Devices
 {
     public class RemoteExtenderAntennaProxy : MonoBehaviour
     {
+        [Tooltip("Remote/loco detection distance in meters")]
+        public float Range = 2000;
+        public bool HideAntennaModel = false;
+
         // remote antenna dimensions
         private const float ANTENNA_WIDTH = 0.160f;
         private const float ANTENNA_HEIGHT = 0.056f;
@@ -17,6 +21,8 @@ namespace CCL.Types.Devices
 
         private void OnDrawGizmos()
         {
+            if (HideAntennaModel) return;
+
             Gizmos.color = Color.yellow;
             Vector3 center = new Vector3(0, ANTENNA_HEIGHT / 2, 0);
             GizmoUtil.DrawLocalPrism(transform, center, new Vector3(ANTENNA_DEPTH, ANTENNA_HEIGHT, ANTENNA_WIDTH));
