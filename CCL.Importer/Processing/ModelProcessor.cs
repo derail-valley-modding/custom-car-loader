@@ -55,6 +55,7 @@ namespace CCL.Importer.Processing
             CCLPlugin.Log($"Augmenting prefab for {Car.id}");
 
             CreateModifiablePrefabs();
+            HandleCustomSerialization();
 
             foreach (var step in SortedSteps)
             {
@@ -96,6 +97,25 @@ namespace CCL.Importer.Processing
                 ModelUtil.SetLayersRecursiveAndExclude(newInterior, DVLayer.Interactable, DVLayer.Train_Walkable);
 
                 Car.interiorPrefab = newInterior;
+            }
+        }
+
+        private void HandleCustomSerialization()
+        {
+            HandleCustomSerialization(Car.prefab);
+
+            if (Car.interiorPrefab) HandleCustomSerialization(Car.interiorPrefab);
+            if (Car.explodedInteriorPrefab) HandleCustomSerialization(Car.explodedInteriorPrefab);
+
+            if (Car.externalInteractablesPrefab) HandleCustomSerialization(Car.externalInteractablesPrefab);
+            if (Car.explodedExternalInteractablesPrefab) HandleCustomSerialization(Car.explodedExternalInteractablesPrefab);
+        }
+
+        private void HandleCustomSerialization(GameObject prefab)
+        {
+            foreach (var component in prefab.GetComponentsInChildrenByInterface<ICustomSerialized>())
+            {
+                component.AfterImport();
             }
         }
     }
