@@ -36,28 +36,27 @@ namespace CCL.Importer.Processing
 
             // If we have something that gets referenced through the simConnections decoupling mechanism - these are generally things
             // that make ports exist.
-            var hasSimConnections = livery.prefab.GetComponentsInChildren<SimComponentDefinition>().Length > 0 ||
-                livery.prefab.GetComponentsInChildren<Connection>().Length > 0 ||
-                livery.prefab.GetComponentsInChildren<PortReferenceConnection>().Length > 0;
-            if (hasSimConnections)
+            var simConnections = livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true);
+
+            if (!simConnections && (livery.prefab.GetComponentsInChildren<SimComponentDefinition>(true).Length > 0))
             {
                 AttachSimConnectionsToPrefab(livery.prefab);
             }
 
             // If we have something that can use a sim controller and don't already have a sim controller
-            var needsSimController = livery.prefab.GetComponentInChildren<SimConnectionDefinition>() ||
-                livery.prefab.GetComponentsInChildren<ASimInitializedController>().Length > 0 &&
-                !livery.prefab.GetComponentInChildren<SimController>();
+            var needsSimController = livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ||
+                livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0 &&
+                !livery.prefab.GetComponentInChildren<SimController>(true);
             if (needsSimController)
             {
                 var simController = livery.prefab.AddComponent<SimController>();
-                simController.connectionsDefinition = livery.prefab.GetComponent<SimConnectionDefinition>() ?? AttachSimConnectionsToPrefab(livery.prefab);
-                simController.otherSimControllers = livery.prefab.GetComponentsInChildren<ASimInitializedController>();
+                simController.connectionsDefinition = livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ?? AttachSimConnectionsToPrefab(livery.prefab);
+                simController.otherSimControllers = livery.prefab.GetComponentsInChildren<ASimInitializedController>(true);
             }
 
             // In the event we have a sim controller and *not* a damage controller, we need to add a dummy damage controller
-            var needsDamageController = livery.prefab.GetComponentInChildren<SimController>() &&
-                !livery.prefab.GetComponentInChildren<DamageController>();
+            var needsDamageController = livery.prefab.GetComponentInChildren<SimController>(true) &&
+                !livery.prefab.GetComponentInChildren<DamageController>(true);
             if (needsDamageController)
             {
                 AttachDummyDamageController(livery.prefab);

@@ -18,6 +18,11 @@ namespace CCL.Types.Json
 
         public static JSONObject CreateFromObject(object obj)
         {
+            if (obj == null)
+            {
+                return Null;
+            }
+
             if (obj is ICollection arrayObj)
             {
                 JSONObject result = NewArray;
@@ -92,6 +97,18 @@ namespace CCL.Types.Json
 
         private object ToObject(Type type, string name = null)
         {
+            if (IsNull)
+            {
+                if (type.IsClass || type.IsInterface || (Nullable.GetUnderlyingType(type) != null))
+                {
+                    return null;
+                }
+                else
+                {
+                    throw new JsonSerializationException(name, $"Serialized data is null, cannot convert to value type");
+                }
+            }
+
             if (typeof(IDictionary<,>).IsAssignableFrom(type))
             {
                 if (NodeType != JsonNodeType.OBJECT)
