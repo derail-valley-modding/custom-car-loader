@@ -64,7 +64,7 @@ namespace CCL.Importer
             if (!sourceType.GetTypeInheritance().Contains(typeof(MonoBehaviour)) ||
                 !destType.GetTypeInheritance().Contains(typeof(MonoBehaviour)))
             {
-                CCLPlugin.Warning("Attempted to map an unsupported type - only monobheaviours are supported");
+                CCLPlugin.Warning("Attempted to map an unsupported type - only MonoBehaviours are supported");
                 return;
             }
             foreach(MonoBehaviour source in prefab.GetComponentsInChildren(sourceType))
@@ -82,7 +82,7 @@ namespace CCL.Importer
             if (!sourceType.GetTypeInheritance().Contains(typeof(MonoBehaviour)) ||
                 !destType.GetTypeInheritance().Contains(typeof(MonoBehaviour)))
             {
-                CCLPlugin.Warning("Attempted to map an unsupported type - only monobheaviours are supported");
+                CCLPlugin.Warning("Attempted to map an unsupported type - only MonoBehaviours are supported");
                 return;
             }
             foreach (MonoBehaviour source in prefab.GetComponentsInChildren(sourceType))
@@ -140,21 +140,49 @@ namespace CCL.Importer
             s_componentMapCache.Clear();
         }
 
+        /// <summary>
+        /// Gets the mapped version of a <see cref="MonoBehaviour"/> if one has been cached.
+        /// </summary>
+        /// <param name="source">The source (usually proxy) component.</param>
+        /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, <c>null</c>.</returns>
         internal static MonoBehaviour GetFromCache(MonoBehaviour source)
         {
-            MonoBehaviour output = null;
-            s_componentMapCache.TryGetValue(source, out output);
+            s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
             return output;
         }
 
+        /// <summary>
+        /// Gets an enumerable in which each <see cref="MonoBehaviour"/> is its mapped version if one has been cached.
+        /// </summary>
+        /// <param name="source">The enumerable of source (usually proxies) components.</param>
+        /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <c>null</c> values..</returns>
         internal static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
         {
             return source.Select(scr => GetFromCache(scr));
         }
 
+        /// <summary>
+        /// Gets the mapped version of a <see cref="MonoBehaviour"/> if one has been cached.
+        /// </summary>
+        /// <param name="source">The source (usually proxy) component.</param>
+        /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, it will return instead <paramref name="source"/>.</returns>
+        internal static MonoBehaviour GetFromCacheOrSelf(MonoBehaviour source)
+        {
+            s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
+            return output ?? source;
+        }
+
+        /// <summary>
+        /// Gets an enumerable in which each <see cref="MonoBehaviour"/> is its mapped version if one has been cached.
+        /// </summary>
+        /// <param name="source">The enumerable of source (usually proxies) components.</param>
+        /// <returns>
+        /// A collection of <see cref="MonoBehaviour"/>. If there is no mapped version for a given one, it will be the original <see cref="MonoBehaviour"/>
+        /// that was in <paramref name="source"/>.
+        /// </returns>
         internal static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
         {
-            return source.Select(scr => GetFromCache(scr) ?? scr);
+            return source.Select(scr => GetFromCacheOrSelf(scr));
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
