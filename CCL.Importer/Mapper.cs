@@ -52,6 +52,17 @@ namespace CCL.Importer
             }
         }
 
+        public static void StoreComponentsInChildrenInCache<TSource, TDestination>(this GameObject prefab)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            foreach (var source in prefab.GetComponentsInChildren<TSource>())
+            {
+                var destination = source.gameObject.AddComponent<TDestination>();
+                s_componentMapCache.Add(source, destination);
+            }
+        }
+
         /// <summary>
         /// Replaces all instances of sourceType with instances of destType in prefab, after checking each one using canRplace to determine if replacement is allowed
         /// </summary>
@@ -95,6 +106,37 @@ namespace CCL.Importer
                         Mapper.M.Map(source, storedValue, sourceType, destType);
                         GameObject.Destroy(source);
                     }
+                }
+            }
+        }
+
+        public static void ConvertFromCache<TSource, TDestination>(this GameObject prefab, Predicate<MonoBehaviour> canReplace)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            foreach (MonoBehaviour source in prefab.GetComponentsInChildren<TSource>())
+            {
+                if (canReplace(source))
+                {
+                    if (s_componentMapCache.TryGetValue(source, out MonoBehaviour cached))
+                    {
+                        M.Map(source, cached);
+                        UnityEngine.Object.Destroy(source);
+                    }
+                }
+            }
+        }
+
+        public static void ConvertFromCache<TSource, TDestination>(this GameObject prefab)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            foreach (MonoBehaviour source in prefab.GetComponentsInChildren<TSource>())
+            {
+                if (s_componentMapCache.TryGetValue(source, out MonoBehaviour cached))
+                {
+                    M.Map(source, cached);
+                    UnityEngine.Object.Destroy(source);
                 }
             }
         }
