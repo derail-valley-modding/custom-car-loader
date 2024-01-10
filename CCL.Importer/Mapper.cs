@@ -197,7 +197,7 @@ namespace CCL.Importer
         /// Gets an enumerable in which each <see cref="MonoBehaviour"/> is its mapped version if one has been cached.
         /// </summary>
         /// <param name="source">The enumerable of source (usually proxies) components.</param>
-        /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <c>null</c> values..</returns>
+        /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <c>null</c> values.</returns>
         internal static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
         {
             return source.Select(scr => GetFromCache(scr));
