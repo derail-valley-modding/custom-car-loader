@@ -18,18 +18,37 @@ namespace CCL.Types.Proxies.Wheels
         public AnimatorStartTimeOffsetPair[] animatorSetups = new AnimatorStartTimeOffsetPair[0];
 
         [HideInInspector]
-        public string? Json;
+        [SerializeField]
+        private Animator[] _animators = new Animator[0];
+        [HideInInspector]
+        [SerializeField]
+        private float[] _offsets = new float[0];
 
         public void OnValidate()
         {
-            Json = JSONObject.ToJson(animatorSetups);
+            int length = animatorSetups.Length;
+            _animators = new Animator[length];
+            _offsets = new float[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                _animators[i] = animatorSetups[i].animator;
+                _offsets[i] = animatorSetups[i].startTimeOffset;
+            }
         }
 
         public void AfterImport()
         {
-            if (Json != null)
+            int length = Mathf.Min(_animators.Length, _offsets.Length);
+            animatorSetups = new AnimatorStartTimeOffsetPair[length];
+
+            for (int i = 0; i < length; i++)
             {
-                animatorSetups = JSONObject.FromJson<AnimatorStartTimeOffsetPair[]>(Json);
+                animatorSetups[i] = new AnimatorStartTimeOffsetPair()
+                {
+                    animator = _animators[i],
+                    startTimeOffset = _offsets[i]
+                };
             }
         }
     }
