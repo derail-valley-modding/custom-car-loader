@@ -43,5 +43,13 @@ namespace CCL.Types.Proxies.Controls
         public AudioClip notch;
         public AudioClip drag;
         public AudioClip limitHit;
+
+        private void OnDrawGizmos()
+        {
+            Vector3 movedOffset = transform.TransformPoint(Vector3.up * linearLimit);
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, movedOffset);
+        }
     }
 }
