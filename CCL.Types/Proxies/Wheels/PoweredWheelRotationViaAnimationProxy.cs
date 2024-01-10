@@ -10,7 +10,6 @@ namespace CCL.Types.Proxies.Wheels
         public class AnimatorStartTimeOffsetPair
         {
             public Animator animator = null!;
-
             [Range(0f, 1f)]
             public float startTimeOffset;
         }

@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
+    [ProxyMap(typeof(TeleportArcPassThroughProxy), typeof(TeleportArcPassThrough))]
+    [ProxyMap(typeof(InternalExternalSnapshotSwitcherProxy), typeof(InternalExternalSnapshotSwitcher))]
+    [ProxyMap(typeof(CargoBoundsProxy), typeof(CargoBounds))]
     [Export(typeof(IProxyReplacer))]
     internal class MiscReplacer : Profile, IProxyReplacer
     {
         public MiscReplacer()
         {
-            CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
-            CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>();
-
             CreateMap<WindowProxy, Window>()
                 .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
 

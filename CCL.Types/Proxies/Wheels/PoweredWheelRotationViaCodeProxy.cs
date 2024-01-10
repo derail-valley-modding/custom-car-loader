@@ -9,7 +9,6 @@ namespace CCL.Types.Proxies.Wheels
         public struct TransformRotationConfig
         {
             public Transform transformToRotate;
-
             public Vector3 rotationAxis;
 
             public TransformRotationConfig(Transform transformToRotate)

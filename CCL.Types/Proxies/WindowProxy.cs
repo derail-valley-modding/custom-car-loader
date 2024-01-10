@@ -11,27 +11,17 @@ namespace CCL.Types.Proxies
     public class WindowProxy : MonoBehaviour
     {
         public bool simulate = true;
-
         public MeshRenderer[] visuals = new MeshRenderer[0];
-
         // To replace with WiperProxy.
         //public Wiper[] wipers;
-
         public WindowProxy[] duplicates = new WindowProxy[0];
-
         public Transform[] windowEdges = new Transform[0];
-
         public Vector2 sizeInMeters;
-
         public bool useBakedUVs;
-
         public bool mirrorX;
-
         public bool mirrorY;
-
-        //public RenderTexture dropletRenderingTexture;
-
-        //public Rigidbody rb;
+        public RenderTexture dropletRenderingTexture;
+        public Rigidbody rb;
 
         [RenderMethodButtons]
         [MethodButton("CCL.Types.Proxies.WindowProxy:SetupDuplicates", "Setup duplicates")]
