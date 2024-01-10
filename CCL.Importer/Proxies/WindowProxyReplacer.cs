@@ -3,15 +3,18 @@ using CCL.Types.Proxies;
 using DV.Rain;
 using System.ComponentModel.Composition;
 using System.Linq;
+using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
     [Export(typeof(IProxyReplacer))]
-    public class WindowReplacer : ProxyReplacer<WindowProxy, Window>
+    public class WindowReplacer : Profile
     {
-        protected override void Customize(IMappingExpression<WindowProxy, Window> cfg)
+        public WindowReplacer()
         {
-            cfg.ForMember(d => d.duplicates, o => o.MapFrom(s => s.duplicates.Select(w => Mapper.GetFromCache(w))));
+            CreateMap<WindowProxy, Window>()
+                .ForMember(d => d.duplicates, o => o.MapFrom(s => s.duplicates.Select(w => Mapper.GetFromCache(w) ?? w)))
+                .ForMember(nameof(Window.duplicates), o => o.ConvertUsing(new CacheConverter(o.DestinationMember), nameof(WindowProxy.duplicates)));
         }
     }
 }

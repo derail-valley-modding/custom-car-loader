@@ -1,7 +1,6 @@
 ﻿using CCL.Types.Json;
 using System;
 using UnityEngine;
-using static CCL.Types.Proxies.Wheels.PoweredWheelRotationViaAnimationProxy;
 
 namespace CCL.Types.Proxies.Wheels
 {

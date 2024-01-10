@@ -107,6 +107,11 @@ namespace CCL.Types.Proxies.Wheels
 
         private void OnDrawGizmosSelected()
         {
+            if (sparkAnchors == null)
+            {
+                return;
+            }
+
             Gizmos.color = Color.yellow;
 
             for (int i = 0; i < sparkAnchors.Length; i++)

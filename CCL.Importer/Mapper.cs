@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Internal;
+using CCL.Importer.Proxies;
 using CCL.Importer.Types;
 using CCL.Types;
 using CCL.Types.Proxies;
@@ -33,18 +34,6 @@ namespace CCL.Importer
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
             cfg.AddMaps(Assembly.GetExecutingAssembly());
-
-            cfg.CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
-            cfg.CreateMap<WindowProxy, DV.Rain.Window>()
-                .ForMember(x => x.duplicates, options => options.Ignore());
-            cfg.CreateMap<InternalExternalSnapshotSwitcherProxy, DV.InternalExternalSnapshotSwitcher>();
-
-            cfg.CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
-                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance));
-            // Make sure these maps are run LAST.
-            cfg.CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
-                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
-                .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => s.scriptsToDisable.Select(x => GetFromCache(x) ?? x)));
         }
 
         public static bool ReplaceAll<T>(T _) => true;
@@ -158,9 +147,14 @@ namespace CCL.Importer
             return output;
         }
 
-        public static IEnumerable<MonoBehaviour> GetEnumerableFromCache(IEnumerable<MonoBehaviour> source)
+        internal static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
         {
-            return source.Select(scr => Mapper.GetFromCache(scr));
+            return source.Select(scr => GetFromCache(scr));
+        }
+
+        internal static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
+        {
+            return source.Select(scr => GetFromCache(scr) ?? scr);
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>
