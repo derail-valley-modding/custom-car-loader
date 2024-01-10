@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
-    [ProxyMap(typeof(ExplosionModelHandlerProxy), typeof(ExplosionModelHandler))]
     [ProxyMap(typeof(ExplosionModelHandlerProxy.MaterialSwapData), typeof(ExplosionModelHandler.MaterialSwapData))]
     [ProxyMap(typeof(ExplosionModelHandlerProxy.GameObjectSwapData), typeof(ExplosionModelHandler.GameObjectSwapData))]
     [Export(typeof(IProxyReplacer))]
@@ -14,11 +13,19 @@ namespace CCL.Importer.Proxies
         public MiscPrivateReplacer()
         {
             ShouldMapField = f => f.IsPublic | f.IsPrivate;
+
+            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>();
         }
 
-        public void CacheAndReplaceProxies(GameObject prefab) { }
+        public void CacheAndReplaceProxies(GameObject prefab)
+        {
+            prefab.StoreComponentsInChildrenInCache<ExplosionModelHandlerProxy, ExplosionModelHandler>();
+        }
 
-        public void MapProxies(GameObject prefab) { }
+        public void MapProxies(GameObject prefab)
+        {
+            prefab.ConvertFromCache<ExplosionModelHandlerProxy, ExplosionModelHandler>();
+        }
 
         public void ReplaceProxiesUncached(GameObject prefab) { }
     }

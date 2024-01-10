@@ -10,22 +10,14 @@ namespace CCL.Types.Proxies
         public class MaterialSwapData
         {
             public Material swapMaterial = null!;
-
             public GameObject[] affectedGameObjects = new GameObject[0];
         }
 
         [Serializable]
         public class GameObjectSwapData
         {
-            public GameObject gameObjectToReplace;
-
-            public GameObject replacePrefab;
-
-            public GameObjectSwapData(GameObject gameObjectToReplace, GameObject replacePrefab)
-            {
-                this.gameObjectToReplace = gameObjectToReplace;
-                this.replacePrefab = replacePrefab;
-            }
+            public GameObject gameObjectToReplace = null!;
+            public GameObject replacePrefab = null!;
         }
 
         [Tooltip("All of these GameObjects will be disabled on explosion")]
@@ -38,26 +30,65 @@ namespace CCL.Types.Proxies
         public MaterialSwapData[] materialSwaps = new MaterialSwapData[0];
 
         [HideInInspector]
-        public string JsonGoSwap = string.Empty;
+        [SerializeField]
+        private Material[] mats = new Material[0];
         [HideInInspector]
-        public string JsonMatSwap = string.Empty;
+        [SerializeField]
+        private GameObject[][] affectedGos = new GameObject[0][];
+        [HideInInspector]
+        [SerializeField]
+        private GameObject[] go2replace = new GameObject[0];
+        [HideInInspector]
+        [SerializeField]
+        private GameObject[] replaceFabs = new GameObject[0];
 
         public void OnValidate()
         {
-            JsonGoSwap = JSONObject.ToJson(gameObjectSwaps);
-            JsonMatSwap = JSONObject.ToJson(materialSwaps);
+            int length = gameObjectSwaps.Length;
+            go2replace = new GameObject[length];
+            replaceFabs = new GameObject[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                go2replace[i] = gameObjectSwaps[i].gameObjectToReplace;
+                replaceFabs[i] = gameObjectSwaps[i].replacePrefab;
+            }
+
+            length = materialSwaps.Length;
+            mats = new Material[length];
+            affectedGos = new GameObject[length][];
+
+            for (int i = 0; i < length; i++)
+            {
+                mats[i] = materialSwaps[i].swapMaterial;
+                affectedGos[i] = materialSwaps[i].affectedGameObjects;
+            }
         }
 
         public void AfterImport()
         {
-            if (JsonGoSwap != null)
+            int length = Mathf.Min(go2replace.Length, replaceFabs.Length);
+            gameObjectSwaps = new GameObjectSwapData[length];
+
+            for (int i = 0; i < length; i++)
             {
-                gameObjectSwaps = JSONObject.FromJson<GameObjectSwapData[]>(JsonGoSwap);
+                gameObjectSwaps[i] = new GameObjectSwapData()
+                {
+                    gameObjectToReplace = go2replace[i],
+                    replacePrefab = replaceFabs[i]
+                };
             }
 
-            if (JsonMatSwap != null)
+            length = Mathf.Min(mats.Length, affectedGos.Length);
+            materialSwaps = new MaterialSwapData[length];
+
+            for(int i = 0;i < length; i++)
             {
-                materialSwaps = JSONObject.FromJson<MaterialSwapData[]>(JsonMatSwap);
+                materialSwaps[i] = new MaterialSwapData()
+                {
+                    swapMaterial = mats[i],
+                    affectedGameObjects = affectedGos[i]
+                };
             }
         }
     }
