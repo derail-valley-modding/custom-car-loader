@@ -30,11 +30,13 @@ namespace CCL.Importer.Processing
         {
             s_soundCache = Resources.FindObjectsOfTypeAll<AudioClip>().ToDictionary(k => k.name, v => v);
             _isCacheEmpty = false;
+
+            CCLPlugin.Log($"Sound cache created with {s_soundCache.Count} sounds.");
         }
 
         public static void ClearCache()
         {
-            s_soundCache?.Clear();
+            s_soundCache.Clear();
             _isCacheEmpty = true;
         }
 
@@ -71,11 +73,17 @@ namespace CCL.Importer.Processing
             {
                 t = grabber.ScriptToAffect.GetType();
 
+                CCLPlugin.Log($"Replacements: {grabber.Replacements.Length}");
+
                 for (int i = 0; i < grabber.Replacements.Length; i++)
                 {
                     if (SoundCache.TryGetValue(grabber.Replacements[i].SoundName, out AudioClip clip))
                     {
-                        t.GetField(grabber.Replacements[i].FieldName).SetValue(grabber.ScriptToAffect, clip);
+                        t.GetField(grabber.Replacements[i].FieldName,
+                            BindingFlags.IgnoreCase |
+                            BindingFlags.Public |
+                            BindingFlags.NonPublic |
+                            BindingFlags.Instance).SetValue(grabber.ScriptToAffect, clip);
                     }
                     else
                     {
