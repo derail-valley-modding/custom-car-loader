@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CCL.Types.Proxies
+namespace CCL.Types.Proxies.Cargo
 {
     public class CargoBoundsProxy : MonoBehaviour
     {
