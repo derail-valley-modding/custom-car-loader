@@ -1,19 +1,20 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies;
+using CCL.Types.Proxies.Wheels;
 using DV;
 using DV.Rain;
+using DV.Wheels;
 using System.ComponentModel.Composition;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
-    [ProxyMap(typeof(TeleportArcPassThroughProxy), typeof(TeleportArcPassThrough))]
-    [ProxyMap(typeof(InternalExternalSnapshotSwitcherProxy), typeof(InternalExternalSnapshotSwitcher))]
     [Export(typeof(IProxyReplacer))]
     internal class MiscReplacer : Profile, IProxyReplacer
     {
         public MiscReplacer()
         {
+            CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<WindowProxy, Window>()
                 .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
 
@@ -22,6 +23,12 @@ namespace CCL.Importer.Proxies
             CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
                 .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => Mapper.GetFromCacheOrSelf(s.scriptsToDisable)));
+
+            // Types that aren't MonoBehaviours but are used in proxies.
+            CreateMap<PoweredWheelRotationViaAnimationProxy.AnimatorStartTimeOffsetPair, PoweredWheelRotationViaAnimation.AnimatorStartTimeOffsetPair>();
+            CreateMap<PoweredWheelRotationViaCodeProxy.TransformRotationConfig, TransformRotationConfig>();
+            CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
+            CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
         }
 
         public void CacheAndReplaceProxies(GameObject prefab)
