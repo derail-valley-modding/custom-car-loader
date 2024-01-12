@@ -68,6 +68,7 @@ namespace CCL.Importer.Processing
         private void ProcessSoundsOnPrefab(GameObject prefab)
         {
             Type t;
+            FieldInfo fi;
 
             foreach (SoundGrabber grabber in prefab.GetComponentsInChildren<SoundGrabber>())
             {
@@ -75,19 +76,33 @@ namespace CCL.Importer.Processing
 
                 CCLPlugin.Log($"Replacements: {grabber.Replacements.Length}");
 
-                for (int i = 0; i < grabber.Replacements.Length; i++)
+                foreach (var replacement in grabber.Replacements)
                 {
-                    if (SoundCache.TryGetValue(grabber.Replacements[i].SoundName, out AudioClip clip))
+                    if (SoundCache.TryGetValue(replacement.SoundName, out AudioClip clip))
                     {
-                        t.GetField(grabber.Replacements[i].FieldName,
-                            BindingFlags.IgnoreCase |
-                            BindingFlags.Public |
-                            BindingFlags.NonPublic |
-                            BindingFlags.Instance).SetValue(grabber.ScriptToAffect, clip);
+                        fi = t.GetField(replacement.FieldName);
+
+                        if (fi == null)
+                        {
+                            CCLPlugin.Error($"FieldInfo is null ({replacement.FieldName})");
+                            continue;
+                        }
+
+                        if (replacement.IsArray)
+                        {
+                            IList<AudioClip> clips = (IList<AudioClip>)fi.GetValue(grabber.ScriptToAffect);
+                            clips[replacement.Index] = clip;
+                            CCLPlugin.Log("FieldInfo is array.");
+                        }
+                        else
+                        {
+                            fi.SetValue(grabber.ScriptToAffect, clip);
+                            CCLPlugin.Log("FieldInfo is field.");
+                        }
                     }
                     else
                     {
-                        CCLPlugin.Error($"Could not find sound '{grabber.Replacements[i].SoundName}'!");
+                        CCLPlugin.Error($"Could not find sound '{replacement.SoundName}'!");
                     }
                 }
 

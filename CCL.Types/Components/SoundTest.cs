@@ -8,8 +8,10 @@ namespace CCL.Types.Components
         private AudioSource _source;
 
         public AudioClip TestClip;
+        public AudioClip[] TestArray;
+        public int IntField;
 
-        private void Start ()
+        private void Start()
         {
             _source = GetComponent<AudioSource>();
             _source.clip = TestClip;
