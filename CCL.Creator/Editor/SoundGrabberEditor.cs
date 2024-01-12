@@ -15,8 +15,8 @@ namespace CCL.Creator.Editor
         private SerializedProperty _script;
         private SerializedProperty _replacements;
 
-        private bool _showArray;
-        private bool _showFields;
+        private static bool s_showArray;
+        private static bool s_showFields;
 
         private void OnEnable()
         {
@@ -29,50 +29,33 @@ namespace CCL.Creator.Editor
             m_SoundGrabber = (SoundGrabber)target;
 
             EditorGUILayout.PropertyField(_script);
-            EditorGUILayout.PropertyField(_replacements);
+            //EditorGUILayout.PropertyField(_replacements);
 
             List<AudioFieldInfo> fields = GetFieldInfos(m_SoundGrabber.ScriptToAffect);
 
-            //_showArray = EditorGUILayout.Foldout(_showArray, "Replacements");
+            s_showArray = EditorGUILayout.Foldout(s_showArray, "Replacements");
 
-            //if (_showArray)
-            //{
-            //    EditorGUI.indentLevel++;
+            if (s_showArray)
+            {
+                EditorGUI.indentLevel++;
 
-            //    int length = EditorGUILayout.DelayedIntField("Size", m_SoundGrabber.Replacements.Length);
-            //    var old = m_SoundGrabber.Replacements.ToArray();
-            //    m_SoundGrabber.Replacements = new SoundGrabber.SoundReplacement[length];
+                int length = EditorGUILayout.DelayedIntField("Size", _replacements.arraySize);
+                _replacements.arraySize = length;
 
-            //    for (int i = 0; i < length; i++)
-            //    {
-            //        var replace = new SoundGrabber.SoundReplacement();
+                for (int i = 0; i < length; i++)
+                {
+                    EditorGUILayout.BeginVertical(GUI.skin.box);
+                    EditorGUILayout.LabelField($"Replacement {i}");
+                    DrawReplacement(_replacements.GetArrayElementAtIndex(i), fields);
+                    EditorGUILayout.EndVertical();
+                }
 
-            //        if (i < old.Length)
-            //        {
-            //            replace.SoundName = old[i].SoundName;
-            //            replace.FieldName = old[i].FieldName;
-            //            replace.IsArray = old[i].IsArray;
-            //            replace.Index = old[i].Index;
-            //        }
-            //        else if (old.Length > 0)
-            //        {
-            //            var last = old.Last();
-            //            replace.SoundName = last.SoundName;
-            //            replace.FieldName = last.FieldName;
-            //            replace.IsArray = last.IsArray;
-            //            replace.Index = last.Index;
-            //        }
+                EditorGUI.indentLevel--;
+            }
 
-            //        DrawReplacement(replace, i, fields);
-            //        m_SoundGrabber.Replacements[i] = replace;
-            //    }
+            s_showFields = EditorGUILayout.Foldout(s_showFields, "Script fields");
 
-            //    EditorGUI.indentLevel--;
-            //}
-
-            _showFields = EditorGUILayout.Foldout(_showFields, "Script fields");
-
-            if (_showFields)
+            if (s_showFields)
             {
                 EditorGUI.indentLevel++;
 
@@ -91,27 +74,28 @@ namespace CCL.Creator.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        private static void DrawReplacement(SoundGrabber.SoundReplacement replacement, int index, IEnumerable<AudioFieldInfo> fields)
+        private static void DrawReplacement(SerializedProperty replacement, IEnumerable<AudioFieldInfo> fields)
         {
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            EditorGUILayout.LabelField($"Replacement {index}");
+            SerializedProperty sound = replacement.FindPropertyRelative("SoundNameIndex");
+            SerializedProperty field = replacement.FindPropertyRelative("FieldName");
+            SerializedProperty array = replacement.FindPropertyRelative("IsArray");
+            SerializedProperty index = replacement.FindPropertyRelative("Index");
 
             EditorGUI.indentLevel++;
 
-            replacement.SoundName = EditorGUILayout.TextField("Sound Name", replacement.SoundName);
-            replacement.FieldName = EditorGUILayout.TextField("Field Name", replacement.FieldName);
-            replacement.IsArray = EditorGUILayout.Toggle("Is Array", replacement.IsArray);
-            GUI.enabled = replacement.IsArray;
-            replacement.Index = EditorGUILayout.IntField("Index", replacement.Index);
+            sound.intValue = EditorGUILayout.Popup("Sound Name", sound.intValue, SoundGrabber.SoundNames);
+            EditorGUILayout.PropertyField(field);
+            EditorGUILayout.PropertyField(array);
+            GUI.enabled = array.boolValue;
+            EditorGUILayout.PropertyField(index);
             GUI.enabled = true;
 
-            if (!fields.Any(x => x.Name == replacement.FieldName))
+            if (!fields.Any(x => x.Name == field.stringValue))
             {
-                EditorGUILayout.HelpBox($"Field '{replacement.FieldName}' does not exist!", MessageType.Error);
+                EditorGUILayout.HelpBox($"Field '{field.stringValue}' does not exist!", MessageType.Error);
             }
 
             EditorGUI.indentLevel--;
-            EditorGUILayout.EndVertical();
         }
 
         private static void DrawFields(IEnumerable<AudioFieldInfo> fields)

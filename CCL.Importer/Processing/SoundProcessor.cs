@@ -76,7 +76,9 @@ namespace CCL.Importer.Processing
 
                 foreach (var replacement in grabber.Replacements)
                 {
-                    if (SoundCache.TryGetValue(replacement.SoundName, out AudioClip clip))
+                    string name = SoundGrabber.SoundNames[replacement.SoundNameIndex];
+
+                    if (SoundCache.TryGetValue(name, out AudioClip clip))
                     {
                         fi = t.GetField(replacement.FieldName);
 
@@ -98,7 +100,7 @@ namespace CCL.Importer.Processing
                     }
                     else
                     {
-                        CCLPlugin.Error($"Could not find sound '{replacement.SoundName}'!");
+                        CCLPlugin.Error($"Could not find sound '{name}' (index {replacement.SoundNameIndex})!");
                     }
                 }
 

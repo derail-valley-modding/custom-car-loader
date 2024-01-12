@@ -1,16 +1,312 @@
 ﻿using CCL.Types.Json;
 using System;
 using UnityEngine;
-using static CCL.Types.Proxies.Wheels.PoweredWheelRotationViaAnimationProxy;
 
 namespace CCL.Types.Components
 {
     public class SoundGrabber : MonoBehaviour, ICustomSerialized
     {
+        public static string[] SoundNames = new string[]
+        {
+            "AirPressureExternal_01",
+            "AirPressureInternal_01",
+            "BookPageFlip_01",
+            "BookPageFlip_02",
+            "BookPageFlip_03",
+            "Boombox_ButtonSwitch_01",
+            "Boombox_CassetteInsert_01",
+            "Boombox_CassetteRemove_01",
+            "Boombox_KnobNotch_01",
+            "Boombox_KnobNotch_02",
+            "Boombox_RadioStatic_01",
+            "Boombox_TrayClose",
+            "Boombox_TrayOpen",
+            "BrakeCylinderReleaseEmpty_01",
+            "BrakeCylinderReleaseFull_01",
+            "BrakeShoes_01",
+            "BrakeShoes_02",
+            "BrakeShoes_03",
+            "BrakeShoes_04",
+            "BrakeShoesOverheated_01",
+            "ButtonClick_01_Radio",
+            "ButtonClick_02_Push",
+            "ChassisRattle_01",
+            "ChassisRattle_02",
+            "CommsRadio_Apply_01",
+            "CommsRadio_Cancel_01",
+            "CommsRadio_Confirm_01",
+            "CommsRadio_Hover_01",
+            "CommsRadio_Message_01",
+            "CommsRadio_RerailDrop_01",
+            "CommsRadio_RerailLift_01",
+            "CommsRadio_Select_01",
+            "Compressor_01",
+            "CompressorSpit_01",
+            "CompressorSpit_02",
+            "CompressorSpit_03",
+            "ContactorOff_01",
+            "ContactorOn_01",
+            "Coupler_ChainCouple_01",
+            "Coupler_ChainDrop_01",
+            "Coupler_ChainScrew_01",
+            "Coupler_ChainStore_01",
+            "Coupler_ChainTake_01",
+            "Coupler_ChainUncouple_01",
+            "Coupler_ChainUnscrew_01",
+            "Coupler_CockCloseEqualized_01",
+            "Coupler_CockOpenEqualized_01",
+            "Coupler_CockOpenToHose_01",
+            "Coupler_CockOpenToTrain_01",
+            "Coupler_HoseAttach_01",
+            "Coupler_HoseAttachPressure_01",
+            "Coupler_HoseDetach_01",
+            "Coupler_HoseDetachPressure_01",
+            "Coupler_MUAttach_01",
+            "Coupler_MUDetach_01",
+            "DashWarning_01_Bell",
+            "DashWarning_02_Buzz",
+            "DashWarning_03_BuzzMultitone",
+            "DashWarning_07_BuzzContinuous",
+            "Derailment_TerrainDrag_01",
+            "DriveShaft_03",
+            "Env-Chicken-Clucking1",
+            "Env-Chicken-Clucking2",
+            "Env-Chicken-Clucking3",
+            "Env-Chicken-Clucking4",
+            "Env-Chicken-Clucking5",
+            "Env-Chicken-Clucking6",
+            "Env-Chicken-Clucking7",
+            "Env-Chicken-Die",
+            "Env-Chicken-Pregnant1",
+            "Env-Chicken-Rooster1",
+            "Env-Chicken-Rooster2",
+            "Env-Chicken-Rooster3",
+            "Env-Chicken-Rooster4",
+            "Env-Chicken-Rooster5",
+            "Env-Collision-MetalGate7",
+            "Env-Cow-Die",
+            "Env-Cow-Moo1",
+            "Env-Cow-Moo2",
+            "Env-Cow-Moo3",
+            "Env-Cow-Moo4",
+            "Env-Goat-Bleat1",
+            "Env-Goat-Bleat2",
+            "Env-Goat-Bleat3",
+            "Env-Goat-Bleat4",
+            "Env-Goat-Bleat5",
+            "Env-Goat-Die",
+            "Env-Pig-Die",
+            "Env-Pig-Oink1",
+            "Env-Pig-Oink2",
+            "Env-Pig-Oink3",
+            "Env-Pig-Oink4",
+            "Env-Pig-Oink5",
+            "Env-Pig-Oink6",
+            "Env-Pig-Oink7",
+            "Env-Pig-Oink8",
+            "Env-Pig-Oink9",
+            "Env-Pig-Oink10",
+            "Env-Sheep-Bleat1",
+            "Env-Sheep-Bleat2",
+            "Env-Sheep-Bleat3",
+            "Env-Sheep-Die",
+            "ExplosionDebris_01",
+            "ExplosionFar_01",
+            "ExplosionMid_01",
+            "ExplosionNear_01",
+            "Fan_01",
+            "FireCrackling_01",
+            "FireCrackling_02",
+            "FluidCoupler_01",
+            "FluidCouplerExplosion_01",
+            "GearChange_01",
+            "GearChangeSpit_03",
+            "GearExplosion_01",
+            "GearGrind_02",
+            "gui_alert",
+            "gui_click",
+            "gui_hover",
+            "Horn_02_Power",
+            "Horn_LocoDE2_01",
+            "Horn_LocoDE2_01_Pulse",
+            "Horn_LocoDE6_01",
+            "Horn_LocoDE6_01_Pulse",
+            "horn_LocoDH4_01",
+            "Horn_LocoDM3_01",
+            "Hose_Plug_01",
+            "Hose_Unplug_01",
+            "ICE_Broken_01",
+            "ICE_CompressionBrake_01",
+            "ICE_FuelCutoff_01",
+            "ICE_LocoDE2_Engine_01",
+            "ICE_LocoDE2_Engine_02",
+            "ICE_LocoDE2_Idle_01",
+            "ICE_LocoDE6_Exhaust_01",
+            "ICE_LocoDH4_Engine_01",
+            "ICE_LocoDH4_Exhaust_01",
+            "ICE_LocoDH4_Idle_01",
+            "ICE_LocoDM3_Engine_01",
+            "ICE_LocoDM3_Exhaust_01",
+            "ICE_Starter_01",
+            "interface_alarm_01",
+            "interface_alert_01",
+            "interface_error_01",
+            "interface_money_01",
+            "interface_money_02",
+            "interface_print_01",
+            "interface_print_error_01",
+            "interface_win_01",
+            "Item_LanternAttach_01",
+            "Item_LanternDetach_01",
+            "Item_LanternHit_01",
+            "ItemCollision_BookHeavy_01",
+            "ItemCollision_BookLight_01",
+            "ItemCollision_BottleGlass_01",
+            "ItemCollision_BottlePlastic_03",
+            "ItemCollision_BoxCarboard_01",
+            "ItemCollision_CapPlastic_01",
+            "ItemCollision_Coal_01",
+            "ItemCollision_Coin_01",
+            "ItemCollision_Coin_02",
+            "ItemCollision_CratePlastic_01",
+            "ItemCollision_CrateWooden_01",
+            "ItemCollision_CupPlastic_01",
+            "ItemCollision_CupPlastic_02",
+            "ItemCollision_DeviceKeyboard_01",
+            "ItemCollision_DevicePlastic_01",
+            "ItemCollision_Eraser_02",
+            "ItemCollision_MetalLight_01",
+            "ItemCollision_MetalSheet_03",
+            "ItemCollision_Money_01",
+            "ItemCollision_PenPlastic_01",
+            "ItemCollision_RulerPlastic_01",
+            "ItemCollision_Wallet_01",
+            "LeverDrag_01_MetalLightGrind",
+            "LeverDrag_02_MetalLightDirt",
+            "LeverDrag_03_MetalLightGrind",
+            "LeverDrag_04_MetalLightGrind",
+            "LeverDrag_05_MetalMediumGrind",
+            "LeverDrag_06_MetalLightSqueak",
+            "LeverDrag_07_MetalHeavyLubricated",
+            "LeverDrag_08_MetalLightDirt",
+            "LeverDrag_09_MetalSqueak",
+            "LeverDrag_10_MetalSqueak",
+            "LeverLimit_01_PlasticLight",
+            "LeverLimit_03_MountLight",
+            "LeverLimit_04_MetalMedium",
+            "LeverLimit_05_MetalMedium",
+            "LeverLimit_06_MetalHeavy",
+            "LeverLimit_07_MetalSolid",
+            "LeverLimit_08_MetalLight",
+            "LeverLimit_09_Door",
+            "LeverNotch_01_Deep",
+            "LeverNotch_07_Deep",
+            "LeverNotch_08_Deep",
+            "LeverNotch_09_Tick",
+            "LeverNotch_10_Deep",
+            "LeverNotch_11_Deep",
+            "LeverNotch_12_DeepMetal",
+            "LighterClose_01",
+            "LighterFlint_01",
+            "LighterOpen_01",
+            "LocoRemote_Charging_01",
+            "LocoRemote_CoupleRange_01",
+            "LocoRemote_TurnOff_01",
+            "LocoRemote_TurnOn_01",
+            "LocoRemote_Warning_01",
+            "radio_static",
+            "Rain-Roof1",
+            "ServicePoint_Full_01_Bell",
+            "sfx_locodiesel_engine_gear_mech",
+            "Shovel_Collision_01",
+            "Shovel_Load_01",
+            "Shovel_Unload_01",
+            "Steam_AirFlow_01",
+            "Steam_AirPump_01",
+            "Steam_BellPump_01",
+            "Steam_BoilerExplosion_01",
+            "Steam_ChuffAshLoop2s_01",
+            "Steam_ChuffL_01",
+            "Steam_ChuffL_02",
+            "Steam_ChuffL_03",
+            "Steam_ChuffL_04",
+            "Steam_ChuffLoop16s_01",
+            "Steam_ChuffLoop2.67s_01",
+            "Steam_ChuffLoop3s_01",
+            "Steam_ChuffLoop4s_01",
+            "Steam_ChuffLoop5.33s_01",
+            "Steam_ChuffLoop8s_01",
+            "Steam_ChuffM_01",
+            "Steam_ChuffM_02",
+            "Steam_ChuffM_03",
+            "Steam_ChuffM_04",
+            "Steam_ChuffS_01",
+            "Steam_ChuffS_02",
+            "Steam_ChuffS_03",
+            "Steam_ChuffS_04",
+            "Steam_ChuffWaterLoop16s_01",
+            "Steam_ChuffWaterLoop2s_01",
+            "Steam_ChuffWaterLoop4s_01",
+            "Steam_CylinderCock_02",
+            "Steam_CylinderCrack_01",
+            "Steam_Dynamo_01",
+            "Steam_Injector_01",
+            "Steam_RunningGear_Grind_01",
+            "Steam_ValveGear16s_02",
+            "Steam_ValveGear4s_02",
+            "Steam_ValveGear8s_02",
+            "SteamRelease_01",
+            "Switch_02_Tick",
+            "Switch_03_Tick",
+            "Switch_04_Tick",
+            "Switch_05_Solid",
+            "Switch_06_Solid",
+            "Switch_07_Plastic",
+            "Switch_08_Electric",
+            "TEMP_wop_p51_wind",
+            "TM_Blow_01",
+            "TM_DE2_02",
+            "TM_DE6_01",
+            "TM_DE6_02",
+            "TM_DE6_03",
+            "TM_DE6_04",
+            "TM_Sparking_01",
+            "Train_Bell-DE6_01",
+            "Train_Bell-DH4_01",
+            "Train_Bell-S060_01",
+            "Train_Bell-S282_01",
+            "train_engine_layer_throttle",
+            "UI_InventoryMoney_01",
+            "UI_InventoryOut_01",
+            "watch_button",
+            "watch_notch",
+            "watch_ring",
+            "watch_ticking",
+            "WaterDump_01",
+            "WaterDump_02",
+            "Wheels_DamagedFast_01",
+            "Wheels_DamagedSlow_01",
+            "Wheels_Roll_05_Near",
+            "Wheels_Roll_06",
+            "Wheels_Roll_07_Locomotive",
+            "Wheels_Wheelslide_01",
+            "Wheels_Wheelslip_01",
+            "Wheels_Wheelslip_02",
+            "Whistle_03_Hoarse",
+            "Whistle_07_Breathy",
+            "Whistle_08_Sine",
+            "WindowGlassBreak_01",
+            "WiperGlassDry_01",
+            "WiperGlassWet_01",
+            "WiperMotor_01",
+            "WiperMotor_02",
+            "WiperWhip_01"
+        };
+
         [Serializable]
         public class SoundReplacement
         {
-            public string SoundName = string.Empty;
+            public int SoundNameIndex = 0;
             public string FieldName = string.Empty;
             public bool IsArray = false;
             public int Index = 0;
@@ -19,58 +315,17 @@ namespace CCL.Types.Components
         public MonoBehaviour ScriptToAffect = null!;
         public SoundReplacement[] Replacements = new SoundReplacement[0];
 
-        //[HideInInspector]
-        //[SerializeField]
-        //private string[] _fields = new string[0];
-        //[HideInInspector]
-        //[SerializeField]
-        //private string[] _sounds = new string[0];
-        //[HideInInspector]
-        //[SerializeField]
-        //private bool[] _arrays = new bool[0];
-        //[HideInInspector]
-        //[SerializeField]
-        //private int[] _index = new int[0];
-
         [HideInInspector]
         [SerializeField]
         private string? _json;
 
         public void OnValidate()
         {
-            //int length = Replacements.Length;
-            //_fields = new string[length];
-            //_sounds = new string[length];
-            //_arrays = new bool[length];
-            //_index = new int[length];
-
-            //for (int i = 0; i < length; i++)
-            //{
-            //    _fields[i] = Replacements[i].FieldName;
-            //    _sounds[i] = Replacements[i].SoundName;
-            //    _arrays[i] = Replacements[i].IsArray;
-            //    _index[i] = Replacements[i].Index;
-            //}
-
             _json = JSONObject.ToJson(Replacements);
         }
 
         public void AfterImport()
         {
-            //int length = Mathf.Min(_fields.Length, _sounds.Length, _arrays.Length, _index.Length);
-            //Replacements = new SoundReplacement[length];
-
-            //for (int i = 0; i < length; i++)
-            //{
-            //    Replacements[i] = new SoundReplacement()
-            //    {
-            //        FieldName = _fields[i],
-            //        SoundName = _sounds[i],
-            //        IsArray = _arrays[i],
-            //        Index = _index[i]
-            //    };
-            //}
-
             if (_json != null)
             {
                 Replacements = JSONObject.FromJson<SoundReplacement[]>(_json);
