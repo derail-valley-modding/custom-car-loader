@@ -55,7 +55,11 @@ namespace CCL.Importer.Processing
             CCLPlugin.Log($"Augmenting prefab for {Car.id}");
 
             CreateModifiablePrefabs();
-            HandleCustomSerialization();
+            
+            foreach (var prefab in Car.AllPrefabs)
+            {
+                HandleCustomSerialization(prefab);
+            }
 
             foreach (var step in SortedSteps)
             {
@@ -98,17 +102,6 @@ namespace CCL.Importer.Processing
 
                 Car.interiorPrefab = newInterior;
             }
-        }
-
-        private void HandleCustomSerialization()
-        {
-            HandleCustomSerialization(Car.prefab);
-
-            if (Car.interiorPrefab) HandleCustomSerialization(Car.interiorPrefab);
-            if (Car.explodedInteriorPrefab) HandleCustomSerialization(Car.explodedInteriorPrefab);
-
-            if (Car.externalInteractablesPrefab) HandleCustomSerialization(Car.externalInteractablesPrefab);
-            if (Car.explodedExternalInteractablesPrefab) HandleCustomSerialization(Car.explodedExternalInteractablesPrefab);
         }
 
         private void HandleCustomSerialization(GameObject prefab)
