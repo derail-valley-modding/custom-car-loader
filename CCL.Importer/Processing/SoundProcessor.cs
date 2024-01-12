@@ -74,8 +74,6 @@ namespace CCL.Importer.Processing
             {
                 t = grabber.ScriptToAffect.GetType();
 
-                CCLPlugin.Log($"Replacements: {grabber.Replacements.Length}");
-
                 foreach (var replacement in grabber.Replacements)
                 {
                     if (SoundCache.TryGetValue(replacement.SoundName, out AudioClip clip))
@@ -84,7 +82,7 @@ namespace CCL.Importer.Processing
 
                         if (fi == null)
                         {
-                            CCLPlugin.Error($"FieldInfo is null ({replacement.FieldName})");
+                            CCLPlugin.Error($"FieldInfo is null in '{prefab.name}' (field name: {replacement.FieldName}), skipping.");
                             continue;
                         }
 
@@ -92,12 +90,10 @@ namespace CCL.Importer.Processing
                         {
                             IList<AudioClip> clips = (IList<AudioClip>)fi.GetValue(grabber.ScriptToAffect);
                             clips[replacement.Index] = clip;
-                            CCLPlugin.Log("FieldInfo is array.");
                         }
                         else
                         {
                             fi.SetValue(grabber.ScriptToAffect, clip);
-                            CCLPlugin.Log("FieldInfo is field.");
                         }
                     }
                     else
