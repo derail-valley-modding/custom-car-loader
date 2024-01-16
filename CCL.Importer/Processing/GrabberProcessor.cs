@@ -71,32 +71,10 @@ namespace CCL.Importer.Processing
 
         public override void ExecuteStep(ModelProcessor context)
         {
-            ProcessSoundsOnPrefab(context.Car.prefab);
-
-            if (context.Car.externalInteractablesPrefab)
+            foreach (var prefab in context.Car.AllPrefabs)
             {
-                ProcessSoundsOnPrefab(context.Car.externalInteractablesPrefab);
+                ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
             }
-
-            if (context.Car.explodedExternalInteractablesPrefab)
-            {
-                ProcessSoundsOnPrefab(context.Car.explodedExternalInteractablesPrefab);
-            }
-
-            if (context.Car.interiorPrefab)
-            {
-                ProcessSoundsOnPrefab(context.Car.interiorPrefab);
-            }
-
-            if (context.Car.explodedInteriorPrefab)
-            {
-                ProcessSoundsOnPrefab(context.Car.explodedInteriorPrefab);
-            }
-        }
-
-        private void ProcessSoundsOnPrefab(GameObject prefab)
-        {
-            ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
         }
 
         /// <summary>
