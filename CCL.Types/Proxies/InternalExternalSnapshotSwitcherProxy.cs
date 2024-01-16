@@ -4,6 +4,6 @@ namespace CCL.Types.Proxies
 {
     public class InternalExternalSnapshotSwitcherProxy : MonoBehaviour
     {
-        public BoxCollider box;
+        public BoxCollider box = null!;
     }
 }

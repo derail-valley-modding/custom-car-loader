@@ -46,14 +46,9 @@ namespace CCL.Importer.Processing
                 foreach (var renderer in replacer.RenderersToAffect)
                 {
                     // Affect only matching lengths.
-                    for (int i = 0; i < renderer.sharedMaterials.Length && i < replacer.ShadersToReplace.Length; i++)
+                    for (int i = 0; i < replacer.ShadersToReplace.Length; i++)
                     {
-                        if (replacer.ShadersToReplace[i] == ShaderGrabber.GrabbableShaders.DoNotReplace)
-                        {
-                            continue;
-                        }
-
-                        renderer.sharedMaterials[i].shader = GetShader(replacer.ShadersToReplace[i]);
+                        renderer.sharedMaterials[replacer.ShadersToReplace[i].Index].shader = GetShader(replacer.ShadersToReplace[i].Shader);
                     }
                 }
 
@@ -62,9 +57,9 @@ namespace CCL.Importer.Processing
             }
         }
 
-        private static readonly Dictionary<ShaderGrabber.GrabbableShaders, Shader> s_shaderCache = new();
+        private static readonly Dictionary<ShaderGrabber.GrabbableShader, Shader> s_shaderCache = new();
 
-        private static Shader GetShader(ShaderGrabber.GrabbableShaders shader)
+        private static Shader GetShader(ShaderGrabber.GrabbableShader shader)
         {
             Shader s;
 
@@ -75,13 +70,10 @@ namespace CCL.Importer.Processing
 
             switch (shader)
             {
-                case ShaderGrabber.GrabbableShaders.DoNotReplace:
-                    CCLPlugin.Error("DoNotReplace shader not handled correctly!");
-                    return null!;
-                case ShaderGrabber.GrabbableShaders.TransparencyWithFog:
+                case ShaderGrabber.GrabbableShader.TransparencyWithFog:
                     s = Shader.Find("TransparencyWithFog");
                     break;
-                case ShaderGrabber.GrabbableShaders.DVModularBuildings:
+                case ShaderGrabber.GrabbableShader.DVModularBuildings:
                     s = Shader.Find("Derail Valley/Modular Buildings");
                     break;
                 default:

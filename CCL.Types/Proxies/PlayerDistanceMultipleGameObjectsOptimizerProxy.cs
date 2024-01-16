@@ -5,19 +5,12 @@ namespace CCL.Types.Proxies
 {
     public class PlayerDistanceMultipleGameObjectsOptimizerProxy : MonoBehaviour
     {
-        public GameObject gameObjectToCheckDistance;
-
-        public List<GameObject> gameObjectsToDisable;
-
-        public List<MonoBehaviour> scriptsToDisable;
-
+        public GameObject gameObjectToCheckDistance = null!;
+        public List<GameObject> gameObjectsToDisable = new List<GameObject>();
+        public List<MonoBehaviour> scriptsToDisable = new List<MonoBehaviour>();
+        // Vanilla only uses squared distance, so there's a special mapping for this
+        // field to square it. Using non squared for ease of use.
         public float disableDistance = 500f;
-
         public float checkPeriod = 2f;
-
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.DrawWireSphere(transform.position, disableDistance);
-        }
     }
 }
