@@ -60,6 +60,12 @@ namespace CCL.Types.Components
             return false;
         }
 
+        /// <summary>
+        /// The array of possible names for the replacements.
+        /// This will be shown as a popup, with the name's index
+        /// being the actual stored value.
+        /// </summary>
+        /// <returns></returns>
         public virtual string[] GetNames()
         {
             return new string[0];

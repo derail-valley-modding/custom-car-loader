@@ -23,12 +23,13 @@ namespace CCL.Creator.Editor
             }
         }
 
-        private IVanillaResourceGrabber _grabber;
-        private SerializedProperty _script = null!;
-        private SerializedProperty _replacements = null!;
-
+        // Keep these global to kinda mimic Unity behaviour.
         private static bool s_showArray;
         private static bool s_showFields;
+
+        private IVanillaResourceGrabber _grabber = null!;
+        private SerializedProperty _script = null!;
+        private SerializedProperty _replacements = null!;
 
         private void OnEnable()
         {
@@ -48,43 +49,43 @@ namespace CCL.Creator.Editor
 
             if (s_showArray)
             {
-                EditorGUI.indentLevel++;
-
-                int length = EditorGUILayout.DelayedIntField("Size", _replacements.arraySize);
-                _replacements.arraySize = length;
-
-                for (int i = 0; i < length; i++)
+                using (new EditorGUI.IndentLevelScope())
                 {
-                    EditorGUILayout.BeginVertical(GUI.skin.box);
-                    EditorGUILayout.LabelField($"Replacement {i}");
-                    DrawReplacement(_replacements.GetArrayElementAtIndex(i), _grabber, fields);
-                    EditorGUILayout.EndVertical();
-                }
+                    // Array size changed *needs* to use a delayed field, or else the size would
+                    // change every time the user typed or erased a number, messing up the array.
+                    int length = EditorGUILayout.DelayedIntField("Size", _replacements.arraySize);
+                    _replacements.arraySize = length;
 
-                EditorGUI.indentLevel--;
+                    for (int i = 0; i < length; i++)
+                    {
+                        EditorGUILayout.BeginVertical(GUI.skin.box);
+                        EditorGUILayout.LabelField($"Replacement {i}");
+                        DrawReplacement(_replacements.GetArrayElementAtIndex(i), _grabber, fields);
+                        EditorGUILayout.EndVertical();
+                    }
+                }
             }
 
             s_showFields = EditorGUILayout.Foldout(s_showFields, "Script fields");
 
             if (s_showFields)
             {
-                EditorGUI.indentLevel++;
-
-                if (_grabber.GetScript())
+                using (new EditorGUI.IndentLevelScope())
                 {
-                    if (fields.Count() == 0)
+                    if (_grabber.GetScript())
                     {
-                        EditorGUILayout.HelpBox($"No supported fields ({_grabber.GetTypeOfResource().Name}) on script!", MessageType.Warning);
+                        if (fields.Count() == 0)
+                        {
+                            EditorGUILayout.HelpBox($"No supported fields ({_grabber.GetTypeOfResource().Name}) on script!", MessageType.Warning);
+                        }
+
+                        DrawFields(fields);
                     }
-
-                    DrawFields(fields);
+                    else
+                    {
+                        EditorGUILayout.HelpBox("No script has been assigned!", MessageType.Warning);
+                    }
                 }
-                else
-                {
-                    EditorGUILayout.HelpBox("No script has been assigned!", MessageType.Warning);
-                }
-
-                EditorGUI.indentLevel--;
             }
 
             serializedObject.ApplyModifiedProperties();
@@ -97,21 +98,21 @@ namespace CCL.Creator.Editor
             SerializedProperty array = replacement.FindPropertyRelative("IsArray");
             SerializedProperty index = replacement.FindPropertyRelative("ArrayIndex");
 
-            EditorGUI.indentLevel++;
-
-            nameI.intValue = EditorGUILayout.Popup("Replacement Name", nameI.intValue, grabber.GetNames());
-            EditorGUILayout.PropertyField(field);
-            EditorGUILayout.PropertyField(array);
-            GUI.enabled = array.boolValue;
-            EditorGUILayout.PropertyField(index);
-            GUI.enabled = true;
-
-            if (!fields.Any(x => x.Name == field.stringValue))
+            using (new EditorGUI.IndentLevelScope())
             {
-                EditorGUILayout.HelpBox($"Field '{field.stringValue}' does not exist!", MessageType.Error);
-            }
+                nameI.intValue = EditorGUILayout.Popup("Replacement Name", nameI.intValue, grabber.GetNames());
+                EditorGUILayout.PropertyField(field);
+                EditorGUILayout.PropertyField(array);
+                GUI.enabled = array.boolValue;
+                EditorGUILayout.PropertyField(index);
+                GUI.enabled = true;
 
-            EditorGUI.indentLevel--;
+                // Warn if the field does not exist.
+                if (!fields.Any(x => x.Name == field.stringValue))
+                {
+                    EditorGUILayout.HelpBox($"Field '{field.stringValue}' does not exist!", MessageType.Error);
+                }
+            }
         }
 
         private static List<AllowedFieldInfo> GetFieldInfosForScript(IVanillaResourceGrabber grabber)
@@ -127,6 +128,8 @@ namespace CCL.Creator.Editor
 
             foreach (var f in fields)
             {
+                // Find fields that support replacement, which are fields
+                // of the type or arrays and lists of the type.
                 if (f.FieldType == grabber.GetTypeOfResource())
                 {
                     infos.Add(new AllowedFieldInfo(f.Name, false));
@@ -144,12 +147,17 @@ namespace CCL.Creator.Editor
         {
             foreach (var f in fields)
             {
-                EditorGUILayout.TextField(f.IsArray ? "Array" : "Field", f.Name);
+                // Why can't we have selectable labels with their own label?
+                // Now it's a bit offset...
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(f.IsArray ? "Array" : "Field");
+                EditorGUILayout.SelectableLabel(f.Name, GUI.skin.textField, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight));
+                EditorGUILayout.EndHorizontal();
             }
         }
 
-
-
+        // Need to declare a basically empty version or the inherited classes will
+        // use the default Unity inspector.
         [CustomEditor(typeof(SoundGrabber))]
         public class SoundGrabberEditor : VanillaResourceGrabberEditor
         {
