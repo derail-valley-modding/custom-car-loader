@@ -93,13 +93,10 @@ namespace CCL.Importer.Processing
 
         public override void ExecuteStep(ModelProcessor context)
         {
-            UpdateShaders(context.Car.prefab);
-
-            if (context.Car.interiorPrefab) UpdateShaders(context.Car.interiorPrefab);
-            if (context.Car.explodedInteriorPrefab) UpdateShaders(context.Car.explodedInteriorPrefab);
-
-            if (context.Car.externalInteractablesPrefab) UpdateShaders(context.Car.externalInteractablesPrefab);
-            if (context.Car.explodedExternalInteractablesPrefab) UpdateShaders(context.Car.explodedExternalInteractablesPrefab);
+            foreach (var prefab in context.Car.AllPrefabs)
+            {
+                UpdateShaders(prefab);
+            }
         }
     }
 }
