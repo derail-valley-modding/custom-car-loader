@@ -86,18 +86,25 @@ namespace CCL.Importer.Processing
 
         private void ProcessSoundsOnPrefab(GameObject prefab)
         {
+            ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
+        }
+
+        private void ProcessGrabberOnPrefab<TGrabber, TGrabType>(GameObject prefab, CachedResource<TGrabType> cache)
+            where TGrabType : UnityEngine.Object
+            where TGrabber : VanillaResourceGrabber<TGrabType>
+        {
             Type t;
             FieldInfo fi;
 
-            foreach (SoundGrabber grabber in prefab.GetComponentsInChildren<SoundGrabber>())
+            foreach (TGrabber grabber in prefab.GetComponentsInChildren<TGrabber>())
             {
                 t = grabber.ScriptToAffect.GetType();
 
                 foreach (var replacement in grabber.Replacements)
                 {
-                    string name = SoundGrabber.SoundNames[replacement.NameIndex];
+                    string name = grabber.GetNames()[replacement.NameIndex];
 
-                    if (s_soundCache.Cache.TryGetValue(name, out AudioClip clip))
+                    if (cache.Cache.TryGetValue(name, out TGrabType grabbed))
                     {
                         fi = t.GetRuntimeField(replacement.FieldName);
 
@@ -109,17 +116,17 @@ namespace CCL.Importer.Processing
 
                         if (replacement.IsArray)
                         {
-                            IList<AudioClip> clips = (IList<AudioClip>)fi.GetValue(grabber.ScriptToAffect);
-                            clips[replacement.ArrayIndex] = clip;
+                            IList<TGrabType> array = (IList<TGrabType>)fi.GetValue(grabber.ScriptToAffect);
+                            array[replacement.ArrayIndex] = grabbed;
                         }
                         else
                         {
-                            fi.SetValue(grabber.ScriptToAffect, clip);
+                            fi.SetValue(grabber.ScriptToAffect, grabbed);
                         }
                     }
                     else
                     {
-                        CCLPlugin.Error($"Could not find sound '{name}' (index {replacement.NameIndex})!");
+                        CCLPlugin.Error($"Could not find cached key '{name}' (index {replacement.NameIndex})!");
                     }
                 }
 

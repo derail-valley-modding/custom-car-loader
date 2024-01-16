@@ -6,6 +6,7 @@ using UnityEngine;
 namespace CCL.Types.Components
 {
     public class VanillaResourceGrabber<T> : MonoBehaviour, IVanillaResourceGrabber, ICustomSerialized
+        where T : UnityEngine.Object
     {
         public Component ScriptToAffect = null!;
         public ResourceReplacement[] Replacements = new ResourceReplacement[0];
