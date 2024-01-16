@@ -8,12 +8,24 @@ using UnityEngine;
 
 namespace CCL.Creator.Editor
 {
-    [CustomEditor(typeof(SoundGrabber))]
-    internal class SoundGrabberEditor : UnityEditor.Editor
+    [CustomEditor(typeof(VanillaResourceGrabber<>))]
+    internal class VanillaResourceGrabberEditor : UnityEditor.Editor
     {
-        private SoundGrabber m_SoundGrabber;
-        private SerializedProperty _script;
-        private SerializedProperty _replacements;
+        private struct AllowedFieldInfo
+        {
+            public string Name;
+            public bool IsArray;
+
+            public AllowedFieldInfo(string name, bool isArray)
+            {
+                Name = name;
+                IsArray = isArray;
+            }
+        }
+
+        private IVanillaResourceGrabber _grabber;
+        private SerializedProperty _script = null!;
+        private SerializedProperty _replacements = null!;
 
         private static bool s_showArray;
         private static bool s_showFields;
@@ -26,12 +38,11 @@ namespace CCL.Creator.Editor
 
         public override void OnInspectorGUI()
         {
-            m_SoundGrabber = (SoundGrabber)target;
+            _grabber = (IVanillaResourceGrabber)target;
 
             EditorGUILayout.PropertyField(_script);
-            //EditorGUILayout.PropertyField(_replacements);
 
-            List<AudioFieldInfo> fields = GetFieldInfos(m_SoundGrabber.ScriptToAffect);
+            List<AllowedFieldInfo> fields = GetFieldInfosForScript(_grabber);
 
             s_showArray = EditorGUILayout.Foldout(s_showArray, "Replacements");
 
@@ -46,7 +57,7 @@ namespace CCL.Creator.Editor
                 {
                     EditorGUILayout.BeginVertical(GUI.skin.box);
                     EditorGUILayout.LabelField($"Replacement {i}");
-                    DrawReplacement(_replacements.GetArrayElementAtIndex(i), fields);
+                    DrawReplacement(_replacements.GetArrayElementAtIndex(i), _grabber, fields);
                     EditorGUILayout.EndVertical();
                 }
 
@@ -59,8 +70,13 @@ namespace CCL.Creator.Editor
             {
                 EditorGUI.indentLevel++;
 
-                if (m_SoundGrabber.ScriptToAffect)
+                if (_grabber.GetScript())
                 {
+                    if (fields.Count() == 0)
+                    {
+                        EditorGUILayout.HelpBox($"No supported fields ({_grabber.GetTypeOfResource().Name}) on script!", MessageType.Warning);
+                    }
+
                     DrawFields(fields);
                 }
                 else
@@ -74,16 +90,16 @@ namespace CCL.Creator.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        private static void DrawReplacement(SerializedProperty replacement, IEnumerable<AudioFieldInfo> fields)
+        private static void DrawReplacement(SerializedProperty replacement, IVanillaResourceGrabber grabber, IEnumerable<AllowedFieldInfo> fields)
         {
-            SerializedProperty sound = replacement.FindPropertyRelative("SoundNameIndex");
+            SerializedProperty nameI = replacement.FindPropertyRelative("NameIndex");
             SerializedProperty field = replacement.FindPropertyRelative("FieldName");
             SerializedProperty array = replacement.FindPropertyRelative("IsArray");
-            SerializedProperty index = replacement.FindPropertyRelative("Index");
+            SerializedProperty index = replacement.FindPropertyRelative("ArrayIndex");
 
             EditorGUI.indentLevel++;
 
-            sound.intValue = EditorGUILayout.Popup("Sound Name", sound.intValue, SoundGrabber.SoundNames);
+            nameI.intValue = EditorGUILayout.Popup("Replacement Name", nameI.intValue, grabber.GetNames());
             EditorGUILayout.PropertyField(field);
             EditorGUILayout.PropertyField(array);
             GUI.enabled = array.boolValue;
@@ -98,49 +114,48 @@ namespace CCL.Creator.Editor
             EditorGUI.indentLevel--;
         }
 
-        private static void DrawFields(IEnumerable<AudioFieldInfo> fields)
+        private static List<AllowedFieldInfo> GetFieldInfosForScript(IVanillaResourceGrabber grabber)
         {
-            foreach (AudioFieldInfo f in fields)
+            if (grabber.GetScript() == null)
             {
-                EditorGUILayout.TextField(f.IsArray ? "Array" : "Field", f.Name);
-            }
-        }
-
-        private static List<AudioFieldInfo> GetFieldInfos(MonoBehaviour mb)
-        {
-            if (mb == null)
-            {
-                return new List<AudioFieldInfo>();
+                return new List<AllowedFieldInfo>();
             }
 
-            Type t = mb.GetType();
-            FieldInfo[] fields = t.GetFields();
-            List<AudioFieldInfo> infos = new List<AudioFieldInfo>();
+            Type t = grabber.GetScript().GetType();
+            IEnumerable<FieldInfo> fields = t.GetRuntimeFields();
+            List<AllowedFieldInfo> infos = new List<AllowedFieldInfo>();
 
             foreach (var f in fields)
             {
-                if (f.FieldType == typeof(AudioClip))
+                if (f.FieldType == grabber.GetTypeOfResource())
                 {
-                    infos.Add(new AudioFieldInfo(f.Name, false));
+                    infos.Add(new AllowedFieldInfo(f.Name, false));
                 }
-                else if (typeof(IEnumerable<AudioClip>).IsAssignableFrom(f.FieldType))
+                else if (grabber.GetTypeOfResourceIList().IsAssignableFrom(f.FieldType))
                 {
-                    infos.Add(new AudioFieldInfo(f.Name, true));
+                    infos.Add(new AllowedFieldInfo(f.Name, true));
                 }
             }
 
             return infos;
         }
 
-        private struct AudioFieldInfo
+        private static void DrawFields(IEnumerable<AllowedFieldInfo> fields)
         {
-            public string Name;
-            public bool IsArray;
-
-            public AudioFieldInfo(string name, bool isArray)
+            foreach (var f in fields)
             {
-                Name = name;
-                IsArray = isArray;
+                EditorGUILayout.TextField(f.IsArray ? "Array" : "Field", f.Name);
+            }
+        }
+
+
+
+        [CustomEditor(typeof(SoundGrabber))]
+        public class SoundGrabberEditor : VanillaResourceGrabberEditor
+        {
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
             }
         }
     }

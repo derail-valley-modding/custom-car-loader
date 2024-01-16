@@ -1,10 +1,8 @@
-﻿using CCL.Types.Json;
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CCL.Types.Components
 {
-    public class SoundGrabber : MonoBehaviour, ICustomSerialized
+    public class SoundGrabber : VanillaResourceGrabber<AudioClip>
     {
         public static string[] SoundNames = new string[]
         {
@@ -303,33 +301,9 @@ namespace CCL.Types.Components
             "WiperWhip_01"
         };
 
-        [Serializable]
-        public class SoundReplacement
+        public override string[] GetNames()
         {
-            public int SoundNameIndex = 0;
-            public string FieldName = string.Empty;
-            public bool IsArray = false;
-            public int Index = 0;
-        }
-
-        public MonoBehaviour ScriptToAffect = null!;
-        public SoundReplacement[] Replacements = new SoundReplacement[0];
-
-        [HideInInspector]
-        [SerializeField]
-        private string? _json;
-
-        public void OnValidate()
-        {
-            _json = JSONObject.ToJson(Replacements);
-        }
-
-        public void AfterImport()
-        {
-            if (_json != null)
-            {
-                Replacements = JSONObject.FromJson<SoundReplacement[]>(_json);
-            }
+            return SoundNames;
         }
     }
 }

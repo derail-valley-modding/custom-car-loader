@@ -4,7 +4,7 @@ using System.ComponentModel.Composition;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
-    [RequiresStep(typeof(SoundProcessor))]
+    [RequiresStep(typeof(GrabberProcessor))]
     internal class ProxyScriptProcessor : ModelProcessorStep
     {
         public override void ExecuteStep(ModelProcessor context)

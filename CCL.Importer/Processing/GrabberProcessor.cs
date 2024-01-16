@@ -9,36 +9,55 @@ using UnityEngine;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
-    internal class SoundProcessor : ModelProcessorStep
+    internal class GrabberProcessor : ModelProcessorStep
     {
-        private static bool _isCacheEmpty = true;
-        private static Dictionary<string, AudioClip> s_soundCache = new Dictionary<string, AudioClip>();
-        private static Dictionary<string, AudioClip> SoundCache
+        private class CachedResource<T> where T : UnityEngine.Object
         {
-            get
-            {
-                if (_isCacheEmpty)
-                {
-                    BuildSoundCache();
-                }
+            private Dictionary<string, T>? _cachedResources = null;
 
-                return s_soundCache!;
+            public Dictionary<string, T> Cache
+            {
+                get
+                {
+                    if (_cachedResources == null)
+                    {
+                        BuildCache();
+                    }
+
+                    return _cachedResources!;
+                }
+            }
+
+            private int _expectedResources;
+
+            public CachedResource(int expectedResources)
+            {
+                _expectedResources = expectedResources;
+            }
+
+            public void BuildCache()
+            {
+                _cachedResources = Resources.FindObjectsOfTypeAll<T>().ToDictionary(k => k.name, v => v);
+
+                CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} sounds.");
+
+                if (_cachedResources.Count < SoundGrabber.SoundNames.Length)
+                {
+                    CCLPlugin.Error($"Possible miscreation of {typeof(T).Name} cache ({_cachedResources.Count}/{_expectedResources})");
+                }
+            }
+
+            public void ClearCache()
+            {
+                if (_cachedResources != null)
+                {
+                    _cachedResources.Clear();
+                    _cachedResources = null;
+                }
             }
         }
 
-        private static void BuildSoundCache()
-        {
-            s_soundCache = Resources.FindObjectsOfTypeAll<AudioClip>().ToDictionary(k => k.name, v => v);
-            _isCacheEmpty = false;
-
-            CCLPlugin.Log($"Sound cache created with {s_soundCache.Count} sounds.");
-        }
-
-        public static void ClearCache()
-        {
-            s_soundCache.Clear();
-            _isCacheEmpty = true;
-        }
+        private static CachedResource<AudioClip> s_soundCache = new CachedResource<AudioClip>(SoundGrabber.SoundNames.Length);
 
         public override void ExecuteStep(ModelProcessor context)
         {
@@ -76,11 +95,11 @@ namespace CCL.Importer.Processing
 
                 foreach (var replacement in grabber.Replacements)
                 {
-                    string name = SoundGrabber.SoundNames[replacement.SoundNameIndex];
+                    string name = SoundGrabber.SoundNames[replacement.NameIndex];
 
-                    if (SoundCache.TryGetValue(name, out AudioClip clip))
+                    if (s_soundCache.Cache.TryGetValue(name, out AudioClip clip))
                     {
-                        fi = t.GetField(replacement.FieldName);
+                        fi = t.GetRuntimeField(replacement.FieldName);
 
                         if (fi == null)
                         {
@@ -91,7 +110,7 @@ namespace CCL.Importer.Processing
                         if (replacement.IsArray)
                         {
                             IList<AudioClip> clips = (IList<AudioClip>)fi.GetValue(grabber.ScriptToAffect);
-                            clips[replacement.Index] = clip;
+                            clips[replacement.ArrayIndex] = clip;
                         }
                         else
                         {
@@ -100,7 +119,7 @@ namespace CCL.Importer.Processing
                     }
                     else
                     {
-                        CCLPlugin.Error($"Could not find sound '{name}' (index {replacement.SoundNameIndex})!");
+                        CCLPlugin.Error($"Could not find sound '{name}' (index {replacement.NameIndex})!");
                     }
                 }
 
