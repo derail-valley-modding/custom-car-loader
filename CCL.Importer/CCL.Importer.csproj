@@ -21,6 +21,7 @@
 		<Reference Include="Newtonsoft.Json" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.AnimationModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="UnityEngine.IMGUIModule" />
@@ -28,6 +29,7 @@
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="DVLangHelper.Data" />
 		<Reference Include="DVLangHelper.Runtime" />
+    <Reference Include="DV.Interaction" />
 		<Reference Include="DV.Localization" />
 		<Reference Include="DV.ThingTypes" />
 		<Reference Include="DV.Utils" />

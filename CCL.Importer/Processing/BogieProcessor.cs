@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
-using CCL.Types.Effects;
+using CCL.Types.Components;
+using CCL.Types.Proxies.Wheels;
 using DV.Simulation.Brake;
 using DV.ThingTypes;
 using System;
@@ -116,6 +117,12 @@ namespace CCL.Importer.Processing
             if (padsR)
             {
                 brakeRenderers.AddRange(padsR!.GetComponentsInChildren<Renderer>(true));
+            }
+
+            // Extra renderers (similar to how the S060, S282 and DM3 are set up).
+            if (newFab.TryGetComponent(out ExtraBrakeRenderers extraBrakeRenderers))
+            {
+                brakeRenderers.AddRange(extraBrakeRenderers.Renderers);
             }
 
             if (!brakeRenderers.Any()) return;

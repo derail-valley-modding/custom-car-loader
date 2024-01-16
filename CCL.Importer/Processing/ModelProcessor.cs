@@ -1,9 +1,7 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
 using DV;
-using DV.CabControls.Spec;
 using DV.ThingTypes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -55,6 +53,11 @@ namespace CCL.Importer.Processing
             CCLPlugin.Log($"Augmenting prefab for {Car.id}");
 
             CreateModifiablePrefabs();
+            
+            foreach (var prefab in Car.AllPrefabs)
+            {
+                HandleCustomSerialization(prefab);
+            }
 
             foreach (var step in SortedSteps)
             {
@@ -96,6 +99,14 @@ namespace CCL.Importer.Processing
                 ModelUtil.SetLayersRecursiveAndExclude(newInterior, DVLayer.Interactable, DVLayer.Train_Walkable);
 
                 Car.interiorPrefab = newInterior;
+            }
+        }
+
+        private void HandleCustomSerialization(GameObject prefab)
+        {
+            foreach (var component in prefab.GetComponentsInChildrenByInterface<ICustomSerialized>())
+            {
+                component.AfterImport();
             }
         }
     }
