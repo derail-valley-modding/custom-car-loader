@@ -26,7 +26,10 @@ namespace CCL.Types.Proxies.Controls
         public float blockAngularDrag;
 
         [Header("Lever")]
+        public CopiedLeverType copiedLeverType;
         public bool invertDirection;
+
+        public override int CopiedControlIndex => (int)copiedLeverType;
 
         [Tooltip("Optional")]
         public Transform interactionPoint;
@@ -138,5 +141,34 @@ namespace CCL.Types.Proxies.Controls
                 }
             }
         }
+
+        public override CopiedControlDescriptor[] CopiedControlData => new[]
+        {
+            null!,
+            new CopiedControlDescriptor(BaseTrainCarType.LocoShunter, "RightCluster/BrakeIndependent/C_BrakeIndependent"),
+            new CopiedControlDescriptor(BaseTrainCarType.LocoShunter, "RightCluster/BrakeTrain/C_BrakeTrain"),
+        };
+    }
+
+    public enum CopiedLeverType
+    {
+        None,
+        IndependentBrakeShunter,
+        TrainBrakeShunter,
+        ThrottleShunter,
+        ReverserShunter,
+        HornShunter,
+
+        IndependentBrakeDE6,
+        TrainBrakeDE6,
+        ThrottleDE6,
+        ReverserDE6,
+        HornDE6,
+        MainBreakerSwitchDE6,
+        EngineThrottleDE6,
+
+        ThrottleSH282,
+        LightLeverSH282,
+        SandValveSH282,
     }
 }

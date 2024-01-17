@@ -22,6 +22,11 @@ namespace CCL.Importer
 
         private static readonly Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
 
+        public static void CacheTargetComponent(MonoBehaviour source, MonoBehaviour target)
+        {
+            s_componentMapCache.Add(source, target);
+        }
+
         private static void Configure(IMapperConfigurationExpression cfg)
         {
             cfg.CreateMap<CustomCarVariant, CCL_CarVariant>()
@@ -47,7 +52,7 @@ namespace CCL.Importer
                 if (canReplace(source))
                 {
                     var destination = source.gameObject.AddComponent<TDestination>();
-                    s_componentMapCache.Add(source, destination);
+                    CacheTargetComponent(source, destination);
                 }
             }
         }
@@ -82,12 +87,33 @@ namespace CCL.Importer
             {
                 if (canReplace(source))
                 {
-                    MonoBehaviour destination = source.gameObject.AddComponent(destType) as MonoBehaviour;
-                    s_componentMapCache.Add(source, destination);
+                    MonoBehaviour destination = (MonoBehaviour)source.gameObject.AddComponent(destType);
+                    CacheTargetComponent(source, destination);
                 }
             }
         }
+
+        /// <summary>
+        /// Create & cache a single proxy script
+        /// </summary>
+        /// <returns>The newly created target script or null in case of error</returns>
+        public static MonoBehaviour? CreateProxyTargetAndCache(MonoBehaviour source, Type sourceType, Type destType)
+        {
+            if (!sourceType.GetTypeInheritance().Contains(typeof(MonoBehaviour)) ||
+                !destType.GetTypeInheritance().Contains(typeof(MonoBehaviour)))
+            {
+                CCLPlugin.Warning("Attempted to map an unsupported type - only monobheaviours are supported");
+                return null;
+            }
+
+            MonoBehaviour destination = (MonoBehaviour)source.gameObject!.AddComponent(destType);
+            CacheTargetComponent(source, destination);
+            return destination;
+        }
         
+        /// <summary>
+        /// Map and delete all pre-cached scripts of specified type
+        /// </summary>
         public static void ConvertFromCache(this GameObject prefab, Type sourceType, Type destType, Predicate<MonoBehaviour> canReplace)
         {
             if (!sourceType.GetTypeInheritance().Contains(typeof(MonoBehaviour)) ||
@@ -96,7 +122,7 @@ namespace CCL.Importer
                 CCLPlugin.Warning("Attempted to map an unsupported type - only MonoBehaviours are supported");
                 return;
             }
-            foreach (MonoBehaviour source in prefab.GetComponentsInChildren(sourceType))
+            foreach (MonoBehaviour source in prefab.GetComponentsInChildren(sourceType).Cast<MonoBehaviour>())
             {
                 if (canReplace(source))
                 {
@@ -142,6 +168,28 @@ namespace CCL.Importer
         }
 
         /// <summary>
+        /// Map and delete a single pre-cached script
+        /// </summary>
+        public static MonoBehaviour? ConvertSingleFromCache(MonoBehaviour source, Type sourceType, Type destType)
+        {
+            if (!sourceType.GetTypeInheritance().Contains(typeof(MonoBehaviour)) ||
+                !destType.GetTypeInheritance().Contains(typeof(MonoBehaviour)))
+            {
+                CCLPlugin.Warning("Attempted to map an unsupported type - only monobheaviours are supported");
+                return null;
+            }
+
+            s_componentMapCache.TryGetValue(source, out MonoBehaviour storedValue);
+            if (null != storedValue && destType.IsInstanceOfType(storedValue))
+            {
+                M.Map(source, storedValue, sourceType, destType);
+                UnityEngine.Object.Destroy(source);
+                return storedValue;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Replaces TSource with TDestination using AutoMapper
         /// 
         /// Unlike MapComponentsInChildren this will only map one and targets a *source* instead of a *prefab*
@@ -155,7 +203,7 @@ namespace CCL.Importer
             where TDestination: MonoBehaviour
         {
             var destination = source.gameObject.AddComponent<TDestination>();
-            s_componentMapCache.Add(source, destination);
+            CacheTargetComponent(source, destination);
             M.Map(source, destination);
             UnityEngine.Object.Destroy(source);
             return destination;
