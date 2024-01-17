@@ -1,14 +1,4 @@
-﻿using CCL.Importer.Proxies;
-using CCL.Types.Proxies;
-using DV;
-using DV.CabControls.Spec;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using System.ComponentModel.Composition;
 
 namespace CCL.Importer.Processing
 {
@@ -17,18 +7,10 @@ namespace CCL.Importer.Processing
     {
         public override void ExecuteStep(ModelProcessor context)
         {
-            // Standard proxy scripts
-            if (context.Car.interiorPrefab)
+            foreach (var prefab in context.Car.AllPrefabs)
             {
-                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.interiorPrefab);
+                Mapper.ProcessConfigs(prefab);
             }
-
-            if (context.Car.externalInteractablesPrefab)
-            {
-                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.externalInteractablesPrefab);
-            }
-
-            ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.prefab);
         }
     }
 }

@@ -1,14 +1,20 @@
-﻿using CCL.Types.Proxies.Indicators;
+﻿using AutoMapper;
+using CCL.Types.Proxies.Indicators;
 using DV.Simulation.Ports;
 using System.ComponentModel.Composition;
 
 namespace CCL.Importer.Proxies.Indicators
 {
-    [ProxyMap(typeof(IndicatorPortReaderProxy), typeof(IndicatorPortReader))]
-    [ProxyMap(typeof(IndicatorEmissionProxy), typeof(IndicatorEmission))]
-    [ProxyMap(typeof(IndicatorGaugeProxy), typeof(IndicatorGauge))]
-    [ProxyMap(typeof(IndicatorModelChangerProxy), typeof(IndicatorModelChanger))]
-    [ProxyMap(typeof(IndicatorScalerProxy), typeof(IndicatorScaler))]
-    [ProxyMap(typeof(IndicatorSliderProxy), typeof(IndicatorSlider))]
-    public class IndicatorPortReaderReplacer : ProxyReplacer { }
+    public class IndicatorPortReaderReplacer : Profile
+    {
+        public IndicatorPortReaderReplacer()
+        {
+            CreateMap<IndicatorPortReaderProxy, IndicatorPortReader>().CacheAndProcessProxyAutomatically();
+            CreateMap<IndicatorEmissionProxy, IndicatorEmission>().CacheAndProcessProxyAutomatically();
+            CreateMap<IndicatorGaugeProxy, IndicatorGauge>().CacheAndProcessProxyAutomatically();
+            CreateMap<IndicatorModelChangerProxy, IndicatorModelChanger>().CacheAndProcessProxyAutomatically();
+            CreateMap<IndicatorScalerProxy, IndicatorScaler>().CacheAndProcessProxyAutomatically();
+            CreateMap<IndicatorSliderProxy, IndicatorSlider>().CacheAndProcessProxyAutomatically();
+        }
+    }
 }

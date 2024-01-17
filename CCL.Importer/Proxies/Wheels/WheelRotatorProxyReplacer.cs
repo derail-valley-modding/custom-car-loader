@@ -1,12 +1,18 @@
-﻿using CCL.Importer.Types;
+﻿using AutoMapper;
+using CCL.Importer.Types;
 using CCL.Types.Proxies.Wheels;
 using DV.Wheels;
 
 namespace CCL.Importer.Proxies.Wheels
 {
-    [ProxyMap(typeof(WheelRotationViaAnimationProxy), typeof(WheelRotationViaAnimation))]
-    [ProxyMap(typeof(WheelRotationViaCodeProxy), typeof(WheelRotationViaCode))]
-    [ProxyMap(typeof(PoweredWheelRotationViaAnimationProxy), typeof(PoweredWheelRotationViaAnimation))]
-    [ProxyMap(typeof(PoweredWheelRotationViaCodeProxy), typeof(PoweredWheelRotationViaCode))]
-    public class WheelRotationProxyReplacer : ProxyReplacer { }
+    public class WheelRotationProxyReplacer : Profile
+    {
+        public WheelRotationProxyReplacer()
+        {
+            CreateMap<WheelRotationViaAnimationProxy, WheelRotationViaAnimation>().CacheAndProcessProxyAutomatically();
+            CreateMap<WheelRotationViaCodeProxy, WheelRotationViaCode>().CacheAndProcessProxyAutomatically();
+            CreateMap<PoweredWheelRotationViaAnimationProxy, PoweredWheelRotationViaAnimation>().CacheAndProcessProxyAutomatically();
+            CreateMap<PoweredWheelRotationViaCodeProxy, PoweredWheelRotationViaCode>().CacheAndProcessProxyAutomatically();
+        }
+    }
 }
