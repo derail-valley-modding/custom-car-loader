@@ -1,15 +1,23 @@
-﻿using CCL.Types.Proxies.Resources;
+﻿using AutoMapper;
+using CCL.Types.Proxies.Resources;
 using LocoSim.Definitions;
-using System.ComponentModel.Composition;
 
 namespace CCL.Importer.Proxies.Resources
 {
-    [ProxyMap(typeof(ResourceContainerProxy), typeof(CoalContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Coal)]
-    [ProxyMap(typeof(ResourceContainerProxy), typeof(FuelContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Fuel)]
-    [ProxyMap(typeof(ResourceContainerProxy), typeof(OilContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Oil)]
-    [ProxyMap(typeof(ResourceContainerProxy), typeof(SandContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Sand)]
-    [ProxyMap(typeof(ResourceContainerProxy), typeof(WaterContainerDefinition), fieldToValidate: nameof(ResourceContainerProxy.type), validValue: ResourceContainerType.Water)]
-    public class CoalContainerProxyReplacer : ProxyReplacer
+    public class ResourceContainerProxyReplacer : Profile
     {
+        public ResourceContainerProxyReplacer()
+        {
+            CreateMap<ResourceContainerProxy, CoalContainerDefinition>()
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Coal);
+            CreateMap<ResourceContainerProxy, FuelContainerDefinition>()
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Fuel);
+            CreateMap<ResourceContainerProxy, OilContainerDefinition>()
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Oil);
+            CreateMap<ResourceContainerProxy, SandContainerDefinition>()
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Sand);
+            CreateMap<ResourceContainerProxy, WaterContainerDefinition>()
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Water);
+        }
     }
 }

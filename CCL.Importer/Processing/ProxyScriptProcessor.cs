@@ -1,5 +1,4 @@
-﻿using CCL.Importer.Proxies;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 
 namespace CCL.Importer.Processing
 {
@@ -9,18 +8,10 @@ namespace CCL.Importer.Processing
     {
         public override void ExecuteStep(ModelProcessor context)
         {
-            // Standard proxy scripts
-            if (context.Car.interiorPrefab)
+            foreach (var prefab in context.Car.AllPrefabs)
             {
-                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.interiorPrefab);
+                Mapper.ProcessConfigs(prefab);
             }
-
-            if (context.Car.externalInteractablesPrefab)
-            {
-                ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.externalInteractablesPrefab);
-            }
-
-            ProxyWrangler.Instance.MapProxiesOnPrefab(context.Car.prefab);
         }
     }
 }

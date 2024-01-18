@@ -4,23 +4,25 @@ using CCL.Types.Proxies.Wheels;
 using DV;
 using DV.Rain;
 using DV.Wheels;
-using System.ComponentModel.Composition;
-using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
-    [Export(typeof(IProxyReplacer))]
-    internal class MiscReplacer : Profile, IProxyReplacer
+    internal class MiscReplacer : Profile
     {
         public MiscReplacer()
         {
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<WindowProxy, Window>()
+                .AutoCacheAndMap()
                 .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
+            CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
+                .AutoCacheAndMap();
 
             CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
+                .AutoCacheAndMap()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance));
             CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
+                .AutoCacheAndMap()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
                 .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => Mapper.GetFromCacheOrSelf(s.scriptsToDisable)));
 
@@ -30,22 +32,5 @@ namespace CCL.Importer.Proxies
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
             CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
         }
-
-        public void CacheAndReplaceProxies(GameObject prefab)
-        {
-            prefab.StoreComponentsInChildrenInCache<WindowProxy, Window>();
-            prefab.StoreComponentsInChildrenInCache<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>();
-            prefab.StoreComponentsInChildrenInCache<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>();
-        }
-
-        public void MapProxies(GameObject prefab)
-        {
-            prefab.ConvertFromCache<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>();
-            prefab.ConvertFromCache<WindowProxy, Window>();
-            prefab.ConvertFromCache<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>();
-            prefab.ConvertFromCache<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>();
-        }
-
-        public void ReplaceProxiesUncached(GameObject prefab) { }
     }
 }
