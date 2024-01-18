@@ -54,6 +54,11 @@ namespace CCL.Types
         public BrakesSetup brakes;
         public DamageSetup damage;
 
+        [SerializeField, HideInInspector]
+        private string? brakesJson;
+        [SerializeField, HideInInspector]
+        private string? damageJson;
+
         public CustomCarType()
         {
             NameTranslations = new TranslationData();
@@ -77,6 +82,9 @@ namespace CCL.Types
 
             NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
             CargoTypeJson = CargoTypes.ToJson();
+
+            brakesJson = JSONObject.ToJson(brakes);
+            damageJson = JSONObject.ToJson(damage);
         }
 
         public void ForceValidation()
@@ -115,6 +123,9 @@ namespace CCL.Types
                     Entries = new List<LoadableCargoEntry>()
                 };
             }
+
+            brakes = JSONObject.FromJson<BrakesSetup>(brakesJson) ?? new BrakesSetup();
+            damage = JSONObject.FromJson<DamageSetup>(damageJson) ?? new DamageSetup();
 
             if (liveries != null)
             {

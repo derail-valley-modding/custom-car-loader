@@ -11,5 +11,10 @@ namespace CCL.Types.Proxies.Controls
     {
         public float defaultValue;
         public bool saveState;
+
+        public override IEnumerable<PortDefinition> ExposedPorts => new[]
+        {
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "EXT_IN")
+        };
     }
 }

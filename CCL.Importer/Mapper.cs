@@ -123,7 +123,8 @@ namespace CCL.Importer
                 .ForMember(c => c.carInstanceIdGenBase, o => o.MapFrom(ccl => ccl.carIdPrefix))
                 .ForMember(c => c.liveries, o => o.ConvertUsing(new LiveriesConverter()));
 
-            cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>();
+            cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>()
+                .ForMember(b => b.trainBrake, o => o.MapFrom(s => s.brakeValveType));
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
             cfg.AddMaps(Assembly.GetExecutingAssembly());
         }
