@@ -25,6 +25,8 @@ namespace CCL.Importer
         private interface ICacheConfig
         {
             public void StoreComponentsInChildrenInCache(GameObject prefab);
+
+            public void ConvertFromCache(GameObject prefab);
         }
 
         private class CacheConfig<TSource, TDestination> : ICacheConfig
@@ -52,6 +54,17 @@ namespace CCL.Importer
                     {
                         var destination = source.gameObject.AddComponent<TDestination>();
                         s_componentMapCache.Add(source, destination);
+                    }
+                }
+            }
+            public void ConvertFromCache(GameObject prefab)
+            {
+                foreach (MonoBehaviour source in prefab.GetComponentsInChildren<TSource>())
+                {
+                    if (s_componentMapCache.TryGetValue(source, out MonoBehaviour cached))
+                    {
+                        M.Map(source, cached);
+                        UnityEngine.Object.Destroy(source);
                     }
                 }
             }
@@ -95,10 +108,9 @@ namespace CCL.Importer
             }
 
             // Then map all components that were created.
-            foreach (var item in s_componentMapCache)
+            foreach (var item in s_configCache)
             {
-                M.Map(item.Key, item.Value);
-                UnityEngine.Object.Destroy(item.Key);
+                item.ConvertFromCache(prefab);
             }
         }
 
