@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace CCL.Creator.Editor
 {
-    [CustomEditor(typeof(VanillaResourceGrabber<>))]
+    [CustomEditor(typeof(VanillaResourceGrabber<>), true)]
     internal class VanillaResourceGrabberEditor : UnityEditor.Editor
     {
         private struct AllowedFieldInfo
@@ -153,17 +153,6 @@ namespace CCL.Creator.Editor
                 EditorGUILayout.LabelField(f.IsArray ? "Array" : "Field");
                 EditorGUILayout.SelectableLabel(f.Name, GUI.skin.textField, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight));
                 EditorGUILayout.EndHorizontal();
-            }
-        }
-
-        // Need to declare a basically empty version or the inherited classes will
-        // use the default Unity inspector.
-        [CustomEditor(typeof(SoundGrabber))]
-        public class SoundGrabberEditor : VanillaResourceGrabberEditor
-        {
-            public override void OnInspectorGUI()
-            {
-                base.OnInspectorGUI();
             }
         }
     }
