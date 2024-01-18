@@ -13,16 +13,16 @@ namespace CCL.Importer.Proxies
         {
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<WindowProxy, Window>()
-                .CacheAndProcessProxyAutomatically()
+                .AutoCacheAndMap()
                 .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
-                .CacheAndProcessProxyAutomatically();
+                .AutoCacheAndMap();
 
             CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
-                .CacheAndProcessProxyAutomatically()
+                .AutoCacheAndMap()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance));
             CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
-                .CacheAndProcessProxyAutomatically()
+                .AutoCacheAndMap()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
                 .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => Mapper.GetFromCacheOrSelf(s.scriptsToDisable)));
 

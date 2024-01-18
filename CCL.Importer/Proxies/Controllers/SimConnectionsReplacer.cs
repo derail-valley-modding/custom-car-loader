@@ -9,7 +9,7 @@ namespace CCL.Importer.Proxies.Controllers
         public SimConnectionsReplacer()
         {
             CreateMap<SimConnectionsDefinitionProxy, SimConnectionDefinition>()
-                .CacheAndProcessProxyAutomatically()
+                .AutoCacheAndMap()
                 .ForMember("executionOrder", o => o.ConvertUsing(new CacheConverter(o.DestinationMember), "executionOrder"));
 
             CreateMap<PortConnectionProxy, Connection>();

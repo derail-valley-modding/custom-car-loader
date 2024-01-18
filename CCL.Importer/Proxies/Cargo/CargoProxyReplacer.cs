@@ -8,9 +8,9 @@ namespace CCL.Importer.Proxies.Cargo
     {
         public CargoProxyReplacer()
         {
-            CreateMap<CargoBoundsProxy, CargoBounds>().CacheAndProcessProxyAutomatically();
-            CreateMap<CargoWaterDamageProxy, CargoWaterDamage>().CacheAndProcessProxyAutomatically();
-            CreateMap<CargoReactionToDamageProxy, CargoReactionToDamage>().CacheAndProcessProxyAutomatically();
+            CreateMap<CargoBoundsProxy, CargoBounds>().AutoCacheAndMap();
+            CreateMap<CargoWaterDamageProxy, CargoWaterDamage>().AutoCacheAndMap();
+            CreateMap<CargoReactionToDamageProxy, CargoReactionToDamage>().AutoCacheAndMap();
         }
     }
 }

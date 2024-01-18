@@ -9,12 +9,12 @@ namespace CCL.Importer.Proxies.Indicators
     {
         public IndicatorPortReaderReplacer()
         {
-            CreateMap<IndicatorPortReaderProxy, IndicatorPortReader>().CacheAndProcessProxyAutomatically();
-            CreateMap<IndicatorEmissionProxy, IndicatorEmission>().CacheAndProcessProxyAutomatically();
-            CreateMap<IndicatorGaugeProxy, IndicatorGauge>().CacheAndProcessProxyAutomatically();
-            CreateMap<IndicatorModelChangerProxy, IndicatorModelChanger>().CacheAndProcessProxyAutomatically();
-            CreateMap<IndicatorScalerProxy, IndicatorScaler>().CacheAndProcessProxyAutomatically();
-            CreateMap<IndicatorSliderProxy, IndicatorSlider>().CacheAndProcessProxyAutomatically();
+            CreateMap<IndicatorPortReaderProxy, IndicatorPortReader>().AutoCacheAndMap();
+            CreateMap<IndicatorEmissionProxy, IndicatorEmission>().AutoCacheAndMap();
+            CreateMap<IndicatorGaugeProxy, IndicatorGauge>().AutoCacheAndMap();
+            CreateMap<IndicatorModelChangerProxy, IndicatorModelChanger>().AutoCacheAndMap();
+            CreateMap<IndicatorScalerProxy, IndicatorScaler>().AutoCacheAndMap();
+            CreateMap<IndicatorSliderProxy, IndicatorSlider>().AutoCacheAndMap();
         }
     }
 }

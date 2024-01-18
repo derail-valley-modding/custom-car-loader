@@ -11,21 +11,21 @@ namespace CCL.Importer.Proxies.Controls
     {
         public ControlSpecReplacer()
         {
-            CreateMap<LeverProxy, Lever>().CacheAndProcessProxyAutomatically()
+            CreateMap<LeverProxy, Lever>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
-            CreateMap<PullerProxy, Puller>().CacheAndProcessProxyAutomatically()
+            CreateMap<PullerProxy, Puller>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
-            CreateMap<RotaryProxy, Rotary>().CacheAndProcessProxyAutomatically()
+            CreateMap<RotaryProxy, Rotary>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
-            CreateMap<ToggleSwitchProxy, ToggleSwitch>().CacheAndProcessProxyAutomatically()
+            CreateMap<ToggleSwitchProxy, ToggleSwitch>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
-            CreateMap<WheelProxy, Wheel>().CacheAndProcessProxyAutomatically()
+            CreateMap<WheelProxy, Wheel>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
-            CreateMap<ButtonProxy, Button>().CacheAndProcessProxyAutomatically()
+            CreateMap<ButtonProxy, Button>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
-            CreateMap<ExternalControlDefinitionProxy, ExternalControlDefinition>().CacheAndProcessProxyAutomatically();
-            CreateMap<StaticInteractionAreaProxy, StaticInteractionArea>().CacheAndProcessProxyAutomatically();
-            CreateMap<InteractablePortFeederProxy, InteractablePortFeeder>().CacheAndProcessProxyAutomatically();
+            CreateMap<ExternalControlDefinitionProxy, ExternalControlDefinition>().AutoCacheAndMap();
+            CreateMap<StaticInteractionAreaProxy, StaticInteractionArea>().AutoCacheAndMap();
+            CreateMap<InteractablePortFeederProxy, InteractablePortFeeder>().AutoCacheAndMap();
         }
     }
 }

@@ -9,15 +9,15 @@ namespace CCL.Importer.Proxies.Resources
         public ResourceContainerProxyReplacer()
         {
             CreateMap<ResourceContainerProxy, CoalContainerDefinition>()
-                .CacheAndProcessProxyAutomatically(x => x.type == ResourceContainerType.Coal);
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Coal);
             CreateMap<ResourceContainerProxy, FuelContainerDefinition>()
-                .CacheAndProcessProxyAutomatically(x => x.type == ResourceContainerType.Fuel);
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Fuel);
             CreateMap<ResourceContainerProxy, OilContainerDefinition>()
-                .CacheAndProcessProxyAutomatically(x => x.type == ResourceContainerType.Oil);
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Oil);
             CreateMap<ResourceContainerProxy, SandContainerDefinition>()
-                .CacheAndProcessProxyAutomatically(x => x.type == ResourceContainerType.Sand);
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Sand);
             CreateMap<ResourceContainerProxy, WaterContainerDefinition>()
-                .CacheAndProcessProxyAutomatically(x => x.type == ResourceContainerType.Water);
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.Water);
         }
     }
 }

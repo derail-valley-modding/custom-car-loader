@@ -9,7 +9,7 @@ namespace CCL.Importer.Proxies
         {
             ShouldMapField = f => f.IsPublic | f.IsPrivate;
 
-            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().CacheAndProcessProxyAutomatically();
+            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
         }
     }
 }

@@ -9,10 +9,10 @@ namespace CCL.Importer.Proxies.Wheels
     {
         public WheelRotationProxyReplacer()
         {
-            CreateMap<WheelRotationViaAnimationProxy, WheelRotationViaAnimation>().CacheAndProcessProxyAutomatically();
-            CreateMap<WheelRotationViaCodeProxy, WheelRotationViaCode>().CacheAndProcessProxyAutomatically();
-            CreateMap<PoweredWheelRotationViaAnimationProxy, PoweredWheelRotationViaAnimation>().CacheAndProcessProxyAutomatically();
-            CreateMap<PoweredWheelRotationViaCodeProxy, PoweredWheelRotationViaCode>().CacheAndProcessProxyAutomatically();
+            CreateMap<WheelRotationViaAnimationProxy, WheelRotationViaAnimation>().AutoCacheAndMap();
+            CreateMap<WheelRotationViaCodeProxy, WheelRotationViaCode>().AutoCacheAndMap();
+            CreateMap<PoweredWheelRotationViaAnimationProxy, PoweredWheelRotationViaAnimation>().AutoCacheAndMap();
+            CreateMap<PoweredWheelRotationViaCodeProxy, PoweredWheelRotationViaCode>().AutoCacheAndMap();
         }
     }
 }
