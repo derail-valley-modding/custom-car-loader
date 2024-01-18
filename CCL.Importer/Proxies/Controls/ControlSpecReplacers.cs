@@ -4,20 +4,28 @@ using DV.CabControls.Spec;
 using DV.Interaction;
 using DV.Simulation.Ports;
 using LocoSim.Definitions;
-using System.ComponentModel.Composition;
 
 namespace CCL.Importer.Proxies.Controls
 {
-    [ProxyMap(typeof(LeverProxy), typeof(Lever), fieldsFromCache: new[] { nameof(LeverProxy.nonVrStaticInteractionArea) })]
-    [ProxyMap(typeof(PullerProxy), typeof(Puller), fieldsFromCache: new[] { nameof(PullerProxy.nonVrStaticInteractionArea) })]
-    [ProxyMap(typeof(RotaryProxy), typeof(Rotary), fieldsFromCache: new[] { nameof(RotaryProxy.nonVrStaticInteractionArea) })]
-    [ProxyMap(typeof(ToggleSwitchProxy), typeof(ToggleSwitch), fieldsFromCache: new[] { nameof(ToggleSwitchProxy.nonVrStaticInteractionArea) })]
-    [ProxyMap(typeof(WheelProxy), typeof(Wheel), fieldsFromCache: new[] { nameof(WheelProxy.nonVrStaticInteractionArea) })]
-    [ProxyMap(typeof(ButtonProxy), typeof(Button), fieldsFromCache: new[] { nameof(ButtonProxy.nonVrStaticInteractionArea) })]
-    [ProxyMap(typeof(ExternalControlDefinitionProxy), typeof(ExternalControlDefinition))]
-    [ProxyMap(typeof(StaticInteractionAreaProxy), typeof(StaticInteractionArea))]
-    [ProxyMap(typeof(InteractablePortFeederProxy), typeof(InteractablePortFeeder))]
-    public class ControlSpecReplacer : ProxyReplacer
+    public class ControlSpecReplacer : Profile
     {
+        public ControlSpecReplacer()
+        {
+            CreateMap<LeverProxy, Lever>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+            CreateMap<PullerProxy, Puller>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+            CreateMap<RotaryProxy, Rotary>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+            CreateMap<ToggleSwitchProxy, ToggleSwitch>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+            CreateMap<WheelProxy, Wheel>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+            CreateMap<ButtonProxy, Button>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+            CreateMap<ExternalControlDefinitionProxy, ExternalControlDefinition>().AutoCacheAndMap();
+            CreateMap<StaticInteractionAreaProxy, StaticInteractionArea>().AutoCacheAndMap();
+            CreateMap<InteractablePortFeederProxy, InteractablePortFeeder>().AutoCacheAndMap();
+        }
     }
 }

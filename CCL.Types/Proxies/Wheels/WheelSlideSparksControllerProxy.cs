@@ -11,10 +11,10 @@ namespace CCL.Types.Proxies.Wheels
     {
         private const float TRACK_GAUGE_2 = 0.76f;
 
-        public Transform[] sparkAnchors;
+        public Transform[] sparkAnchors = new Transform[0];
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Effects.WheelSlideSparksControllerProxy:AutoSetupButton", "Auto setup",
+        [MethodButton("CCL.Types.Proxies.Wheels.WheelSlideSparksControllerProxy:AutoSetupButton", "Auto setup",
             "This will auto setup contact points on the bogies. If you are only using default bogies, and no extra wheels, " +
             "you do not need to include this component at all.")]
         public bool buttonRender;
@@ -107,6 +107,11 @@ namespace CCL.Types.Proxies.Wheels
 
         private void OnDrawGizmosSelected()
         {
+            if (sparkAnchors == null)
+            {
+                return;
+            }
+
             Gizmos.color = Color.yellow;
 
             for (int i = 0; i < sparkAnchors.Length; i++)

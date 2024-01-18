@@ -28,9 +28,24 @@ namespace CCL.Creator.Editor
             // align front collider
             var frontCollider = GetFrontBogieCollider(tempPrefab);
             var frontBogie = GetFrontBogie(tempPrefab);
+            var axles = GetAxles(frontBogie);
             if (frontCollider && frontBogie)
             {
-                var frontCenter = new Vector3(0, wheelRadius, frontBogie!.localPosition.z);
+                // Bogie centre
+                float z = frontBogie!.localPosition.z;
+
+                if (!carType.UseCustomFrontBogie)
+                {
+                    // If using a vanilla bogie, get the axle distance from it.
+                    z += GetBogieOffset(carType.BaseCarType);
+                }
+                else if (axles.Length > 0)
+                {
+                    // Otherwise, get the frontmost axle for this bogie.
+                    z = axles.Last().position.z;
+                }
+
+                var frontCenter = new Vector3(0, wheelRadius, z);
                 frontCollider!.center = frontCenter;
                 frontCollider.radius = wheelRadius;
             }
@@ -38,9 +53,22 @@ namespace CCL.Creator.Editor
             // align rear collider
             var rearCollider = GetRearBogieCollider(tempPrefab);
             var rearBogie = GetRearBogie(tempPrefab);
+            axles = GetAxles(rearBogie);
             if (rearCollider)
             {
-                var rearCenter = new Vector3(0, wheelRadius, rearBogie!.localPosition.z);
+                float z = rearBogie!.localPosition.z;
+
+                if (!carType.UseCustomRearBogie)
+                {
+                    z -= GetBogieOffset(carType.BaseCarType);
+                }
+                else if (axles.Length > 0)
+                {
+                    // Opposite to front bogie, rearmost axle.
+                    z = axles.First().position.z;
+                }
+
+                var rearCenter = new Vector3(0, wheelRadius, z);
                 rearCollider!.center = rearCenter;
                 rearCollider.radius = wheelRadius;
             }
@@ -74,6 +102,54 @@ namespace CCL.Creator.Editor
                 return bogieColliders.FirstOrDefault();
             }
             return null;
+        }
+
+        private static Transform[] GetAxles(Transform? bogie)
+        {
+            if (bogie == null)
+            {
+                return new Transform[0];
+            }
+
+            Transform? axleParent = bogie.transform.FindSafe(CarPartNames.BOGIE_CAR);
+
+            if (axleParent == null)
+            {
+                return new Transform[0];
+            }
+
+            List<Transform> axles = new List<Transform>();
+
+            foreach (Transform t in axleParent)
+            {
+                if (t.name == CarPartNames.AXLE)
+                {
+                    axles.Add(t);
+                }
+            }
+
+            return axles.OrderBy(x => x.position.z).ToArray();
+        }
+
+        private static float GetBogieOffset(BaseTrainCarType carType)
+        { 
+            switch (carType)
+            {
+                case BaseTrainCarType.LocoDiesel:
+                case BaseTrainCarType.LocoDE6Slug:
+                    return 2.03f;
+                case BaseTrainCarType.LocoDH4:
+                    return 1.10f;
+                case BaseTrainCarType.NotSet:
+                case BaseTrainCarType.LocoShunter:
+                case BaseTrainCarType.LocoDM3:
+                case BaseTrainCarType.LocoS060:
+                case BaseTrainCarType.LocoSteamHeavy:
+                case BaseTrainCarType.LocoRailbus:
+                    return 0.00f;
+                default:
+                    return 1.00f;
+            }
         }
     }
 }

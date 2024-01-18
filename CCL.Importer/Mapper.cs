@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using AutoMapper.Internal;
 using CCL.Importer.Types;
 using CCL.Types;
-using CCL.Types.Proxies;
 using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
@@ -14,12 +12,107 @@ namespace CCL.Importer
 {
     internal static class Mapper
     {
+        private static readonly List<ICacheConfig> s_configCache = new();
+        private static readonly Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
+        // Mapper needs to be declared after the caches, or it will cause reflection problems,
+        // as the config will try to access the caches.
         private static readonly MapperConfiguration _config = new(Configure);
 
         private static IMapper? _map;
         public static IMapper M => _map ??= _config.CreateMapper();
 
-        private static readonly Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
+        // This interface is only used to be able to store the generic type without the generics.
+        private interface ICacheConfig
+        {
+            public void StoreComponentsInChildrenInCache(GameObject prefab);
+
+            public void ConvertFromCache(GameObject prefab);
+        }
+
+        private class CacheConfig<TSource, TDestination> : ICacheConfig
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            private Predicate<TSource>? _shouldMap;
+
+            public CacheConfig()
+            {
+                _shouldMap = null;
+            }
+
+            public CacheConfig(Predicate<TSource> shouldMap)
+            {
+                _shouldMap = shouldMap;
+            }
+
+            public void StoreComponentsInChildrenInCache(GameObject prefab)
+            {
+                foreach (var source in prefab.GetComponentsInChildren<TSource>())
+                {
+                    // If there is no condition or the condition is true.
+                    if (_shouldMap == null || _shouldMap(source))
+                    {
+                        var destination = source.gameObject.AddComponent<TDestination>();
+                        s_componentMapCache.Add(source, destination);
+                    }
+                }
+            }
+            public void ConvertFromCache(GameObject prefab)
+            {
+                foreach (MonoBehaviour source in prefab.GetComponentsInChildren<TSource>())
+                {
+                    if (s_componentMapCache.TryGetValue(source, out MonoBehaviour cached))
+                    {
+                        M.Map(source, cached);
+                        UnityEngine.Object.Destroy(source);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds a type map config to be automatically processed.
+        /// </summary>
+        /// <typeparam name="TSource">The proxy component type.</typeparam>
+        /// <typeparam name="TDestination">The real component type.</typeparam>
+        internal static void AddConfig<TSource, TDestination>()
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            ICacheConfig config = new CacheConfig<TSource, TDestination>();
+            s_configCache.Add(config);
+        }
+
+        /// <summary>
+        /// Adds a type map config to be automatically processed.
+        /// </summary>
+        /// <typeparam name="TSource">The proxy component type.</typeparam>
+        /// <typeparam name="TDestination">The real component type.</typeparam>
+        /// <param name="shouldMap">The condition that must be met for the map to be possible.</param>
+        internal static void AddConfig<TSource, TDestination>(Predicate<TSource> shouldMap)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            s_configCache.Add(new CacheConfig<TSource, TDestination>(shouldMap));
+        }
+
+        /// <summary>
+        /// Process all the proxy maps of a prefab.
+        /// </summary>
+        internal static void ProcessConfigs(GameObject prefab)
+        {
+            // First create all the real components from each proxy.
+            foreach (var item in s_configCache)
+            {
+                item.StoreComponentsInChildrenInCache(prefab);
+            }
+
+            // Then map all components that were created.
+            foreach (var item in s_configCache)
+            {
+                item.ConvertFromCache(prefab);
+            }
+        }
 
         private static void Configure(IMapperConfigurationExpression cfg)
         {
@@ -34,81 +127,6 @@ namespace CCL.Importer
                 .ForMember(b => b.trainBrake, o => o.MapFrom(s => s.brakeValveType));
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
             cfg.AddMaps(Assembly.GetExecutingAssembly());
-
-            cfg.CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
-            cfg.CreateMap<WindowProxy, DV.Rain.Window>()
-                .ForMember(x => x.duplicates, options => options.Ignore());
-            cfg.CreateMap<InternalExternalSnapshotSwitcherProxy, DV.InternalExternalSnapshotSwitcher>();
-
-            cfg.CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
-                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance));
-            // Make sure these maps are run LAST.
-            cfg.CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
-                .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
-                .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => s.scriptsToDisable.Select(x => GetFromCache(x) ?? x)));
-        }
-
-        public static bool ReplaceAll<T>(T _) => true;
-       
-        public static void StoreComponentsInChildrenInCache<TSource, TDestination>(this GameObject prefab, System.Func<TSource, bool> canReplace)
-            where TSource : MonoBehaviour
-            where TDestination : MonoBehaviour
-        {
-            foreach (var source in prefab.GetComponentsInChildren<TSource>())
-            {
-                if (canReplace(source))
-                {
-                    var destination = source.gameObject.AddComponent<TDestination>();
-                    s_componentMapCache.Add(source, destination);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Replaces all instances of sourceType with instances of destType in prefab, after checking each one using canRplace to determine if replacement is allowed
-        /// </summary>
-        /// <param name="prefab">The Unity GameObject to update</param>
-        /// <param name="sourceType">The type to replace</param>
-        /// <param name="destType">The type to replace with</param>
-        /// <param name="canReplace"></param>
-        public static void StoreComponentsInChildrenInCache(this GameObject prefab, Type sourceType, Type destType, Predicate<MonoBehaviour> canReplace)
-        {
-            if (!sourceType.GetTypeInheritance().Contains(typeof(MonoBehaviour)) ||
-                !destType.GetTypeInheritance().Contains(typeof(MonoBehaviour)))
-            {
-                CCLPlugin.Warning("Attempted to map an unsupported type - only monobheaviours are supported");
-                return;
-            }
-            foreach(MonoBehaviour source in prefab.GetComponentsInChildren(sourceType))
-            {
-                if (canReplace(source))
-                {
-                    MonoBehaviour destination = source.gameObject.AddComponent(destType) as MonoBehaviour;
-                    s_componentMapCache.Add(source, destination);
-                }
-            }
-        }
-        
-        public static void ConvertFromCache(this GameObject prefab, Type sourceType, Type destType, Predicate<MonoBehaviour> canReplace)
-        {
-            if (!sourceType.GetTypeInheritance().Contains(typeof(MonoBehaviour)) ||
-                !destType.GetTypeInheritance().Contains(typeof(MonoBehaviour)))
-            {
-                CCLPlugin.Warning("Attempted to map an unsupported type - only monobheaviours are supported");
-                return;
-            }
-            foreach (MonoBehaviour source in prefab.GetComponentsInChildren(sourceType))
-            {
-                if (canReplace(source))
-                {
-                    s_componentMapCache.TryGetValue(source, out MonoBehaviour storedValue);
-                    if (null != storedValue && destType.IsInstanceOfType(storedValue))
-                    {
-                        Mapper.M.Map(source, storedValue, sourceType, destType);
-                        GameObject.Destroy(source);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -120,7 +138,7 @@ namespace CCL.Importer
         /// <typeparam name="TDestination">Type of component to replace with</typeparam>
         /// <param name="source">Component being replaced, will be destroyed before this returns</param>
         /// <returns>The replaced component which can be used in other mappers</returns>
-        public static TDestination MapComponent<TSource, TDestination>(this TSource source)
+        public static TDestination MapComponent<TSource, TDestination>(TSource source)
             where TSource : MonoBehaviour
             where TDestination: MonoBehaviour
         {
@@ -147,16 +165,54 @@ namespace CCL.Importer
             destination = MapComponent<TSource, TDestination>(source);
         }
 
-        public static void ClearCache()
-        {
-            s_componentMapCache.Clear();
-        }
-
+        /// <summary>
+        /// Gets the mapped version of a <see cref="MonoBehaviour"/> if one has been cached.
+        /// </summary>
+        /// <param name="source">The source (usually proxy) component.</param>
+        /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, <c>null</c>.</returns>
         internal static MonoBehaviour GetFromCache(MonoBehaviour source)
         {
-            MonoBehaviour output = null;
-            s_componentMapCache.TryGetValue(source, out output);
+            s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
             return output;
+        }
+
+        /// <summary>
+        /// Gets an enumerable in which each <see cref="MonoBehaviour"/> is its mapped version if one has been cached.
+        /// </summary>
+        /// <param name="source">The enumerable of source (usually proxies) components.</param>
+        /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <c>null</c> values.</returns>
+        internal static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
+        {
+            return source.Select(scr => GetFromCache(scr));
+        }
+
+        /// <summary>
+        /// Gets the mapped version of a <see cref="MonoBehaviour"/> if one has been cached.
+        /// </summary>
+        /// <param name="source">The source (usually proxy) component.</param>
+        /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, it will return instead <paramref name="source"/>.</returns>
+        internal static MonoBehaviour GetFromCacheOrSelf(MonoBehaviour source)
+        {
+            s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
+            return output ?? source;
+        }
+
+        /// <summary>
+        /// Gets an enumerable in which each <see cref="MonoBehaviour"/> is its mapped version if one has been cached.
+        /// </summary>
+        /// <param name="source">The enumerable of source (usually proxies) components.</param>
+        /// <returns>
+        /// A collection of <see cref="MonoBehaviour"/>. If there is no mapped version for a given one, it will be the original <see cref="MonoBehaviour"/>
+        /// that was in <paramref name="source"/>.
+        /// </returns>
+        internal static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
+        {
+            return source.Select(scr => GetFromCacheOrSelf(scr));
+        }
+
+        public static void ClearComponentCache()
+        {
+            s_componentMapCache.Clear();
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>

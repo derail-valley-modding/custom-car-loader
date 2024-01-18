@@ -7,18 +7,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
+		<ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Reference Include="DVLangHelper.Data" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.AssetBundleModule" />
+		<Reference Include="UnityEngine.AudioModule" />
 		<Reference Include="UnityEngine.CoreModule" />
+		<Reference Include="UnityEngine.IMGUIModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="UnityEngine.UI" />
-		<Reference Include="UnityEngine.IMGUIModule" />
-		<Reference Include="UnityEngine.AssetBundleModule" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

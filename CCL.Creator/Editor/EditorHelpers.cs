@@ -61,5 +61,10 @@ namespace CCL.Creator
 
             return SearchDisksForPath(steamModPath);
         }
+
+        public static T ObjectField<T>(T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options) where T : UnityEngine.Object
+        {
+            return (T)UnityEditor.EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects, options);
+        }
     }
 }

@@ -59,7 +59,8 @@ namespace CCL.Importer
                     CustomCarTypes.Add(carType);
                     loadedCount += 1;
                 }
-                Mapper.ClearCache();
+
+                Mapper.ClearComponentCache();
             }
             if (loadedCount > 0)
             {
