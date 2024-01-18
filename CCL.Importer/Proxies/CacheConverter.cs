@@ -2,35 +2,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
-    public class ProxyAutomapperProfile : Profile
-    {
-        public ProxyAutomapperProfile() {
-            foreach(var attribute in Attributes())
-            {
-                var map = CreateMap(attribute.SourceType, attribute.DestinationType);
-                foreach(var cacheMapField in attribute.FieldsFromCache)
-                {
-                    map.ForMember(cacheMapField, cfg => {
-                        cfg.ConvertUsing(new CacheConverter(cfg.DestinationMember), cacheMapField);
-                    });
-                }
-            }
-        }
-        private IEnumerable<ProxyMapAttribute> Attributes()
-        {
-            return from t in Assembly.GetExecutingAssembly().GetTypes()
-                   from a in t.GetCustomAttributes<ProxyMapAttribute>()
-                   select a;
-        }
-    }
     public class CacheConverter : IValueConverter<object, object>
     {
         private readonly Type _destType;
