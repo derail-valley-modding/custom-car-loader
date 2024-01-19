@@ -39,7 +39,7 @@ namespace CCL.Types.Components
 
         public void AfterImport()
         {
-            if (json != null)
+            if (!string.IsNullOrEmpty(json))
             {
                 ShadersToReplace = JSONObject.FromJson<ShaderIndex[]>(json);
             }

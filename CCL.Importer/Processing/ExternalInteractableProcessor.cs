@@ -25,39 +25,27 @@ namespace CCL.Importer.Processing
 
         public override void ExecuteStep(ModelProcessor context)
         {
+            var interactables = context.Car.externalInteractablesPrefab;
+
             if (CarTypes.IsRegularCar(context.Car))
             {
-                var newFab = SetupFreightInteractables(context.Car.externalInteractablesPrefab);
+                SetupFreightInteractables(interactables);
 
-                var brakeFeeders = newFab.AddComponent<HandbrakeFeedersController>();
+                var brakeFeeders = interactables.AddComponent<HandbrakeFeedersController>();
                 brakeFeeders.RefreshChildren();
 
-                var keyboardCtrl = newFab.AddComponent<InteractablesKeyboardControl>();
+                var keyboardCtrl = interactables.AddComponent<InteractablesKeyboardControl>();
                 keyboardCtrl.RefreshChildren();
 
-                var optimizer = newFab.AddComponent<PlayerOnCarScriptsOptimizer>();
+                var optimizer = interactables.AddComponent<PlayerOnCarScriptsOptimizer>();
                 optimizer.scriptsToDisable = new MonoBehaviour[] { keyboardCtrl };
-
-                context.Car.externalInteractablesPrefab = newFab;
-            }
-            else
-            {
-                var newFab = Object.Instantiate(context.Car.externalInteractablesPrefab, null);
-                newFab.SetActive(false);
-                Object.DontDestroyOnLoad(newFab);
-
-                context.Car.externalInteractablesPrefab = newFab;
             }
         }
 
-        private static GameObject SetupFreightInteractables(GameObject interactables)
+        private static void SetupFreightInteractables(GameObject interactables)
         {
-            GameObject newFab = Object.Instantiate(interactables, null);
-            newFab.SetActive(false);
-            Object.DontDestroyOnLoad(newFab);
-
-            var existingChildren = Enumerable.Range(0, newFab.transform.childCount)
-                .Select(i => newFab.transform.GetChild(i))
+            var existingChildren = Enumerable.Range(0, interactables.transform.childCount)
+                .Select(i => interactables.transform.GetChild(i))
                 .ToList();
 
             foreach (var current in existingChildren)
@@ -65,14 +53,14 @@ namespace CCL.Importer.Processing
                 switch (current.name)
                 {
                     case CarPartNames.DUMMY_HANDBRAKE_SMALL:
-                        var newBrake = Object.Instantiate(_flatbedHandbrake, newFab.transform);
+                        var newBrake = Object.Instantiate(_flatbedHandbrake, interactables.transform);
                         newBrake.transform.localPosition = current.localPosition;
                         newBrake.transform.localRotation = current.localRotation;
                         Object.Destroy(current.gameObject);
                         break;
 
                     case CarPartNames.DUMMY_BRAKE_RELEASE:
-                        var newRelease = Object.Instantiate(_flatbedBrakeRelease, newFab.transform);
+                        var newRelease = Object.Instantiate(_flatbedBrakeRelease, interactables.transform);
                         newRelease.transform.localPosition = current.localPosition;
                         newRelease.transform.localRotation = current.localRotation;
                         Object.Destroy(current.gameObject);
@@ -83,10 +71,8 @@ namespace CCL.Importer.Processing
                 }
             }
 
-            newFab.SetLayersRecursive(DVLayer.Interactable);
-            FixControlColliders(newFab);
-
-            return newFab;
+            interactables.SetLayersRecursive(DVLayer.Interactable);
+            FixControlColliders(interactables);
         }
 
         private static void FixControlColliders(GameObject root)
