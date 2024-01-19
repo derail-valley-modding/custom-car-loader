@@ -79,8 +79,21 @@ namespace CCL.Importer.Processing
         {
             // Create a modifiable copy of the prefab
             GameObject newFab = UObject.Instantiate(Car.prefab, null);
+
+            // Get enabled state of components on prefab.
+            // Unity disables the attached components on a GameObject when
+            // deactivating that object, and we don't want that or when we
+            // instance this prefab again they will all be disabled.
+            var states = newFab.GetComponents<MonoBehaviour>().ToDictionary(k => k, v => v.enabled);
+
             newFab.SetActive(false);
             UObject.DontDestroyOnLoad(newFab);
+
+            // Restore state.
+            foreach (var state in states)
+            {
+                state.Key.enabled = state.Value;
+            }
 
             newFab.name = Car.id;
             Car.prefab = newFab;
