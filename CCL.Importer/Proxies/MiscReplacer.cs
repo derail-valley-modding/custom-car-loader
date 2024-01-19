@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies;
 using DV;
-using DV.Rain;
 
 namespace CCL.Importer.Proxies
 {
@@ -10,9 +9,6 @@ namespace CCL.Importer.Proxies
         public MiscReplacer()
         {
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
-            CreateMap<WindowProxy, Window>()
-                .AutoCacheAndMap()
-                .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap();
 

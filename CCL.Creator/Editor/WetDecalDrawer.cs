@@ -1,7 +1,7 @@
-﻿using CCL.Types.Proxies;
+﻿using CCL.Types.Proxies.Weather;
 using UnityEditor;
-using static CCL.Types.Proxies.WetDecalProxy;
 using UnityEngine;
+using static CCL.Types.Proxies.Weather.WetDecalEnums;
 
 namespace CCL.Creator.Editor
 {

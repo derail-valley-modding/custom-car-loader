@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies;
+using CCL.Types.Proxies.Weather;
 using PlaceholderSoftware.WetStuff;
 
 namespace CCL.Importer.Proxies
@@ -13,11 +14,6 @@ namespace CCL.Importer.Proxies
             CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
             CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
-
-            CreateMap<WetDecalProxy, WetDecal>().AutoCacheAndMap();
-            CreateMap<WetDecalProxy.DecalSettingsProxy, DecalSettings>();
-            CreateMap<WetDecalProxy.DecalLayerProxy, DecalLayer>();
-            CreateMap<WetDecalProxy.DecalLayerChannelProxy, DecalLayerChannel>();
         }
     }
 }
