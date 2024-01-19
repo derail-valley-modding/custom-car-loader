@@ -8,7 +8,7 @@ namespace CCL.Types.Proxies.Ports
     {
         public FuseDefinition[] fuses;
 
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private string fusesJson;
 
         public bool saveState = true;

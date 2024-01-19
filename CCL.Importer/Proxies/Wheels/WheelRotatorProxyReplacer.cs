@@ -2,6 +2,8 @@
 using CCL.Importer.Types;
 using CCL.Types.Proxies.Wheels;
 using DV.Wheels;
+using LocoSim.Implementations.Wheels;
+using System.Linq;
 
 namespace CCL.Importer.Proxies.Wheels
 {
@@ -13,6 +15,10 @@ namespace CCL.Importer.Proxies.Wheels
             CreateMap<WheelRotationViaCodeProxy, WheelRotationViaCode>().AutoCacheAndMap();
             CreateMap<PoweredWheelRotationViaAnimationProxy, PoweredWheelRotationViaAnimation>().AutoCacheAndMap();
             CreateMap<PoweredWheelRotationViaCodeProxy, PoweredWheelRotationViaCode>().AutoCacheAndMap();
+
+            CreateMap<PoweredWheelsManagerProxy, PoweredWheelsManager>().AutoCacheAndMap()
+                .ForMember(s => s.poweredWheels, o => o.MapFrom(s => Mapper.GetFromCache(s.poweredWheels).ToArray()));
+            CreateMap<PoweredWheelProxy, PoweredWheel>().AutoCacheAndMap();
         }
     }
 }
