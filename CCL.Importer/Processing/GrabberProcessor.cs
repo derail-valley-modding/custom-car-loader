@@ -82,8 +82,9 @@ namespace CCL.Importer.Processing
             }
         }
 
+        // Removed some items from the possible choices, more info on each class.
         private static CachedResource<AudioClip> s_soundCache = new CachedResource<AudioClip>(SoundGrabber.SoundNames.Length);
-        private static CachedResource<Material> s_materialCache = new CachedResource<Material>(MaterialGrabber.MaterialNames.Length);
+        private static CachedResource<Material> s_materialCache = new CachedResource<Material>(MaterialGrabber.MaterialNames.Length - 1);
 
         public override void ExecuteStep(ModelProcessor context)
         {

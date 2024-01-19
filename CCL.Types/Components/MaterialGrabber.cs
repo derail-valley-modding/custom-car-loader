@@ -4,8 +4,10 @@ namespace CCL.Types.Components
 {
     public class MaterialGrabber : VanillaResourceGrabber<Material>
     {
+        // Removed 1 (empty).
         public static string[] MaterialNames = new string[]
         {
+            //"",
             "ArrowCareerManagerScreen",
             "BallastMed",
             "BallastNew",
