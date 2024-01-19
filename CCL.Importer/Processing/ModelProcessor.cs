@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
 using DV;
+using DV.Logic.Job;
 using DV.ThingTypes;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -77,8 +78,24 @@ namespace CCL.Importer.Processing
 
         private void CreateModifiablePrefabs()
         {
-            // Create a modifiable copy of the prefab
-            GameObject newFab = UObject.Instantiate(Car.prefab, null);
+            // Create a modifiable copy of the prefabs.
+            Car.RemakePrefabs();
+
+            // Create new TrainCar script.
+            Car.prefab.name = Car.id;
+            var newTrainCar = Car.prefab.AddComponent<TrainCar>();
+            newTrainCar.carLivery = Car;
+
+            // Set interior layers.
+            if (Car.interiorPrefab)
+            {
+                ModelUtil.SetLayersRecursiveAndExclude(Car.interiorPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
+            }
+        }
+
+        public static GameObject CreateModifiablePrefab(GameObject gameObject)
+        {
+            GameObject newFab = UObject.Instantiate(gameObject, null);
 
             // Get enabled state of components on prefab.
             // Unity disables the attached components on a GameObject when
@@ -95,24 +112,7 @@ namespace CCL.Importer.Processing
                 state.Key.enabled = state.Value;
             }
 
-            newFab.name = Car.id;
-            Car.prefab = newFab;
-
-            // Create new TrainCar script
-            var newTrainCar = newFab.AddComponent<TrainCar>();
-            newTrainCar.carLivery = Car;
-
-            // create modifiable interior
-            if (Car.interiorPrefab)
-            {
-                var newInterior = UObject.Instantiate(Car.interiorPrefab, null);
-                newInterior.SetActive(false);
-                UObject.DontDestroyOnLoad(newInterior);
-
-                ModelUtil.SetLayersRecursiveAndExclude(newInterior, DVLayer.Interactable, DVLayer.Train_Walkable);
-
-                Car.interiorPrefab = newInterior;
-            }
+            return newFab;
         }
 
         private void HandleCustomSerialization(GameObject prefab)
