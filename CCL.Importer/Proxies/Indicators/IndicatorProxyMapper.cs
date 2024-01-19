@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Indicators;
+using DV.Indicators;
 using DV.Simulation.Ports;
 using System.ComponentModel.Composition;
 
@@ -10,6 +11,10 @@ namespace CCL.Importer.Proxies.Indicators
         public IndicatorPortReaderReplacer()
         {
             CreateMap<IndicatorPortReaderProxy, IndicatorPortReader>().AutoCacheAndMap();
+            CreateMap<IndicatorBrakeCylinderReaderProxy, IndicatorBrakeCylinderReader>().AutoCacheAndMap();
+            CreateMap<IndicatorBrakePipeReaderProxy, IndicatorBrakePipeReader>().AutoCacheAndMap();
+            CreateMap<IndicatorBrakeReservoirReaderProxy, IndicatorMainResReader>().AutoCacheAndMap();
+
             CreateMap<IndicatorEmissionProxy, IndicatorEmission>().AutoCacheAndMap();
             CreateMap<IndicatorGaugeProxy, IndicatorGauge>().AutoCacheAndMap();
             CreateMap<IndicatorModelChangerProxy, IndicatorModelChanger>().AutoCacheAndMap();

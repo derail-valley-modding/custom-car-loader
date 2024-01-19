@@ -6,10 +6,17 @@
 		<AssemblyName>$(MSBuildProjectName)</AssemblyName>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="AutoMapper" Version="10.1.1" />
+	  <PackageReference Include="AutoMapper" Version="10.1.1" />
+	  <PackageReference Include="Krafs.Publicizer" Version="2.2.1">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Publicize Include="Assembly-CSharp" IncludeVirtualMembers="false" />
 	</ItemGroup>
 
 	<ItemGroup>

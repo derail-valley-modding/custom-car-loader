@@ -34,6 +34,14 @@ namespace CCL.Importer.Processing
                 AddAdditionalControllers(livery.externalInteractablesPrefab);
             }
 
+            // Add Control Override components
+            var baseOverrider = livery.prefab.GetComponentInChildren<BaseControlsOverrider>();
+            if ((livery.prefab.GetComponentsInChildren<OverridableBaseControl>().Length > 0) && !baseOverrider)
+            {
+                baseOverrider = livery.prefab.AddComponent<BaseControlsOverrider>();
+            }
+            baseOverrider?.OnValidate();
+
             // If we have something that gets referenced through the simConnections decoupling mechanism - these are generally things
             // that make ports exist.
             var simConnections = livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true);
@@ -50,8 +58,7 @@ namespace CCL.Importer.Processing
             if (needsSimController)
             {
                 var simController = livery.prefab.AddComponent<SimController>();
-                simController.connectionsDefinition = livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ?? AttachSimConnectionsToPrefab(livery.prefab);
-                simController.otherSimControllers = livery.prefab.GetComponentsInChildren<ASimInitializedController>(true);
+                simController.OnValidate();
             }
 
             // In the event we have a sim controller and *not* a damage controller, we need to add a dummy damage controller
