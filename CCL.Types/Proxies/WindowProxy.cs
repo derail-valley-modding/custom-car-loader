@@ -24,7 +24,7 @@ namespace CCL.Types.Proxies
         public Rigidbody rb;
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Proxies.WindowProxy:SetupDuplicates", "Setup duplicates")]
+        [MethodButton(nameof(SetupDuplicates), "Setup duplicates")]
         public bool buttonRender;
 
         private void OnDrawGizmosSelected()
