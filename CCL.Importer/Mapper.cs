@@ -227,5 +227,10 @@ namespace CCL.Importer
                 }).Cast<TrainCarLivery>().ToList();
             }
         }
+
+        public static bool IsPublicOrSerialized(FieldInfo f)
+        {
+            return f.IsPublic || Attribute.IsDefined(f, typeof(SerializeField));
+        }
     }
 }
