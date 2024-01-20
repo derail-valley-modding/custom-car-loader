@@ -1,7 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
+    // There's actually no need to show these in CCL as they use
+    // the same values everywhere, so the defaults are set to
+    // the correct values already.
+    //[Serializable]
     public class DecalLayerProxy
     {
         private DecalLayerChannelProxy _channel2;
