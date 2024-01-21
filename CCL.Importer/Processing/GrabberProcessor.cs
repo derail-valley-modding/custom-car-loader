@@ -1,4 +1,5 @@
-﻿using CCL.Types.Components;
+﻿using CCL.Types;
+using CCL.Types.Components;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -90,11 +91,16 @@ namespace CCL.Importer.Processing
         {
             foreach (var prefab in context.Car.AllPrefabs)
             {
-                ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
-                ProcessGrabberOnPrefab<MaterialGrabber, Material>(prefab, s_materialCache);
-
-                ProcessMaterialGrabberRenderer(prefab);
+                ProcessGrabbersOnPrefab(prefab);
             }
+        }
+
+        public static void ProcessGrabbersOnPrefab(GameObject prefab)
+        {
+            ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
+            ProcessGrabberOnPrefab<MaterialGrabber, Material>(prefab, s_materialCache);
+
+            ProcessMaterialGrabberRenderer(prefab);
         }
 
         /// <summary>
@@ -104,7 +110,7 @@ namespace CCL.Importer.Processing
         /// <typeparam name="TGrabType">The type that will be grabbed.</typeparam>
         /// <param name="prefab">The prefab with the components.</param>
         /// <param name="cache">The cache for the type that will be grabbed.</param>
-        private void ProcessGrabberOnPrefab<TGrabber, TGrabType>(GameObject prefab, CachedResource<TGrabType> cache)
+        private static void ProcessGrabberOnPrefab<TGrabber, TGrabType>(GameObject prefab, CachedResource<TGrabType> cache)
             where TGrabType : UnityEngine.Object
             where TGrabber : VanillaResourceGrabber<TGrabType>
         {
@@ -156,7 +162,7 @@ namespace CCL.Importer.Processing
             }
         }
 
-        private void ProcessMaterialGrabberRenderer(GameObject prefab)
+        private static void ProcessMaterialGrabberRenderer(GameObject prefab)
         {
             foreach (var grabber in prefab.GetComponentsInChildren<MaterialGrabberRenderer>())
             {
@@ -168,6 +174,8 @@ namespace CCL.Importer.Processing
                     foreach (var index in grabber.Indeces)
                     {
                         string name = MaterialGrabber.MaterialNames[index.NameIndex];
+
+                        CCLPlugin.Log(name);
 
                         if (s_materialCache.Cache.TryGetValue(name, out Material mat))
                         {

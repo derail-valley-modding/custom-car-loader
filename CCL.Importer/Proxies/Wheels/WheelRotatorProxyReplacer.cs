@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Importer.Types;
 using CCL.Types.Proxies.Wheels;
+using DV;
 using DV.Wheels;
 
 namespace CCL.Importer.Proxies.Wheels
@@ -13,6 +14,9 @@ namespace CCL.Importer.Proxies.Wheels
             CreateMap<WheelRotationViaCodeProxy, WheelRotationViaCode>().AutoCacheAndMap();
             CreateMap<PoweredWheelRotationViaAnimationProxy, PoweredWheelRotationViaAnimation>().AutoCacheAndMap();
             CreateMap<PoweredWheelRotationViaCodeProxy, PoweredWheelRotationViaCode>().AutoCacheAndMap();
+
+            CreateMap<PoweredWheelRotationViaAnimationProxy.AnimatorStartTimeOffsetPair, PoweredWheelRotationViaAnimation.AnimatorStartTimeOffsetPair>();
+            CreateMap<PoweredWheelRotationViaCodeProxy.TransformRotationConfig, TransformRotationConfig>();
         }
     }
 }
