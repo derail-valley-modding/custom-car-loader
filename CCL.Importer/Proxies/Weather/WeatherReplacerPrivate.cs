@@ -8,7 +8,7 @@ namespace CCL.Importer.Proxies.Weather
     {
         public WeatherReplacerPrivate()
         {
-            ShouldMapField = f => Mapper.IsPublicOrSerialized(f);
+            ShouldMapField = f => AutoMapperHelper.IsPublicOrSerialized(f);
 
             CreateMap<WetDecalProxy, WetDecal>().AutoCacheAndMap();
 
