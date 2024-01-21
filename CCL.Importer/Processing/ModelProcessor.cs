@@ -115,7 +115,7 @@ namespace CCL.Importer.Processing
             return newFab;
         }
 
-        private void HandleCustomSerialization(GameObject prefab)
+        public static void HandleCustomSerialization(GameObject prefab)
         {
             foreach (var component in prefab.GetComponentsInChildrenByInterface<ICustomSerialized>())
             {
