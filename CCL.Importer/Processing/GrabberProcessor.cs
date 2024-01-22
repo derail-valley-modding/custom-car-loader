@@ -175,8 +175,6 @@ namespace CCL.Importer.Processing
                     {
                         string name = MaterialGrabber.MaterialNames[index.NameIndex];
 
-                        CCLPlugin.Log(name);
-
                         if (s_materialCache.Cache.TryGetValue(name, out Material mat))
                         {
                             if (index.RendererIndex < renderer.sharedMaterials.Length)

@@ -30,13 +30,7 @@ namespace CCL.Importer
                 {
                     for (int i = 0; i < loadableCargo.ModelVariants.Length; i++)
                     {
-                        CCLPlugin.LogVerbose($"Deserializing");
-                        ModelProcessor.HandleCustomSerialization(loadableCargo.ModelVariants[i]);
-                        CCLPlugin.LogVerbose($"Processing grabbers");
-                        GrabberProcessor.ProcessGrabbersOnPrefab(loadableCargo.ModelVariants[i]);
-                        CCLPlugin.LogVerbose($"Processing proxies");
-                        Mapper.ProcessConfigs(loadableCargo.ModelVariants[i]);
-                        Mapper.ClearComponentCache();
+                        ModelProcessor.DoBasicProcessing(loadableCargo.ModelVariants[i]);
                     }
                 }
 
