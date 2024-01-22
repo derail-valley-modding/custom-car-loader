@@ -1,5 +1,6 @@
 ﻿using CCL.Types.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,18 +10,19 @@ namespace CCL.Types.Proxies.Ports
     {
         public SimComponentDefinitionProxy[] executionOrder;
 
-        public PortConnectionProxy[] connections;
+        public List<PortConnectionProxy> connections;
 
         [SerializeField, HideInInspector]
         private string connectionsJson;
 
-        public PortReferenceConnectionProxy[] portReferenceConnections;
+        public List<PortReferenceConnectionProxy> portReferenceConnections;
 
         [SerializeField, HideInInspector]
         private string portReferenceConnectionsJson;
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Proxies.Ports.SimConnectionsDefinitionProxy:PopulateComponents", "Populate Components")]
+        [MethodButton(nameof(PopulateComponents), "Populate Components")]
+        [MethodButton("CCL.Creator.Editor.SimulationEditorWindow:ShowWindow", "Launch Wizard")]
         public bool renderButtons;
 
         public void OnValidate()
@@ -31,14 +33,14 @@ namespace CCL.Types.Proxies.Ports
 
         public void AfterImport()
         {
-            connections = JSONObject.FromJson<PortConnectionProxy[]>(connectionsJson);
-            portReferenceConnections = JSONObject.FromJson<PortReferenceConnectionProxy[]>(portReferenceConnectionsJson);
+            connections = JSONObject.FromJson(connectionsJson, () => new List<PortConnectionProxy>());
+            portReferenceConnections = JSONObject.FromJson(portReferenceConnectionsJson, () => new List<PortReferenceConnectionProxy>());
         }
 
         
         public void PopulateComponents()
         {
-            var newExecutionList = executionOrder.ToList();
+            var newExecutionList = executionOrder?.ToList() ?? new List<SimComponentDefinitionProxy>();
             var allComponents = transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>();
 
             foreach (var component in allComponents)
@@ -56,10 +58,10 @@ namespace CCL.Types.Proxies.Ports
     [Serializable]
     public class PortConnectionProxy
     {
-        [PortId(new DVPortType[] { DVPortType.OUT })]
+        [PortId(DVPortType.OUT)]
         public string fullPortIdOut;
 
-        [PortId(new DVPortType[] { DVPortType.IN })]
+        [PortId(DVPortType.IN)]
         public string fullPortIdIn;
     }
 

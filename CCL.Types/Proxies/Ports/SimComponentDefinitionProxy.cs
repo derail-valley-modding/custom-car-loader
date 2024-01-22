@@ -11,5 +11,13 @@ namespace CCL.Types.Proxies.Ports
         public virtual IEnumerable<PortDefinition> ExposedPorts => Enumerable.Empty<PortDefinition>();
 
         public virtual IEnumerable<PortReferenceDefinition> ExposedPortReferences => Enumerable.Empty<PortReferenceDefinition>();
+
+        void Reset()
+        {
+            if (string.IsNullOrWhiteSpace(ID))
+            {
+                ID = gameObject.name;
+            }
+        }
     }
 }

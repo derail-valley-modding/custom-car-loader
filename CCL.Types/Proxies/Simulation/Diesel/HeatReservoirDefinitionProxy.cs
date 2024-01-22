@@ -24,7 +24,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "TEMPERATURE"),
         };
 
-        public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => inputs;
+        public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => inputs ?? base.ExposedPortReferences;
 
         public void OnValidate()
         {
