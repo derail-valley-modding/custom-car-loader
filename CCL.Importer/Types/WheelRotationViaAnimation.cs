@@ -9,7 +9,7 @@ namespace CCL.Importer.Types
 
         private const string SPEED = "SpeedMultiplier";
 
-        private static readonly int SPEED_ID = Animator.StringToHash("SpeedMultiplier");
+        private static readonly int SPEED_ID = Animator.StringToHash(SPEED);
 
         protected override void Awake()
         {

@@ -1,7 +1,6 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
 using DV;
-using DV.Logic.Job;
 using DV.ThingTypes;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -12,8 +11,6 @@ using UnityEngine;
 
 namespace CCL.Importer.Processing
 {
-    using UObject = UnityEngine.Object;
-
     internal class ModelProcessor
     {
         private static readonly AggregateCatalog _catalog;
@@ -95,7 +92,7 @@ namespace CCL.Importer.Processing
 
         public static GameObject CreateModifiablePrefab(GameObject gameObject)
         {
-            GameObject newFab = UObject.Instantiate(gameObject, null);
+            GameObject newFab = Object.Instantiate(gameObject, null);
 
             // Get enabled state of components on prefab.
             // Unity disables the attached components on a GameObject when
@@ -104,7 +101,7 @@ namespace CCL.Importer.Processing
             var states = newFab.GetComponents<MonoBehaviour>().ToDictionary(k => k, v => v.enabled);
 
             newFab.SetActive(false);
-            UObject.DontDestroyOnLoad(newFab);
+            Object.DontDestroyOnLoad(newFab);
 
             // Restore state.
             foreach (var state in states)

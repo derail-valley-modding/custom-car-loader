@@ -143,9 +143,10 @@ namespace CCL.Creator.Editor
                 case BaseTrainCarType.NotSet:
                 case BaseTrainCarType.LocoShunter:
                 case BaseTrainCarType.LocoDM3:
+                case BaseTrainCarType.LocoRailbus:
                 case BaseTrainCarType.LocoS060:
                 case BaseTrainCarType.LocoSteamHeavy:
-                case BaseTrainCarType.LocoRailbus:
+                case BaseTrainCarType.HandCar:
                     return 0.00f;
                 default:
                     return 1.00f;
