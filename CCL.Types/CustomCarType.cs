@@ -54,6 +54,9 @@ namespace CCL.Types
         public BrakesSetup brakes;
         public DamageSetup damage;
 
+        [Tooltip("Any extra prefab that has scripts on it should be added here")]
+        public GameObject[] ExtraModels = new GameObject[0];
+
         [SerializeField, HideInInspector]
         private string? brakesJson;
         [SerializeField, HideInInspector]

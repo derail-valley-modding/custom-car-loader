@@ -119,5 +119,14 @@ namespace CCL.Importer.Processing
                 component.AfterImport();
             }
         }
+
+        public static void DoBasicProcessing(GameObject prefab)
+        {
+            CCLPlugin.LogVerbose($"Deserializing, processing grabbers and proxies for {prefab.name}");
+            HandleCustomSerialization(prefab);
+            GrabberProcessor.ProcessGrabbersOnPrefab(prefab);
+            Mapper.ProcessConfigs(prefab);
+            Mapper.ClearComponentCache();
+        }
     }
 }

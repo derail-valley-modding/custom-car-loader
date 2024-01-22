@@ -158,6 +158,13 @@ namespace CCL.Importer
                 }
             }
 
+            CCLPlugin.Log($"Extra models: {carType.ExtraModels.Length}");
+
+            foreach (var extraModel in carType.ExtraModels)
+            {
+                ModelProcessor.DoBasicProcessing(extraModel);
+            }
+
             return true;
         }
 
