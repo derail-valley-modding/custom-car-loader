@@ -137,6 +137,8 @@ namespace CCL.Importer
 
                 CCLPlugin.Log($"Successfully loaded car type {carId}");
 
+                assetBundle.Unload(false);
+
                 return carType;
             }
             catch (Exception ex)

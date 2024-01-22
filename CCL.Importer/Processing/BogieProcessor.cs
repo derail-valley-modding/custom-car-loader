@@ -3,7 +3,6 @@ using CCL.Types.Components;
 using CCL.Types.Proxies.Wheels;
 using DV.Simulation.Brake;
 using DV.ThingTypes;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -71,10 +70,10 @@ namespace CCL.Importer.Processing
             CapsuleCollider baseBogieCollider, Bogie origBogie)
         {
             Vector3 bogiePosition = newBogieTransform.localPosition;
-            UnityEngine.Object.Destroy(newBogieTransform.gameObject);
+            Object.Destroy(newBogieTransform.gameObject);
 
             //GameObject origBogie = baseCar.Bogies[0].gameObject;
-            GameObject copiedObject = UnityEngine.Object.Instantiate(origBogie.gameObject, carRoot);
+            GameObject copiedObject = Object.Instantiate(origBogie.gameObject, carRoot);
             copiedObject.name = CarPartNames.BOGIE_FRONT;
             copiedObject.transform.localPosition = bogiePosition;
 
@@ -170,7 +169,7 @@ namespace CCL.Importer.Processing
 
             var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
             temp.sparkAnchors = controller.sparkAnchors.Where(x => ProcessSparkAnchor(x, front.transform, rear.transform)).ToArray();
-            UnityEngine.Object.Destroy(controller);
+            Object.Destroy(controller);
         }
 
         private static bool ProcessSparkAnchor(Transform anchor, Transform frontBogie, Transform rearBogie)
