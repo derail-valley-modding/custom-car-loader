@@ -46,6 +46,9 @@ namespace CCL.Types
         public float wheelRadius;
         public bool useDefaultWheelRotation = true;
 
+        [Header("HUD - optional")]
+        public GameObject hudPrefab;
+
         [Header("Cargo")]
         [SerializeField, HideInInspector]
         public string? CargoTypeJson = null;

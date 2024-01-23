@@ -292,7 +292,18 @@ namespace CCL.Types.Json
 			return Create(val, maxDepth, storeExcessLevels, strict).ToObject<T>();
 		}
 
-		public JSONObject() { }
+        public static T FromJsonNotNullOrEmpty<T>(T current, string val, int maxDepth = -2, bool storeExcessLevels = false, bool strict = false)
+			where T : class
+        {
+			if (string.IsNullOrEmpty(val))
+			{
+				return current;
+			}
+
+            return Create(val, maxDepth, storeExcessLevels, strict).ToObject<T>();
+        }
+
+        public JSONObject() { }
 		#region PARSE
 		public JSONObject(string str, int maxDepth = -2, bool storeExcessLevels = false, bool strict = false)
 		{   //create a new JSONObject from a string (this will also create any children, and parse the whole string)
