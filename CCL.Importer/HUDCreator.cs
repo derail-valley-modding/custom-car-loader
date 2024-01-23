@@ -1,4 +1,5 @@
-﻿using CCL.Types.Components.HUD;
+﻿using CCL.Importer.Processing;
+using CCL.Types.Components.HUD;
 using DV.Localization;
 using DV.ThingTypes.TransitionHelpers;
 using DV.UI.LocoHUD;
@@ -12,12 +13,11 @@ namespace CCL.Importer
         // LOTS OF HARDCODED NAMES AND VALUES
         // PROCEED AT YOUR OWN DISCRETION
 
-        private static string _path = "bg/Controls/HUDSlot";
-
         public static GameObject CreateHUD(VanillaHudLayout layout)
         {
             // S060 has the most complete HUD.
-            GameObject hud = Object.Instantiate(DV.ThingTypes.TrainCarType.LocoS060.ToV2().parentType.hudPrefab);
+            layout.AfterImport();
+            GameObject hud = ModelProcessor.CreateModifiablePrefab(DV.ThingTypes.TrainCarType.LocoS060.ToV2().parentType.hudPrefab);
             HUDLocoControls controls = hud.GetComponent<HUDLocoControls>();
 
             BasicControls(layout.Settings, controls);
@@ -27,16 +27,6 @@ namespace CCL.Importer
             MechanicalControls(layout.Settings, controls);
 
             return hud;
-        }
-
-        private static string GetPath(int index)
-        {
-            if (index == 0)
-            {
-                return _path;
-            }
-            
-            return $"{_path} ({index})";
         }
 
         private static void BasicControls(VanillaHudSettings settings, HUDLocoControls hud)
@@ -144,7 +134,51 @@ namespace CCL.Importer
 
             hud.cab.oilLevelMeter.gameObject.SetActive(settings.CabControls[1].Value1 == 1);
 
+            switch (settings.CabControls[1].Value2)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+
             hud.cab.sandMeter.gameObject.SetActive(settings.CabControls[2].Value1 == 1);
+
+            hud.steam.tenderWaterLevel.gameObject.SetActive(settings.CabControls[3].Value1 == 2);
+
+            switch (settings.CabControls[3].Value2)
+            {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+
+            hud.cab.horn.gameObject.SetActive(settings.CabControls[4].Value1 != 0);
+
+            if (settings.CabControls[4].Value1 != 2)
+            {
+                // Rename whistle to horn.
+                if (settings.CabControls[4].Value1 != 2)
+                {
+                    hud.cab.horn.name = "Horn";
+                    hud.cab.horn.GetComponentInChildren<Localize>().key = "car/horn";
+                }
+            }
+
+            hud.steam.tenderCoalLevel.gameObject.SetActive(settings.CabControls[4].Value1 == 2);
         }
 
         private static void MechanicalControls(VanillaHudSettings settings, HUDLocoControls hud)

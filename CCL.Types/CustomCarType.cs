@@ -47,7 +47,7 @@ namespace CCL.Types
         public bool useDefaultWheelRotation = true;
 
         [Header("HUD - optional")]
-        public GameObject hudPrefab;
+        public GameObject hudPrefab = null!;
 
         [Header("Cargo")]
         [SerializeField, HideInInspector]

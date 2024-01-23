@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Components.HUD;
 using DV.JObjectExtstensions;
 using Newtonsoft.Json.Linq;
 using System;
@@ -163,6 +164,26 @@ namespace CCL.Importer
             foreach (var extraModel in carType.ExtraModels)
             {
                 ModelProcessor.DoBasicProcessing(extraModel);
+            }
+
+            if (carType.hudPrefab != null)
+            {
+                var layout = carType.hudPrefab.GetComponent<VanillaHudLayout>();
+
+                if (layout != null)
+                {
+                    CCLPlugin.Log("Car has HUD prefab, augmenting...");
+                    carType.hudPrefab = HUDCreator.CreateHUD(layout);
+                }
+                else
+                {
+                    CCLPlugin.Log("Car has HUD prefab but no layout component, destroying");
+                    carType.hudPrefab = null;
+                }
+            }
+            else
+            {
+                CCLPlugin.Log("No HUD on car, skipping");
             }
 
             return true;

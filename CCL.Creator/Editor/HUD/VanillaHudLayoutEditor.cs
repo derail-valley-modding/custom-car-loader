@@ -253,7 +253,7 @@ namespace CCL.Creator.Editor.HUD
                             break;
                         case 1:
                             s.Value1 = EditorGUILayout.Popup(s.Value1, new string[] { "None", "Oil Level" });
-                            s.Value2 = EditorGUILayout.Popup(s.Value2, new string[] { "None", "Cab Lights", "Cab + Dash Light" });
+                            s.Value2 = EditorGUILayout.Popup(s.Value2, new string[] { "None", "Cab Light", "Cab + Dash Light", "Cab Light + Gear Light" });
                             break;
                         case 2:
                             s.Value1 = EditorGUILayout.Popup(s.Value1, new string[] { "None", "Sand Level" });
@@ -261,7 +261,7 @@ namespace CCL.Creator.Editor.HUD
                             break;
                         case 3:
                             s.Value1 = EditorGUILayout.Popup(s.Value1, new string[] { "None", "Bell Button", "Tender Water" });
-                            s.Value1 = EditorGUILayout.Popup(s.Value1, new string[] { "None", "Headlights", "DM3 Headlights", "Steam Bell" });
+                            s.Value2 = EditorGUILayout.Popup(s.Value1, new string[] { "None", "Headlights", "DM3 Headlights", "Steam Bell" });
                             break;
                         case 4:
                             s.Value1 = EditorGUILayout.Popup(s.Value1, new string[] { "None", "Horn", "Whistle + Tender Coal" });
