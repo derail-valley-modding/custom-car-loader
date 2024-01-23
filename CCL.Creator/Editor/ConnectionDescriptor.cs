@@ -1,4 +1,6 @@
 ﻿using CCL.Types.Proxies.Ports;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CCL.Creator.Editor
 {
@@ -28,7 +30,9 @@ namespace CCL.Creator.Editor
         public readonly string Id;
         public readonly PortConnectionProxy? PortConnection;
         public readonly PortReferenceConnectionProxy? ReferenceConnection;
+        public readonly PortIdField? IdFieldConnection;
         public readonly PortDirection Direction;
+        public readonly PortOptionType ConnectionType;
 
         public ConnectionDescriptor(SimConnectionsDefinitionProxy host, string id, PortConnectionProxy portConnection, PortDirection direction)
         {
@@ -36,6 +40,7 @@ namespace CCL.Creator.Editor
             Id = id;
             PortConnection = portConnection;
             Direction = direction;
+            ConnectionType = PortOptionType.Port;
         }
 
         public ConnectionDescriptor(SimConnectionsDefinitionProxy host, string id, PortReferenceConnectionProxy portReferenceConnection, PortDirection direction)
@@ -44,6 +49,15 @@ namespace CCL.Creator.Editor
             Id = id;
             ReferenceConnection = portReferenceConnection;
             Direction = direction;
+            ConnectionType = PortOptionType.PortReference;
+        }
+
+        public ConnectionDescriptor(SimConnectionsDefinitionProxy host, PortIdField idFieldConnection)
+        {
+            Connections = host;
+            Id = idFieldConnection.FullName;
+            IdFieldConnection = idFieldConnection;
+            ConnectionType = PortOptionType.PortIdField;
         }
 
         public void DestroyConnection()
@@ -55,6 +69,10 @@ namespace CCL.Creator.Editor
             else if (ReferenceConnection != null)
             {
                 Connections.portReferenceConnections.Remove(ReferenceConnection);
+            }
+            else if (IdFieldConnection != null)
+            {
+                IdFieldConnection.Destroy();
             }
         }
 
@@ -96,21 +114,29 @@ namespace CCL.Creator.Editor
             }
         }
 
-        public static void CreateNewLink(SimConnectionsDefinitionProxy host, string localId, string remoteId, PortDirection direction, bool refConnection)
+        public static ConnectionDescriptor CreateNewLink(SimConnectionsDefinitionProxy host, string localId, bool localIsRef, PortOptionBase remote, PortDirection direction)
         {
-            if (refConnection)
+            if (remote is PortIdFieldOption idField)
+            {
+                idField.Field.Assign(localId);
+                return new ConnectionDescriptor(host, idField.Field);
+            }
+
+            if (localIsRef || remote is PortReferenceOption)
             {
                 var link = new PortReferenceConnectionProxy();
                 SetIdForDirection(link, localId, direction);
-                SetIdForDirection(link, remoteId, direction.Opposite());
+                SetIdForDirection(link, remote.ID!, direction.Opposite());
                 host.portReferenceConnections.Add(link);
+                return new ConnectionDescriptor(host, remote.ID!, link, direction);
             }
             else
             {
                 var link = new PortConnectionProxy();
                 SetIdForDirection(link, localId, direction);
-                SetIdForDirection(link, remoteId, direction.Opposite());
+                SetIdForDirection(link, remote.ID!, direction.Opposite());
                 host.connections.Add(link);
+                return new ConnectionDescriptor(host, remote.ID!, link, direction);
             }
         }
 
@@ -148,6 +174,72 @@ namespace CCL.Creator.Editor
             {
                 connection.portReferenceId = fullId;
             }
+        }
+    }
+
+    public enum ConnectionResultType
+    {
+        None,
+        Single,
+        Multiple,
+    }
+
+    public class ConnectionResult
+    {
+        public readonly List<ConnectionDescriptor> Matches = new List<ConnectionDescriptor>();
+
+        private const string NOT_CONNECTED = "Not Connected";
+        private const string MULTI_CONNECTED = "[Multiple Connections]";
+
+        public bool AnyConnection => Type != ConnectionResultType.None;
+        public ConnectionDescriptor? Single => (Matches.Count == 1) ? Matches[0] : null;
+
+        public ConnectionResultType Type
+        {
+            get
+            {
+                return Matches.Count switch
+                {
+                    0 => ConnectionResultType.None,
+                    1 => ConnectionResultType.Single,
+                    _ => ConnectionResultType.Multiple,
+                };
+            }
+        }
+
+        public string DisplayId
+        {
+            get
+            {
+                return Type switch
+                {
+                    ConnectionResultType.Single => Matches[0].Id,
+                    ConnectionResultType.Multiple => MULTI_CONNECTED,
+                    _ => NOT_CONNECTED,
+                };
+            }
+        }
+
+        public string? Tooltip =>
+            (Type == ConnectionResultType.Multiple) ? string.Join(",", Matches.Select(m => m.Id)) : null;
+
+        public void AddMatch(ConnectionDescriptor descriptor)
+        {
+            Matches.Add(descriptor);
+        }
+
+        public void DestroyAll()
+        {
+            foreach (var connection in Matches)
+            {
+                connection.DestroyConnection();
+            }
+        }
+
+        public void Destroy(ConnectionDescriptor descriptor)
+        {
+            descriptor.DestroyConnection();
+            Matches.Remove(descriptor);
         }
     }
 }

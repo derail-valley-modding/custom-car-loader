@@ -19,6 +19,8 @@ namespace CCL.Importer.Proxies.Wheels
             CreateMap<PoweredWheelsManagerProxy, PoweredWheelsManager>().AutoCacheAndMap()
                 .ForMember(s => s.poweredWheels, o => o.MapFrom(s => Mapper.GetFromCache(s.poweredWheels).ToArray()));
             CreateMap<PoweredWheelProxy, PoweredWheel>().AutoCacheAndMap();
+
+            CreateMap<WheelslipControllerProxy, WheelslipController>().AutoCacheAndMap();
         }
     }
 }

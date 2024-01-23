@@ -10,8 +10,24 @@ namespace CCL.Types.Proxies.Resources
 {
     public class ResourceContainerProxy : SimComponentDefinitionProxy
     {
-        public float capacity;
-        public float defaultValue;
+        public float capacity = 100;
+        public float defaultValue = 100;
         public ResourceContainerType type;
+
+        public override IEnumerable<PortDefinition> ExposedPorts
+        {
+            get
+            {
+                var valueType = type.PortValueType();
+                return new[]
+                {
+                    new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "CAPACITY"),
+                    new PortDefinition(DVPortType.EXTERNAL_IN, valueType, "REFILL_EXT_IN"),
+                    new PortDefinition(DVPortType.EXTERNAL_IN, valueType, "CONSUME_EXT_IN"),
+                    new PortDefinition(DVPortType.READONLY_OUT, valueType, "AMOUNT"),
+                    new PortDefinition(DVPortType.READONLY_OUT, valueType, "NORMALIZED"),
+                };
+            }
+        }
     }
 }

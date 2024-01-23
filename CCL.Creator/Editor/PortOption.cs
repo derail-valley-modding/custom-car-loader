@@ -8,6 +8,7 @@ namespace CCL.Creator.Editor
         None = 0,
         Port,
         PortReference,
+        PortIdField,
     }
 
     public abstract class PortOptionBase
@@ -33,7 +34,15 @@ namespace CCL.Creator.Editor
             PortValueType = valueType;
         }
 
-        public string Description => $"{ID} ({PrefabName})";
+        public string Description => $"{Code} {ID} ({PrefabName})";
+
+        public string Code => Type switch
+        {
+            PortOptionType.Port => "P",
+            PortOptionType.PortReference => "R",
+            PortOptionType.PortIdField => "F",
+            _ => "?"
+        };
     }
 
     public class PortReferenceOption : PortOptionBase
@@ -71,6 +80,17 @@ namespace CCL.Creator.Editor
         public bool MatchesValueType(DVPortValueType[]? filters)
         {
             return (filters == null) || (filters.Length == 0) || filters.Contains(PortValueType);
+        }
+    }
+
+    public class PortIdFieldOption : PortOptionBase
+    {
+        public readonly PortIdField Field;
+
+        public PortIdFieldOption(string prefabName, PortIdField field, DVPortValueType valueType)
+            : base(PortOptionType.PortIdField, field.FullName, valueType, prefabName)
+        {
+            Field = field;
         }
     }
 }

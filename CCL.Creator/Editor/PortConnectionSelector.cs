@@ -17,13 +17,15 @@ namespace CCL.Creator.Editor
         private readonly PortDirection _direction;
         private readonly float _width;
 
-        private readonly ConnectionDescriptor? _currentConnection;
+        private readonly ConnectionResult _currentConnection;
+        private readonly ConnectionResultType _multiplicity;
         private readonly List<PortOptionBase> _options;
 
-        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortDefinition port, string localId, PortDirection direction, ConnectionDescriptor? currentConn = null)
+        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortDefinition port, string localId, 
+            PortDirection direction, ConnectionResult currentConn)
         {
             _simConn = host;
-            _width = width;
+            _width = width * 1.2f;
             _currentConnection = currentConn;
             _localId = localId;
             _direction = direction;
@@ -35,22 +37,26 @@ namespace CCL.Creator.Editor
             if (direction == PortDirection.Input)
             {
                 options = PortOptionHelper.GetInputPortConnectionOptions(port.valueType, sources);
+                _multiplicity = ConnectionResultType.Single;
             }
             else
             {
                 options = PortOptionHelper.GetOutputPortConnectionOptions(port.valueType, sources);
+                _multiplicity = ConnectionResultType.Multiple;
             }
 
             _options = options.ToList();
         }
 
-        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortReferenceDefinition reference, string localId, ConnectionDescriptor? currentConn = null)
+        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortReferenceDefinition reference, string localId,
+            ConnectionResult currentConn)
         {
             _simConn = host;
-            _width = width;
+            _width = width * 1.2f;
             _currentConnection = currentConn;
+            _multiplicity = ConnectionResultType.Single;
             _localId = localId;
-            _direction = PortDirection.Output;
+            _direction = PortDirection.Input;
             _localIsReference = true;
 
             var sources = PortOptionHelper.GetAvailableSources(host, false);
@@ -59,26 +65,54 @@ namespace CCL.Creator.Editor
         }
 
         private const int LINE_HEIGHT = 20;
+        private static GUIStyle? _buttonStyle = null;
+        private static GUIStyle ButtonStyle
+        {
+            get
+            {
+                _buttonStyle ??= new GUIStyle(GUI.skin.button)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                };
+                return _buttonStyle;
+            }
+        }
+
+        private static readonly Color _unlinkColor = new Color32(255, 153, 153, 255);
+
+        private Vector2 _scrollPosition;
+        private const int MAX_OPTIONS = 9;
+        private const int SCROLL_PADDING = 15;
 
         public override Vector2 GetWindowSize()
         {
-            int nOptions = _options != null ? _options.Count : 0;
-            return new Vector2(_width, LINE_HEIGHT * (nOptions + 1));
+            if (_options == null || _options.Count == 0) return new Vector2(_width, LINE_HEIGHT);
+
+            if (_options.Count > MAX_OPTIONS)
+            {
+                return new Vector2(_width + SCROLL_PADDING, LINE_HEIGHT * (MAX_OPTIONS + 1));
+            }
+            return new Vector2(_width, LINE_HEIGHT * (_options.Count + 1));
         }
 
         public override void OnGUI(Rect rect)
         {
-            if (_options == null || _options.Count == 0)
+            if (_options.Count > MAX_OPTIONS)
             {
-                GUI.Label(new Rect(0, 0, _width, LINE_HEIGHT), "No Options Found");
-                return;
+                var windowRect = new Rect(0, 0, _width + SCROLL_PADDING, LINE_HEIGHT * (MAX_OPTIONS + 1));
+                var viewRect = new Rect(0, 0, _width, LINE_HEIGHT * (_options.Count + 1));
+                _scrollPosition = GUI.BeginScrollView(windowRect, _scrollPosition, viewRect);
             }
 
-            if (GUI.Button(new Rect(0, 0, _width, LINE_HEIGHT), "Unlink"))
+            using (new GUIColorScope(_unlinkColor))
             {
-                _currentConnection?.DestroyConnection();
-                editorWindow.Close();
-                return;
+                string unlinkText = (_multiplicity == ConnectionResultType.Multiple) ? "Unlink All" : "Unlink";
+                if (GUI.Button(new Rect(0, 0, _width, LINE_HEIGHT), unlinkText, ButtonStyle))
+                {
+                    _currentConnection.DestroyAll();
+                    editorWindow.Close();
+                    return;
+                }
             }
 
             float yOffset = 0;
@@ -88,21 +122,36 @@ namespace CCL.Creator.Editor
                 yOffset += LINE_HEIGHT;
                 var optRect = new Rect(0, yOffset, _width, LINE_HEIGHT);
 
-                if (GUI.Button(optRect, option.Description))
+                var connector = _currentConnection.Matches.FirstOrDefault(cd => cd.Id == option.ID);
+
+                bool wasConnected = connector != null;
+                bool nowConnected = GUI.Toggle(optRect, wasConnected, option.Description);
+
+                if (nowConnected && !wasConnected)
                 {
-                    if (_currentConnection != null)
+                    // new connection
+                    if ((_multiplicity == ConnectionResultType.Single) && (option.Type != PortOptionType.PortIdField))
                     {
-                        _currentConnection.ChangeLink(option);
-                    }
-                    else
-                    {
-                        bool needsRefConnection = _localIsReference || (option.Type == PortOptionType.PortReference);
-                        ConnectionDescriptor.CreateNewLink(_simConn, _localId, option.ID!, _direction, needsRefConnection);
+                        // destroy existing connections
+                        foreach (var link in _currentConnection.Matches.Where(m => m.ConnectionType != PortOptionType.PortIdField).ToList())
+                        {
+                            _currentConnection.Destroy(link);
+                        }
                     }
 
-                    editorWindow.Close();
-                    return;
+                    var newLink = ConnectionDescriptor.CreateNewLink(_simConn, _localId, _localIsReference, option, _direction);
+                    _currentConnection.AddMatch(newLink);
                 }
+                else if (!nowConnected && wasConnected)
+                {
+                    // delete connection
+                    _currentConnection.Destroy(connector!);
+                }
+            }
+
+            if (_options.Count > MAX_OPTIONS)
+            {
+                GUI.EndScrollView();
             }
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using UnityEngine;
 
 namespace CCL.Creator
 {
@@ -65,6 +66,26 @@ namespace CCL.Creator
         public static T ObjectField<T>(T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options) where T : UnityEngine.Object
         {
             return (T)UnityEditor.EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects, options);
+        }
+    }
+
+    internal class GUIColorScope : IDisposable
+    {
+        private readonly Color _entryColor;
+
+        public GUIColorScope()
+        {
+            _entryColor = GUI.color;
+        }
+
+        public GUIColorScope(Color newColor) : this()
+        {
+            GUI.color = newColor;
+        }
+
+        public void Dispose()
+        {
+            GUI.color = _entryColor;
         }
     }
 }

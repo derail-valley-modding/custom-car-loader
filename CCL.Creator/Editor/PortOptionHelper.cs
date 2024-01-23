@@ -60,6 +60,20 @@ namespace CCL.Creator.Editor
                 .Select(AssetDatabase.LoadAssetAtPath<GameObject>);
         }
 
+        public static IEnumerable<PortIdField> GetPortIdFields(IEnumerable<GameObject> sources)
+        {
+            foreach (var source in sources)
+            {
+                foreach (var hasFields in source.GetComponentsInChildren<IHasPortIdFields>())
+                {
+                    foreach (var field in hasFields.ExposedPortIdFields)
+                    {
+                        yield return field;
+                    }
+                }
+            }
+        }
+
 
         public static IEnumerable<PortOptionBase> GetPortOptions(PortIdAttribute filter, IEnumerable<GameObject> sources)
         {
@@ -120,6 +134,20 @@ namespace CCL.Creator.Editor
                         yield return port;
                     }
                 }
+
+                foreach (var hasFields in source.GetComponentsInChildren<IHasPortIdFields>())
+                {
+                    foreach (var field in hasFields.ExposedPortIdFields)
+                    {
+                        if (field.TypeFilters == null || field.TypeFilters.Contains(DVPortType.IN))
+                        {
+                            if (field.ValueFilters == null || field.ValueFilters.Contains(valueType))
+                            {
+                                yield return new PortIdFieldOption(source.name, field, valueType);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -142,6 +170,20 @@ namespace CCL.Creator.Editor
                         yield return reference;
                     }
                 }
+
+                foreach (var hasFields in source.GetComponentsInChildren<IHasPortIdFields>())
+                {
+                    foreach (var field in hasFields.ExposedPortIdFields)
+                    {
+                        if (field.TypeFilters == null || field.TypeFilters.Contains(DVPortType.OUT))
+                        {
+                            if (field.ValueFilters == null || field.ValueFilters.Contains(valueType))
+                            {
+                                yield return new PortIdFieldOption(source.name, field, valueType);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -151,7 +193,7 @@ namespace CCL.Creator.Editor
             {
                 foreach (var port in GetPortsInObject(source))
                 {
-                    if (port.PortValueType == valueType)
+                    if ((valueType == DVPortValueType.GENERIC) || (port.PortValueType == valueType) || (port.PortValueType == DVPortValueType.GENERIC))
                     {
                         yield return port;
                     }

@@ -8,7 +8,12 @@ namespace CCL.Types.Proxies.Ports
 {
     public class SimConnectionsDefinitionProxy : MonoBehaviour, ICustomSerialized
     {
-        public SimComponentDefinitionProxy[] executionOrder;
+        [RenderMethodButtons]
+        [MethodButton(nameof(PopulateComponents), "Populate Components")]
+        [MethodButton("CCL.Creator.Editor.SimulationEditorWindow:ShowWindow", "Connection Wizard")]
+        public bool renderButtons;
+
+        public List<SimComponentDefinitionProxy> executionOrder;
 
         public List<PortConnectionProxy> connections;
 
@@ -19,11 +24,6 @@ namespace CCL.Types.Proxies.Ports
 
         [SerializeField, HideInInspector]
         private string portReferenceConnectionsJson;
-
-        [RenderMethodButtons]
-        [MethodButton(nameof(PopulateComponents), "Populate Components")]
-        [MethodButton("CCL.Creator.Editor.SimulationEditorWindow:ShowWindow", "Launch Wizard")]
-        public bool renderButtons;
 
         public void OnValidate()
         {
@@ -40,18 +40,101 @@ namespace CCL.Types.Proxies.Ports
         
         public void PopulateComponents()
         {
-            var newExecutionList = executionOrder?.ToList() ?? new List<SimComponentDefinitionProxy>();
+            executionOrder ??= new List<SimComponentDefinitionProxy>();
             var allComponents = transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>();
 
             foreach (var component in allComponents)
             {
-                if (!newExecutionList.Contains(component))
+                if (!executionOrder.Contains(component))
                 {
-                    newExecutionList.Add(component);
+                    executionOrder.Add(component);
+                }
+            }
+        }
+
+        public void DestroyConnectionsToComponent(SimComponentDefinitionProxy component)
+        {
+            string compId = component.ID;
+            foreach (var connection in connections.ToArray())
+            {
+                if (component.ExposedPorts.Any(p => ConnectionUsesPort(connection, compId, p)))
+                {
+                    connections.Remove(connection);
+                }
+            }
+            foreach (var connection in portReferenceConnections.ToArray())
+            {
+                if (component.ExposedPorts.Any(p => ConnectionUsesPort(connection, compId, p)) ||
+                    component.ExposedPortReferences.Any(r => ConnectionUsesReference(connection, compId, r)))
+                {
+                    portReferenceConnections.Remove(connection);
+                }
+            }
+            executionOrder?.Remove(component);
+        }
+
+        private static bool ConnectionUsesPort(PortConnectionProxy connection, string compId, PortDefinition port)
+        {
+            string fullId = $"{compId}.{port.ID}";
+            return (connection.fullPortIdIn == fullId) || (connection.fullPortIdOut == fullId);
+        }
+
+        private static bool ConnectionUsesPort(PortReferenceConnectionProxy connection, string compId, PortDefinition port)
+        {
+            string fullId = $"{compId}.{port.ID}";
+            return connection.portId == fullId;
+        }
+
+        private static bool ConnectionUsesReference(PortReferenceConnectionProxy connection, string compId, PortReferenceDefinition reference)
+        {
+            string fullId = $"{compId}.{reference.ID}";
+            return connection.portReferenceId == fullId;
+        }
+
+        public void RemapComponentId(string oldId, string newId)
+        {
+            // don't remap if more than one component with same ID
+            if (executionOrder.Count(c => c.ID == oldId) > 1)
+            {
+                return;
+            }
+
+            foreach (var connection in connections)
+            {
+                if (HasComponentId(connection.fullPortIdIn, oldId))
+                {
+                    ReplaceComponentId(ref connection.fullPortIdIn, newId);
+                }
+                if (HasComponentId(connection.fullPortIdOut, oldId))
+                {
+                    ReplaceComponentId(ref connection.fullPortIdOut, newId);
                 }
             }
 
-            executionOrder = newExecutionList.ToArray();
+            foreach (var connection in portReferenceConnections)
+            {
+                if (HasComponentId(connection.portId, oldId))
+                {
+                    ReplaceComponentId(ref connection.portId, newId);
+                }
+                if (HasComponentId(connection.portReferenceId, oldId))
+                {
+                    ReplaceComponentId(ref connection.portReferenceId, newId);
+                }
+            }
+        }
+
+        private static bool HasComponentId(string fullPortId, string componentId)
+        {
+            if (string.IsNullOrWhiteSpace(fullPortId)) return false;
+            var parts = fullPortId.Split('.');
+            return (parts.Length == 2) && (componentId == parts[0]);
+        }
+
+        private static void ReplaceComponentId(ref string fullPortId, string newComponentId)
+        {
+            var parts = fullPortId.Split('.');
+            fullPortId = $"{newComponentId}.{parts[1]}";
         }
     }
 

@@ -15,8 +15,11 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         public float overheatingTemperatureThreshold = 120f;
 
+        [Delayed]
+        public int inputCount = 1;
+        [HideInInspector]
         public PortReferenceDefinition[] inputs;
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private string? _inputsJson;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
@@ -28,6 +31,12 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         public void OnValidate()
         {
+            if (inputs == null || inputs.Length != inputCount)
+            {
+                inputs = Enumerable.Range(0, inputCount)
+                    .Select(i => new PortReferenceDefinition(DVPortValueType.HEAT_RATE, $"HEAT_IN_{i + 1}"))
+                    .ToArray();
+            }
             _inputsJson = JSONObject.ToJson(inputs);
         }
 
