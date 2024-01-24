@@ -1,8 +1,8 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
-using CCL.Types.Proxies.Wheels;
 using DV.Simulation.Brake;
 using DV.ThingTypes;
+using DV.Wheels;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -154,7 +154,7 @@ namespace CCL.Importer.Processing
 
         private static void SetupWheelSlideSparks(GameObject newFab, Bogie front, Bogie rear)
         {
-            WheelSlideSparksControllerProxy controller = newFab.GetComponentInChildren<WheelSlideSparksControllerProxy>();
+            CustomWheelSlideSparks controller = newFab.GetComponentInChildren<CustomWheelSlideSparks>();
 
             // If the prefab has no proxy component, add one anyways and use it to automatically
             // setup the sparks, then treat it as usual.
@@ -163,11 +163,11 @@ namespace CCL.Importer.Processing
                 var sparks = new GameObject(CarPartNames.WHEEL_SPARKS);
                 sparks.transform.parent = newFab.transform;
                 sparks.transform.localPosition = Vector3.zero;
-                controller = sparks.gameObject.AddComponent<WheelSlideSparksControllerProxy>();
+                controller = sparks.gameObject.AddComponent<CustomWheelSlideSparks>();
                 controller.AutoSetupWithBogies(front.transform.Find(CarPartNames.BOGIE_CAR), rear.transform.Find(CarPartNames.BOGIE_CAR));
             }
 
-            var temp = controller.gameObject.AddComponent<DV.Wheels.WheelSlideSparksController>();
+            var temp = controller.gameObject.AddComponent<WheelSlideSparksController>();
             temp.sparkAnchors = controller.sparkAnchors.Where(x => ProcessSparkAnchor(x, front.transform, rear.transform)).ToArray();
             Object.Destroy(controller);
         }

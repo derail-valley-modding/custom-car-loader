@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace CCL.Types.Proxies.Wheels
+namespace CCL.Types.Components
 {
-    public class WheelSlideSparksControllerProxy : MonoBehaviour
+    public class CustomWheelSlideSparks : MonoBehaviour
     {
         private const float TRACK_GAUGE_2 = 0.76f;
 
@@ -121,6 +117,11 @@ namespace CCL.Types.Proxies.Wheels
                     Gizmos.DrawSphere(sparkAnchors[i].position, 0.1f);
                 }
             }
+        }
+		
+        private static void AutoSetupButton(CustomWheelSlideSparks controller)
+        {
+            controller.AutoSetup();
         }
     }
 }
