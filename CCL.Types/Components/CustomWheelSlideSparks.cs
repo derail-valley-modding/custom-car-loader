@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace CCL.Types.Proxies.Wheels
+namespace CCL.Types.Components
 {
-    public class WheelSlideSparksControllerProxy : MonoBehaviour
+    public class CustomWheelSlideSparks : MonoBehaviour
     {
         private const float TRACK_GAUGE_2 = 0.76f;
 
         public Transform[] sparkAnchors = new Transform[0];
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Proxies.Wheels.WheelSlideSparksControllerProxy:AutoSetupButton", "Auto setup",
+        [MethodButton("CCL.Types.Components.CustomWheelSlideSparks:AutoSetupButton", "Auto setup",
             "This will auto setup contact points on the bogies. If you are only using default bogies, and no extra wheels, " +
             "you do not need to include this component at all.")]
         public bool buttonRender;
@@ -123,7 +119,7 @@ namespace CCL.Types.Proxies.Wheels
             }
         }
 
-        private static void AutoSetupButton(WheelSlideSparksControllerProxy controller)
+        private static void AutoSetupButton(CustomWheelSlideSparks controller)
         {
             controller.AutoSetup();
         }
