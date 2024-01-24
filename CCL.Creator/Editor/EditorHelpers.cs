@@ -62,9 +62,22 @@ namespace CCL.Creator
             return SearchDisksForPath(steamModPath);
         }
 
-        public static T ObjectField<T>(T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options) where T : UnityEngine.Object
+        public static T ObjectField<T>(T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options)
+            where T : UnityEngine.Object
         {
             return (T)UnityEditor.EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects, options);
+        }
+
+        public static T ObjectField<T>(string label, T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options)
+            where T : UnityEngine.Object
+        {
+            return (T)UnityEditor.EditorGUILayout.ObjectField(label, obj, typeof(T), allowSceneObjects, options);
+        }
+
+        public static T EnumPopup<T>(string label, T selected, params UnityEngine.GUILayoutOption[] options)
+            where T : Enum
+        {
+            return (T)UnityEditor.EditorGUILayout.EnumPopup(label, selected, options);
         }
     }
 }
