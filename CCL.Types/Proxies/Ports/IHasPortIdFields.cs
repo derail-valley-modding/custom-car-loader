@@ -34,6 +34,10 @@ namespace CCL.Types.Proxies.Ports
             : this(container, fieldName, portId, valueTypeFilters: new[] { valueFilter })
         { }
 
+        public PortIdField(MonoBehaviour container, string fieldName, string portId, DVPortType typeFilter, DVPortValueType valueFilter)
+            : this(container, fieldName, portId, new[] { typeFilter }, new[] { valueFilter })
+        { }
+
         private static readonly BindingFlags AllInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         public void Assign(string fullPortId)
