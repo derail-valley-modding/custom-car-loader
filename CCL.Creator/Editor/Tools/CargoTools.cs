@@ -248,6 +248,17 @@ namespace CCL.Creator.Editor.Tools
             {
                 AutoAssign();
             }
+
+            if (GUILayout.Button("Clear all models"))
+            {
+                if (RequireNotNull(_currentCar, "Current Car"))
+                {
+                    foreach (var item in _currentCar.CargoTypes.Entries)
+                    {
+                        item.ModelVariants = new GameObject[0];
+                    }
+                }
+            }
         }
 
         public void AutoAssign()
