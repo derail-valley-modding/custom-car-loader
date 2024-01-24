@@ -3,7 +3,6 @@ using CCL.Importer.Types;
 using DV;
 using DV.ThingTypes;
 using HarmonyLib;
-using UnityEngine;
 
 namespace CCL.Importer
 {
@@ -24,6 +23,7 @@ namespace CCL.Importer
                 if (!Globals.G.Types.CargoType_to_v2.TryGetValue((CargoType)loadableCargo.CargoType, out var matchCargo))
                 {
                     CCLPlugin.Error($"Couldn't find v2 cargo type {loadableCargo.CargoType} for car {carType.id}");
+                    continue;
                 }
 
                 if (loadableCargo.ModelVariants != null)

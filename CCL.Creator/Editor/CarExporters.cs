@@ -33,6 +33,11 @@ namespace CCL.Creator
                 requirements.Add(ExporterConstants.PASSENGER_JOBS);
             }
 
+            if (carType.CargoTypes.Entries.Any(x => !Enum.IsDefined(typeof(BaseCargoType), x.CargoType)))
+            {
+                // Require custom cargo mod here
+            }
+
             Requirements = requirements.ToArray();
         }
 

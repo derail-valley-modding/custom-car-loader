@@ -42,6 +42,7 @@ namespace CCL.Types
     {
         public float AmountPerCar = 1f;
         public BaseCargoType CargoType;
+        public bool UseCustomCargo;
 
         [JsonIgnore]
         public GameObject[]? ModelVariants;
