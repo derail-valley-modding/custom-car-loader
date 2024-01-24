@@ -11,8 +11,6 @@ using UnityEngine;
 
 namespace CCL.Importer.Processing
 {
-    using UObject = UnityEngine.Object;
-
     internal class ModelProcessor
     {
         private static readonly AggregateCatalog _catalog;
@@ -77,37 +75,58 @@ namespace CCL.Importer.Processing
 
         private void CreateModifiablePrefabs()
         {
-            // Create a modifiable copy of the prefab
-            GameObject newFab = UObject.Instantiate(Car.prefab, null);
-            newFab.SetActive(false);
-            UObject.DontDestroyOnLoad(newFab);
+            // Create a modifiable copy of the prefabs.
+            Car.RemakePrefabs();
 
-            newFab.name = Car.id;
-            Car.prefab = newFab;
-
-            // Create new TrainCar script
-            var newTrainCar = newFab.AddComponent<TrainCar>();
+            // Create new TrainCar script.
+            Car.prefab.name = Car.id;
+            var newTrainCar = Car.prefab.AddComponent<TrainCar>();
             newTrainCar.carLivery = Car;
 
-            // create modifiable interior
+            // Set interior layers.
             if (Car.interiorPrefab)
             {
-                var newInterior = UObject.Instantiate(Car.interiorPrefab, null);
-                newInterior.SetActive(false);
-                UObject.DontDestroyOnLoad(newInterior);
-
-                ModelUtil.SetLayersRecursiveAndExclude(newInterior, DVLayer.Interactable, DVLayer.Train_Walkable);
-
-                Car.interiorPrefab = newInterior;
+                ModelUtil.SetLayersRecursiveAndExclude(Car.interiorPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
             }
         }
 
-        private void HandleCustomSerialization(GameObject prefab)
+        public static GameObject CreateModifiablePrefab(GameObject gameObject)
+        {
+            GameObject newFab = Object.Instantiate(gameObject, null);
+
+            // Get enabled state of components on prefab.
+            // Unity disables the attached components on a GameObject when
+            // deactivating that object, and we don't want that or when we
+            // instance this prefab again they will all be disabled.
+            var states = newFab.GetComponents<MonoBehaviour>().ToDictionary(k => k, v => v.enabled);
+
+            newFab.SetActive(false);
+            Object.DontDestroyOnLoad(newFab);
+
+            // Restore state.
+            foreach (var state in states)
+            {
+                state.Key.enabled = state.Value;
+            }
+
+            return newFab;
+        }
+
+        public static void HandleCustomSerialization(GameObject prefab)
         {
             foreach (var component in prefab.GetComponentsInChildrenByInterface<ICustomSerialized>())
             {
                 component.AfterImport();
             }
+        }
+
+        public static void DoBasicProcessing(GameObject prefab)
+        {
+            CCLPlugin.LogVerbose($"Deserializing, processing grabbers and proxies for {prefab.name}");
+            HandleCustomSerialization(prefab);
+            GrabberProcessor.ProcessGrabbersOnPrefab(prefab);
+            Mapper.ProcessConfigs(prefab);
+            Mapper.ClearComponentCache();
         }
     }
 }

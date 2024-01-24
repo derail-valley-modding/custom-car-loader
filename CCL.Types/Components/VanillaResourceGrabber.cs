@@ -22,7 +22,7 @@ namespace CCL.Types.Components
 
         public void AfterImport()
         {
-            if (_json != null)
+            if (!string.IsNullOrEmpty(_json))
             {
                 Replacements = JSONObject.FromJson<ResourceReplacement[]>(_json);
             }

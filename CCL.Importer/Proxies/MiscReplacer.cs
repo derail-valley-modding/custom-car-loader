@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies;
-using CCL.Types.Proxies.Wheels;
 using DV;
-using DV.Rain;
-using DV.Wheels;
 
 namespace CCL.Importer.Proxies
 {
@@ -12,11 +9,12 @@ namespace CCL.Importer.Proxies
         public MiscReplacer()
         {
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
-            CreateMap<WindowProxy, Window>()
-                .AutoCacheAndMap()
-                .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap();
+
+            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
+            CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
+            CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
 
             CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
                 .AutoCacheAndMap()
@@ -25,12 +23,6 @@ namespace CCL.Importer.Proxies
                 .AutoCacheAndMap()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
                 .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => Mapper.GetFromCacheOrSelf(s.scriptsToDisable)));
-
-            // Types that aren't MonoBehaviours but are used in proxies.
-            CreateMap<PoweredWheelRotationViaAnimationProxy.AnimatorStartTimeOffsetPair, PoweredWheelRotationViaAnimation.AnimatorStartTimeOffsetPair>();
-            CreateMap<PoweredWheelRotationViaCodeProxy.TransformRotationConfig, TransformRotationConfig>();
-            CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
-            CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
         }
     }
 }

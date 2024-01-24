@@ -31,6 +31,9 @@ namespace CCL.Importer
 
             Translations = new TranslationInjector(CCLPluginInfo.Guid);
 
+            // Build caches before any car is loaded, to only get vanilla resources.
+            Processing.GrabberProcessor.BuildAllCaches();
+
             CarManager.ScanLoadedMods();
             UnityModManager.toggleModsListen += CarManager.HandleModToggled;
 

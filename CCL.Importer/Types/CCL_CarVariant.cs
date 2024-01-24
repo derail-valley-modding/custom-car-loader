@@ -1,6 +1,8 @@
-﻿using CCL.Types;
+﻿using CCL.Importer.Processing;
+using CCL.Types;
 using DV.ThingTypes;
 using DVLangHelper.Data;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,6 +34,17 @@ namespace CCL.Importer.Types
                 if (externalInteractablesPrefab) yield return externalInteractablesPrefab;
                 if (explodedExternalInteractablesPrefab) yield return explodedExternalInteractablesPrefab;
             }
+        }
+
+        public void RemakePrefabs()
+        {
+            prefab = ModelProcessor.CreateModifiablePrefab(prefab);
+
+            if (interiorPrefab) interiorPrefab =  ModelProcessor.CreateModifiablePrefab(interiorPrefab);
+            if (explodedInteriorPrefab) explodedInteriorPrefab = ModelProcessor.CreateModifiablePrefab(explodedInteriorPrefab);
+
+            if (externalInteractablesPrefab) externalInteractablesPrefab = ModelProcessor.CreateModifiablePrefab(externalInteractablesPrefab);
+            if (explodedExternalInteractablesPrefab) explodedExternalInteractablesPrefab = ModelProcessor.CreateModifiablePrefab(explodedExternalInteractablesPrefab);
         }
     }
 }

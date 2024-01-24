@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using UnityEngine;
 
-namespace CCL.Types.Proxies
+namespace CCL.Types.Proxies.Weather
 {
     [DisallowMultipleComponent]
     public class WindowProxy : MonoBehaviour

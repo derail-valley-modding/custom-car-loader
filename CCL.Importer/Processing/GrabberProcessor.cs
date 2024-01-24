@@ -1,4 +1,5 @@
-﻿using CCL.Types.Components;
+﻿using CCL.Types;
+using CCL.Types.Components;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -45,13 +46,22 @@ namespace CCL.Importer.Processing
 
             public void BuildCache()
             {
-                _cachedResources = Resources.FindObjectsOfTypeAll<T>().ToDictionary(k => k.name, v => v);
+                if (_cachedResources != null)
+                {
+                    ClearCache();
+                }
 
-                CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} sounds.");
+                //_cachedResources = Resources.FindObjectsOfTypeAll<T>().ToDictionary(k => k.name, v => v);
+
+                _cachedResources = Resources.FindObjectsOfTypeAll<T>()
+                    .GroupBy(x => x.name, StringComparer.Ordinal)
+                    .ToDictionary(k => k.Key, v => v.First());
+
+                CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} items.");
 
                 // If we have more names that elements in the cache, it's possible one of the required
                 // resources has not been loaded, so log an error.
-                if (_cachedResources.Count < _expectedResources)
+                if (_cachedResources.Count != _expectedResources)
                 {
                     CCLPlugin.Error($"Possible miscreation of {typeof(T).Name} cache ({_cachedResources.Count}/{_expectedResources})");
                 }
@@ -65,16 +75,32 @@ namespace CCL.Importer.Processing
                     _cachedResources = null;
                 }
             }
+
+            // Used for debug.
+            public void PrintCache(string separator = ", ")
+            {
+                CCLPlugin.Log(string.Join(separator, Cache.Keys));
+            }
         }
 
+        // Removed some items from the possible choices, more info on each class.
         private static CachedResource<AudioClip> s_soundCache = new CachedResource<AudioClip>(SoundGrabber.SoundNames.Length);
+        private static CachedResource<Material> s_materialCache = new CachedResource<Material>(MaterialGrabber.MaterialNames.Length - 1);
 
         public override void ExecuteStep(ModelProcessor context)
         {
             foreach (var prefab in context.Car.AllPrefabs)
             {
-                ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
+                ProcessGrabbersOnPrefab(prefab);
             }
+        }
+
+        public static void ProcessGrabbersOnPrefab(GameObject prefab)
+        {
+            ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
+            ProcessGrabberOnPrefab<MaterialGrabber, Material>(prefab, s_materialCache);
+
+            ProcessMaterialGrabberRenderer(prefab);
         }
 
         /// <summary>
@@ -84,7 +110,7 @@ namespace CCL.Importer.Processing
         /// <typeparam name="TGrabType">The type that will be grabbed.</typeparam>
         /// <param name="prefab">The prefab with the components.</param>
         /// <param name="cache">The cache for the type that will be grabbed.</param>
-        private void ProcessGrabberOnPrefab<TGrabber, TGrabType>(GameObject prefab, CachedResource<TGrabType> cache)
+        private static void ProcessGrabberOnPrefab<TGrabber, TGrabType>(GameObject prefab, CachedResource<TGrabType> cache)
             where TGrabType : UnityEngine.Object
             where TGrabber : VanillaResourceGrabber<TGrabType>
         {
@@ -134,6 +160,49 @@ namespace CCL.Importer.Processing
                 // Remove the grabber from the prefab since it's no longer needed.
                 UnityEngine.Object.Destroy(grabber);
             }
+        }
+
+        private static void ProcessMaterialGrabberRenderer(GameObject prefab)
+        {
+            foreach (var grabber in prefab.GetComponentsInChildren<MaterialGrabberRenderer>())
+            {
+                foreach (var renderer in grabber.RenderersToAffect)
+                {
+                    // Copy the copy, to assign later, or it won't actually reflect the changes.
+                    var mats = renderer.sharedMaterials;
+
+                    foreach (var index in grabber.Indeces)
+                    {
+                        string name = MaterialGrabber.MaterialNames[index.NameIndex];
+
+                        if (s_materialCache.Cache.TryGetValue(name, out Material mat))
+                        {
+                            if (index.RendererIndex < renderer.sharedMaterials.Length)
+                            {
+                                mats[index.RendererIndex] = mat;
+                            }
+                            else
+                            {
+                                CCLPlugin.Error($"Specified index ({index.RendererIndex}) is larger than materials in renderer '{renderer.name}'!");
+                            }
+                        }
+                        else
+                        {
+                            CCLPlugin.Error($"Could not find cached key '{name}' (index {index.NameIndex})!");
+                        }
+                    }
+
+                    renderer.sharedMaterials = mats;
+                }
+
+                UnityEngine.Object.Destroy(grabber);
+            }
+        }
+
+        public static void BuildAllCaches()
+        {
+            s_soundCache.BuildCache();
+            s_materialCache.BuildCache();
         }
     }
 }

@@ -39,9 +39,10 @@
 		<Reference Include="DVLangHelper.Runtime" />
 		<Reference Include="DV.Interaction" />
 		<Reference Include="DV.Localization" />
+		<Reference Include="DV.Simulation" />
 		<Reference Include="DV.ThingTypes" />
 		<Reference Include="DV.Utils" />
-		<Reference Include="DV.Simulation" />
+		<Reference Include="DV.WeatherSystem" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

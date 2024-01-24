@@ -14,6 +14,7 @@ namespace CCL.Importer.Types
         public DVTrainCarKind KindSelection;
         public TranslationData NameTranslations = new();
         public LoadableCargo? CargoTypes;
+        public GameObject[] ExtraModels = new GameObject[0];
 
         public IEnumerable<GameObject> AllCargoModels
         {

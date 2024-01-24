@@ -1,8 +1,8 @@
-﻿using CCL.Importer.Types;
+﻿using CCL.Importer.Processing;
+using CCL.Importer.Types;
 using DV;
 using DV.ThingTypes;
 using HarmonyLib;
-using System;
 using UnityEngine;
 
 namespace CCL.Importer
@@ -20,9 +20,18 @@ namespace CCL.Importer
             foreach (var loadableCargo in carType.CargoTypes.Entries)
             {
                 CCLPlugin.LogVerbose($"Loadable cargo {carType.id} - {loadableCargo.AmountPerCar} {loadableCargo.CargoType}, {loadableCargo.ModelVariants?.Length} models");
+
                 if (!Globals.G.Types.CargoType_to_v2.TryGetValue((CargoType)loadableCargo.CargoType, out var matchCargo))
                 {
                     CCLPlugin.Error($"Couldn't find v2 cargo type {loadableCargo.CargoType} for car {carType.id}");
+                }
+
+                if (loadableCargo.ModelVariants != null)
+                {
+                    for (int i = 0; i < loadableCargo.ModelVariants.Length; i++)
+                    {
+                        ModelProcessor.DoBasicProcessing(loadableCargo.ModelVariants[i]);
+                    }
                 }
 
                 var loadableInfo = new CargoType_v2.LoadableInfo(carType, loadableCargo.ModelVariants);

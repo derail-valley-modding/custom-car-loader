@@ -137,6 +137,8 @@ namespace CCL.Importer
 
                 CCLPlugin.Log($"Successfully loaded car type {carId}");
 
+                assetBundle.Unload(false);
+
                 return carType;
             }
             catch (Exception ex)
@@ -154,6 +156,13 @@ namespace CCL.Importer
                 {
                     return false;
                 }
+            }
+
+            CCLPlugin.Log($"Extra models: {carType.ExtraModels.Length}");
+
+            foreach (var extraModel in carType.ExtraModels)
+            {
+                ModelProcessor.DoBasicProcessing(extraModel);
             }
 
             return true;
