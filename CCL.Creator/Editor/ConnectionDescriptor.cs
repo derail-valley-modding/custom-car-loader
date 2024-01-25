@@ -32,7 +32,7 @@ namespace CCL.Creator.Editor
         public readonly PortConnectionProxy? PortConnection;
         public readonly PortReferenceConnectionProxy? ReferenceConnection;
         public readonly PortIdField? IdFieldConnection;
-        public readonly string? LocalId;
+        public readonly string? AssignedId;
 
         public readonly PortDirection Direction;
         public readonly PortOptionType ConnectionType;
@@ -55,12 +55,13 @@ namespace CCL.Creator.Editor
             ConnectionType = PortOptionType.PortReference;
         }
 
-        public ConnectionDescriptor(SimConnectionsDefinitionProxy host, PortIdField idFieldConnection, string localId)
+        public ConnectionDescriptor(SimConnectionsDefinitionProxy host, PortIdField idFieldConnection, string assignedId, PortDirection direction)
         {
             Connections = host;
-            Id = idFieldConnection.FullName;
+            Id = (direction == PortDirection.Output) ? idFieldConnection.FullName : assignedId;
             IdFieldConnection = idFieldConnection;
-            LocalId = localId;
+            AssignedId = assignedId;
+            Direction = direction;
             ConnectionType = PortOptionType.PortIdField;
         }
 
@@ -76,7 +77,7 @@ namespace CCL.Creator.Editor
             }
             else if (IdFieldConnection != null)
             {
-                IdFieldConnection.UnAssign(LocalId!);
+                IdFieldConnection.UnAssign(AssignedId!);
 
                 EditorUtility.SetDirty(IdFieldConnection.Container);
                 SimulationEditorWindow.SaveAndRefresh();
@@ -128,7 +129,7 @@ namespace CCL.Creator.Editor
                 idField.Field.Assign(localId);
                 EditorUtility.SetDirty(idField.Field.Container);
                 SimulationEditorWindow.SaveAndRefresh();
-                return new ConnectionDescriptor(host, idField.Field, localId);
+                return new ConnectionDescriptor(host, idField.Field, localId, direction);
             }
 
             if (localIsRef || remote is PortReferenceOption)
@@ -147,6 +148,14 @@ namespace CCL.Creator.Editor
                 host.connections.Add(link);
                 return new ConnectionDescriptor(host, remote.ID!, link, direction);
             }
+        }
+
+        public static ConnectionDescriptor CreatePortIdLink(SimConnectionsDefinitionProxy host, PortIdField idField, string fullPortId)
+        {
+            idField.Assign(fullPortId);
+            EditorUtility.SetDirty(idField.Container);
+            SimulationEditorWindow.SaveAndRefresh();
+            return new ConnectionDescriptor(host, idField, fullPortId, PortDirection.Input);
         }
 
         private string GetLocalId()

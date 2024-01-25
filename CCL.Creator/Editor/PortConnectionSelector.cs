@@ -13,6 +13,7 @@ namespace CCL.Creator.Editor
     {
         private readonly SimConnectionsDefinitionProxy _simConn;
         private readonly string _localId;
+        private readonly PortIdField? _localIdField;
         private readonly bool _localIsReference;
         private readonly PortDirection _direction;
         private readonly float _width;
@@ -61,6 +62,22 @@ namespace CCL.Creator.Editor
 
             var sources = PortOptionHelper.GetAvailableSources(host, false);
             var options = PortOptionHelper.GetPortReferenceInputOptions(reference.valueType, sources);
+            _options = options.ToList();
+        }
+
+        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortIdField idField, ConnectionResult currentConn)
+        {
+            _simConn = host;
+            _width = width * 1.2f;
+            _currentConnection = currentConn;
+            _multiplicity = idField.IsMultiValue ? ConnectionResultType.Multiple : ConnectionResultType.Single;
+            _localId = null!;
+            _localIdField = idField;
+            _direction = PortDirection.Input;
+            _localIsReference = false;
+
+            var sources = PortOptionHelper.GetAvailableSources(host, false);
+            var options = PortOptionHelper.GetPortOptions(sources, idField.TypeFilters, idField.ValueFilters);
             _options = options.ToList();
         }
 
@@ -139,7 +156,15 @@ namespace CCL.Creator.Editor
                         }
                     }
 
-                    var newLink = ConnectionDescriptor.CreateNewLink(_simConn, _localId, _localIsReference, option, _direction);
+                    ConnectionDescriptor newLink;
+                    if (_localIdField != null)
+                    {
+                        newLink = ConnectionDescriptor.CreatePortIdLink(_simConn, _localIdField, option.ID!);
+                    }
+                    else
+                    {
+                        newLink = ConnectionDescriptor.CreateNewLink(_simConn, _localId, _localIsReference, option, _direction);
+                    }
                     _currentConnection.AddMatch(newLink);
                 }
                 else if (!nowConnected && wasConnected)

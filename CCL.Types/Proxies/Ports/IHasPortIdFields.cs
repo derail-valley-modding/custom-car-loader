@@ -9,6 +9,7 @@ namespace CCL.Types.Proxies.Ports
     {
         public readonly MonoBehaviour Container;
         public readonly string FieldName;
+        public readonly bool IsMultiValue;
         public readonly string[]? AssignedPorts;
 
         public readonly DVPortType[]? TypeFilters;
@@ -41,6 +42,8 @@ namespace CCL.Types.Proxies.Ports
 
             TypeFilters = typeFilters;
             ValueFilters = valueFilters;
+
+            IsMultiValue = Container.GetType().GetField(FieldName, AllInstance).FieldType != typeof(string);
         }
 
         // multi id, single type

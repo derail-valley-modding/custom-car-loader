@@ -89,6 +89,20 @@ namespace CCL.Creator.Editor
             }
         }
 
+        public static IEnumerable<PortOptionBase> GetPortOptions(IEnumerable<GameObject> sources, DVPortType[]? typeFilters, DVPortValueType[]? valueFilters)
+        {
+            foreach (var source in sources)
+            {
+                foreach (var port in GetPortsInObject(source))
+                {
+                    if (port.MatchesType(typeFilters) && port.MatchesValueType(valueFilters))
+                    {
+                        yield return port;
+                    }
+                }
+            }
+        }
+
         public static IEnumerable<PortOptionBase> GetPortReferenceOptions(IEnumerable<GameObject> sources)
         {
             foreach (var source in sources)
