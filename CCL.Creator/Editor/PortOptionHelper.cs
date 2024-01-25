@@ -151,7 +151,7 @@ namespace CCL.Creator.Editor
             }
         }
 
-        public static IEnumerable<PortOptionBase> GetOutputPortConnectionOptions(DVPortValueType valueType, IEnumerable<GameObject> sources)
+        public static IEnumerable<PortOptionBase> GetOutputPortConnectionOptions(DVPortType portType, DVPortValueType valueType, IEnumerable<GameObject> sources)
         {
             foreach (var source in sources)
             {
@@ -175,12 +175,9 @@ namespace CCL.Creator.Editor
                 {
                     foreach (var field in hasFields.ExposedPortIdFields)
                     {
-                        if (field.TypeFilters == null || field.TypeFilters.Contains(DVPortType.OUT))
+                        if (field.CanConnect(portType) && field.CanConnect(valueType))
                         {
-                            if (field.ValueFilters == null || field.ValueFilters.Contains(valueType))
-                            {
-                                yield return new PortIdFieldOption(source.name, field, valueType);
-                            }
+                            yield return new PortIdFieldOption(source.name, field, valueType);
                         }
                     }
                 }

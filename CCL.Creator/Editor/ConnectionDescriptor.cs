@@ -1,6 +1,7 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 
 namespace CCL.Creator.Editor
 {
@@ -31,6 +32,8 @@ namespace CCL.Creator.Editor
         public readonly PortConnectionProxy? PortConnection;
         public readonly PortReferenceConnectionProxy? ReferenceConnection;
         public readonly PortIdField? IdFieldConnection;
+        public readonly string? LocalId;
+
         public readonly PortDirection Direction;
         public readonly PortOptionType ConnectionType;
 
@@ -52,11 +55,12 @@ namespace CCL.Creator.Editor
             ConnectionType = PortOptionType.PortReference;
         }
 
-        public ConnectionDescriptor(SimConnectionsDefinitionProxy host, PortIdField idFieldConnection)
+        public ConnectionDescriptor(SimConnectionsDefinitionProxy host, PortIdField idFieldConnection, string localId)
         {
             Connections = host;
             Id = idFieldConnection.FullName;
             IdFieldConnection = idFieldConnection;
+            LocalId = localId;
             ConnectionType = PortOptionType.PortIdField;
         }
 
@@ -72,7 +76,10 @@ namespace CCL.Creator.Editor
             }
             else if (IdFieldConnection != null)
             {
-                IdFieldConnection.Destroy();
+                IdFieldConnection.UnAssign(LocalId!);
+
+                EditorUtility.SetDirty(IdFieldConnection.Container);
+                SimulationEditorWindow.SaveAndRefresh();
             }
         }
 
@@ -119,7 +126,9 @@ namespace CCL.Creator.Editor
             if (remote is PortIdFieldOption idField)
             {
                 idField.Field.Assign(localId);
-                return new ConnectionDescriptor(host, idField.Field);
+                EditorUtility.SetDirty(idField.Field.Container);
+                SimulationEditorWindow.SaveAndRefresh();
+                return new ConnectionDescriptor(host, idField.Field, localId);
             }
 
             if (localIsRef || remote is PortReferenceOption)

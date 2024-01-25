@@ -54,8 +54,6 @@ namespace CCL.Creator.Editor
             }
 
             EditorGUI.EndProperty();
-
-            property.serializedObject.ApplyModifiedProperties();
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Types;
+using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 namespace CCL.Creator.Editor
@@ -21,6 +22,50 @@ namespace CCL.Creator.Editor
             simConnections.portReferenceConnections ??= new List<PortReferenceConnectionProxy>();
 
             _instance.Show();
+        }
+
+        private static string? GetSelectionPath()
+        {
+            if (Selection.activeGameObject)
+            {
+                return Selection.activeGameObject.GetPath();
+            }
+            return null;
+        }
+
+        public static void SaveAndRefresh()
+        {
+            AssetDatabase.SaveAssets();
+            string? selectionPath = GetSelectionPath();
+            EditorApplication.delayCall += () => DelayedRefresh(selectionPath);
+        }
+
+        private static void DelayedRefresh(string? selectionPath)
+        {
+            var scene = EditorSceneManager.GetActiveScene();
+            var roots = scene.GetRootGameObjects();
+            var connections = roots.Select(r => r.GetComponentInChildren<SimConnectionsDefinitionProxy>()).FirstOrDefault();
+
+            if (connections) ShowWindow(connections);
+
+            if (!string.IsNullOrEmpty(selectionPath))
+            {
+                var parts = selectionPath!.Split(new[] { '/' }, 2);
+                var root = roots.FirstOrDefault(r => r.name == parts[0]);
+
+                if (parts.Length == 1)
+                {
+                    Selection.activeGameObject = root;
+                }
+                else
+                {
+                    Transform? target = root.transform.FindSafe(parts[1]);
+                    if (target)
+                    {
+                        Selection.activeGameObject = target!.gameObject;
+                    }
+                }
+            }
         }
 
         public SimConnectionsDefinitionProxy SimConnections = null!;
@@ -125,9 +170,9 @@ namespace CCL.Creator.Editor
             var assignedFields = PortOptionHelper.GetPortIdFields(sources).Where(f => f.IsAssigned);
             foreach (var field in assignedFields)
             {
-                if (field.AssignedPort == targetId)
+                if (field.IsPortAssigned(targetId))
                 {
-                    result.AddMatch(new ConnectionDescriptor(connections, field));
+                    result.AddMatch(new ConnectionDescriptor(connections, field, targetId));
                 }
             }
 
@@ -151,9 +196,9 @@ namespace CCL.Creator.Editor
             var assignedFields = PortOptionHelper.GetPortIdFields(sources).Where(f => f.IsAssigned);
             foreach (var field in assignedFields)
             {
-                if (field.AssignedPort == sourceId)
+                if (field.IsPortAssigned(sourceId))
                 {
-                    result.AddMatch(new ConnectionDescriptor(connections, field));
+                    result.AddMatch(new ConnectionDescriptor(connections, field, sourceId));
                 }
             }
 

@@ -41,7 +41,7 @@ namespace CCL.Creator.Editor
             }
             else
             {
-                options = PortOptionHelper.GetOutputPortConnectionOptions(port.valueType, sources);
+                options = PortOptionHelper.GetOutputPortConnectionOptions(port.type, port.valueType, sources);
                 _multiplicity = ConnectionResultType.Multiple;
             }
 
