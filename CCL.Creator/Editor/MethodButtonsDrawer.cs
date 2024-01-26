@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using CCL.Types;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
 namespace CCL.Creator
@@ -37,6 +37,12 @@ namespace CCL.Creator
                     else
                     {
                         button.Action.Invoke(targetProp.serializedObject.targetObject, new object[0]);
+                    }
+
+                    if (PrefabStageUtility.GetCurrentPrefabStage() is PrefabStage stage)
+                    {
+                        EditorUtility.SetDirty(targetProp.serializedObject.targetObject);
+                        EditorHelpers.SaveAndRefresh();
                     }
                 }
             }

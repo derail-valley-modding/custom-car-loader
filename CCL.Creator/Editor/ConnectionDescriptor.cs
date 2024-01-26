@@ -70,17 +70,23 @@ namespace CCL.Creator.Editor
             if (PortConnection != null)
             {
                 Connections.connections.Remove(PortConnection);
+
+                EditorUtility.SetDirty(Connections);
+                EditorHelpers.SaveAndRefresh(SimulationEditorWindow.RefreshWindowFromScene);
             }
             else if (ReferenceConnection != null)
             {
                 Connections.portReferenceConnections.Remove(ReferenceConnection);
+
+                EditorUtility.SetDirty(Connections);
+                EditorHelpers.SaveAndRefresh(SimulationEditorWindow.RefreshWindowFromScene);
             }
             else if (IdFieldConnection != null)
             {
                 IdFieldConnection.UnAssign(AssignedId!);
 
                 EditorUtility.SetDirty(IdFieldConnection.Container);
-                SimulationEditorWindow.SaveAndRefresh();
+                EditorHelpers.SaveAndRefresh(SimulationEditorWindow.RefreshWindowFromScene);
             }
         }
 
@@ -128,7 +134,7 @@ namespace CCL.Creator.Editor
             {
                 idField.Field.Assign(localId);
                 EditorUtility.SetDirty(idField.Field.Container);
-                SimulationEditorWindow.SaveAndRefresh();
+                EditorHelpers.SaveAndRefresh(SimulationEditorWindow.RefreshWindowFromScene);
                 return new ConnectionDescriptor(host, idField.Field, localId, direction);
             }
 
@@ -138,6 +144,9 @@ namespace CCL.Creator.Editor
                 SetIdForDirection(link, localId, direction);
                 SetIdForDirection(link, remote.ID!, direction.Opposite());
                 host.portReferenceConnections.Add(link);
+
+                EditorUtility.SetDirty(host);
+                EditorHelpers.SaveAndRefresh(SimulationEditorWindow.RefreshWindowFromScene);
                 return new ConnectionDescriptor(host, remote.ID!, link, direction);
             }
             else
@@ -146,6 +155,9 @@ namespace CCL.Creator.Editor
                 SetIdForDirection(link, localId, direction);
                 SetIdForDirection(link, remote.ID!, direction.Opposite());
                 host.connections.Add(link);
+
+                EditorUtility.SetDirty(host);
+                EditorHelpers.SaveAndRefresh(SimulationEditorWindow.RefreshWindowFromScene);
                 return new ConnectionDescriptor(host, remote.ID!, link, direction);
             }
         }
@@ -154,7 +166,7 @@ namespace CCL.Creator.Editor
         {
             idField.Assign(fullPortId);
             EditorUtility.SetDirty(idField.Container);
-            SimulationEditorWindow.SaveAndRefresh();
+            EditorHelpers.SaveAndRefresh(SimulationEditorWindow.RefreshWindowFromScene);
             return new ConnectionDescriptor(host, idField, fullPortId, PortDirection.Input);
         }
 

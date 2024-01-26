@@ -3,6 +3,7 @@ using CCL.Types.Proxies.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
@@ -13,6 +14,16 @@ namespace CCL.Creator.Editor
     public class SimulationEditorWindow : EditorWindow
     {
         private static SimulationEditorWindow? _instance;
+
+        static SimulationEditorWindow()
+        {
+            PrefabStage.prefabStageClosing += OnStageClose;
+        }
+
+        private static void OnStageClose(PrefabStage _)
+        {
+            if (_instance) _instance!.Close();
+        }
 
         public static void ShowWindow(SimConnectionsDefinitionProxy simConnections)
         {
@@ -31,62 +42,22 @@ namespace CCL.Creator.Editor
             _unfoldedState.Clear();
         }
 
-        private static string? GetSelectionPath()
+        public static void RefreshWindowFromScene()
         {
-            if (Selection.activeGameObject)
-            {
-                return Selection.activeGameObject.GetPath();
-            }
-            return null;
-        }
-
-        public static void SaveAndRefresh()
-        {
-            AssetDatabase.SaveAssets();
-            string? selectionPath = GetSelectionPath();
-            EditorApplication.delayCall += () => DelayedRefresh(selectionPath);
-        }
-
-        private static void DelayedRefresh(string? selectionPath)
-        {
-            GameObject? root = null;
             SimConnectionsDefinitionProxy? connections;
-            var parts = selectionPath?.Split(new[] { '/' }, 2);
 
             if (PrefabStageUtility.GetCurrentPrefabStage() is PrefabStage stage)
             {
-                root = stage.prefabContentsRoot;
-                connections = root.GetComponentInChildren<SimConnectionsDefinitionProxy>();
+                connections = stage.prefabContentsRoot.GetComponentInChildren<SimConnectionsDefinitionProxy>();
             }
             else
             {
                 var scene = EditorSceneManager.GetActiveScene();
                 var roots = scene.GetRootGameObjects();
                 connections = roots.Select(r => r.GetComponentInChildren<SimConnectionsDefinitionProxy>()).FirstOrDefault();
-
-                if (parts != null)
-                {
-                    root = roots.FirstOrDefault(r => r.name == parts[0]);
-                }
             }
 
             if (connections) ShowWindow(connections);
-
-            if (parts != null && root)
-            {
-                if (parts.Length == 1)
-                {
-                    Selection.activeGameObject = root;
-                }
-                else
-                {
-                    Transform? target = root!.transform.FindSafe(parts[1]);
-                    if (target)
-                    {
-                        Selection.activeGameObject = target!.gameObject;
-                    }
-                }
-            }
         }
 
         public SimConnectionsDefinitionProxy SimConnections = null!;
@@ -121,6 +92,7 @@ namespace CCL.Creator.Editor
             GUI.EndScrollView();
         }
 
+        const int N_COLUMNS = 2;
         const int H_PADDING = 10;
         const int LINE_HEIGHT = 20;
 
@@ -170,7 +142,7 @@ namespace CCL.Creator.Editor
             public void Draw(SimConnectionsDefinitionProxy simConnections, ref float yOffset, float compBoxWidth, Dictionary<Component, bool> unfolded)
             {
                 yOffset += H_PADDING;
-                float columnWidth = compBoxWidth / 3;
+                float columnWidth = compBoxWidth / N_COLUMNS;
                 float entryWidth = columnWidth - (H_PADDING * 2);
 
                 var compBox = new Rect(H_PADDING, yOffset, compBoxWidth, Height(unfolded));
@@ -186,7 +158,7 @@ namespace CCL.Creator.Editor
                 unfolded[Component] = newFold;
 
                 // Title/Jump button
-                var titleBox = new Rect(columnWidth, localY, columnWidth, LINE_HEIGHT);
+                var titleBox = new Rect(columnWidth / 2, localY, columnWidth, LINE_HEIGHT);
                 if (GUI.Button(titleBox, Title))
                 {
                     Selection.activeObject = Component;
@@ -205,7 +177,7 @@ namespace CCL.Creator.Editor
                     foreach (var port in Ports)
                     {
                         localY += LINE_HEIGHT;
-                        var entryPos = new Rect(columnWidth + H_PADDING, localY, entryWidth, LINE_HEIGHT);
+                        var entryPos = new Rect(H_PADDING, localY, entryWidth, LINE_HEIGHT);
                         port.Draw(simConnections, entryPos);
                     }
 
@@ -213,7 +185,7 @@ namespace CCL.Creator.Editor
                     foreach (var reference in References)
                     {
                         localY += LINE_HEIGHT;
-                        var entryPos = new Rect(columnWidth + H_PADDING, localY, entryWidth, LINE_HEIGHT);
+                        var entryPos = new Rect(H_PADDING, localY, entryWidth, LINE_HEIGHT);
                         reference.Draw(simConnections, entryPos);
                     }
 
@@ -221,7 +193,7 @@ namespace CCL.Creator.Editor
                     foreach (var idField in IdFields)
                     {
                         localY += LINE_HEIGHT;
-                        var entryPos = new Rect(columnWidth + H_PADDING, localY, entryWidth, LINE_HEIGHT);
+                        var entryPos = new Rect(H_PADDING, localY, entryWidth, LINE_HEIGHT);
                         idField.Draw(simConnections, entryPos);
                     }
                 }
@@ -317,17 +289,7 @@ namespace CCL.Creator.Editor
 
             protected static string GetValueTypeString(DVPortValueType valueType)
             {
-                return System.Enum.GetName(typeof(DVPortValueType), valueType);
-            }
-
-            protected static Rect GetLeftButtonRect(Rect position)
-            {
-                return new Rect(
-                    position.x - (position.width + (H_PADDING * 2)),
-                    position.y,
-                    position.width,
-                    LINE_HEIGHT
-                );
+                return Enum.GetName(typeof(DVPortValueType), valueType);
             }
 
             protected static Rect GetRightButtonRect(Rect position)
@@ -340,29 +302,80 @@ namespace CCL.Creator.Editor
                 );
             }
 
-            private const float TYPE_RATIO = 4;
+            private const float DESC_COLUMNS = 4;
+
+            private static Rect GetPortTypeRect(Rect position)
+            {
+                return new Rect(position.x, position.y, position.width / DESC_COLUMNS, LINE_HEIGHT);
+            }
 
             private static Rect GetTypeRect(Rect position)
             {
-                return new Rect(position.x, position.y, position.width / TYPE_RATIO, LINE_HEIGHT);
+                return new Rect(position.x + (position.width / DESC_COLUMNS), position.y, position.width / DESC_COLUMNS, LINE_HEIGHT);
             }
 
             private static Rect GetIdRect(Rect position)
             {
-                const float ID_PROPORTION = (TYPE_RATIO - 1) / TYPE_RATIO;
-                return new Rect(position.x + (position.width / TYPE_RATIO), position.y, position.width * ID_PROPORTION, LINE_HEIGHT);
+                const float ID_PROPORTION = (DESC_COLUMNS - 2) / DESC_COLUMNS;
+                return new Rect(position.x + (position.width / DESC_COLUMNS) * 2, position.y, position.width * ID_PROPORTION, LINE_HEIGHT);
             }
 
-            protected static void DrawDescription(Rect position, DVPortValueType valueType, string id)
+            private static readonly Regex _titleRegex = new Regex(@"(?<1>\p{Lu})(?=\p{Ll})|(?<=\p{Ll})(?<1>\p{Lu})");
+
+            private static string GetPrettyId(string id)
+            {
+                if (id.All(c => c == '_' || char.IsUpper(c)))
+                {
+                    char[] dest = new char[id.Length];
+
+                    char lastChar = '\0';
+                    for (int i = 0; i < id.Length; i++)
+                    {
+                        if (lastChar == '\0' || lastChar == '_')
+                        {
+                            dest[i] = id[i];
+                        }
+                        else if (id[i] == '_')
+                        {
+                            dest[i] = ' ';
+                        }
+                        else
+                        {
+                            dest[i] = char.ToLower(id[i]);
+                        }
+
+                        lastChar = id[i];
+                    }
+
+                    return new string(dest);
+                }
+                else
+                {
+                    var spaced = _titleRegex.Replace(id, " $1").ToCharArray();
+                    spaced[0] = char.ToUpper(spaced[0]);
+                    return new string(spaced);
+                }
+            }
+
+            protected static void DrawDescription(Rect position, DVPortValueType valueType, string id, string? portType)
             {
                 GUI.color = Color.white;
+                if (portType != null)
+                {
+                    GUI.Label(GetPortTypeRect(position), GetPrettyId(portType));
+                }
                 GUI.Label(GetTypeRect(position), $"[{GetValueTypeString(valueType)}]");
-                GUI.Label(GetIdRect(position), id);
+                GUI.Label(GetIdRect(position), GetPrettyId(id));
             }
 
-            protected static void DrawDescription(Rect position, DVPortValueType[]? valueFilters, string id)
+            protected static void DrawDescription(Rect position, DVPortValueType[]? valueFilters, string id, string? portType)
             {
                 GUI.color = Color.white;
+
+                if (portType != null)
+                {
+                    GUI.Label(GetPortTypeRect(position), GetPrettyId(portType));
+                }
 
                 string typeString;
                 if (valueFilters == null)
@@ -375,7 +388,7 @@ namespace CCL.Creator.Editor
                 }
 
                 GUI.Label(GetTypeRect(position), $"[{typeString}]");
-                GUI.Label(GetIdRect(position), id);
+                GUI.Label(GetIdRect(position), GetPrettyId(id));
             }
         }
 
@@ -392,39 +405,30 @@ namespace CCL.Creator.Editor
 
             public override void Draw(SimConnectionsDefinitionProxy connections, Rect position)
             {
-                DrawDescription(position, Port.valueType, Port.ID);
+                DrawDescription(position, Port.valueType, Port.ID, Enum.GetName(typeof(DVPortType), Port.type));
+
+                var selectorRect = GetRightButtonRect(position);
 
                 if (Port.type == DVPortType.IN)
                 {
-                    var lRect = GetLeftButtonRect(position);
-
                     var inConnection = TryFindInputConnection(connections, FullId);
                     GUI.color = inConnection.AnyConnection ? Color.white : NC_COLOR;
 
-                    if (GUI.Button(lRect, new GUIContent(inConnection.DisplayId, inConnection.Tooltip)))
+                    if (GUI.Button(selectorRect, new GUIContent(inConnection.DisplayId, inConnection.Tooltip)))
                     {
-                        var selector = new PortConnectionSelector(connections, lRect.width, Port, FullId, PortDirection.Input, inConnection);
-                        PopupWindow.Show(lRect, selector);
+                        var selector = new PortConnectionSelector(connections, selectorRect.width, Port, FullId, PortDirection.Input, inConnection);
+                        PopupWindow.Show(selectorRect, selector);
                     }
                 }
                 else
                 {
-                    if (Port.type == DVPortType.EXTERNAL_IN)
-                    {
-                        GUI.color = Color.white;
-                        var lRect = GetLeftButtonRect(position);
-                        GUI.Label(lRect, "[External Control]");
-                    }
-
-                    var rRect = GetRightButtonRect(position);
-
                     var outConnection = TryFindOutputConnection(connections, FullId);
-                    GUI.color = (outConnection.AnyConnection || (Port.type == DVPortType.EXTERNAL_IN)) ? Color.white : NC_COLOR;
+                    GUI.color = (outConnection.AnyConnection) ? Color.white : NC_COLOR;
 
-                    if (GUI.Button(rRect, new GUIContent(outConnection.DisplayId, outConnection.Tooltip)))
+                    if (GUI.Button(selectorRect, new GUIContent(outConnection.DisplayId, outConnection.Tooltip)))
                     {
-                        var selector = new PortConnectionSelector(connections, rRect.width, Port, FullId, PortDirection.Output, outConnection);
-                        PopupWindow.Show(rRect, selector);
+                        var selector = new PortConnectionSelector(connections, selectorRect.width, Port, FullId, PortDirection.Output, outConnection);
+                        PopupWindow.Show(selectorRect, selector);
                     }
                 }
             }
@@ -443,16 +447,16 @@ namespace CCL.Creator.Editor
 
             public override void Draw(SimConnectionsDefinitionProxy connections, Rect position)
             {
-                DrawDescription(position, Reference.valueType, Reference.ID);
+                DrawDescription(position, Reference.valueType, Reference.ID, "REFERENCE");
 
-                var lRect = GetLeftButtonRect(position);
+                var selectorRect = GetRightButtonRect(position);
                 var inConnection = TryFindInputConnection(connections, FullId);
                 GUI.color = inConnection.AnyConnection ? Color.white : NC_COLOR;
 
-                if (GUI.Button(lRect, new GUIContent(inConnection.DisplayId, inConnection.Tooltip)))
+                if (GUI.Button(selectorRect, new GUIContent(inConnection.DisplayId, inConnection.Tooltip)))
                 {
-                    var popup = new PortConnectionSelector(connections, lRect.width, Reference, FullId, inConnection);
-                    PopupWindow.Show(lRect, popup);
+                    var popup = new PortConnectionSelector(connections, selectorRect.width, Reference, FullId, inConnection);
+                    PopupWindow.Show(selectorRect, popup);
                 }
             }
         }
@@ -468,16 +472,16 @@ namespace CCL.Creator.Editor
 
             public override void Draw(SimConnectionsDefinitionProxy connections, Rect position)
             {
-                DrawDescription(position, Field.ValueFilters, Field.FieldName);
+                DrawDescription(position, Field.ValueFilters, Field.FieldName, "PORT_ID");
                 
-                var lRect = GetLeftButtonRect(position);
+                var selectorRect = GetRightButtonRect(position);
                 var connection = TryFindPortFieldConnection(connections, Field);
 
                 GUI.color = connection.AnyConnection ? Color.white : NC_COLOR;
-                if (GUI.Button(lRect, new GUIContent(connection.DisplayId, connection.Tooltip)))
+                if (GUI.Button(selectorRect, new GUIContent(connection.DisplayId, connection.Tooltip)))
                 {
-                    var popup = new PortConnectionSelector(connections, lRect.width, Field, connection);
-                    PopupWindow.Show(lRect, popup);
+                    var popup = new PortConnectionSelector(connections, selectorRect.width, Field, connection);
+                    PopupWindow.Show(selectorRect, popup);
                 }
             }
         }

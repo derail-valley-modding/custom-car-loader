@@ -1,6 +1,11 @@
+using CCL.Types;
 using System;
 using System.IO;
+using UnityEditor.Experimental.SceneManagement;
+using UnityEditor.SceneManagement;
+using UnityEditor;
 using UnityEngine;
+using System.Linq;
 
 namespace CCL.Creator
 {
@@ -66,6 +71,61 @@ namespace CCL.Creator
         public static T ObjectField<T>(T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options) where T : UnityEngine.Object
         {
             return (T)UnityEditor.EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects, options);
+        }
+
+        public static string? GetSelectionPath()
+        {
+            if (Selection.activeGameObject)
+            {
+                return Selection.activeGameObject.GetPath();
+            }
+            return null;
+        }
+
+        public static void SaveAndRefresh(Action? extraAction = null)
+        {
+            AssetDatabase.SaveAssets();
+            string? selectionPath = GetSelectionPath();
+            EditorApplication.delayCall += () => DelayedRefresh(selectionPath, extraAction);
+        }
+
+        private static void DelayedRefresh(string? selectionPath, Action? extraAction)
+        {
+            GameObject? root = null;
+            var parts = selectionPath?.Split(new[] { '/' }, 2);
+
+            if (PrefabStageUtility.GetCurrentPrefabStage() is PrefabStage stage)
+            {
+                root = stage.prefabContentsRoot;
+            }
+            else
+            {
+                var scene = EditorSceneManager.GetActiveScene();
+                var roots = scene.GetRootGameObjects();
+
+                if (parts != null)
+                {
+                    root = roots.FirstOrDefault(r => r.name == parts[0]);
+                }
+            }
+
+            if (parts != null && root)
+            {
+                if (parts.Length == 1)
+                {
+                    Selection.activeGameObject = root;
+                }
+                else
+                {
+                    Transform? target = root!.transform.FindSafe(parts[1]);
+                    if (target)
+                    {
+                        Selection.activeGameObject = target!.gameObject;
+                    }
+                }
+            }
+
+            extraAction?.Invoke();
         }
     }
 

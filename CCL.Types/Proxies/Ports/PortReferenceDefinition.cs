@@ -11,6 +11,8 @@ namespace CCL.Types.Proxies.Ports
 
         public bool writeAllowed;
 
+        public PortReferenceDefinition() { }
+
         public PortReferenceDefinition(DVPortValueType valueType, string iD, bool writeAllowed = false)
         {
             this.valueType = valueType;

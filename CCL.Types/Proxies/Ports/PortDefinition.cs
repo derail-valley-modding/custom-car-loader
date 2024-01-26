@@ -9,6 +9,8 @@ namespace CCL.Types.Proxies.Ports
     [Serializable]
     public class PortDefinition
     {
+        public PortDefinition() { }
+
         // Token: 0x0600000A RID: 10 RVA: 0x00002141 File Offset: 0x00000341
         public PortDefinition(DVPortType type, DVPortValueType valueType, string iD)
         {

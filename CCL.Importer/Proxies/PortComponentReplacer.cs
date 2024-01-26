@@ -8,6 +8,9 @@ namespace CCL.Importer.Proxies
     {
         public PortComponentReplacer()
         {
+            CreateMap<CCL.Types.Proxies.Ports.PortDefinition, LocoSim.Definitions.PortDefinition>();
+            CreateMap<CCL.Types.Proxies.Ports.PortReferenceDefinition, LocoSim.Definitions.PortReferenceDefinition>();
+
             CreateMap<ConstantPortDefinitionProxy, ConfigurablePortDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableAddDefinitionProxy, ConfigurableAddDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableMultiplierDefinitionProxy, ConfigurableMultiplierDefinition>().AutoCacheAndMap();
