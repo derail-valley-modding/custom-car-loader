@@ -42,7 +42,7 @@ namespace CCL.Types
     {
         public float AmountPerCar = 1f;
         public BaseCargoType CargoType;
-        public bool UseCustomCargo;
+        public string CustomCargoId = string.Empty;
 
         [JsonIgnore]
         public GameObject[]? ModelVariants;
@@ -53,5 +53,7 @@ namespace CCL.Types
         {
             ModelVariants = ModelPaths?.Select(p => bundle.LoadAsset<GameObject>(p)).ToArray();
         }
+
+        public bool IsCustom => CargoType == BaseCargoType.Custom;
     }
 }

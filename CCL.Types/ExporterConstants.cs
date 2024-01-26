@@ -35,5 +35,6 @@ namespace CCL.Types
 
         // Other Mods
         public const string PASSENGER_JOBS = "PassengerJobs";
+        public const string CUSTOM_CARGO = "DVCustomCargo";
     }
 }

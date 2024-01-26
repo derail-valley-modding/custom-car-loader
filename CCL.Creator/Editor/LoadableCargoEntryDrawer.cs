@@ -7,16 +7,11 @@ namespace CCL.Creator.Editor
     [CustomPropertyDrawer(typeof(LoadableCargoEntry))]
     internal class LoadableCargoEntryDrawer : PropertyDrawer
     {
-        private static GUIContent amountC = new GUIContent("Amount");
-        private static GUIContent customC = new GUIContent("Use Custom Cargo");
-        private static GUIContent cargoTC = new GUIContent("Cargo Type");
-        private static GUIContent modelsC = new GUIContent("Model Variants");
-
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var amount = property.FindPropertyRelative(nameof(LoadableCargoEntry.AmountPerCar));
-            var custom = property.FindPropertyRelative(nameof(LoadableCargoEntry.UseCustomCargo));
             var cargoT = property.FindPropertyRelative(nameof(LoadableCargoEntry.CargoType));
+            var custom = property.FindPropertyRelative(nameof(LoadableCargoEntry.CustomCargoId));
             var models = property.FindPropertyRelative(nameof(LoadableCargoEntry.ModelVariants));
 
             EditorGUI.BeginProperty(position, label, property);
@@ -29,22 +24,17 @@ namespace CCL.Creator.Editor
 
             using (new EditorGUI.IndentLevelScope())
             {
-                amount.floatValue = EditorGUI.FloatField(controlPos, amountC, amount.floatValue);
+                EditorGUI.PropertyField(controlPos, amount);
                 controlPos.position += offset;
-                custom.boolValue = EditorGUI.Toggle(controlPos, customC, custom.boolValue);
+                EditorGUI.PropertyField(controlPos, cargoT);
                 controlPos.position += offset;
 
-                if (custom.boolValue)
-                {
-                    cargoT.intValue = EditorGUI.IntField(controlPos, cargoTC, cargoT.intValue);
-                }
-                else
-                {
-                    cargoT.intValue = (int)(BaseCargoType)EditorGUI.EnumPopup(controlPos, cargoTC, (BaseCargoType)cargoT.intValue);
-                }
-
+                GUI.enabled = cargoT.intValue == (int)BaseCargoType.Custom;
+                EditorGUI.PropertyField(controlPos, custom);
                 controlPos.position += offset;
-                EditorGUI.PropertyField(controlPos, models, modelsC);
+                GUI.enabled = true;
+
+                EditorGUI.PropertyField(controlPos, models);
                 controlPos.position += offset;
 
                 if (models.isExpanded)
