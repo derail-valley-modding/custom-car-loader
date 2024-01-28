@@ -1,17 +1,18 @@
 ﻿using CCL.Types.Proxies.Ports;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
-    public abstract class IndicatorBrakeReaderProxy : MonoBehaviour
+    public abstract class IndicatorBrakeReaderProxy : MonoBehaviour, IHasFuseIdFields
     {
         [FuseId]
         public string fuseId;
+
+        public virtual IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(fuseId), fuseId),
+        };
     }
 
     public class IndicatorBrakeCylinderReaderProxy : IndicatorBrakeReaderProxy { }

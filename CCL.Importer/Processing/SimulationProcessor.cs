@@ -35,7 +35,7 @@ namespace CCL.Importer.Processing
             }
 
             // Add Control Override components
-            var baseOverrider = livery.prefab.GetComponentInChildren<BaseControlsOverrider>();
+            var baseOverrider = livery.prefab.GetComponentInChildren<BaseControlsOverrider>(true);
             if ((livery.prefab.GetComponentsInChildren<OverridableBaseControl>().Length > 0) && !baseOverrider)
             {
                 baseOverrider = livery.prefab.AddComponent<BaseControlsOverrider>();
@@ -52,8 +52,8 @@ namespace CCL.Importer.Processing
             }
 
             // If we have something that can use a sim controller and don't already have a sim controller
-            var needsSimController = livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ||
-                livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0 &&
+            var needsSimController = (livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ||
+                livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0) &&
                 !livery.prefab.GetComponentInChildren<SimController>(true);
             if (needsSimController)
             {

@@ -8,10 +8,15 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
-    public class InteractablePortFeederProxy : MonoBehaviour
+    public class InteractablePortFeederProxy : MonoBehaviour, IHasPortIdFields
     {
         // This is an EXT_IN port which controls something, and is not required to be on the same prefab (but is on the same traincar
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, false)]
         public string portId;
+
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL),
+        };
     }
 }

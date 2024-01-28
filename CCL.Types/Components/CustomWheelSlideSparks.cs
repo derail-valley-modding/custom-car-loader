@@ -10,7 +10,7 @@ namespace CCL.Types.Components
         public Transform[] sparkAnchors = new Transform[0];
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Components.CustomWheelSlideSparks:AutoSetupButton", "Auto setup",
+        [MethodButton(nameof(AutoSetup), "Auto setup",
             "This will auto setup contact points on the bogies. If you are only using default bogies, and no extra wheels, " +
             "you do not need to include this component at all.")]
         public bool buttonRender;
@@ -118,7 +118,7 @@ namespace CCL.Types.Components
                 }
             }
         }
-
+		
         private static void AutoSetupButton(CustomWheelSlideSparks controller)
         {
             controller.AutoSetup();

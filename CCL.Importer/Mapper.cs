@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CCL.Importer
 {
-    internal static class Mapper
+    public static class Mapper
     {
         private static readonly List<ICacheConfig> s_configCache = new();
         private static readonly Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();

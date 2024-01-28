@@ -26,21 +26,14 @@ namespace CCL.Creator.Editor
             EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
-            IEnumerable<GameObject> sources;
+            IEnumerable<GameObject> sources = PortOptionHelper.GetAvailableSources((Component)component, false);
 
-            // otherwise we want to list ports on all parts of the car
-            string? prefabAssetPath = GetCurrentPrefabPath(component);
-            if (prefabAssetPath != null)
+            var options = new List<PortOptionBase>
             {
-                sources = GetSiblingPrefabs(prefabAssetPath);
-            }
-            else
-            {
-                var scene = EditorSceneManager.GetActiveScene();
-                sources = scene.GetRootGameObjects();
-            }
+                new PortReferenceOption(null, "Not Set")
+            };
+            options.AddRange(PortOptionHelper.GetPortReferenceOptions(sources));
 
-            var options = GetPortOptions(sources);
             int selected = options.FindIndex(p => p.ID == currentValue);
 
             if ((selected < 0) && !string.IsNullOrEmpty(currentValue))
@@ -61,76 +54,6 @@ namespace CCL.Creator.Editor
             EditorGUI.EndProperty();
 
             property.serializedObject.ApplyModifiedProperties();
-        }
-
-        private static string? GetCurrentPrefabPath(UnityEngine.Object contextObj)
-        {
-            if (PrefabUtility.IsPartOfAnyPrefab(contextObj))
-            {
-                return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(contextObj);
-            }
-
-            if (PrefabStageUtility.GetCurrentPrefabStage() is PrefabStage stage)
-            {
-                return stage.prefabAssetPath;
-            }
-
-            return null;
-        }
-
-        private static IEnumerable<GameObject> GetSiblingPrefabs(string prefabPath)
-        {
-            string curFolder = Path.GetDirectoryName(prefabPath);
-
-            return AssetDatabase.FindAssets("t:prefab", new string[] { curFolder })
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Where(p => p != null)
-                .Select(AssetDatabase.LoadAssetAtPath<GameObject>);
-        }
-
-        private static List<PortReferenceOption> GetPortOptions(IEnumerable<GameObject> sources)
-        {
-            var ids = new List<PortReferenceOption>
-            {
-                new PortReferenceOption(null, "Not Set")
-            };
-
-            foreach (var source in sources)
-            {
-                ids.AddRange(GetPortsInObject(source));
-            }
-            return ids;
-        }
-
-        private static IEnumerable<PortReferenceOption> GetPortsInObject(GameObject root)
-        {
-            foreach (var component in root.GetComponentsInChildren<SimComponentDefinitionProxy>())
-            {
-                foreach (var portDef in component.ExposedPortReferences)
-                {
-                    yield return new PortReferenceOption(root.name, component.ID, portDef.ID);
-                }
-            }
-        }
-
-        private readonly struct PortReferenceOption
-        {
-            public readonly string PrefabName;
-            public readonly string? ID;
-
-            public PortReferenceOption(string prefabName, string compId, string portId)
-            {
-                PrefabName = prefabName;
-                ID = $"{compId}.{portId}";
-            }
-
-            public PortReferenceOption(string? fullId, string prefabName = "Unknown")
-            {
-                PrefabName = prefabName;
-                ID = fullId;
-            }
-
-            public string Description => $"{ID} ({PrefabName})";
         }
     }
 }
