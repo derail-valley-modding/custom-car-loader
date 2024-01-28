@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace CCL.Importer.Proxies.Wheels
 {
-    public class WheelRotationProxyReplacer : Profile
+    public class WheelProxyReplacer : Profile
     {
-        public WheelRotationProxyReplacer()
+        public WheelProxyReplacer()
         {
             CreateMap<WheelRotationViaAnimationProxy, WheelRotationViaAnimation>().AutoCacheAndMap();
             CreateMap<WheelRotationViaCodeProxy, WheelRotationViaCode>().AutoCacheAndMap();

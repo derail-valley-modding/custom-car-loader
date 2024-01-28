@@ -118,8 +118,6 @@ namespace CCL.Creator.Editor
             }
         }
 
-        private static readonly Color _unlinkColor = new Color32(255, 153, 153, 255);
-
         private Vector2 _scrollPosition;
         private const int MAX_OPTIONS = 9;
         private const int SCROLL_PADDING = 15;
@@ -144,7 +142,7 @@ namespace CCL.Creator.Editor
                 _scrollPosition = GUI.BeginScrollView(windowRect, _scrollPosition, viewRect);
             }
 
-            using (new GUIColorScope(_unlinkColor))
+            using (new GUIColorScope(EditorHelpers.Colors.DELETE_ACTION))
             {
                 string unlinkText = (_multiplicity == ConnectionResultType.Multiple) ? "Unlink All" : "Unlink";
                 if (GUI.Button(new Rect(0, 0, _width, LINE_HEIGHT), unlinkText, ButtonStyle))

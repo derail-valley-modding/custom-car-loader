@@ -11,6 +11,13 @@ namespace CCL.Creator
 {
     public static class EditorHelpers
     {
+        public static class Colors
+        {
+            public static readonly Color DEFAULT = Color.white;
+            public static readonly Color WARNING = new Color32(255, 230, 128, 255);
+            public static readonly Color DELETE_ACTION = new Color32(255, 153, 153, 255);
+        }
+
         /// <summary>
         /// Clears out an entire folder. BE CAREFUL WHEN USING.
         /// </summary>
