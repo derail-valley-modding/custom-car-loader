@@ -31,7 +31,7 @@ namespace CCL.Creator.Editor
         public readonly string Id;
         public readonly PortConnectionProxy? PortConnection;
         public readonly PortReferenceConnectionProxy? ReferenceConnection;
-        public readonly PortIdField? IdFieldConnection;
+        public readonly IdFieldBase? IdFieldConnection;
         public readonly string? AssignedId;
 
         public readonly PortDirection Direction;
@@ -55,14 +55,14 @@ namespace CCL.Creator.Editor
             ConnectionType = PortOptionType.PortReference;
         }
 
-        public ConnectionDescriptor(SimConnectionsDefinitionProxy host, PortIdField idFieldConnection, string assignedId, PortDirection direction)
+        public ConnectionDescriptor(SimConnectionsDefinitionProxy host, IdFieldBase idFieldConnection, string assignedId, PortDirection direction)
         {
             Connections = host;
             Id = (direction == PortDirection.Output) ? idFieldConnection.FullName : assignedId;
             IdFieldConnection = idFieldConnection;
             AssignedId = assignedId;
             Direction = direction;
-            ConnectionType = PortOptionType.PortIdField;
+            ConnectionType = PortOptionType.IdField;
         }
 
         public void DestroyConnection()
@@ -130,7 +130,7 @@ namespace CCL.Creator.Editor
 
         public static ConnectionDescriptor CreateNewLink(SimConnectionsDefinitionProxy host, string localId, bool localIsRef, PortOptionBase remote, PortDirection direction)
         {
-            if (remote is PortIdFieldOption idField)
+            if (remote is IdFieldOption idField)
             {
                 idField.Field.Assign(localId);
                 EditorUtility.SetDirty(idField.Field.Container);
@@ -162,7 +162,7 @@ namespace CCL.Creator.Editor
             }
         }
 
-        public static ConnectionDescriptor CreatePortIdLink(SimConnectionsDefinitionProxy host, PortIdField idField, string fullPortId)
+        public static ConnectionDescriptor CreatePortIdLink(SimConnectionsDefinitionProxy host, IdFieldBase idField, string fullPortId)
         {
             idField.Assign(fullPortId);
             EditorUtility.SetDirty(idField.Container);

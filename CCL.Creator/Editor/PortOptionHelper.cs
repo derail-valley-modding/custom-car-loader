@@ -74,6 +74,20 @@ namespace CCL.Creator.Editor
             }
         }
 
+        public static IEnumerable<FuseIdField> GetFuseIdFields(IEnumerable<GameObject> sources)
+        {
+            foreach (var source in sources)
+            {
+                foreach (var hasFields in source.GetComponentsInChildren<IHasFuseIdFields>())
+                {
+                    foreach (var field in hasFields.ExposedFuseIdFields)
+                    {
+                        yield return field;
+                    }
+                }
+            }
+        }
+
 
         public static IEnumerable<PortOptionBase> GetPortOptions(PortIdAttribute filter, IEnumerable<GameObject> sources)
         {
@@ -85,6 +99,17 @@ namespace CCL.Creator.Editor
                     {
                         yield return port;
                     }
+                }
+            }
+        }
+
+        public static IEnumerable<PortOptionBase> GetFuseOptions(IEnumerable<GameObject> sources)
+        {
+            foreach (var source in sources)
+            {
+                foreach (var fuse in GetFusesInObject(source))
+                {
+                    yield return fuse;
                 }
             }
         }
@@ -136,6 +161,17 @@ namespace CCL.Creator.Editor
             }
         }
 
+        private static IEnumerable<FuseOption> GetFusesInObject(GameObject root)
+        {
+            foreach (var component in root.GetComponentsInChildren<SimComponentDefinitionProxy>())
+            {
+                foreach (var fuseDef in component.ExposedFuses)
+                {
+                    yield return new FuseOption(root.name, component.ID, fuseDef.id);
+                }
+            }
+        }
+
 
         public static IEnumerable<PortOptionBase> GetInputPortConnectionOptions(DVPortValueType valueType, IEnumerable<GameObject> sources)
         {
@@ -157,7 +193,7 @@ namespace CCL.Creator.Editor
                         {
                             if (field.ValueFilters == null || field.ValueFilters.Contains(valueType))
                             {
-                                yield return new PortIdFieldOption(source.name, field, valueType);
+                                yield return new IdFieldOption(source.name, field, valueType);
                             }
                         }
                     }
@@ -191,7 +227,7 @@ namespace CCL.Creator.Editor
                     {
                         if (field.CanConnect(portType) && field.CanConnect(valueType))
                         {
-                            yield return new PortIdFieldOption(source.name, field, valueType);
+                            yield return new IdFieldOption(source.name, field, valueType);
                         }
                     }
                 }
@@ -207,6 +243,20 @@ namespace CCL.Creator.Editor
                     if ((valueType == DVPortValueType.GENERIC) || (port.PortValueType == valueType) || (port.PortValueType == DVPortValueType.GENERIC))
                     {
                         yield return port;
+                    }
+                }
+            }
+        }
+
+        public static IEnumerable<PortOptionBase> GetFuseConnectionOptions(IEnumerable<GameObject> sources)
+        {
+            foreach (var source in sources)
+            {
+                foreach (var hasFuseIds in source.GetComponentsInChildren<IHasFuseIdFields>())
+                {
+                    foreach (var fuseIdField in hasFuseIds.ExposedFuseIdFields)
+                    {
+                        yield return new IdFieldOption(source.name, fuseIdField, DVPortValueType.GENERIC);
                     }
                 }
             }

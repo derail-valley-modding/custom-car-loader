@@ -1,5 +1,6 @@
 ﻿using CCL.Types.Json;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
@@ -22,5 +23,7 @@ namespace CCL.Types.Proxies.Ports
         {
             fusesJson = JSONObject.ToJson(fuses);
         }
+
+        public override IEnumerable<FuseDefinition> ExposedFuses => fuses ?? base.ExposedFuses;
     }
 }

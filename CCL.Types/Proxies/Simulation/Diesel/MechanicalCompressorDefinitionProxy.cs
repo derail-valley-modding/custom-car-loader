@@ -13,6 +13,10 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public float mainReservoirVolume = 15f;
         public float smoothTime = 0.3f;
 
+        [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]
+        [RenderMethodButtons]
+        public bool renderButtons;
+
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "ACTIVATION_SIGNAL_EXT_IN"),
@@ -29,5 +33,14 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         {
             new PortReferenceDefinition(DVPortValueType.RPM, "ENGINE_RPM_NORMALIZED"),
         };
+
+        public void ApplyDM3Defaults()
+        {
+            loadTorque = 250;
+            maxProductionRate = 45;
+            activationPressureThreshold = 7;
+            mainReservoirVolume = 50;
+            smoothTime = 0.3f;
+        }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
-    public abstract class PoweredControlHandlerBase : MonoBehaviour, IHasPortIdFields
+    public abstract class PoweredControlHandlerBase : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(DVPortValueType.CONTROL, false)]
         public string controlId;
@@ -15,6 +15,11 @@ namespace CCL.Types.Proxies.Controllers
         public virtual IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(controlId), controlId, DVPortValueType.CONTROL),
+        };
+
+        public virtual IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
     }
 }

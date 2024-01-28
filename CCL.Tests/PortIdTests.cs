@@ -71,6 +71,51 @@ namespace CCL.Tests
             }
         }
 
+        [TestMethod]
+        public void AllFuseIdFieldsAreEnumerated()
+        {
+            var scriptTypes = Assembly.GetAssembly(typeof(FuseIdAttribute)).GetTypes()
+                .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t));
+
+            var failures = new List<string>();
+
+            foreach (var scriptType in scriptTypes)
+            {
+                if (scriptType.IsAbstract) continue;
+
+                var fuseIds = scriptType.GetFields(ALL_INSTANCE)
+                    .Select(f => new KeyValuePair<string, FuseIdAttribute>(f.Name, f.GetCustomAttribute<FuseIdAttribute>()))
+                    .Where(kvp => kvp.Value != null)
+                    .ToList();
+
+                if (!fuseIds.Any()) continue;
+
+                if (!typeof(IHasFuseIdFields).IsAssignableFrom(scriptType))
+                {
+                    failures.Add($"Script \"{scriptType.Name}\" with fuse IDs must expose them via {nameof(IHasFuseIdFields)}");
+                    continue;
+                }
+
+                var instance = Activator.CreateInstance(scriptType);
+                var exposedFields = ((IHasFuseIdFields)instance).ExposedFuseIdFields.ToList();
+
+                foreach (var idField in fuseIds)
+                {
+                    var matchingExposed = exposedFields.Find(f => f.FieldName == idField.Key);
+
+                    if (matchingExposed == null)
+                    {
+                        failures.Add($"Fuse ID field {idField.Key} must be exposed via {nameof(IHasFuseIdFields)}");
+                    }
+                }
+            }
+
+            if (failures.Count > 0)
+            {
+                Assert.Fail("\n" + string.Join("\n", failures));
+            }
+        }
+
         private static bool SetsAreEqual<T>(IEnumerable<T>? a, IEnumerable<T>? b)
         {
             if ((a == null) || (b == null))

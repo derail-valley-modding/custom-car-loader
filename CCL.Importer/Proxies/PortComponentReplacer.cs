@@ -10,6 +10,7 @@ namespace CCL.Importer.Proxies
         {
             CreateMap<CCL.Types.Proxies.Ports.PortDefinition, LocoSim.Definitions.PortDefinition>();
             CreateMap<CCL.Types.Proxies.Ports.PortReferenceDefinition, LocoSim.Definitions.PortReferenceDefinition>();
+            CreateMap<CCL.Types.Proxies.Ports.FuseDefinition, LocoSim.Definitions.FuseDefinition>();
 
             CreateMap<ConstantPortDefinitionProxy, ConfigurablePortDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableAddDefinitionProxy, ConfigurableAddDefinition>().AutoCacheAndMap();

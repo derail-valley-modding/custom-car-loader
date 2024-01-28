@@ -13,7 +13,7 @@ namespace CCL.Creator.Editor
     {
         private readonly SimConnectionsDefinitionProxy _simConn;
         private readonly string _localId;
-        private readonly PortIdField? _localIdField;
+        private readonly IdFieldBase? _localIdField;
         private readonly bool _localIsReference;
         private readonly PortDirection _direction;
         private readonly float _width;
@@ -65,7 +65,22 @@ namespace CCL.Creator.Editor
             _options = options.ToList();
         }
 
-        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortIdField idField, ConnectionResult currentConn)
+        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, FuseDefinition fuse, string localId,
+            ConnectionResult currentConn)
+        {
+            _simConn = host;
+            _width = width * 1.2f;
+            _currentConnection = currentConn;
+            _multiplicity = ConnectionResultType.Single;
+            _localId = localId;
+            _direction = PortDirection.Output;
+            _localIsReference = false;
+
+            var sources = PortOptionHelper.GetAvailableSources(host, false);
+            _options = PortOptionHelper.GetFuseConnectionOptions(sources).ToList();
+        }
+
+        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, IdFieldBase idField, ConnectionResult currentConn)
         {
             _simConn = host;
             _width = width * 1.2f;
@@ -77,8 +92,16 @@ namespace CCL.Creator.Editor
             _localIsReference = false;
 
             var sources = PortOptionHelper.GetAvailableSources(host, false);
-            var options = PortOptionHelper.GetPortOptions(sources, idField.TypeFilters, idField.ValueFilters);
-            _options = options.ToList();
+
+            if (idField is PortIdField portField)
+            {
+                _options = PortOptionHelper.GetPortOptions(sources, portField.TypeFilters, portField.ValueFilters).ToList();
+            }
+            else if (idField is FuseIdField)
+            {
+                _options = PortOptionHelper.GetFuseOptions(sources).ToList();
+            }
+            else throw new ArgumentException("Invalid id field type");
         }
 
         private const int LINE_HEIGHT = 20;
@@ -147,10 +170,10 @@ namespace CCL.Creator.Editor
                 if (nowConnected && !wasConnected)
                 {
                     // new connection
-                    if ((_multiplicity == ConnectionResultType.Single) && (option.Type != PortOptionType.PortIdField))
+                    if ((_multiplicity == ConnectionResultType.Single) && (option.Type != PortOptionType.IdField))
                     {
                         // destroy existing connections
-                        foreach (var link in _currentConnection.Matches.Where(m => m.ConnectionType != PortOptionType.PortIdField).ToList())
+                        foreach (var link in _currentConnection.Matches.Where(m => m.ConnectionType != PortOptionType.IdField).ToList())
                         {
                             _currentConnection.Destroy(link);
                         }

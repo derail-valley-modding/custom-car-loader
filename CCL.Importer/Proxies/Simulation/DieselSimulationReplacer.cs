@@ -10,6 +10,7 @@ namespace CCL.Importer.Proxies.Simulation
         {
             CreateMap<DieselEngineDirectDefinitionProxy, DieselEngineDirectDefinition>().AutoCacheAndMap();
             CreateMap<HydraulicTransmissionDefinitionProxy, HydraulicTransmissionDefinition>().AutoCacheAndMap();
+            CreateMap<HydraulicTransmissionDefinitionProxy.HydraulicConfigDefinition, HydraulicTransmissionDefinition.HydraulicConfigDefinition>();
 
             // heat
             CreateMap<PassiveCoolerDefinitionProxy, PassiveCoolerDefinition>().AutoCacheAndMap();

@@ -8,7 +8,8 @@ namespace CCL.Creator.Editor
         None = 0,
         Port,
         PortReference,
-        PortIdField,
+        IdField,
+        Fuse,
     }
 
     public abstract class PortOptionBase
@@ -34,13 +35,14 @@ namespace CCL.Creator.Editor
             PortValueType = valueType;
         }
 
-        public string Description => $"{Code} {ID} ({PrefabName})";
+        public string Description => $"[{Code}] {ID} ({PrefabName})";
 
         public string Code => Type switch
         {
-            PortOptionType.Port => "P",
-            PortOptionType.PortReference => "R",
-            PortOptionType.PortIdField => "F",
+            PortOptionType.Port => "Port",
+            PortOptionType.PortReference => "Ref",
+            PortOptionType.IdField => "ID",
+            PortOptionType.Fuse => "Fuse",
             _ => "?"
         };
     }
@@ -83,14 +85,25 @@ namespace CCL.Creator.Editor
         }
     }
 
-    public class PortIdFieldOption : PortOptionBase
+    public class IdFieldOption : PortOptionBase
     {
-        public readonly PortIdField Field;
+        public readonly IdFieldBase Field;
 
-        public PortIdFieldOption(string prefabName, PortIdField field, DVPortValueType valueType)
-            : base(PortOptionType.PortIdField, field.FullName, valueType, prefabName)
+        public IdFieldOption(string prefabName, IdFieldBase field, DVPortValueType valueType)
+            : base(PortOptionType.IdField, field.FullName, valueType, prefabName)
         {
             Field = field;
         }
+    }
+
+    public class FuseOption : PortOptionBase
+    {
+        public FuseOption(string prefabName, string compId, string fuseId)
+            : base(PortOptionType.Fuse, prefabName, compId, fuseId, DVPortValueType.GENERIC)
+        { }
+
+        public FuseOption(string? fullId, string prefabName = "Unknown")
+            : base(PortOptionType.Fuse, fullId, DVPortValueType.GENERIC, prefabName)
+        { }
     }
 }

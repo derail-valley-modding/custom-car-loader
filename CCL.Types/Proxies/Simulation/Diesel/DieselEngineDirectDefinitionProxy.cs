@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy
+    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields
     {
         [Header("RPM Range")]
         public float rotationalInertia;
@@ -61,6 +61,11 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortReferenceDefinition(DVPortValueType.OIL, "OIL_CONSUMPTION", true),
             new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE"),
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TEMPERATURE"),
+        };
+
+        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(engineStarterFuseId), engineStarterFuseId),
         };
 
         [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]

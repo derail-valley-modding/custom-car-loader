@@ -15,6 +15,8 @@ namespace CCL.Types.Proxies.Ports
 
         public virtual IEnumerable<PortReferenceDefinition> ExposedPortReferences => Enumerable.Empty<PortReferenceDefinition>();
 
+        public virtual IEnumerable<FuseDefinition> ExposedFuses => Enumerable.Empty<FuseDefinition>();
+
         void Reset()
         {
             if (string.IsNullOrWhiteSpace(ID) && (GetComponents<SimComponentDefinitionProxy>().Length <= 1))

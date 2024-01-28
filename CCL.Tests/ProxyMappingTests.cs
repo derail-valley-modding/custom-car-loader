@@ -19,24 +19,42 @@ namespace CCL.Tests
         {
             const string proxyNamespace = "CCL.Types.Proxies";
             var scriptTypes = Assembly.GetAssembly(typeof(SimComponentDefinitionProxy)).GetTypes()
-                .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t) && t.Namespace.StartsWith(proxyNamespace));
+                .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t) && t.Namespace.StartsWith(proxyNamespace))
+                .ToList();
 
             var typeMaps = Mapper.M.ConfigurationProvider.GetAllTypeMaps();
             var failures = new List<string>();
 
+            CheckMappingExists(scriptTypes, typeMaps, failures);
+
+            if (failures.Count > 0)
+            {
+                Assert.Fail(string.Join("\n", failures));
+            }
+        }
+
+        private static void CheckMappingExists(IEnumerable<Type> scriptTypes, IEnumerable<AutoMapper.TypeMap> typeMaps, List<string> failures, string? parentType = null)
+        {
             foreach (var scriptType in scriptTypes)
             {
                 if (scriptType.IsAbstract) continue;
 
                 if (!typeMaps.Any(map => map.SourceType == scriptType))
                 {
-                    failures.Add($"No mappings configured for proxy script {scriptType.Name}");
+                    string typeName = scriptType.Name;
+                    if (parentType != null) typeName = $"{parentType}.{typeName}";
+                    failures.Add($"No mappings configured for proxy script {typeName}");
                 }
-            }
-
-            if (failures.Count > 0)
-            {
-                Assert.Fail(string.Join("\n", failures));
+                else
+                {
+                    var subTypes = scriptType.GetNestedTypes();
+                    if (subTypes.Any())
+                    {
+                        string prefix = scriptType.Name;
+                        if (parentType != null) prefix = $"{parentType}.{prefix}";
+                        CheckMappingExists(subTypes, typeMaps, failures, prefix);
+                    }
+                }
             }
         }
     }

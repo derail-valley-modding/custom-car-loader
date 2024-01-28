@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
-    public class IndicatorPortReaderProxy : MonoBehaviour, IHasPortIdFields
+    public class IndicatorPortReaderProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(null, null, false)]
         public string portId;
@@ -28,6 +28,11 @@ namespace CCL.Types.Proxies.Indicators
         {
             new PortIdField(this, nameof(portId), portId),
             new PortIdField(this, nameof(indicatorRangeScalerPortId), indicatorRangeScalerPortId),
+        };
+
+        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(fuseId), fuseId),
         };
     }
 }

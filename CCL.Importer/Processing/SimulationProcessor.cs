@@ -35,7 +35,7 @@ namespace CCL.Importer.Processing
             }
 
             // Add Control Override components
-            var baseOverrider = livery.prefab.GetComponentInChildren<BaseControlsOverrider>();
+            var baseOverrider = livery.prefab.GetComponentInChildren<BaseControlsOverrider>(true);
             if ((livery.prefab.GetComponentsInChildren<OverridableBaseControl>().Length > 0) && !baseOverrider)
             {
                 baseOverrider = livery.prefab.AddComponent<BaseControlsOverrider>();

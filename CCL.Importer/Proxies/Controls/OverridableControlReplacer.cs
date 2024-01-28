@@ -26,6 +26,7 @@ namespace CCL.Importer.Proxies.Controls
 
             CreateMap<InteriorControlsManagerProxy, InteriorControlsManager>().AutoCacheAndMap();
             CreateMap<BaseControlsOverriderProxy, BaseControlsOverrider>().AutoCacheAndMap();
+            CreateMap<BaseControlsOverriderProxy.PortSetter, BaseControlsOverrider.PortSetter>();
         }
     }
 }
