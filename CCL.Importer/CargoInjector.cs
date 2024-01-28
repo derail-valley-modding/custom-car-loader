@@ -20,10 +20,15 @@ namespace CCL.Importer
             {
                 CCLPlugin.LogVerbose($"Loadable cargo {carType.id} - {loadableCargo.AmountPerCar} {loadableCargo.CargoType}, {loadableCargo.ModelVariants?.Length} models");
 
-                if (loadableCargo.IsCustom && !Globals.G.Types.cargos.TryFind(x => x.id == loadableCargo.CustomCargoId, out var matchCargo))
+                CargoType_v2 matchCargo;
+
+                if (loadableCargo.IsCustom)
                 {
-                    CCLPlugin.Error($"Couldn't find custom cargo {loadableCargo.CustomCargoId} for car {carType.id}");
-                    continue;
+                    if (!Globals.G.Types.cargos.TryFind(x => x.id == loadableCargo.CustomCargoId, out matchCargo))
+                    {
+                        CCLPlugin.Error($"Couldn't find custom cargo {loadableCargo.CustomCargoId} for car {carType.id}");
+                        continue;
+                    }
                 }
                 else if (!Globals.G.Types.CargoType_to_v2.TryGetValue((CargoType)loadableCargo.CargoType, out matchCargo))
                 {
