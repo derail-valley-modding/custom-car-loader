@@ -3,7 +3,6 @@ using CCL.Importer.Types;
 using DV;
 using DV.ThingTypes;
 using HarmonyLib;
-using UnityEngine;
 
 namespace CCL.Importer
 {
@@ -21,9 +20,20 @@ namespace CCL.Importer
             {
                 CCLPlugin.LogVerbose($"Loadable cargo {carType.id} - {loadableCargo.AmountPerCar} {loadableCargo.CargoType}, {loadableCargo.ModelVariants?.Length} models");
 
-                if (!Globals.G.Types.CargoType_to_v2.TryGetValue((CargoType)loadableCargo.CargoType, out var matchCargo))
+                CargoType_v2 matchCargo;
+
+                if (loadableCargo.IsCustom)
+                {
+                    if (!Globals.G.Types.cargos.TryFind(x => x.id == loadableCargo.CustomCargoId, out matchCargo))
+                    {
+                        CCLPlugin.Error($"Couldn't find custom cargo {loadableCargo.CustomCargoId} for car {carType.id}");
+                        continue;
+                    }
+                }
+                else if (!Globals.G.Types.CargoType_to_v2.TryGetValue((CargoType)loadableCargo.CargoType, out matchCargo))
                 {
                     CCLPlugin.Error($"Couldn't find v2 cargo type {loadableCargo.CargoType} for car {carType.id}");
+                    continue;
                 }
 
                 if (loadableCargo.ModelVariants != null)

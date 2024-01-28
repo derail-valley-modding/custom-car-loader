@@ -14,6 +14,7 @@ namespace CCL.Creator
         public readonly CustomCarType CarType;
         public readonly string ExportFolderPath;
         public readonly string BundleName;
+        public readonly string[] Requirements;
 
         public readonly CarLiveryExporter[] LiveryExporters;
 
@@ -24,6 +25,20 @@ namespace CCL.Creator
             BundleName = $"{carType.id.Replace(' ', '_')}_bundle";
 
             LiveryExporters = carType.liveries.Select(l => new CarLiveryExporter(this, l)).ToArray();
+
+            List<string> requirements = new List<string>() { ExporterConstants.MOD_ID };
+
+            if (carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Passengers))
+            {
+                requirements.Add(ExporterConstants.PASSENGER_JOBS);
+            }
+
+            if (carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Custom))
+            {
+                requirements.Add(ExporterConstants.CUSTOM_CARGO);
+            }
+
+            Requirements = requirements.ToArray();
         }
 
         private static bool Progress(string status, float percent)
@@ -130,7 +145,7 @@ namespace CCL.Creator
                 { "Version", CarType.version },
                 { "Author", CarType.author },
                 { "ManagerVersion", "0.27.3" },
-                { "Requirements", new JSONObject { ExporterConstants.MOD_ID } },
+                { "Requirements", JSONObject.CreateFromObject(Requirements) },
             };
 
             using StreamWriter stream = new StreamWriter(outFilePath, false);

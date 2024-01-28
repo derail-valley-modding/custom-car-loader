@@ -32,5 +32,9 @@ namespace CCL.Types
         public const string CARGO_LICENSE = "requiredLicense";
         public const string CARGO_SOURCE = "sources";
         public const string CARGO_DEST = "destinations";
+
+        // Other Mods
+        public const string PASSENGER_JOBS = "PassengerJobs";
+        public const string CUSTOM_CARGO = "DVCustomCargo";
     }
 }
