@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using CCL.Types;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
 namespace CCL.Creator
@@ -38,6 +38,12 @@ namespace CCL.Creator
                     {
                         button.Action.Invoke(targetProp.serializedObject.targetObject, new object[0]);
                     }
+
+                    if (PrefabStageUtility.GetCurrentPrefabStage() is PrefabStage stage)
+                    {
+                        EditorUtility.SetDirty(targetProp.serializedObject.targetObject);
+                        EditorHelpers.SaveAndRefresh();
+                    }
                 }
             }
         }
@@ -52,7 +58,7 @@ namespace CCL.Creator
 
             foreach (var attr in field.GetCustomAttributes<MethodButtonAttribute>())
             {
-                var action = GetMethod(attr.MethodName);
+                var action = GetMethod(property.serializedObject.targetObject.GetType(), attr.MethodName);
 
                 if (action != null)
                 {
@@ -61,12 +67,18 @@ namespace CCL.Creator
             }
         }
 
-        private static MethodInfo? GetMethod(string methodName)
+        private static MethodInfo? GetMethod(Type localType, string methodName)
         {
             string[] parts = methodName.Split(':');
-            if (parts.Length != 2) return null;
 
-            if (GetType(parts[0]) is Type type)
+            if (parts.Length == 1)
+            {
+                if (localType.GetMethod(parts[0], ALL_INSTANCE) is MethodInfo localMethod)
+                {
+                    return localMethod;
+                }
+            }
+            else if ((parts.Length == 2) && (GetType(parts[0]) is Type type))
             {
                 if (type.GetMethod(parts[1], ALL_STATIC) is MethodInfo methodInfo)
                 {

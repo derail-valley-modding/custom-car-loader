@@ -15,6 +15,8 @@ namespace CCL.Types.Proxies.Ports
 
         public float offValue;
 
+        public FuseDefinition() { }
+
         public FuseDefinition(string id, bool initialState, float offValue = 0f)
         {
             this.id = id;

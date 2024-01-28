@@ -1,10 +1,23 @@
+using CCL.Types;
 using System;
 using System.IO;
+using UnityEditor.Experimental.SceneManagement;
+using UnityEditor.SceneManagement;
+using UnityEditor;
+using UnityEngine;
+using System.Linq;
 
 namespace CCL.Creator
 {
     public static class EditorHelpers
     {
+        public static class Colors
+        {
+            public static readonly Color DEFAULT = Color.white;
+            public static readonly Color WARNING = new Color32(255, 230, 128, 255);
+            public static readonly Color DELETE_ACTION = new Color32(255, 153, 153, 255);
+        }
+
         /// <summary>
         /// Clears out an entire folder. BE CAREFUL WHEN USING.
         /// </summary>
@@ -78,6 +91,81 @@ namespace CCL.Creator
             where T : Enum
         {
             return (T)UnityEditor.EditorGUILayout.EnumPopup(label, selected, options);
+        }
+
+        public static string? GetSelectionPath()
+        {
+            if (Selection.activeGameObject)
+            {
+                return Selection.activeGameObject.GetPath();
+            }
+            return null;
+        }
+
+        public static void SaveAndRefresh(Action? extraAction = null)
+        {
+            AssetDatabase.SaveAssets();
+            string? selectionPath = GetSelectionPath();
+            EditorApplication.delayCall += () => DelayedRefresh(selectionPath, extraAction);
+        }
+
+        private static void DelayedRefresh(string? selectionPath, Action? extraAction)
+        {
+            GameObject? root = null;
+            var parts = selectionPath?.Split(new[] { '/' }, 2);
+
+            if (PrefabStageUtility.GetCurrentPrefabStage() is PrefabStage stage)
+            {
+                root = stage.prefabContentsRoot;
+            }
+            else
+            {
+                var scene = EditorSceneManager.GetActiveScene();
+                var roots = scene.GetRootGameObjects();
+
+                if (parts != null)
+                {
+                    root = roots.FirstOrDefault(r => r.name == parts[0]);
+                }
+            }
+
+            if (parts != null && root)
+            {
+                if (parts.Length == 1)
+                {
+                    Selection.activeGameObject = root;
+                }
+                else
+                {
+                    Transform? target = root!.transform.FindSafe(parts[1]);
+                    if (target)
+                    {
+                        Selection.activeGameObject = target!.gameObject;
+                    }
+                }
+            }
+
+            extraAction?.Invoke();
+        }
+    }
+
+    internal class GUIColorScope : IDisposable
+    {
+        private readonly Color _entryColor;
+
+        public GUIColorScope()
+        {
+            _entryColor = GUI.color;
+        }
+
+        public GUIColorScope(Color newColor) : this()
+        {
+            GUI.color = newColor;
+        }
+
+        public void Dispose()
+        {
+            GUI.color = _entryColor;
         }
     }
 }

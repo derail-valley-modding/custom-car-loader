@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace CCL.Types
@@ -104,6 +106,30 @@ namespace CCL.Types
             {
                 SetLayerRecursiveInternal(tform.GetChild(i), layer, exclude);
             }
+        }
+
+        public static string GetPath(this GameObject go)
+        {
+            var parts = new Stack<string>();
+
+            Transform current = go.transform;
+            while (current)
+            {
+                parts.Push(current.name);
+                current = current.parent;
+            }
+
+            var sb = new StringBuilder();
+            while (parts.Count > 0)
+            {
+                if (sb.Length > 0)
+                {
+                    sb.Append('/');
+                }
+                sb.Append(parts.Pop());
+            }
+
+            return sb.ToString();
         }
     }
 

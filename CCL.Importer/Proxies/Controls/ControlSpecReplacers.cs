@@ -26,6 +26,7 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<ExternalControlDefinitionProxy, ExternalControlDefinition>().AutoCacheAndMap();
             CreateMap<StaticInteractionAreaProxy, StaticInteractionArea>().AutoCacheAndMap();
             CreateMap<InteractablePortFeederProxy, InteractablePortFeeder>().AutoCacheAndMap();
+            CreateMap<ManualTransmissionInputDefinitionProxy, ManualTransmissionInputDefinition>().AutoCacheAndMap();
         }
     }
 }

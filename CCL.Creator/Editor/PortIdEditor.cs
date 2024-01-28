@@ -28,29 +28,14 @@ namespace CCL.Creator.Editor
             EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
-            IEnumerable<GameObject> sources;
+            IEnumerable<GameObject> sources = PortOptionHelper.GetAvailableSources((Component)component, portData.local);
 
-            if (portData.local)
+            var options = new List<PortOptionBase>
             {
-                // if local, only look at ports on the current prefab
-                sources = new GameObject[] { ((Component)component).transform.root.gameObject };
-            }
-            else
-            {
-                // otherwise we want to list ports on all parts of the car
-                string? prefabAssetPath = GetCurrentPrefabPath(component);
-                if (prefabAssetPath != null)
-                {
-                    sources = GetSiblingPrefabs(prefabAssetPath);
-                }
-                else
-                {
-                    var scene = EditorSceneManager.GetActiveScene();
-                    sources = scene.GetRootGameObjects();
-                }
-            }
+                new PortOption(null, "Not Set")
+            };
+            options.AddRange(PortOptionHelper.GetPortOptions(portData, sources));
 
-            var options = GetPortOptions(portData, sources);
             int selected = options.FindIndex(p => p.ID == currentValue);
 
             if ((selected < 0) && !string.IsNullOrEmpty(currentValue))
@@ -69,100 +54,6 @@ namespace CCL.Creator.Editor
             }
 
             EditorGUI.EndProperty();
-
-            property.serializedObject.ApplyModifiedProperties();
-        }
-
-        private static string? GetCurrentPrefabPath(UnityEngine.Object contextObj)
-        {
-            if (PrefabUtility.IsPartOfAnyPrefab(contextObj))
-            {
-                return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(contextObj);
-            }
-
-            if (PrefabStageUtility.GetCurrentPrefabStage() is PrefabStage stage)
-            {
-                return stage.prefabAssetPath;
-            }
-
-            return null;
-        }
-
-        private static IEnumerable<GameObject> GetSiblingPrefabs(string prefabPath)
-        {
-            string curFolder = Path.GetDirectoryName(prefabPath);
-
-            return AssetDatabase.FindAssets("t:prefab", new string[] { curFolder })
-                .Select(AssetDatabase.GUIDToAssetPath)
-                .Where(p => p != null)
-                .Select(AssetDatabase.LoadAssetAtPath<GameObject>);
-        }
-
-        private static List<PortOption> GetPortOptions(PortIdAttribute filter, IEnumerable<GameObject> sources)
-        {
-            var ids = new List<PortOption>
-            {
-                new PortOption(null, "Not Set")
-            };
-
-            foreach (var source in sources)
-            {
-                foreach (PortOption port in GetPortsInObject(source))
-                {
-                    if (port.MatchesType(filter.typeFilters) && port.MatchesValueType(filter.valueTypeFilters))
-                    {
-                        ids.Add(port);
-                    }
-                }
-            }
-            return ids;
-        }
-
-        private static IEnumerable<PortOption> GetPortsInObject(GameObject root)
-        {
-            foreach (var component in root.GetComponentsInChildren<SimComponentDefinitionProxy>())
-            {
-                foreach (var portDef in component.ExposedPorts)
-                {
-                    yield return new PortOption(root.name, component.ID, portDef.ID, portDef.type, portDef.valueType);
-                }
-            }
-        }
-
-        private readonly struct PortOption
-        {
-            public readonly string PrefabName;
-            public readonly string? ID;
-            public readonly DVPortType PortType;
-            public readonly DVPortValueType PortValueType;
-
-            public PortOption(string prefabName, string compId, string portId, DVPortType portType, DVPortValueType valueType)
-            {
-                PrefabName = prefabName;
-                ID = $"{compId}.{portId}";
-                PortType = portType;
-                PortValueType = valueType;
-            }
-
-            public PortOption(string? fullId, string prefabName = "Unknown")
-            {
-                PrefabName = prefabName;
-                ID = fullId;
-                PortType = DVPortType.IN;
-                PortValueType = DVPortValueType.GENERIC;
-            }
-
-            public bool MatchesType(DVPortType[]? filters)
-            {
-                return (filters == null) || (filters.Length == 0) || filters.Contains(PortType);
-            }
-
-            public bool MatchesValueType(DVPortValueType[]? filters)
-            {
-                return (filters == null) || (filters.Length == 0) || filters.Contains(PortValueType);
-            }
-
-            public string Description => $"{ID} ({PrefabName})";
         }
     }
 }

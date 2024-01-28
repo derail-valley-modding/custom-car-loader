@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
+using System;
 /*
 Copyright (c) 2010-2019 Matt Schoen
 
@@ -286,11 +287,22 @@ namespace CCL.Types.Json
 			return obj;
 		}
 
-		public static T FromJson<T>(string val, int maxDepth = -2, bool storeExcessLevels = false, bool strict = false)
+		public static T FromJson<T>(string val)
 			where T : class
 		{
-			return Create(val, maxDepth, storeExcessLevels, strict).ToObject<T>();
+			return Create(val, -2, false, false).ToObject<T>();
 		}
+
+		public static T FromJson<T>(string val, Func<T> fallbackValue)
+			where T : class
+		{
+			if (string.IsNullOrWhiteSpace(val))
+			{
+				return fallbackValue();
+			}
+
+            return Create(val, -2, false, false).ToObject<T>();
+        }
 
 		public JSONObject() { }
 		#region PARSE

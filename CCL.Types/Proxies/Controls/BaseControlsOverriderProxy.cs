@@ -1,11 +1,13 @@
 ﻿using CCL.Types.Json;
 using CCL.Types.Proxies.Ports;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
-    public class BaseControlsOverriderProxy : MonoBehaviour, ICustomSerialized
+    public class BaseControlsOverriderProxy : MonoBehaviour, ICustomSerialized, IHasPortIdFields
     {
         [Serializable]
         public class PortSetter
@@ -29,6 +31,19 @@ namespace CCL.Types.Proxies.Controls
         [SerializeField]
         [HideInInspector]
         private string _neutralStateSettersJson;
+
+        public IEnumerable<PortIdField> ExposedPortIdFields
+        {
+            get
+            {
+                if (neutralStateSetters == null || neutralStateSetters.Length == 0)
+                {
+                    return Enumerable.Empty<PortIdField>();
+                }
+                return neutralStateSetters.Select((nss, i) =>
+                    new PortIdField(this, $"{nameof(PortSetter.portId)}_{i}", nss.portId));
+            }
+        }
 
         public void OnValidate()
         {
