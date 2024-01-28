@@ -190,6 +190,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             public float couplingSpeedRatio;
 
             [Header("Maximum achieved thermal efficiency. Must be >= couplingSpeedRatio and <= 1.")]
+            [Range(0f, 1f)]
             public float maxEfficiency;
             public bool hasStatorUnlock;
             public float gearRatio;
