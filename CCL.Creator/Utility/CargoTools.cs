@@ -1,12 +1,11 @@
-﻿using CCL.Creator.Utility;
-using CCL.Types;
+﻿using CCL.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Editor.Tools
+namespace CCL.Creator.Utility
 {
     internal class CargoTools : EditorWindow
     {
@@ -104,7 +103,7 @@ namespace CCL.Creator.Editor.Tools
                 Debug.LogError($"{name} is not set!");
                 return false;
             }
-            
+
             return true;
         }
 

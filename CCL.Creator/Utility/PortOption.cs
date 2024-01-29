@@ -1,7 +1,7 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Linq;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Utility
 {
     public enum PortOptionType
     {
@@ -52,7 +52,7 @@ namespace CCL.Creator.Editor
         public PortReferenceOption(string prefabName, string compId, string portId, DVPortValueType valueType)
             : base(PortOptionType.PortReference, prefabName, compId, portId, valueType)
         { }
-        
+
         public PortReferenceOption(string? fullId, string prefabName = "Unknown")
             : base(PortOptionType.PortReference, fullId, DVPortValueType.GENERIC, prefabName)
         { }
@@ -76,12 +76,12 @@ namespace CCL.Creator.Editor
 
         public bool MatchesType(DVPortType[]? filters)
         {
-            return (filters == null) || (filters.Length == 0) || filters.Contains(PortType);
+            return filters == null || filters.Length == 0 || filters.Contains(PortType);
         }
 
         public bool MatchesValueType(DVPortValueType[]? filters)
         {
-            return (filters == null) || (filters.Length == 0) || filters.Contains(PortValueType);
+            return filters == null || filters.Length == 0 || filters.Contains(PortValueType);
         }
     }
 

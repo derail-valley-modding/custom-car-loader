@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Proxies.Ports;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     [CustomPropertyDrawer(typeof(FuseIdAttribute))]
     public class FuseIdEditor : PropertyDrawer
@@ -23,7 +24,7 @@ namespace CCL.Creator.Editor
             }
 
             var component = property.serializedObject.targetObject;
-            
+
             EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
@@ -37,7 +38,7 @@ namespace CCL.Creator.Editor
 
             int selected = options.FindIndex(p => p.ID == currentValue);
 
-            if ((selected < 0) && !string.IsNullOrEmpty(currentValue))
+            if (selected < 0 && !string.IsNullOrEmpty(currentValue))
             {
                 options.Add(new FuseOption(currentValue));
                 selected = options.Count - 1;

@@ -43,7 +43,7 @@ namespace CCL.Types
         public bool HideBackCoupler = false;
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Creator.Editor.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
+        [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
         public bool buttonRender;
 
         private void OnValidate()

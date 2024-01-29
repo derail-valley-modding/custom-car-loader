@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace CCL.Creator
+namespace CCL.Creator.Wizards
 {
     public class CarWizard : EditorWindow
     {
@@ -196,11 +196,11 @@ namespace CCL.Creator
             public BaseTrainCarType BaseCarType;
 
             public bool IsValid =>
-                (Kind == DVTrainCarKind.Car) &&
+                Kind == DVTrainCarKind.Car &&
                 !string.IsNullOrWhiteSpace(ID) &&
                 !string.IsNullOrWhiteSpace(Name) &&
                 !string.IsNullOrWhiteSpace(Author) &&
-                (BaseCarType != BaseTrainCarType.NotSet);
+                BaseCarType != BaseTrainCarType.NotSet;
         }
     }
 }

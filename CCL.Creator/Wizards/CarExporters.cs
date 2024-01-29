@@ -6,8 +6,9 @@ using System;
 using System.Collections.Generic;
 using CCL.Types;
 using CCL.Types.Json;
+using CCL.Creator.Utility;
 
-namespace CCL.Creator
+namespace CCL.Creator.Wizards
 {
     internal class CarTypeExporter
     {
@@ -154,15 +155,15 @@ namespace CCL.Creator
     }
 
     internal class CarLiveryExporter
-	{
-		public readonly CarTypeExporter Parent;
-		public readonly CustomCarVariant Livery;
+    {
+        public readonly CarTypeExporter Parent;
+        public readonly CustomCarVariant Livery;
 
-		public CarLiveryExporter(CarTypeExporter parent, CustomCarVariant livery)
-		{
-			Parent = parent;
-			Livery = livery;
-		}
+        public CarLiveryExporter(CarTypeExporter parent, CustomCarVariant livery)
+        {
+            Parent = parent;
+            Livery = livery;
+        }
 
         public bool PrepareForExport()
         {
@@ -215,5 +216,5 @@ namespace CCL.Creator
 
             return true;
         }
-	}
+    }
 }

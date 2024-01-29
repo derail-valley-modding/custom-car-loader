@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Proxies.Ports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Wizards
 {
     public class PortConnectionSelector : PopupWindowContent
     {
@@ -22,7 +23,7 @@ namespace CCL.Creator.Editor
         private readonly ConnectionResultType _multiplicity;
         private readonly List<PortOptionBase> _options;
 
-        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortDefinition port, string localId, 
+        public PortConnectionSelector(SimConnectionsDefinitionProxy host, float width, PortDefinition port, string localId,
             PortDirection direction, ConnectionResult currentConn)
         {
             _simConn = host;
@@ -34,7 +35,7 @@ namespace CCL.Creator.Editor
 
             var sources = PortOptionHelper.GetAvailableSources(host, false);
             IEnumerable<PortOptionBase> options;
-            
+
             if (direction == PortDirection.Input)
             {
                 options = PortOptionHelper.GetInputPortConnectionOptions(port.valueType, sources);
@@ -144,7 +145,7 @@ namespace CCL.Creator.Editor
 
             using (new GUIColorScope(EditorHelpers.Colors.DELETE_ACTION))
             {
-                string unlinkText = (_multiplicity == ConnectionResultType.Multiple) ? "Unlink All" : "Unlink";
+                string unlinkText = _multiplicity == ConnectionResultType.Multiple ? "Unlink All" : "Unlink";
                 if (GUI.Button(new Rect(0, 0, _width, LINE_HEIGHT), unlinkText, ButtonStyle))
                 {
                     _currentConnection.DestroyAll();
@@ -168,7 +169,7 @@ namespace CCL.Creator.Editor
                 if (nowConnected && !wasConnected)
                 {
                     // new connection
-                    if ((_multiplicity == ConnectionResultType.Single) && (option.Type != PortOptionType.IdField))
+                    if (_multiplicity == ConnectionResultType.Single && option.Type != PortOptionType.IdField)
                     {
                         // destroy existing connections
                         foreach (var link in _currentConnection.Matches.Where(m => m.ConnectionType != PortOptionType.IdField).ToList())

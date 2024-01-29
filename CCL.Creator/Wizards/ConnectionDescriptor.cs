@@ -1,9 +1,10 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Wizards
 {
     public enum PortDirection
     {
@@ -58,7 +59,7 @@ namespace CCL.Creator.Editor
         public ConnectionDescriptor(SimConnectionsDefinitionProxy host, IdFieldBase idFieldConnection, string assignedId, PortDirection direction)
         {
             Connections = host;
-            Id = (direction == PortDirection.Output) ? idFieldConnection.FullName : assignedId;
+            Id = direction == PortDirection.Output ? idFieldConnection.FullName : assignedId;
             IdFieldConnection = idFieldConnection;
             AssignedId = assignedId;
             Direction = direction;
@@ -174,11 +175,11 @@ namespace CCL.Creator.Editor
         {
             if (PortConnection != null)
             {
-                return (Direction == PortDirection.Output) ? PortConnection.fullPortIdOut : PortConnection.fullPortIdIn;
+                return Direction == PortDirection.Output ? PortConnection.fullPortIdOut : PortConnection.fullPortIdIn;
             }
             else
             {
-                return (Direction == PortDirection.Output) ? ReferenceConnection!.portId : ReferenceConnection!.portReferenceId;
+                return Direction == PortDirection.Output ? ReferenceConnection!.portId : ReferenceConnection!.portReferenceId;
             }
         }
 
@@ -222,7 +223,7 @@ namespace CCL.Creator.Editor
         private const string MULTI_CONNECTED = "[Multiple Connections]";
 
         public bool AnyConnection => Type != ConnectionResultType.None;
-        public ConnectionDescriptor? Single => (Matches.Count == 1) ? Matches[0] : null;
+        public ConnectionDescriptor? Single => Matches.Count == 1 ? Matches[0] : null;
 
         public ConnectionResultType Type
         {
@@ -251,7 +252,7 @@ namespace CCL.Creator.Editor
         }
 
         public string? Tooltip =>
-            (Type == ConnectionResultType.Multiple) ? string.Join(",", Matches.Select(m => m.Id)) : null;
+            Type == ConnectionResultType.Multiple ? string.Join(",", Matches.Select(m => m.Id)) : null;
 
         public void AddMatch(ConnectionDescriptor descriptor)
         {

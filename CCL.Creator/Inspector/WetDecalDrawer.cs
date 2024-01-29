@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using static CCL.Types.Proxies.Weather.WetDecalEnums;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     internal class WetDecalDrawer
     {
@@ -14,8 +14,8 @@ namespace CCL.Creator.Editor
             Gizmos.matrix = proxy.transform.localToWorldMatrix;
             if (proxy.Settings.Shape == DecalShape.Cube || proxy.Settings.Shape == DecalShape.Mesh)
             {
-                color.a = (gizmo == GizmoType.Selected ? 0.3f : 0.1f);
-                color.a *= (proxy.isActiveAndEnabled ? 0.15f : 0.1f);
+                color.a = gizmo == GizmoType.Selected ? 0.3f : 0.1f;
+                color.a *= proxy.isActiveAndEnabled ? 0.15f : 0.1f;
                 Gizmos.color = color;
                 Gizmos.DrawCube(Vector3.zero, Vector3.one);
             }
@@ -29,8 +29,8 @@ namespace CCL.Creator.Editor
                 Debug.LogError($"Unknown decal shape: '{proxy.Settings.Shape}'");
             }
 
-            color.a = (gizmo == GizmoType.Selected ? 0.5f : 0.2f);
-            color.a *= (proxy.isActiveAndEnabled ? 1f : 0.75f);
+            color.a = gizmo == GizmoType.Selected ? 0.5f : 0.2f;
+            color.a *= proxy.isActiveAndEnabled ? 1f : 0.75f;
             Gizmos.color = color;
             if (proxy.Settings.Shape == DecalShape.Cube || proxy.Settings.Shape == DecalShape.Mesh)
             {

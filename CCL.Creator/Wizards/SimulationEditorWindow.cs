@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -6,7 +7,7 @@ using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Wizards
 {
     public partial class SimulationEditorWindow : EditorWindow
     {

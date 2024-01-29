@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using CCL.Creator.Utility;
 using CCL.Types;
 using UnityEditor;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
-namespace CCL.Creator
+namespace CCL.Creator.Inspector
 {
     [CustomPropertyDrawer(typeof(RenderMethodButtonsAttribute))]
     public class MethodButtonsDrawer : PropertyDrawer
@@ -26,7 +27,7 @@ namespace CCL.Creator
             for (int i = 0; i < buttons.Count; i++)
             {
                 var button = buttons[i];
-                Rect buttonRect = new Rect(position.x, position.y + ((i + 1) * (buttonHeight + 1)), position.width, buttonHeight - 1);
+                Rect buttonRect = new Rect(position.x, position.y + (i + 1) * (buttonHeight + 1), position.width, buttonHeight - 1);
 
                 if (GUI.Button(buttonRect, new GUIContent(button.Text, button.Tooltip ?? string.Empty)))
                 {
@@ -78,7 +79,7 @@ namespace CCL.Creator
                     return localMethod;
                 }
             }
-            else if ((parts.Length == 2) && (GetType(parts[0]) is Type type))
+            else if (parts.Length == 2 && GetType(parts[0]) is Type type)
             {
                 if (type.GetMethod(parts[1], ALL_STATIC) is MethodInfo methodInfo)
                 {

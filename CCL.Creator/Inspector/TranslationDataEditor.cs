@@ -3,7 +3,7 @@ using DVLangHelper.Data;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     [CustomPropertyDrawer(typeof(TranslationData))]
     public class TranslationDataEditor : GridPropertyDrawer<TranslationData>
@@ -35,7 +35,7 @@ namespace CCL.Creator.Editor
                 {
                     EditorGUI.PropertyField(langSpinnerRect, langProp, GUIContent.none);
                 }
-                
+
                 var valueFieldRect = GetCellPosition(bounds, 1, i);
                 var valueProp = item.FindPropertyRelative(nameof(TranslationItem.Value));
                 EditorGUI.PropertyField(valueFieldRect, valueProp, GUIContent.none);

@@ -1,7 +1,7 @@
 ﻿using CCL.Types;
 using System;
 
-namespace CCL.Creator.Editor.Tools
+namespace CCL.Creator.Utility
 {
     internal class CargoHelper
     {

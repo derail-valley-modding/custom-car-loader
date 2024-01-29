@@ -1,4 +1,4 @@
-﻿namespace CCL.Creator.Editor.Tools
+﻿namespace CCL.Creator.Utility
 {
     internal enum CarParentType
     {

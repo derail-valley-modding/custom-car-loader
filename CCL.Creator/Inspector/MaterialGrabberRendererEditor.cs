@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     [CustomEditor(typeof(MaterialGrabberRenderer))]
     internal class MaterialGrabberRendererEditor : UnityEditor.Editor

@@ -5,7 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     public abstract class GridPropertyDrawer<TProp> : PropertyDrawer
     {
@@ -22,10 +22,10 @@ namespace CCL.Creator.Editor
         protected Rect GetCellPosition(Rect bounds, int col, int row, int colSpan = 1, int rowSpan = 1)
         {
             return new Rect(
-                bounds.x + (bounds.width / Columns) * col + PADDING_X,
-                bounds.y + (bounds.height / Rows) * row + PADDING_Y,
-                bounds.width * colSpan / Columns - (2 * PADDING_X),
-                bounds.height * rowSpan / Rows - (2 * PADDING_Y)
+                bounds.x + bounds.width / Columns * col + PADDING_X,
+                bounds.y + bounds.height / Rows * row + PADDING_Y,
+                bounds.width * colSpan / Columns - 2 * PADDING_X,
+                bounds.height * rowSpan / Rows - 2 * PADDING_Y
             );
         }
 

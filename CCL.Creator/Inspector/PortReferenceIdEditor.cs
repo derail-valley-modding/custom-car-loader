@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Proxies.Ports;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     [CustomPropertyDrawer(typeof(PortReferenceIdAttribute))]
     public class PortReferenceIdEditor : PropertyDrawer
@@ -22,7 +23,7 @@ namespace CCL.Creator.Editor
             }
 
             var component = property.serializedObject.targetObject;
-            
+
             EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
@@ -36,7 +37,7 @@ namespace CCL.Creator.Editor
 
             int selected = options.FindIndex(p => p.ID == currentValue);
 
-            if ((selected < 0) && !string.IsNullOrEmpty(currentValue))
+            if (selected < 0 && !string.IsNullOrEmpty(currentValue))
             {
                 options.Add(new PortReferenceOption(currentValue));
                 selected = options.Count - 1;

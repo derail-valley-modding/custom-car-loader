@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Wizards
 {
     public static class CarPrefabManipulators
     {
@@ -132,7 +132,7 @@ namespace CCL.Creator.Editor
         }
 
         private static float GetBogieOffset(BaseTrainCarType carType)
-        { 
+        {
             switch (carType)
             {
                 case BaseTrainCarType.LocoDiesel:

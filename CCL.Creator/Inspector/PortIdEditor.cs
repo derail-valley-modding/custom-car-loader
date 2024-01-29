@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Proxies.Ports;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     [CustomPropertyDrawer(typeof(PortIdAttribute))]
     public class PortIdEditor : PropertyDrawer
@@ -16,7 +17,7 @@ namespace CCL.Creator.Editor
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var portData = (PortIdAttribute)attribute;
-            
+
             string? currentValue = property.stringValue;
             if (string.IsNullOrEmpty(currentValue))
             {
@@ -24,7 +25,7 @@ namespace CCL.Creator.Editor
             }
 
             var component = property.serializedObject.targetObject;
-            
+
             EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
@@ -38,7 +39,7 @@ namespace CCL.Creator.Editor
 
             int selected = options.FindIndex(p => p.ID == currentValue);
 
-            if ((selected < 0) && !string.IsNullOrEmpty(currentValue))
+            if (selected < 0 && !string.IsNullOrEmpty(currentValue))
             {
                 options.Add(new PortOption(currentValue));
                 selected = options.Count - 1;

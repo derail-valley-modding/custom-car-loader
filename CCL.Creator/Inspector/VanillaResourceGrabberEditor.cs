@@ -6,7 +6,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Inspector
 {
     [CustomEditor(typeof(VanillaResourceGrabber<>), true)]
     internal class VanillaResourceGrabberEditor : UnityEditor.Editor

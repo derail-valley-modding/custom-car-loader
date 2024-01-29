@@ -71,7 +71,7 @@ namespace CCL.Types
         }
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Creator.TrainCarValidator:ValidateExport", "Export Car")]
+        [MethodButton("CCL.Creator.Validators.TrainCarValidator:ValidateExport", "Export Car")]
         public bool buttonRender;
 
         private void OnValidate()

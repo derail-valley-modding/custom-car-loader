@@ -8,7 +8,7 @@ using System.Linq;
 using CCL.Types.Proxies.Ports;
 using static System.Net.WebRequestMethods;
 
-namespace CCL.Creator.Editor
+namespace CCL.Creator.Utility
 {
     internal static class PortOptionHelper
     {
@@ -29,7 +29,7 @@ namespace CCL.Creator.Editor
                 }
                 else
                 {
-                    var scene = EditorSceneManager.GetActiveScene();
+                    var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                     return scene.GetRootGameObjects();
                 }
             }
@@ -240,7 +240,7 @@ namespace CCL.Creator.Editor
             {
                 foreach (var port in GetPortsInObject(source))
                 {
-                    if ((valueType == DVPortValueType.GENERIC) || (port.PortValueType == valueType) || (port.PortValueType == DVPortValueType.GENERIC))
+                    if (valueType == DVPortValueType.GENERIC || port.PortValueType == valueType || port.PortValueType == DVPortValueType.GENERIC)
                     {
                         yield return port;
                     }

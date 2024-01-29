@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 
-namespace CCL.Creator
+namespace CCL.Creator.Utility
 {
     public static class EditorHelpers
     {
@@ -75,22 +75,22 @@ namespace CCL.Creator
             return SearchDisksForPath(steamModPath);
         }
 
-        public static T ObjectField<T>(T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options)
+        public static T ObjectField<T>(T obj, bool allowSceneObjects, params GUILayoutOption[] options)
             where T : UnityEngine.Object
         {
-            return (T)UnityEditor.EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects, options);
+            return (T)EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects, options);
         }
 
-        public static T ObjectField<T>(string label, T obj, bool allowSceneObjects, params UnityEngine.GUILayoutOption[] options)
+        public static T ObjectField<T>(string label, T obj, bool allowSceneObjects, params GUILayoutOption[] options)
             where T : UnityEngine.Object
         {
-            return (T)UnityEditor.EditorGUILayout.ObjectField(label, obj, typeof(T), allowSceneObjects, options);
+            return (T)EditorGUILayout.ObjectField(label, obj, typeof(T), allowSceneObjects, options);
         }
 
-        public static T EnumPopup<T>(string label, T selected, params UnityEngine.GUILayoutOption[] options)
+        public static T EnumPopup<T>(string label, T selected, params GUILayoutOption[] options)
             where T : Enum
         {
-            return (T)UnityEditor.EditorGUILayout.EnumPopup(label, selected, options);
+            return (T)EditorGUILayout.EnumPopup(label, selected, options);
         }
 
         public static string? GetSelectionPath()
@@ -120,7 +120,7 @@ namespace CCL.Creator
             }
             else
             {
-                var scene = EditorSceneManager.GetActiveScene();
+                var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
                 var roots = scene.GetRootGameObjects();
 
                 if (parts != null)

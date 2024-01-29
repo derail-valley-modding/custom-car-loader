@@ -1,4 +1,4 @@
-﻿using CCL.Creator.Validators;
+﻿using CCL.Creator.Wizards;
 using CCL.Types;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator
+namespace CCL.Creator.Validators
 {
     public class TrainCarValidator : EditorWindow
     {
