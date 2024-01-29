@@ -99,6 +99,7 @@ namespace CCL.Creator.Editor
                 }
             }
 
+            GUI.color = EditorHelpers.Colors.DEFAULT;
             // Sort mode selector
             Rect sortSelectArea = new Rect(0, 0, position.width / 4, LINE_HEIGHT);
             _sortMode = (SortMode)EditorGUI.Popup(sortSelectArea, (int)_sortMode, _sortModeNames);
@@ -193,12 +194,15 @@ namespace CCL.Creator.Editor
                 yOffset -= LINE_HEIGHT / 2f;
                 float localY = 0;
 
-                // Fold arrow
-                var foldBox = new Rect(H_PADDING, localY, compBoxWidth, LINE_HEIGHT);
-                bool currentFold = unfolded.ContainsKey(Component) && unfolded[Component];
-                bool newFold = EditorGUI.Foldout(foldBox, currentFold, "Expand");
-                unfolded[Component] = newFold;
-
+                bool newFold = false;
+                if (Entries.Count > 0)
+                {
+                    // Fold arrow
+                    var foldBox = new Rect(H_PADDING, localY, compBoxWidth, LINE_HEIGHT);
+                    bool currentFold = unfolded.ContainsKey(Component) && unfolded[Component];
+                    newFold = EditorGUI.Foldout(foldBox, currentFold, "Expand");
+                    unfolded[Component] = newFold;
+                }
                 // Title/Jump button
                 var titleBox = new Rect(columnWidth / 2, localY, columnWidth, LINE_HEIGHT);
                 if (GUI.Button(titleBox, Title))
