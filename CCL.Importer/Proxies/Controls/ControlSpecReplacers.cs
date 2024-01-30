@@ -23,8 +23,12 @@ namespace CCL.Importer.Proxies.Controls
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
             CreateMap<ButtonProxy, Button>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+
             CreateMap<ExternalControlDefinitionProxy, ExternalControlDefinition>().AutoCacheAndMap();
+            CreateMap<GenericControlDefinitionProxy, GenericControlDefinition>().AutoCacheAndMap();
             CreateMap<ReverserDefinitionProxy, ReverserDefinition>().AutoCacheAndMap();
+            CreateMap<HornDefinitionProxy, HornDefinition>().AutoCacheAndMap();
+
             CreateMap<StaticInteractionAreaProxy, StaticInteractionArea>().AutoCacheAndMap();
             CreateMap<InteractablePortFeederProxy, InteractablePortFeeder>().AutoCacheAndMap();
             CreateMap<ManualTransmissionInputDefinitionProxy, ManualTransmissionInputDefinition>().AutoCacheAndMap();

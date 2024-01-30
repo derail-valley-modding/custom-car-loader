@@ -46,11 +46,9 @@ namespace CCL.Creator.Wizards
                 "This wizard will automagically create car type and livery assets for your new vehicle. " +
                 "Simply fill out the fields below to get started!");
 
-            GUI.enabled = false;
             _carSettings.Kind = RenderEnum(
                 "This is the \"category\" of vehicle (only Car supported currently)",
                 "Kind", _carSettings.Kind);
-            GUI.enabled = true;
 
             _carSettings.ID = RenderTextbox(
                 "This will be the unique identifier for your car - we will also apply it to the default livery",

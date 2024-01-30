@@ -85,24 +85,26 @@ namespace CCL.Creator.Wizards
             if (!SimConnections) Close();
 
             var componentInfos = SimConnections.executionOrder?.Select(c => new ComponentInfo(c, _sortMode)).ToList() ?? new List<ComponentInfo>(0);
+
+            var haveIds = new List<ComponentInfo>();
             foreach (var hasFields in SimConnections.transform.root.GetComponentsInChildren<IHasPortIdFields>())
             {
-                if (!componentInfos.Any(info => info.Component == (Component)hasFields))
+                if (!componentInfos.Any(info => info.Component == (Component)hasFields) && !haveIds.Any(info => info.Component == (Component)hasFields))
                 {
-                    componentInfos.Add(new ComponentInfo((Component)hasFields, _sortMode));
+                    haveIds.Add(new ComponentInfo((Component)hasFields, _sortMode));
                 }
             }
             foreach (var hasFields in SimConnections.transform.root.GetComponentsInChildren<IHasFuseIdFields>())
             {
-                if (!componentInfos.Any(info => info.Component == (Component)hasFields))
+                if (!componentInfos.Any(info => info.Component == (Component)hasFields) && !haveIds.Any(info => info.Component == (Component)hasFields))
                 {
-                    componentInfos.Add(new ComponentInfo((Component)hasFields, _sortMode));
+                    haveIds.Add(new ComponentInfo((Component)hasFields, _sortMode));
                 }
             }
 
             GUI.color = EditorHelpers.Colors.DEFAULT;
             // Sort mode selector
-            Rect sortSelectArea = new Rect(0, 0, position.width / 4, LINE_HEIGHT);
+            Rect sortSelectArea = new Rect(H_PADDING, 0, position.width / 4 - H_PADDING, LINE_HEIGHT);
             _sortMode = (SortMode)EditorGUI.Popup(sortSelectArea, (int)_sortMode, _sortModeNames);
 
             // Headers
@@ -121,15 +123,30 @@ namespace CCL.Creator.Wizards
 
             // Component scroll view
             Rect scrollArea = new Rect(0, LINE_HEIGHT * 2, position.width, position.height - LINE_HEIGHT * 2);
-            Rect canvas = new Rect(0, 0, position.width - (H_PADDING * 2), componentInfos.Sum(c => c.PaddedHeight(_unfoldedState)));
+            Rect canvas = new Rect(0, 0, position.width - (H_PADDING * 2), componentInfos.Concat(haveIds).Sum(c => c.PaddedHeight(_unfoldedState)));
             _scrollPosition = GUI.BeginScrollView(scrollArea, _scrollPosition, canvas);
 
             float compBoxWidth = canvas.width - (H_PADDING * 2.5f);
 
-            float yOffset = 0;
+            // Section Label
+            Rect sectionRect = new Rect(H_PADDING, H_PADDING, compWidth, LINE_HEIGHT);
+            GUI.Label(sectionRect, "Sim Components (Execution Order)");
+
+            float yOffset = LINE_HEIGHT + H_PADDING;
             foreach (var component in componentInfos)
             {
                 component.Draw(SimConnections, ref yOffset, compBoxWidth, _unfoldedState);
+            }
+
+            // Section Label
+            yOffset += LINE_HEIGHT;
+            sectionRect = new Rect(H_PADDING, yOffset, compWidth, LINE_HEIGHT);
+            GUI.Label(sectionRect, "Port & Fuse ID Components");
+            yOffset += LINE_HEIGHT;
+
+            foreach (var hasIds in haveIds)
+            {
+                hasIds.Draw(SimConnections, ref yOffset, compBoxWidth, _unfoldedState);
             }
 
             GUI.EndScrollView();

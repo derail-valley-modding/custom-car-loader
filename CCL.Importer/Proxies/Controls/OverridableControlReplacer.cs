@@ -18,7 +18,8 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<OverridableControlProxy, IndependentBrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.IndBrake);
             //CreateMap<OverridableControlProxy, HandbrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Handbrake);
             CreateMap<OverridableControlProxy, SanderControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Sander);
-            CreateMap<OverridableControlProxy, HornControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Horn);
+            //CreateMap<OverridableControlProxy, HornControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Horn);
+            CreateMap<HornControlProxy, HornControl>().AutoCacheAndMap();
             CreateMap<OverridableControlProxy, HeadlightsControlFront>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsFront);
             CreateMap<OverridableControlProxy, HeadlightsControlRear>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsRear);
             CreateMap<OverridableControlProxy, DynamicBrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.DynamicBrake);

@@ -85,7 +85,7 @@ namespace CCL.Creator.Wizards
 
             private static string GetPrettyId(string id)
             {
-                if (id.All(c => c == '_' || char.IsUpper(c)))
+                if (id.All(c => c == '_' || char.IsDigit(c) || char.IsUpper(c)))
                 {
                     char[] dest = new char[id.Length];
 
