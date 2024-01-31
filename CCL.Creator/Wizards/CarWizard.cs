@@ -47,7 +47,7 @@ namespace CCL.Creator.Wizards
                 "Simply fill out the fields below to get started!");
 
             _carSettings.Kind = RenderEnum(
-                "This is the \"category\" of vehicle (only Car supported currently)",
+                "This is the \"category\" of vehicle",
                 "Kind", _carSettings.Kind);
 
             _carSettings.ID = RenderTextbox(
@@ -129,10 +129,10 @@ namespace CCL.Creator.Wizards
 
             // create interactables prefab
             GameObject? interactables = null;
-            if (settings.Kind == DVTrainCarKind.Car)
-            {
+            //if (settings.Kind == DVTrainCarKind.Car)
+            //{
                 interactables = CreateFreightInteractables(settings.ID!, relativeCarFolder);
-            }
+            //}
 
             // create car type
             var carType = CreateInstance<CustomCarType>();
@@ -144,6 +144,15 @@ namespace CCL.Creator.Wizards
             carType.carIdPrefix = $"{GetInitials(settings.Name!)}-";
             carType.mass = 25000;
             carType.wheelRadius = 0.459f;
+
+            bool isLoco = settings.Kind == DVTrainCarKind.Loco;
+            carType.brakes = new CustomCarType.BrakesSetup()
+            {
+                hasCompressor = isLoco,
+                brakeValveType = isLoco ? CustomCarType.BrakesSetup.TrainBrakeType.SelfLap : CustomCarType.BrakesSetup.TrainBrakeType.None,
+                hasIndependentBrake = isLoco,
+                hasHandbrake = true,
+            };
 
             // create livery
             var livery = CreateInstance<CustomCarVariant>();
@@ -194,11 +203,10 @@ namespace CCL.Creator.Wizards
             public BaseTrainCarType BaseCarType;
 
             public bool IsValid =>
-                Kind == DVTrainCarKind.Car &&
                 !string.IsNullOrWhiteSpace(ID) &&
                 !string.IsNullOrWhiteSpace(Name) &&
                 !string.IsNullOrWhiteSpace(Author) &&
-                BaseCarType != BaseTrainCarType.NotSet;
+                (BaseCarType != BaseTrainCarType.NotSet);
         }
     }
 }
