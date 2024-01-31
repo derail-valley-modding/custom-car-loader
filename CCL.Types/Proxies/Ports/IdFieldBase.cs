@@ -26,7 +26,7 @@ namespace CCL.Types.Proxies.Ports
         {
             Container = container;
             FieldName = fieldName;
-            AssignedIds = assignedIds;
+            AssignedIds = assignedIds?.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
 
             IsMultiValue = Container.GetType().GetField(FieldName, AllInstance).FieldType != typeof(string);
         }
@@ -49,7 +49,7 @@ namespace CCL.Types.Proxies.Ports
                         if (!array.Contains(fullPortId))
                         {
                             array = array.Append(fullPortId).ToArray();
-                            field.SetValue(Container, array);
+                            field.SetValue(Container, array.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray());
                         }
                     }
                 }
@@ -60,6 +60,8 @@ namespace CCL.Types.Proxies.Ports
                         list = new List<string>();
                         field.SetValue(Container, list);
                     }
+
+                    list.RemoveAll(string.IsNullOrWhiteSpace);
 
                     if (!list.Contains(fullPortId))
                     {
@@ -84,7 +86,7 @@ namespace CCL.Types.Proxies.Ports
                         // existing array
                         if (array.Contains(fullPortId))
                         {
-                            array = array.Where(id => id != fullPortId).ToArray();
+                            array = array.Where(id => id != fullPortId && !string.IsNullOrWhiteSpace(id)).ToArray();
                             field.SetValue(Container, array);
                         }
                     }
@@ -94,6 +96,7 @@ namespace CCL.Types.Proxies.Ports
                     if (field.GetValue(Container) is List<string> list)
                     {
                         list.Remove(fullPortId);
+                        list.RemoveAll(string.IsNullOrWhiteSpace);
                     }
                 }
                 else

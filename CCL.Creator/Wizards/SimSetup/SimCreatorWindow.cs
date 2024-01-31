@@ -168,6 +168,7 @@ namespace CCL.Creator.Wizards.SimSetup
             _sim.transform.localRotation = Quaternion.identity;
 
             _connectionDef = _sim.AddComponent<SimConnectionsDefinitionProxy>();
+            _connectionDef.executionOrder = _sim.GetComponentsInChildren<SimComponentDefinitionProxy>().ToList();
             _connectionDef.connections = new List<PortConnectionProxy>();
             _connectionDef.portReferenceConnections = new List<PortReferenceConnectionProxy>();
 

@@ -2,6 +2,8 @@
 using CCL.Types;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -11,46 +13,33 @@ namespace CCL.Creator.Validators
 {
     public class TrainCarValidator : EditorWindow
     {
+        private static readonly AggregateCatalog _catalog;
         private static TrainCarValidator? window = null;
 
-        private readonly List<Result> results = new List<Result>();
+        static TrainCarValidator()
+        {
+            _catalog = new AggregateCatalog();
+            _catalog.Catalogs.Add(new AssemblyCatalog(Assembly.GetExecutingAssembly()));
+        }
+
+        [ImportMany]
+        private IEnumerable<ICarValidator>? _steps = new ICarValidator[0];
+        private readonly List<ICarValidator> SortedSteps;
+
+        private readonly List<ValidationResult> results = new List<ValidationResult>();
         private CustomCarType? carType = null;
         private bool validationPassed = false;
         private bool correctionsNeeded = false;
 
         Vector2 scrollPos = Vector2.zero;
 
-        delegate IEnumerable<Result> CarValidatorFunc(CustomCarType carType);
-
-        private class Validator
+        public TrainCarValidator()
         {
-            public readonly string TestName;
-            public readonly CarValidatorFunc Func;
+            var container = new CompositionContainer(_catalog);
+            container.ComposeParts(this);
 
-            public Validator(string testName, CarValidatorFunc func)
-            {
-                TestName = testName;
-                Func = func;
-            }
-        }
-
-        private static readonly List<Validator> _validators;
-
-        static TrainCarValidator()
-        {
-            _validators = new List<Validator>();
-
-            foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
-            {
-                foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Static))
-                {
-                    if (method.GetCustomAttribute<CarValidatorAttribute>() is CarValidatorAttribute attr)
-                    {
-                        var testMethod = (CarValidatorFunc)method.CreateDelegate(typeof(CarValidatorFunc));
-                        _validators.Add(new Validator(attr.TestName, testMethod));
-                    }
-                }
-            }
+            SortedSteps = new List<ICarValidator>(_steps);
+            SortedSteps.Sort();
         }
 
         private void OnGUI()
@@ -60,17 +49,19 @@ namespace CCL.Creator.Validators
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
             GUILayout.BeginHorizontal();
 
+            var entries = results.SelectMany(r => r.Entries).ToList();
+
             // Test Names
             GUILayout.BeginVertical();
-            foreach (Result result in results)
+            foreach (var result in entries)
             {
-                GUILayout.Label($"{result.Name}: ");
+                GUILayout.Label($"{result.TestName}: ");
             }
             GUILayout.EndVertical();
 
             // Statuses
             GUILayout.BeginVertical();
-            foreach (Result result in results)
+            foreach (var result in entries)
             {
                 GUI.skin.label.normal.textColor = result.StatusColor;
                 GUILayout.Label(Enum.GetName(typeof(ResultStatus), result.Status));
@@ -80,7 +71,7 @@ namespace CCL.Creator.Validators
             // Messages
             GUI.skin.label.normal.textColor = defaultText;
             GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-            foreach (Result result in results)
+            foreach (var result in entries)
             {
                 GUILayout.Label(" " + result.Message);
             }
@@ -148,39 +139,26 @@ namespace CCL.Creator.Validators
             carType = carSetup;
             bool criticalFail = false;
 
-            foreach (var validator in _validators)
+            foreach (var validator in SortedSteps)
             {
-                var tests = RunTest(validator).ToList();
-                foreach (var result in tests)
+                var result = validator.Validate(carSetup);
+                results.Add(result);
+
+                if (result.IsCorrectable)
                 {
-                    results.Add(result);
+                    correctionsNeeded = true;
+                }
 
-                    if (result.IsCorrectable)
-                    {
-                        correctionsNeeded = true;
-                    }
-
-                    if (result.Status == ResultStatus.Failed)
-                    {
-                        validationPassed = false;
-                    }
-                    else if (result.Status == ResultStatus.Critical)
-                    {
-                        validationPassed = false;
-                        criticalFail = true;
-                    }
+                if (result.AnyFailure)
+                {
+                    validationPassed = false;
+                }
+                if (result.Status == ResultStatus.Critical)
+                {
+                    criticalFail = true;
                 }
 
                 if (criticalFail) return;
-            }
-        }
-
-        private IEnumerable<Result> RunTest(Validator validator)
-        {
-            foreach (var result in validator.Func(carType!))
-            {
-                result.Name = validator.TestName;
-                yield return result;
             }
         }
     }

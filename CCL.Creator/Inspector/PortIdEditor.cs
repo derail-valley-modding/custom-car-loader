@@ -25,6 +25,7 @@ namespace CCL.Creator.Inspector
             }
 
             var component = property.serializedObject.targetObject;
+            GUI.color = EditorHelpers.Colors.DEFAULT;
 
             EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
@@ -43,6 +44,7 @@ namespace CCL.Creator.Inspector
             {
                 options.Add(new PortOption(currentValue));
                 selected = options.Count - 1;
+                GUI.color = EditorHelpers.Colors.DELETE_ACTION;
             }
 
             string[] optionNames = options.Select(p => p.Description).ToArray();

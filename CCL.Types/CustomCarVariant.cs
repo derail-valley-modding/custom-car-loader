@@ -64,6 +64,21 @@ namespace CCL.Types
         public void ForceValidation()
         {
             OnValidate();
+
+            if (prefab) ForceValidatePrefab(prefab!);
+            if (interiorPrefab) ForceValidatePrefab(interiorPrefab!);
+            if (explodedInteriorPrefab) ForceValidatePrefab(explodedInteriorPrefab!);
+
+            if (externalInteractablesPrefab) ForceValidatePrefab(externalInteractablesPrefab!);
+            if (explodedExternalInteractablesPrefab) ForceValidatePrefab(explodedExternalInteractablesPrefab!);
+        }
+
+        private void ForceValidatePrefab(GameObject prefab)
+        {
+            foreach (var customSerialized in prefab.GetComponentsInChildren<ICustomSerialized>())
+            {
+                customSerialized.OnValidate();
+            }
         }
 
         public void AfterAssetLoad()

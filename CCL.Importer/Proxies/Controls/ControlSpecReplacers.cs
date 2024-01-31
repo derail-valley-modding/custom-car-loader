@@ -2,6 +2,7 @@
 using CCL.Types.Proxies.Controls;
 using DV.CabControls.Spec;
 using DV.Interaction;
+using DV.Simulation.Fuses;
 using DV.Simulation.Ports;
 using LocoSim.Definitions;
 
@@ -31,6 +32,7 @@ namespace CCL.Importer.Proxies.Controls
 
             CreateMap<StaticInteractionAreaProxy, StaticInteractionArea>().AutoCacheAndMap();
             CreateMap<InteractablePortFeederProxy, InteractablePortFeeder>().AutoCacheAndMap();
+            CreateMap<InteractableFuseFeederProxy, InteractableFuseFeeder>().AutoCacheAndMap();
             CreateMap<ManualTransmissionInputDefinitionProxy, ManualTransmissionInputDefinition>().AutoCacheAndMap();
         }
     }

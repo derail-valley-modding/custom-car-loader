@@ -21,6 +21,7 @@
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="UnityEngine.TextRenderingModule" />
 		<Reference Include="UnityEngine.UI" />
+		<Reference Include="System.ComponentModel.Composition" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

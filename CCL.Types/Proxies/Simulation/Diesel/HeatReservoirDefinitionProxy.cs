@@ -34,7 +34,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             if (inputs == null || inputs.Length != inputCount)
             {
                 inputs = Enumerable.Range(0, inputCount)
-                    .Select(i => new PortReferenceDefinition(DVPortValueType.HEAT_RATE, $"HEAT_IN_{i + 1}"))
+                    .Select(i => new PortReferenceDefinition(DVPortValueType.HEAT_RATE, $"HEAT_IN_{i}"))
                     .ToArray();
             }
             _inputsJson = JSONObject.ToJson(inputs);

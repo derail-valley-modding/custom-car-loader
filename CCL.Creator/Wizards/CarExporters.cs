@@ -77,6 +77,9 @@ namespace CCL.Creator.Wizards
                 }
 
                 CarType.ForceValidation();
+                EditorUtility.SetDirty(CarType);
+                EditorHelpers.SaveAndRefresh();
+
                 string carTypePath = AssetDatabase.GetAssetPath(CarType);
                 AssetImporter.GetAtPath(carTypePath).SetAssetBundleNameAndVariant(BundleName, "");
 
