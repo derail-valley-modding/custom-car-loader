@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Controllers;
 using DV.Damage;
+using DV.Simulation.Brake;
 
 namespace CCL.Importer.Proxies.Controllers
 {
@@ -9,6 +10,7 @@ namespace CCL.Importer.Proxies.Controllers
         public MiscControllerReplacer()
         {
             CreateMap<DamageControllerProxy, DamageController>().AutoCacheAndMap();
+            CreateMap<CompressorSimControllerProxy, CompressorSimController>().AutoCacheAndMap();
         }
     }
 }

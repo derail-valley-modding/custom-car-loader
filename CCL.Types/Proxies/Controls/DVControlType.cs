@@ -15,7 +15,7 @@ namespace CCL.Types.Proxies.Controls
         IndBrake = DVControlType.IndBrake,
         Handbrake = DVControlType.Handbrake,
         Sander = DVControlType.Sander,
-        Horn = DVControlType.Horn,
+        //Horn = DVControlType.Horn,
         HeadlightsFront = DVControlType.HeadlightsFront,
         HeadlightsRear = DVControlType.HeadlightsRear,
         DynamicBrake = DVControlType.DynamicBrake,

@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Resources
 {
-    public class ResourceContainerProxy : SimComponentDefinitionProxy
+    public class ResourceContainerProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults
     {
         public float capacity = 100;
         public float defaultValue = 100;
@@ -28,6 +28,30 @@ namespace CCL.Types.Proxies.Resources
                     new PortDefinition(DVPortType.READONLY_OUT, valueType, "NORMALIZED"),
                 };
             }
+        }
+
+        public void ApplyDM3Defaults()
+        {
+            capacity = type switch
+            {
+                ResourceContainerType.Fuel => 1500,
+                ResourceContainerType.Oil => 100,
+                ResourceContainerType.Sand => 250,
+                _ => 100
+            };
+            defaultValue = capacity;
+        }
+
+        public void ApplyDH4Defaults()
+        {
+            capacity = type switch
+            {
+                ResourceContainerType.Fuel => 6000,
+                ResourceContainerType.Oil => 300,
+                ResourceContainerType.Sand => 400,
+                _ => 100,
+            };
+            defaultValue = capacity;
         }
     }
 }

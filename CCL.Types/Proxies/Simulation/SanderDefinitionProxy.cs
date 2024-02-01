@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields
+    public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDH4Defaults
     {
         public float sandConsumptionRate = 5f;
 
@@ -41,6 +41,12 @@ namespace CCL.Types.Proxies.Simulation
         {
             sandConsumptionRate = 0.5f;
             sandCoeficientMax = 2.25f;
+        }
+
+        public void ApplyDH4Defaults()
+        {
+            sandConsumptionRate = 0.5f;
+            sandCoeficientMax = 1.5f;
         }
     }
 }

@@ -16,4 +16,17 @@ namespace CCL.Types.Proxies.Controls
             new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)
         };
     }
+
+    public class HornControlProxy : MonoBehaviour, IHasPortIdFields
+    {
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
+        public string portId;
+
+        public bool neutralAt0;
+
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)
+        };
+    }
 }

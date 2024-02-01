@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
+    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDM3Defaults, IDH4Defaults
     {
         [Header("Torque Transmission")]
         public float outputTorqueLimit;

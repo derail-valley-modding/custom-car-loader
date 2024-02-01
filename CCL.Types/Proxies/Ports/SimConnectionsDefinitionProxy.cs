@@ -10,7 +10,7 @@ namespace CCL.Types.Proxies.Ports
     {
         [RenderMethodButtons]
         [MethodButton(nameof(PopulateComponents), "Populate Components")]
-        [MethodButton("CCL.Creator.Editor.SimulationEditorWindow:ShowWindow", "Connection Wizard")]
+        [MethodButton("CCL.Creator.Wizards.SimulationEditorWindow:ShowWindow", "Connection Wizard")]
         public bool renderButtons;
 
         public List<SimComponentDefinitionProxy> executionOrder;
