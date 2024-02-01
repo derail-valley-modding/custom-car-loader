@@ -21,17 +21,35 @@ namespace CCL.Creator.Utility
             }
             else
             {
-                // otherwise we want to list ports on all parts of the car
-                string? prefabAssetPath = GetCurrentPrefabPath(location);
-                if (prefabAssetPath != null)
-                {
-                    return GetSiblingPrefabs(prefabAssetPath);
-                }
-                else
-                {
-                    var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-                    return scene.GetRootGameObjects();
-                }
+                return GetAllAvailableSources(location);
+            }
+        }
+
+        public static IEnumerable<GameObject> GetAvailableSources(Transform location, bool local)
+        {
+            if (local)
+            {
+                // if local, only look at ports on the current prefab
+                return new GameObject[] { location.root.gameObject };
+            }
+            else
+            {
+                return GetAllAvailableSources(location);
+            }
+        }
+
+        public static IEnumerable<GameObject> GetAllAvailableSources(Object prefabPart)
+        {
+            // otherwise we want to list ports on all parts of the car
+            string? prefabAssetPath = GetCurrentPrefabPath(prefabPart);
+            if (prefabAssetPath != null)
+            {
+                return GetSiblingPrefabs(prefabAssetPath);
+            }
+            else
+            {
+                var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+                return scene.GetRootGameObjects();
             }
         }
 
