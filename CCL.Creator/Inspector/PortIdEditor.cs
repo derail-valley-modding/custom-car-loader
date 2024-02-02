@@ -30,8 +30,6 @@ namespace CCL.Creator.Inspector
                 currentValue = null;
             }
 
-            GUI.color = EditorHelpers.Colors.DEFAULT;
-
             EditorGUI.BeginProperty(position, label, property);
             position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
@@ -49,13 +47,13 @@ namespace CCL.Creator.Inspector
             {
                 if (selected == 0)
                 {
-                    GUI.color = EditorHelpers.Colors.WARNING;
+                    GUI.backgroundColor = EditorHelpers.Colors.WARNING;
                 }
                 else if (selected < 0 && !string.IsNullOrEmpty(currentValue))
                 {
                     options.Add(new PortOption(currentValue));
                     selected = options.Count - 1;
-                    GUI.color = EditorHelpers.Colors.DELETE_ACTION;
+                    GUI.backgroundColor = EditorHelpers.Colors.DELETE_ACTION;
                 }
 
                 string[] optionNames = options.Select(p => p.Description).ToArray();

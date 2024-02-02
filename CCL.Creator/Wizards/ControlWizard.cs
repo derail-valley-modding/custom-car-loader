@@ -87,6 +87,7 @@ namespace CCL.Creator.Wizards
             }
 
             serialized.ApplyModifiedProperties();
+            EditorGUILayout.Space(18);
 
             if (GUILayout.Button("Add Control"))
             {

@@ -152,20 +152,25 @@ namespace CCL.Creator.Utility
     internal class GUIColorScope : IDisposable
     {
         private readonly Color _entryColor;
+        private readonly Color _entryBackground;
+        private readonly Color _entryContent;
 
-        public GUIColorScope()
+        public GUIColorScope(Color? newColor = null, Color? newBackground = null, Color? newContent = null)
         {
             _entryColor = GUI.color;
-        }
+            _entryBackground = GUI.backgroundColor;
+            _entryContent = GUI.contentColor;
 
-        public GUIColorScope(Color newColor) : this()
-        {
-            GUI.color = newColor;
+            if (newColor.HasValue) GUI.color = newColor.Value;
+            if (newBackground.HasValue) GUI.backgroundColor = newBackground.Value;
+            if (newContent.HasValue) GUI.contentColor = newContent.Value;
         }
 
         public void Dispose()
         {
             GUI.color = _entryColor;
+            GUI.backgroundColor = _entryBackground;
+            GUI.contentColor = _entryContent;
         }
     }
 }

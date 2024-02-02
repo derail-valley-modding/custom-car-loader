@@ -37,7 +37,7 @@ namespace CCL.Tests
         {
             foreach (var scriptType in scriptTypes)
             {
-                if (scriptType.IsAbstract) continue;
+                if (scriptType.IsAbstract || scriptType.IsEnum) continue;
 
                 if (!typeMaps.Any(map => map.SourceType == scriptType))
                 {
