@@ -35,6 +35,9 @@ namespace CCL.Types
 
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
+        [Tooltip("(Optional)")]
+        public GameObject SimAudioPrefab;
+
         [Header("Physics")]
         public float mass;
         public float bogieSuspensionMultiplier = 1;
