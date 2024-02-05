@@ -275,7 +275,7 @@ namespace CCL.Creator.Utility
                 // Assign prefabs if the name contains a cargo type.
                 // Containers have some special logic to remove their types,
                 // and only keep the brand name.
-                var prefabs = _prefabs.Where(x => x.name.Contains(CargoHelper.CleanName(item.CargoType))).ToArray();
+                var prefabs = _prefabs.Where(x => CheckName(x.name, item)).ToArray();
 
                 // Only assign prefabs if the array is empty.
                 if (_emptyOnly && (item.ModelVariants == null || item.ModelVariants.Length == 0))
@@ -304,6 +304,16 @@ namespace CCL.Creator.Utility
 
             Debug.Log($"Added {count} prefabs: {string.Join(", ", assigned)}");
             SaveChanges();
+        }
+
+        private static bool CheckName(string name, LoadableCargoEntry cargo)
+        {
+            if (cargo.IsCustom)
+            {
+                return name.Contains(cargo.CustomCargoId);
+            }
+
+            return name.Contains(CargoHelper.CleanName(cargo.CargoType));
         }
 
         #endregion
