@@ -1,5 +1,6 @@
 ﻿using CCL.Types.Json;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Components
@@ -31,6 +32,13 @@ namespace CCL.Types.Components
             {
                 Indeces = JSONObject.FromJson<IndexToIndex[]>(_json);
             }
+        }
+
+        public void PickChildren()
+        {
+            var renderers = RenderersToAffect.ToList();
+            renderers.AddRange(GetComponentsInChildren<MeshRenderer>());
+            RenderersToAffect = renderers.ToArray();
         }
     }
 }
