@@ -8,11 +8,14 @@ namespace CCL.Importer.Proxies
     {
         public MiscReplacer()
         {
+            ShouldMapField = f => AutoMapperHelper.IsPublicOrSerialized(f);
+
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap();
 
-            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
+            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap().AfterMap((x, y) =>
+                CCLPlugin.Log($"{x.gameObjectSwaps.Length} -> {y.gameObjectSwaps.Length}"));
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
             CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
 
