@@ -14,8 +14,7 @@ namespace CCL.Importer.Proxies
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap();
 
-            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap().AfterMap((x, y) =>
-                CCLPlugin.Log($"{x.gameObjectSwaps.Length} -> {y.gameObjectSwaps.Length}"));
+            CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
             CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
 
