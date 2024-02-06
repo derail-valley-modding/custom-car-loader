@@ -9,8 +9,6 @@ namespace CCL.Importer.Proxies.Weather
     {
         public WeatherReplacer()
         {
-            ShouldMapField = f => AutoMapperHelper.IsPublicOrSerialized(f);
-
             CreateMap<WindowProxy, Window>().AutoCacheAndMap()
                 .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
             CreateMap<CabinDryVolumeProxy, CabinDryVolume>().AutoCacheAndMap()

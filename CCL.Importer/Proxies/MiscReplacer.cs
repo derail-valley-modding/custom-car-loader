@@ -8,8 +8,6 @@ namespace CCL.Importer.Proxies
     {
         public MiscReplacer()
         {
-            ShouldMapField = f => AutoMapperHelper.IsPublicOrSerialized(f);
-
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap();
