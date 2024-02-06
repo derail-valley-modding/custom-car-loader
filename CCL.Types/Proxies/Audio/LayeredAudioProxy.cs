@@ -31,7 +31,7 @@ namespace CCL.Types.Proxies.Audio
             source.playOnAwake = false;
             source.minDistance = 3;
             source.maxDistance = 400;
-            source.volume = 0;
+            source.volume = 1;
             source.spatialBlend = 1; // full 3d
             source.dopplerLevel = 0;
             source.ignoreListenerPause = false;

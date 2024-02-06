@@ -16,6 +16,7 @@ namespace CCL.Importer.Types
         public LoadableCargo? CargoTypes;
         public GameObject[] ExtraModels = new GameObject[0];
         public GameObject SimAudioPrefab;
+        public bool AddRainAudioModule = false;
 
         public IEnumerable<GameObject> AllCargoModels
         {

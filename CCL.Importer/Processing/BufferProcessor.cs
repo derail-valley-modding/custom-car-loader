@@ -184,14 +184,30 @@ namespace CCL.Importer.Processing
                 else if (CarPartNames.BUFFER_PLATE_FRONT.Equals(childName))
                 {
                     // front hook plate
-                    child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
-                    CCLPlugin.LogVerbose("Adjust Hook Plate F");
+                    if (carSetup.HideFrontCoupler)
+                    {
+                        Object.Destroy(child.gameObject);
+                        CCLPlugin.LogVerbose("Destroy Hook Plate F");
+                    }
+                    else
+                    {
+                        child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
+                        CCLPlugin.LogVerbose("Adjust Hook Plate F");
+                    }
                 }
                 else if (CarPartNames.BUFFER_PLATE_REAR.Equals(childName))
                 {
                     // rear hook plate
-                    child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
-                    CCLPlugin.LogVerbose("Adjust Hook Plate R");
+                    if (carSetup.HideBackCoupler)
+                    {
+                        Object.Destroy(child.gameObject);
+                        CCLPlugin.LogVerbose("Destroy Hook Plate R");
+                    }
+                    else
+                    {
+                        child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
+                        CCLPlugin.LogVerbose("Adjust Hook Plate R");
+                    }
                 }
                 else if (CarPartNames.BUFFER_STEMS.Contains(childName))
                 {
