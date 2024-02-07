@@ -35,9 +35,12 @@ namespace CCL.Types
 
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
-        [Header("Audio")]
+        [Header("Audio (Optional)")]
         public GameObject SimAudioPrefab;
-        public bool AddRainAudioModule = false;
+        [Tooltip("Doesn't need to be part of a prefab")]
+        public Transform RainAudioRoofLocation;
+        [HideInInspector]
+        public Vector3? RainAudioRoofOffset;
 
         [Header("Physics")]
         public float mass;
@@ -92,6 +95,8 @@ namespace CCL.Types
 
             brakesJson = JSONObject.ToJson(brakes);
             damageJson = JSONObject.ToJson(damage);
+
+            RainAudioRoofOffset = RainAudioRoofLocation ? RainAudioRoofLocation.position : (Vector3?)null;
         }
 
         public void ForceValidation()

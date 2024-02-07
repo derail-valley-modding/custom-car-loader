@@ -27,7 +27,7 @@ namespace CCL.Importer
         }
 
         private static bool NeedsCustomAudio(CCL_CarType carType) =>
-            (carType.SimAudioPrefab || carType.AddRainAudioModule || NeedsWheelsAudioModule(carType));
+            (carType.SimAudioPrefab || carType.RainAudioRoofOffset.HasValue || NeedsWheelsAudioModule(carType));
 
         public static void InjectAudioPrefabs(TrainComponentPool pool)
         {
@@ -45,10 +45,12 @@ namespace CCL.Importer
                 var newAudioFab = ModelProcessor.CreateModifiablePrefab(pool.defaultAudioPrefab);
                 var modularAudio = newAudioFab.GetComponent<CarModularAudio>();
 
-                if (carType.AddRainAudioModule)
+                if (carType.RainAudioRoofOffset.HasValue)
                 {
                     var rainAudio = DM3AudioPrefab.transform.Find("RainModule").gameObject;
                     var newRainAudio = Object.Instantiate(rainAudio, newAudioFab.transform);
+                    newRainAudio.transform.localPosition = carType.RainAudioRoofOffset.Value;
+
                     var rainAudioModule = newRainAudio.GetComponent<RainAudioModule>();
                     modularAudio.audioModules.Add(rainAudioModule);
                 }
