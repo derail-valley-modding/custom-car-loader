@@ -116,6 +116,9 @@ namespace CCL.Importer
 
         private static void Configure(IMapperConfigurationExpression cfg)
         {
+            // It's safe to map private fields if they're marked with the Serialized attribute.
+            cfg.ShouldMapField = f => AutoMapperHelper.IsPublicOrSerialized(f);
+
             cfg.CreateMap<CustomCarVariant, CCL_CarVariant>()
                 .ForMember(c => c.parentType, o => o.Ignore());
 

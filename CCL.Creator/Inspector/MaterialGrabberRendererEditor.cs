@@ -27,6 +27,13 @@ namespace CCL.Creator.Inspector
 
             EditorGUILayout.PropertyField(_renderers);
 
+            if (GUILayout.Button("Pick children"))
+            {
+                _grabber.PickChildren();
+            }
+
+            EditorGUILayout.Space();
+
             s_showArray = EditorGUILayout.Foldout(s_showArray, "Replacements");
 
             if (s_showArray)

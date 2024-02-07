@@ -13,6 +13,12 @@ namespace CCL.Importer.Proxies.Weather
                 .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
             CreateMap<CabinDryVolumeProxy, CabinDryVolume>().AutoCacheAndMap()
                 .ForMember(d => d.subVolumes, o => o.MapFrom(s => Mapper.GetFromCache(s.subVolumes)));
+
+            CreateMap<WetDecalProxy, WetDecal>().AutoCacheAndMap();
+
+            CreateMap<DecalSettingsProxy, DecalSettings>();
+            CreateMap<DecalLayerProxy, DecalLayer>();
+            CreateMap<DecalLayerChannelProxy, DecalLayerChannel>();
         }
     }
 }
