@@ -11,6 +11,7 @@ using UnityEngine;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
+    [RequiresStep(typeof(ProxyScriptProcessor))]
     internal class ExternalInteractableProcessor : ModelProcessorStep
     {
         private static readonly GameObject _flatbedHandbrake;
@@ -27,7 +28,7 @@ namespace CCL.Importer.Processing
         {
             var interactables = context.Car.externalInteractablesPrefab;
 
-            if (CarTypes.IsRegularCar(context.Car))
+            if (interactables)
             {
                 SetupFreightInteractables(interactables);
 

@@ -2,6 +2,7 @@
 using DV.Damage;
 using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
+using DV.Simulation.Fuses;
 using DV.Simulation.Ports;
 using LocoSim.Definitions;
 using System;
@@ -100,6 +101,13 @@ namespace CCL.Importer.Processing
                 var controller = prefab.AddComponent<IndicatorPortReadersController>();
                 controller.entries = prefab.GetComponentsInChildren<IndicatorPortReader>();
             }
+
+            if (prefab.GetComponentsInChildren<InteractableFuseFeeder>().Length > 0)
+            {
+                var controller = prefab.AddComponent<InteractableFuseFeedersController>();
+                controller.entries = prefab.GetComponentsInChildren<InteractableFuseFeeder>();
+            }
+
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
         }
 
