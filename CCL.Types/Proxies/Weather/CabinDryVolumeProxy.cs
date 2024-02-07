@@ -15,12 +15,12 @@ namespace CCL.Types.Proxies.Weather
         public float edgeFadeOffOutside = 1f;
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Proxies.Weather.CabinDryVolumeProxy:AutoAssignSubVolumes", "Auto assign children as subvolumes")]
+        [MethodButton(nameof(AutoAssignSubVolumes), "Auto assign children as subvolumes")]
         public bool buttonRender;
 
-        private static void AutoAssignSubVolumes(CabinDryVolumeProxy proxy)
+        private void AutoAssignSubVolumes()
         {
-            proxy.subVolumes = proxy.GetComponentsInChildren<WetDecalProxy>(true).Where(c => c.transform != proxy.transform).ToArray();
+            subVolumes = GetComponentsInChildren<WetDecalProxy>(true).Where(c => c.transform != transform).ToArray();
         }
     }
 }

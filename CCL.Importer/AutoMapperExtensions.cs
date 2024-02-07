@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using System;
+using System.Linq.Expressions;
 using UnityEngine;
 
 namespace CCL.Importer
@@ -37,6 +38,16 @@ namespace CCL.Importer
         {
             Mapper.AddConfig<TSource, TDestination>(predicate);
             return cfg;
+        }
+
+        public static IMappingExpression<TSource, TDestination> WithCachedMember<TSource, TDestination, TMember>(
+            this IMappingExpression<TSource, TDestination> cfg, Expression<Func<TDestination, TMember>> member
+        )
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+            where TMember : MonoBehaviour
+        {
+            return cfg.ForMember(member, opt => opt.MapFrom(s => Mapper.GetFromCache(s)));
         }
     }
 }

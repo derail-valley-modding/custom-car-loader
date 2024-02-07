@@ -35,6 +35,10 @@ namespace CCL.Types
 
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
+        [Header("Audio")]
+        public GameObject SimAudioPrefab;
+        public bool AddRainAudioModule = false;
+
         [Header("Physics")]
         public float mass;
         public float bogieSuspensionMultiplier = 1;
@@ -74,7 +78,7 @@ namespace CCL.Types
         }
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Creator.TrainCarValidator:ValidateExport", "Export Car")]
+        [MethodButton("CCL.Creator.Validators.TrainCarValidator:ValidateExport", "Export Car")]
         public bool buttonRender;
 
         private void OnValidate()

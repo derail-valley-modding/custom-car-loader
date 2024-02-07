@@ -135,6 +135,7 @@
         EmptyTraeg,
         EmptyChemlek,
         EmptyNeoGamma,
-        Passengers = 1000
+        Passengers = 1000,
+        Custom = 10000
     }
 }

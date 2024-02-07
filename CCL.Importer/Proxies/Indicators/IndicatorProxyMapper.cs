@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Indicators;
 using DV.Indicators;
+using DV.Simulation.Brake;
+using DV.Simulation.Fuses;
 using DV.Simulation.Ports;
-using System.ComponentModel.Composition;
 
 namespace CCL.Importer.Proxies.Indicators
 {
@@ -17,9 +18,16 @@ namespace CCL.Importer.Proxies.Indicators
 
             CreateMap<IndicatorEmissionProxy, IndicatorEmission>().AutoCacheAndMap();
             CreateMap<IndicatorGaugeProxy, IndicatorGauge>().AutoCacheAndMap();
+            CreateMap<IndicatorGaugeLaggingProxy, IndicatorGaugeLagging>().AutoCacheAndMap();
             CreateMap<IndicatorModelChangerProxy, IndicatorModelChanger>().AutoCacheAndMap();
             CreateMap<IndicatorScalerProxy, IndicatorScaler>().AutoCacheAndMap();
             CreateMap<IndicatorSliderProxy, IndicatorSlider>().AutoCacheAndMap();
+
+            CreateMap<LampPortReaderProxy, LampPortReader>().AutoCacheAndMap();
+            CreateMap<LampFuseReaderProxy, LampFuseReader>().AutoCacheAndMap();
+            CreateMap<LampBrakeIssueReaderProxy, LampBrakeLeaksAndHandbrakeStateReader>().AutoCacheAndMap();
+            CreateMap<LampControlProxy, LampControl>().AutoCacheAndMap()
+                .WithCachedMember(d => d.lampInd);
         }
     }
 }

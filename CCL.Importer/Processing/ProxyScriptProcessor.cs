@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.Composition;
+﻿using CCL.Types.Proxies.Ports;
+using System.ComponentModel.Composition;
+using System.Reflection;
+using UnityEngine;
 
 namespace CCL.Importer.Processing
 {
@@ -10,7 +13,41 @@ namespace CCL.Importer.Processing
         {
             foreach (var prefab in context.Car.AllPrefabs)
             {
+                FixEmptyPortIds(prefab);
                 Mapper.ProcessConfigs(prefab);
+            }
+        }
+
+        private void FixEmptyPortIds(GameObject prefab)
+        {
+            foreach (var component in prefab.GetComponentsInChildren<Component>())
+            {
+                const BindingFlags ALL_INSTANCE = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+                foreach (var field in component.GetType().GetFields(ALL_INSTANCE))
+                {
+                    if (field.GetCustomAttribute<PortIdAttribute>() != null ||
+                        field.GetCustomAttribute<FuseIdAttribute>() != null)
+                    {
+                        if (field.FieldType.IsArray)
+                        {
+                            var array = (string[])field.GetValue(component);
+                            for (int i = 0; i < array.Length; i++)
+                            {
+                                if (string.IsNullOrWhiteSpace(array[i]))
+                                {
+                                    CCLPlugin.LogVerbose($"Fix empty id {component.GetType().Name}.{field.Name}[{i}]");
+                                    array[i] = null!;
+                                }
+                            }
+                        }
+                        else if ((field.FieldType == typeof(string)) && string.IsNullOrWhiteSpace((string?)field.GetValue(component)))
+                        {
+                            CCLPlugin.LogVerbose($"Fix empty id {component.GetType().Name}.{field.Name}");
+                            field.SetValue(component, null);
+                        }
+                    }
+                }
             }
         }
     }

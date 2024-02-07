@@ -20,7 +20,7 @@ namespace CCL.Types.Proxies.Weather
         public Rigidbody rb;
 
         [RenderMethodButtons]
-        [MethodButton("CCL.Types.Proxies.Weather.WindowProxy:SetupDuplicates", "Setup duplicates")]
+        [MethodButton(nameof(SetupDuplicates), "Setup duplicates")]
         public bool buttonRender;
 
         private void OnDrawGizmosSelected()
