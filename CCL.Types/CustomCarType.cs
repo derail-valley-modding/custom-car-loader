@@ -37,10 +37,6 @@ namespace CCL.Types
 
         [Header("Audio (Optional)")]
         public GameObject SimAudioPrefab;
-        [Tooltip("Doesn't need to be part of a prefab")]
-        public Transform RainAudioRoofLocation;
-        [HideInInspector]
-        public Vector3? RainAudioRoofOffset;
 
         [Header("Physics")]
         public float mass;
@@ -95,8 +91,6 @@ namespace CCL.Types
 
             brakesJson = JSONObject.ToJson(brakes);
             damageJson = JSONObject.ToJson(damage);
-
-            RainAudioRoofOffset = RainAudioRoofLocation ? RainAudioRoofLocation.position : (Vector3?)null;
         }
 
         public void ForceValidation()

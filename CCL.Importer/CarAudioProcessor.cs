@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
+using CCL.Types;
 using DV.Damage;
 using DV.ModularAudioCar;
 using DV.Simulation.Controllers;
@@ -27,7 +28,7 @@ namespace CCL.Importer
         }
 
         private static bool NeedsCustomAudio(CCL_CarType carType) =>
-            (carType.SimAudioPrefab || carType.RainAudioRoofOffset.HasValue || NeedsWheelsAudioModule(carType));
+            (carType.SimAudioPrefab || NeedsWheelsAudioModule(carType));
 
         public static void InjectAudioPrefabs(TrainComponentPool pool)
         {
@@ -39,26 +40,30 @@ namespace CCL.Importer
 
                 carType.audioPoolSize = 10;
 
-                var simAudioFab = ModelProcessor.CreateModifiablePrefab(carType.SimAudioPrefab);
-                ModelProcessor.DoBasicProcessing(simAudioFab);
-
                 var newAudioFab = ModelProcessor.CreateModifiablePrefab(pool.defaultAudioPrefab);
                 var modularAudio = newAudioFab.GetComponent<CarModularAudio>();
 
-                if (carType.RainAudioRoofOffset.HasValue)
-                {
-                    var rainAudio = DM3AudioPrefab.transform.Find("RainModule").gameObject;
-                    var newRainAudio = Object.Instantiate(rainAudio, newAudioFab.transform);
-                    newRainAudio.transform.localPosition = carType.RainAudioRoofOffset.Value;
-
-                    var rainAudioModule = newRainAudio.GetComponent<RainAudioModule>();
-                    modularAudio.audioModules.Add(rainAudioModule);
-                }
-
                 if (carType.SimAudioPrefab)
                 {
+                    var simAudioFab = ModelProcessor.CreateModifiablePrefab(carType.SimAudioPrefab);
+                    ModelProcessor.DoBasicProcessing(simAudioFab);
+
                     simAudioFab.transform.SetParent(newAudioFab.transform, false);
                     simAudioFab.SetActive(true);
+
+                    // setup optional rain
+                    var rainLocation = simAudioFab.transform.Find(CarPartNames.Audio.RAIN_DUMMY_TRANSFORM);
+                    if (rainLocation)
+                    {
+                        var rainAudio = DM3AudioPrefab.transform.Find(CarPartNames.Audio.RAIN_MODULE).gameObject;
+                        var newRainAudio = Object.Instantiate(rainAudio, newAudioFab.transform);
+                        newRainAudio.transform.position = rainLocation.position;
+
+                        var rainAudioModule = newRainAudio.GetComponent<RainAudioModule>();
+                        modularAudio.audioModules.Add(rainAudioModule);
+
+                        Object.Destroy(rainLocation.gameObject);
+                    }
 
                     // setup sim module
                     var simAudio = simAudioFab.AddComponent<SimAudioModule>();
@@ -73,7 +78,7 @@ namespace CCL.Importer
 
                 if (NeedsWheelsAudioModule(carType))
                 {
-                    var wheelsAudio = DM3AudioPrefab.transform.Find("WheelsModule").gameObject;
+                    var wheelsAudio = DM3AudioPrefab.transform.Find(CarPartNames.Audio.WHEELS_MODULE).gameObject;
                     var newWheelsAudio = Object.Instantiate(wheelsAudio, newAudioFab.transform);
                     var wheelAudioModule = newWheelsAudio.GetComponent<WheelsAudioModule>();
                     modularAudio.audioModules.Add(wheelAudioModule);
@@ -83,8 +88,8 @@ namespace CCL.Importer
                     var rearBogie = bogies.Last();
                     var frontBogie = bogies.First();
 
-                    var wheelsFront = newWheelsAudio.transform.Find("WheelsFront");
-                    var wheelsRear = newWheelsAudio.transform.Find("WheelsRear");
+                    var wheelsFront = newWheelsAudio.transform.Find(CarPartNames.Audio.WHEELS_FRONT);
+                    var wheelsRear = newWheelsAudio.transform.Find(CarPartNames.Audio.WHEELS_REAR);
 
                     wheelsFront.position = frontBogie.transform.position;
                     wheelsRear.position = rearBogie.transform.position;
@@ -98,8 +103,8 @@ namespace CCL.Importer
                         for (int i = 0; i < slipDefs.Length; i++)
                         {
                             var layerLoc = GetCorrespondingWheelslipLayers(pwm.poweredWheels[i].transform, wheelsFront, wheelsRear);
-                            var slipLayers = layerLoc.Find("WheelslipLayers").GetComponent<LayeredAudio>();
-                            var derailLayers = layerLoc.Find("WheelDamagedLayers").GetComponent<LayeredAudio>();
+                            var slipLayers = layerLoc.Find(CarPartNames.Audio.WHEELS_LAYERS_WHEELSLIP).GetComponent<LayeredAudio>();
+                            var derailLayers = layerLoc.Find(CarPartNames.Audio.WHEELS_LAYERS_DAMAGED).GetComponent<LayeredAudio>();
 
                             slipDefs[i] = new WheelsAudioModule.WheelslipAudioDefinition()
                             {
