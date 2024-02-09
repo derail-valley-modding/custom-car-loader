@@ -1,10 +1,13 @@
-﻿namespace CCL.Types.Proxies.Controls
+﻿using System;
+
+namespace CCL.Types.Proxies.Controls
 {
+    [Serializable]
     public class InteractionHandPosesProxy
     {
-        public InteractionHandPosesProxy.DVHandPoseState nearTouchPose;
-        public InteractionHandPosesProxy.DVHandPoseState touchPose;
-        public InteractionHandPosesProxy.DVHandPoseState grabPose;
+        public DVHandPoseState nearTouchPose = DVHandPoseState.Generic;
+        public DVHandPoseState touchPose = DVHandPoseState.Generic;
+        public DVHandPoseState grabPose = DVHandPoseState.Generic;
 
         public enum DVHandPoseState
         {

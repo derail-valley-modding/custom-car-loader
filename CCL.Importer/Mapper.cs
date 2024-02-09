@@ -49,6 +49,10 @@ namespace CCL.Importer
             {
                 foreach (var source in prefab.GetComponentsInChildren<TSource>())
                 {
+                    // If the class inherits from another that is also mapped,
+                    // skip it so it doesn't get added to the dictionary twice.
+                    if (source.GetType() != typeof(TSource)) continue;
+
                     // If there is no condition or the condition is true.
                     if (_shouldMap == null || _shouldMap(source))
                     {
@@ -57,6 +61,7 @@ namespace CCL.Importer
                     }
                 }
             }
+
             public void ConvertFromCache(GameObject prefab)
             {
                 foreach (MonoBehaviour source in prefab.GetComponentsInChildren<TSource>())
