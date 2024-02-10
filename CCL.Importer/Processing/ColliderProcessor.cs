@@ -2,7 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using System.ComponentModel.Composition;
-using System;
 using CCL.Types.Proxies;
 
 namespace CCL.Importer.Processing
@@ -102,8 +101,12 @@ namespace CCL.Importer.Processing
                 NewBogieColliderRoot.parent = colliderRoot.transform;
             }
 
-            Transform baseBogieColliderRoot = context.BaseLivery.prefab.transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
-            BaseBogieColliders = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>();
+            // No more base livery so what a mess this is.
+            Transform baseBogieColliderRoot = context.Car.FrontBogie.ToTypePrefab().transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
+            var c1 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().First();
+            baseBogieColliderRoot = context.Car.RearBogie.ToTypePrefab().transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
+            var c2 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().Last();
+            BaseBogieColliders = new[] { c1, c2 };
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
 using DV.Simulation.Brake;
-using DV.ThingTypes;
 using DV.Wheels;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -20,7 +19,6 @@ namespace CCL.Importer.Processing
             var colliders = context.GetCompletedStep<ColliderProcessor>();
 
             Bogie frontBogie, rearBogie;
-            TrainCar baseTrainCar = context.BaseLivery.prefab.GetComponent<TrainCar>();
 
             // Find existing bogie transforms
             Transform newFrontBogieTransform = newFab.transform.Find(CarPartNames.BOGIE_FRONT);
@@ -43,8 +41,11 @@ namespace CCL.Importer.Processing
             }
             else
             {
-                frontBogie = StealBaseCarBogie(newFab.transform, newFrontBogieTransform, colliders.NewBogieColliderRoot,
-                    colliders.BaseFrontBogie, baseTrainCar.Bogies.Last());
+                frontBogie = StealBaseCarBogie(newFab.transform,
+                    newFrontBogieTransform,
+                    colliders.NewBogieColliderRoot,
+                    colliders.BaseFrontBogie,
+                    context.Car.FrontBogie.ToTypePrefab().GetComponent<TrainCar>().Bogies.Last());
             }
 
             // TODO: apply front bogie config
@@ -56,13 +57,16 @@ namespace CCL.Importer.Processing
             }
             else
             {
-                rearBogie = StealBaseCarBogie(newFab.transform, newRearBogieTransform, colliders.NewBogieColliderRoot,
-                    colliders.BaseRearBogie, baseTrainCar.Bogies.First());
+                rearBogie = StealBaseCarBogie(newFab.transform,
+                    newRearBogieTransform,
+                    colliders.NewBogieColliderRoot,
+                    colliders.BaseRearBogie,
+                    context.Car.RearBogie.ToTypePrefab().GetComponent<TrainCar>().Bogies.First());
             }
 
             // TODO: apply rear bogie config
 
-            SetupBrakeGlows(newFab, frontBogie, rearBogie, context.BaseLivery);
+            SetupBrakeGlows(newFab, frontBogie, rearBogie);
             SetupWheelSlideSparks(newFab, frontBogie, rearBogie);
         }
 
@@ -95,7 +99,7 @@ namespace CCL.Importer.Processing
             Extensions.GetCached(ref _defaultBrakeGradient,
                 () => Resources.FindObjectsOfTypeAll<BrakesOverheatingColorGradient>().FirstOrDefault(g => g.name == "BrakeShoeOverheatColorGradient"));
 
-        private static void SetupBrakeGlows(GameObject newFab, Bogie front, Bogie rear, TrainCarLivery baseLivery)
+        private static void SetupBrakeGlows(GameObject newFab, Bogie front, Bogie rear)
         {
             List<Renderer> brakeRenderers = new();
 
@@ -139,16 +143,8 @@ namespace CCL.Importer.Processing
             }
             else
             {
-                // Or just use the same one as the base car type.
-                if (baseLivery.prefab.TryGetComponent(out BrakesOverheatingController baseGlow))
-                {
-                    brakeGlow.overheatColor.colorGradient = baseGlow.overheatColor.colorGradient;
-                }
-                else
-                {
-                    brakeGlow.overheatColor.colorGradient = DefaultBrakeGradient.colorGradient;
-                    CCLPlugin.LogVerbose($"Apply default brake gradient to {newFab.name}");
-                }
+                brakeGlow.overheatColor.colorGradient = DefaultBrakeGradient.colorGradient;
+                CCLPlugin.LogVerbose($"Apply default brake gradient to {newFab.name}");
             }
         }
 

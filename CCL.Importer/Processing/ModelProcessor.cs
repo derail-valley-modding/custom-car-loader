@@ -1,7 +1,5 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
-using DV;
-using DV.ThingTypes;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
@@ -28,14 +26,10 @@ namespace CCL.Importer.Processing
         private readonly List<IModelProcessorStep> _completedSteps;
 
         public readonly CCL_CarVariant Car;
-        public readonly TrainCarLivery BaseLivery;
 
         public ModelProcessor(CCL_CarVariant car)
         {
             Car = car;
-
-            // Fetch the base type prefab for this car
-            BaseLivery = Globals.G.Types.TrainCarType_to_v2[car.BaseCarType];
 
             var container = new CompositionContainer(_catalog, car);
             container.ComposeParts(this);

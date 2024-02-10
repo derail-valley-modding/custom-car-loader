@@ -2,7 +2,6 @@
 using CCL.Types;
 using DV.ThingTypes;
 using DVLangHelper.Data;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,17 +9,20 @@ namespace CCL.Importer.Types
 {
     public class CCL_CarVariant : TrainCarLivery
     {
-        public TrainCarType BaseCarType;
         public TranslationData NameTranslations = new TranslationData();
 
-        public bool UseCustomFrontBogie;
-        public bool UseCustomRearBogie;
+        public BogieType FrontBogie;
+        public BogieType RearBogie;
 
-        public bool UseCustomBuffers;
+        public BufferType BufferType;
         public bool UseCustomHosePositions;
 
         public bool HideFrontCoupler;
         public bool HideBackCoupler;
+
+        public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
+        public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
+        public bool UseCustomBuffers => BufferType == BufferType.Custom;
 
         public IEnumerable<GameObject> AllPrefabs
         {

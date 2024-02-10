@@ -13,10 +13,7 @@ namespace CCL.Creator.Validators
             {
                 return CriticalFail("Livery must have a prefab assigned!");
             }
-            if (livery.BaseCarType == BaseTrainCarType.NotSet)
-            {
-                return Fail("Base car type must be set");
-            }
+
             return Pass();
         }
     }
