@@ -6,6 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace CCL.Creator.Utility
 {
@@ -152,6 +153,48 @@ namespace CCL.Creator.Utility
             }
 
             extraAction?.Invoke();
+        }
+
+        private const string SearchFieldControlName = "SearchFieldText";
+        private static Vector2 _searchScroll = Vector2.zero;
+
+        /// <summary>
+        /// Draws a string property, and uses its value to search through a list of options.
+        /// </summary>
+        /// <param name="property">The string property.</param>
+        /// <param name="searchOptions">The available options for picking.</param>
+        /// <param name="searchMaxHeight">The maximum height of the search box.</param>
+        /// <param name="maxResults">The maximum results to display.</param>
+        /// <remarks>Please ensure the property has a string value.</remarks>
+        public static void StringWithSearchField(SerializedProperty property, IEnumerable<string> searchOptions, float searchMaxHeight, int maxResults)
+        {
+            GUI.SetNextControlName(SearchFieldControlName);
+            EditorGUILayout.PropertyField(property);
+            string s = property.stringValue;
+
+            if (GUI.GetNameOfFocusedControl() != SearchFieldControlName || string.IsNullOrEmpty(s))
+            {
+                return;
+            }
+
+            _searchScroll = EditorGUILayout.BeginScrollView(_searchScroll, false, true, GUILayout.MaxHeight(searchMaxHeight));
+
+            var results = searchOptions.Where(x => x.StartsWith(s, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x).Take(maxResults);
+
+            if (results.Count() > 0 && results.First() != property.stringValue)
+            {
+                foreach (var item in results)
+                {
+                    if (GUILayout.Button(item, EditorStyles.toggle))
+                    {
+                        property.stringValue = item;
+                        GUI.FocusControl("");
+                        break;
+                    }
+                }
+            }
+
+            EditorGUILayout.EndScrollView();
         }
     }
 
