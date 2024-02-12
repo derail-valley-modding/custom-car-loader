@@ -4,17 +4,6 @@ namespace CCL.Types.Proxies.Controls
 {
     public class PullerProxy : ControlSpecProxy
     {
-        private new void OnValidate()
-        {
-            base.OnValidate();
-
-            if (this.nonVrStaticInteractionArea != null && this.nonVrStaticInteractionArea.gameObject.activeInHierarchy)
-            {
-                Debug.LogWarning("nonVrStaticInteractionArea gameObject must be disabled in prefabs! Forcing disable on nonVrStaticInteractionArea gameObject", this);
-                this.nonVrStaticInteractionArea.gameObject.SetActive(false);
-            }
-        }
-
         [Header("Rigidbody")]
         public float rigidbodyMass = 5f;
         public float rigidbodyDrag = 15f;
@@ -32,9 +21,6 @@ namespace CCL.Types.Proxies.Controls
         public Transform connectionAnchor;
         public Transform pivot;
         public float linearLimit = 0.003f;
-
-        [Header("Static non-vr interaction area - optional")]
-        public StaticInteractionAreaProxy nonVrStaticInteractionArea;
 
         [Header("Audio")]
         public AudioClip notch;

@@ -4,26 +4,12 @@ namespace CCL.Types.Proxies.Controls
 {
     public class ToggleSwitchProxy : ControlSpecProxy
     {
-        private new void OnValidate()
-        {
-            base.OnValidate();
-
-            if (this.nonVrStaticInteractionArea != null && this.nonVrStaticInteractionArea.gameObject.activeInHierarchy)
-            {
-                Debug.LogWarning("nonVrStaticInteractionArea gameObject must be disabled in prefabs! Forcing disable on nonVrStaticInteractionArea gameObject", this);
-                this.nonVrStaticInteractionArea.gameObject.SetActive(false);
-            }
-        }
-
         [Header("Toggle switch")]
         public Vector3 jointAxis = Vector3.forward;
         public float jointLimitMin;
         public float jointLimitMax;
 
         public float autoOffTimer;
-
-        [Header("Static non-vr interaction area - optional")]
-        public StaticInteractionAreaProxy nonVrStaticInteractionArea;
 
         [Header("Audio")]
         public AudioClip toggle;
