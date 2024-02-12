@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Indicators;
 using DV.Indicators;
+using DV.Localization;
 using DV.Simulation.Brake;
 using DV.Simulation.Fuses;
 using DV.Simulation.Ports;
@@ -28,6 +29,8 @@ namespace CCL.Importer.Proxies.Indicators
             CreateMap<LampBrakeIssueReaderProxy, LampBrakeLeaksAndHandbrakeStateReader>().AutoCacheAndMap();
             CreateMap<LampControlProxy, LampControl>().AutoCacheAndMap()
                 .WithCachedMember(d => d.lampInd);
+
+            CreateMap<LabelLocalizer, Localize>().AutoCacheAndMap();
         }
     }
 }

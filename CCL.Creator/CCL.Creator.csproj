@@ -12,12 +12,14 @@
 
 	<ItemGroup>
 		<Reference Include="DVLangHelper.Data" />
+		<Reference Include="Unity.TextMeshPro" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.AudioModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.IMGUIModule" />
+		<Reference Include="UnityEngine.UnityWebRequestModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="UnityEngine.TextRenderingModule" />
 		<Reference Include="UnityEngine.UI" />
