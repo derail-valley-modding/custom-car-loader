@@ -37,7 +37,7 @@ namespace CCL.Creator.Wizards
                 if (!carType.UseCustomFrontBogie)
                 {
                     // If using a vanilla bogie, get the axle distance from it.
-                    z += GetBogieOffset(carType.BaseCarType);
+                    z += GetBogieOffset(carType.FrontBogie);
                 }
                 else if (axles.Length > 0)
                 {
@@ -60,7 +60,7 @@ namespace CCL.Creator.Wizards
 
                 if (!carType.UseCustomRearBogie)
                 {
-                    z -= GetBogieOffset(carType.BaseCarType);
+                    z -= GetBogieOffset(carType.RearBogie);
                 }
                 else if (axles.Length > 0)
                 {
@@ -131,25 +131,18 @@ namespace CCL.Creator.Wizards
             return axles.OrderBy(x => x.position.z).ToArray();
         }
 
-        private static float GetBogieOffset(BaseTrainCarType carType)
+        private static float GetBogieOffset(BogieType bogieType)
         {
-            switch (carType)
+            switch (bogieType)
             {
-                case BaseTrainCarType.LocoDiesel:
-                case BaseTrainCarType.LocoDE6Slug:
-                    return 2.03f;
-                case BaseTrainCarType.LocoDH4:
-                    return 1.10f;
-                case BaseTrainCarType.NotSet:
-                case BaseTrainCarType.LocoShunter:
-                case BaseTrainCarType.LocoDM3:
-                case BaseTrainCarType.LocoRailbus:
-                case BaseTrainCarType.LocoS060:
-                case BaseTrainCarType.LocoSteamHeavy:
-                case BaseTrainCarType.HandCar:
-                    return 0.00f;
-                default:
+                case BogieType.Default:
                     return 1.00f;
+                case BogieType.DE6:
+                    return 2.03f;
+                case BogieType.DH4:
+                    return 1.10f;
+                default:
+                    return 0.00f;
             }
         }
     }

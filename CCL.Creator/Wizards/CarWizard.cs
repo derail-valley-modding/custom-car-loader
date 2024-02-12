@@ -159,10 +159,12 @@ namespace CCL.Creator.Wizards
             livery.id = settings.ID;
             livery.name = $"{settings.ID}_livery";
             livery.parentType = carType;
-            livery.BaseCarType = settings.BaseCarType;
             livery.NameTranslations = TranslationData.Default(settings.Name!);
             livery.prefab = prefab;
             livery.externalInteractablesPrefab = interactables;
+            livery.BufferType = GetBufferFromBase(settings.BaseCarType);
+            livery.FrontBogie = GetBogieFromBase(settings.BaseCarType);
+            livery.RearBogie = livery.FrontBogie;
 
             string liveryPath = Path.Combine(relativeCarFolder, $"{settings.ID}_livery.asset");
             AssetDatabase.CreateAsset(livery, liveryPath);
@@ -194,6 +196,87 @@ namespace CCL.Creator.Wizards
                 .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(x => x.Length >= 1 && char.IsLetter(x[0]))
                 .Select(x => char.ToUpper(x[0])));
+        }
+
+        private static BogieType GetBogieFromBase(BaseTrainCarType carType)
+        {
+            switch (carType)
+            {
+                case BaseTrainCarType.LocoShunter:
+                    return BogieType.DE2;
+                case BaseTrainCarType.LocoSteamHeavy:
+                    return BogieType.S282;
+                case BaseTrainCarType.LocoDiesel:
+                case BaseTrainCarType.LocoDE6Slug:
+                    return BogieType.DE6;
+                case BaseTrainCarType.LocoDH4:
+                    return BogieType.DH4;
+                case BaseTrainCarType.LocoMicroshunter:
+                    return BogieType.Microshunter;
+                case BaseTrainCarType.HandCar:
+                    return BogieType.Handcar;
+                default:
+                    return BogieType.Default;
+            }
+        }
+
+        private static BufferType GetBufferFromBase(BaseTrainCarType carType)
+        {
+            switch (carType)
+            {
+                case BaseTrainCarType.BoxcarBrown:
+                case BaseTrainCarType.BoxcarGreen:
+                case BaseTrainCarType.BoxcarPink:
+                case BaseTrainCarType.BoxcarRed:
+                    return BufferType.Buffer02;
+
+                case BaseTrainCarType.LocoShunter:
+                case BaseTrainCarType.LocoDH4:
+                case BaseTrainCarType.LocoDM3:
+                case BaseTrainCarType.StockRed:
+                case BaseTrainCarType.StockGreen:
+                case BaseTrainCarType.StockBrown:
+                    return BufferType.Buffer03;
+
+                case BaseTrainCarType.LocoS060:
+                case BaseTrainCarType.GondolaRed:
+                case BaseTrainCarType.GondolaGreen:
+                case BaseTrainCarType.GondolaGray:
+                    return BufferType.Buffer04;
+
+                case BaseTrainCarType.LocoDiesel:
+                case BaseTrainCarType.LocoDE6Slug:
+                case BaseTrainCarType.LocoMicroshunter:
+                    return BufferType.Buffer05;
+
+                case BaseTrainCarType.BoxcarMilitary:
+                case BaseTrainCarType.RefrigeratorWhite:
+                    return BufferType.Buffer06;
+
+                case BaseTrainCarType.CabooseRed:
+                case BaseTrainCarType.TankOrange:
+                case BaseTrainCarType.TankWhite:
+                case BaseTrainCarType.TankYellow:
+                case BaseTrainCarType.TankBlue:
+                case BaseTrainCarType.TankChrome:
+                case BaseTrainCarType.TankBlack:
+                case BaseTrainCarType.TankShortMilk:
+                    return BufferType.Buffer07;
+
+                case BaseTrainCarType.PassengerRed:
+                case BaseTrainCarType.PassengerGreen:
+                case BaseTrainCarType.PassengerBlue:
+                    return BufferType.Buffer08;
+
+                case BaseTrainCarType.LocoSteamHeavy:
+                    return BufferType.S282A;
+
+                case BaseTrainCarType.Tender:
+                    return BufferType.S282B;
+
+                default:
+                    return BufferType.Buffer09;
+            }
         }
 
         private class CarSettings

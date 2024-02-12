@@ -12,6 +12,7 @@
         LocoDE6Slug = 45,
         LocoDH4 = 50,
         LocoDM3 = 60,
+        LocoMicroshunter = 70,
         FlatbedEmpty = 200,
         FlatbedStakes,
         FlatbedMilitary,

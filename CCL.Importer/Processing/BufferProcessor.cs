@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
 using DV.ThingTypes;
+using DV.ThingTypes.TransitionHelpers;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
@@ -15,56 +16,30 @@ namespace CCL.Importer.Processing
 
         public override void ExecuteStep(ModelProcessor context)
         {
-            var basePrefab = context.BaseLivery.prefab;
+            var basePrefab = context.Car.UseCustomBuffers ?
+                TrainCarType.FlatbedEmpty.ToV2().prefab :
+                context.Car.BufferType.ToTypePrefab();
 
             // copy main buffer part cohort
             GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
             bufferRoot = Object.Instantiate(bufferRoot, context.Car.prefab.transform);
             bufferRoot.name = CarPartNames.BUFFERS_ROOT;
 
-            // special case for refrigerator - chain rigs are parented to car root instead of [buffers]
-            if (context.BaseLivery.v1 == TrainCarType.RefrigeratorWhite)
-            {
-                for (int i = 0; i < basePrefab.transform.childCount; i++)
-                {
-                    var child = basePrefab.transform.GetChild(i).gameObject;
-                    if (child.name == CarPartNames.BUFFER_CHAIN_REGULAR)
-                    {
-                        GameObject copiedChain = Object.Instantiate(child, bufferRoot.transform);
-                        copiedChain.name = CarPartNames.BUFFER_CHAIN_REGULAR;
-
-                        var bufferController = copiedChain.GetComponent<TrainBufferController>();
-                        if (copiedChain.transform.localPosition.z > 0)
-                        {
-                            // front buffer
-                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FL);
-                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_FR);
-                        }
-                        else
-                        {
-                            // rear buffer
-                            bufferController.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RL);
-                            bufferController.bufferModelRight = bufferRoot.transform.Find(CarPartNames.BUFFER_PAD_RR);
-                        }
-                    }
-                }
-            }
-
             PositionPair bufferPositions;
             if (context.Car.UseCustomBuffers)
             {
-                bufferPositions = SetupCustomBuffers(context.Car.prefab, basePrefab, context.Car);
+                bufferPositions = SetupCustomBuffers(context.Car.prefab, context.Car);
             }
             else
             {
-                bufferPositions = SetupDefaultBuffers(context.Car.prefab, basePrefab);
+                bufferPositions = SetupDefaultBuffers(context.Car.prefab);
             }
 
             FrontRigPosition = bufferPositions.Front;
             RearRigPosition = bufferPositions.Rear;
         }
 
-        private static PositionPair SetupDefaultBuffers(GameObject newPrefab, GameObject basePrefab)
+        private static PositionPair SetupDefaultBuffers(GameObject newPrefab)
         {
             // yeet the dummy buffer rigs so they aren't duplicated
             Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
@@ -144,7 +119,7 @@ namespace CCL.Importer.Processing
             return new PositionPair(frontRigPosition, rearRigPosition);
         }
 
-        private static PositionPair SetupCustomBuffers(GameObject newPrefab, GameObject basePrefab, CCL_CarVariant carSetup)
+        private static PositionPair SetupCustomBuffers(GameObject newPrefab, CCL_CarVariant carSetup)
         {
             Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
             Vector3 frontRigPosition = frontCouplerRig.position;

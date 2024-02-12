@@ -11,7 +11,6 @@ namespace CCL.Types
         [Header("Basic Properties")]
         public CustomCarType? parentType;
         public string? id;
-        public BaseTrainCarType BaseCarType;
 
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
@@ -32,11 +31,11 @@ namespace CCL.Types
         public GameObject? explodedExternalInteractablesPrefab;
 
         [Header("Bogies")]
-        public bool UseCustomFrontBogie = false;
-        public bool UseCustomRearBogie = false;
+        public BogieType FrontBogie;
+        public BogieType RearBogie;
 
         [Header("Buffers")]
-        public bool UseCustomBuffers = false;
+        public BufferType BufferType = BufferType.Buffer09;
         public bool UseCustomHosePositions = false;
 
         public bool HideFrontCoupler = false;
@@ -45,6 +44,10 @@ namespace CCL.Types
         [RenderMethodButtons]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
         public bool buttonRender;
+
+        public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
+        public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
+        public bool UseCustomBuffers => BufferType == BufferType.Custom;
 
         public IEnumerable<GameObject> AllPrefabs
         {

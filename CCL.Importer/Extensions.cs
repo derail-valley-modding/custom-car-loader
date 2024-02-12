@@ -1,9 +1,12 @@
-﻿using DV.Simulation.Controllers;
+﻿using CCL.Types;
+using DV.Simulation.Controllers;
 using DV.ThingTypes;
+using DV.ThingTypes.TransitionHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Contexts;
 using UnityEngine;
 
 namespace CCL.Importer
@@ -176,4 +179,17 @@ namespace CCL.Importer
     //        return true;
     //    }
     //}
+
+    public static class EnumExtensions
+    {
+        public static GameObject ToTypePrefab(this BogieType bogie)
+        {
+            return ((TrainCarType)bogie).ToV2().prefab;
+        }
+
+        public static GameObject ToTypePrefab(this BufferType buffer)
+        {
+            return ((TrainCarType)buffer).ToV2().prefab;
+        }
+    }
 }
