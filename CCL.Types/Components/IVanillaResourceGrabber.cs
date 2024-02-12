@@ -5,6 +5,8 @@ namespace CCL.Types.Components
 {
     public interface IVanillaResourceGrabber
     {
+        public GameObject gameObject { get; }
+
         public Component GetScript();
 
         public Type GetTypeOfResource();
@@ -14,5 +16,7 @@ namespace CCL.Types.Components
         public bool IsSupportedType(Type type, out bool isIList);
 
         public string[] GetNames();
+
+        public ResourceReplacement[] GetReplacements();
     }
 }
