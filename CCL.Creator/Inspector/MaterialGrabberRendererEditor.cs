@@ -1,24 +1,24 @@
-﻿using CCL.Types.Components;
-using System;
-using System.Collections.Generic;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Components;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 namespace CCL.Creator.Inspector
 {
     [CustomEditor(typeof(MaterialGrabberRenderer))]
-    internal class MaterialGrabberRendererEditor : UnityEditor.Editor
+    internal class MaterialGrabberRendererEditor : Editor
     {
         private static bool s_showArray;
 
-        private MaterialGrabberRenderer _grabber;
-        private SerializedProperty _renderers;
-        private SerializedProperty _indices;
+        private MaterialGrabberRenderer _grabber = null!;
+        private SerializedProperty _renderers = null!;
+        private SerializedProperty _indices = null!;
 
         private void OnEnable()
         {
             _renderers = serializedObject.FindProperty(nameof(MaterialGrabberRenderer.RenderersToAffect));
-            _indices = serializedObject.FindProperty(nameof(MaterialGrabberRenderer.Indeces));
+            _indices = serializedObject.FindProperty(nameof(MaterialGrabberRenderer.Replacements));
         }
 
         public override void OnInspectorGUI()
@@ -68,18 +68,18 @@ namespace CCL.Creator.Inspector
 
         private static void DrawReplacement(SerializedProperty replacement, int maxLength)
         {
-            SerializedProperty renderer = replacement.FindPropertyRelative("RendererIndex");
-            SerializedProperty name = replacement.FindPropertyRelative("NameIndex");
+            SerializedProperty renderer = replacement.FindPropertyRelative(nameof(MaterialGrabberRenderer.IndexToName.RendererIndex));
+            SerializedProperty name = replacement.FindPropertyRelative(nameof(MaterialGrabberRenderer.IndexToName.ReplacementName));
 
             using (new EditorGUI.IndentLevelScope())
             {
                 EditorGUILayout.PropertyField(renderer, new GUIContent("Material Index"));
-                name.intValue = EditorGUILayout.Popup("Replacement Name", name.intValue, MaterialGrabber.MaterialNames);
+                EditorHelpers.StringWithSearchField(name, MaterialGrabber.MaterialNames, EditorGUIUtility.singleLineHeight * 4, 40);
 
-                // Warn if length is outside array bounds.
-                if (renderer.intValue >= maxLength)
+                // Warn if the key doesn't exist.
+                if (!MaterialGrabber.MaterialNames.Contains(name.stringValue))
                 {
-                    EditorGUILayout.HelpBox($"Material index is outside array bounds (max {maxLength})!", MessageType.Error);
+                    EditorGUILayout.HelpBox($"Name '{name.stringValue}' does not exist!", MessageType.Error);
                 }
             }
         }

@@ -70,5 +70,10 @@ namespace CCL.Types.Components
         {
             return new string[0];
         }
+
+        public ResourceReplacement[] GetReplacements()
+        {
+            return Replacements;
+        }
     }
 }

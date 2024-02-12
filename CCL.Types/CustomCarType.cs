@@ -153,6 +153,34 @@ namespace CCL.Types
             }
         }
 
+        public IEnumerable<GameObject> AllPrefabs
+        {
+            get
+            {
+                foreach (var cargo in CargoTypes.Entries)
+                {
+                    if (cargo.ModelVariants != null)
+                    {
+                        foreach (var model in cargo.ModelVariants)
+                        {
+                            if (model != null)
+                            {
+                                yield return model;
+                            }
+                        }
+                    }
+                }
+
+                foreach (var model in ExtraModels)
+                {
+                    if (model != null)
+                    {
+                        yield return model;
+                    }
+                }
+            }
+        }
+
         [Serializable]
         public class BrakesSetup
         {

@@ -46,6 +46,20 @@ namespace CCL.Types
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
         public bool buttonRender;
 
+        public IEnumerable<GameObject> AllPrefabs
+        {
+            get
+            {
+                if (prefab) yield return prefab!;
+
+                if (interiorPrefab) yield return interiorPrefab!;
+                if (explodedInteriorPrefab) yield return explodedInteriorPrefab!;
+
+                if (externalInteractablesPrefab) yield return externalInteractablesPrefab!;
+                if (explodedExternalInteractablesPrefab) yield return explodedExternalInteractablesPrefab!;
+            }
+        }
+
         private void OnValidate()
         {
             localizationKey = $"ccl/livery/{id}";

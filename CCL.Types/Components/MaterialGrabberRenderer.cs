@@ -8,14 +8,14 @@ namespace CCL.Types.Components
     public class MaterialGrabberRenderer : MonoBehaviour, ICustomSerialized
     {
         [Serializable]
-        public class IndexToIndex
+        public class IndexToName
         {
             public int RendererIndex;
-            public int NameIndex;
+            public string ReplacementName = string.Empty;
         }
 
         public MeshRenderer[] RenderersToAffect = new MeshRenderer[0];
-        public IndexToIndex[] Indeces = new IndexToIndex[0];
+        public IndexToName[] Replacements = new IndexToName[0];
 
         [HideInInspector]
         [SerializeField]
@@ -23,14 +23,14 @@ namespace CCL.Types.Components
 
         public void OnValidate()
         {
-            _json = JSONObject.ToJson(Indeces);
+            _json = JSONObject.ToJson(Replacements);
         }
 
         public void AfterImport()
         {
             if (!string.IsNullOrEmpty(_json))
             {
-                Indeces = JSONObject.FromJson<IndexToIndex[]>(_json);
+                Replacements = JSONObject.FromJson<IndexToName[]>(_json);
             }
         }
 
