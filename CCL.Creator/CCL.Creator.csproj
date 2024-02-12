@@ -26,7 +26,13 @@
 		<Reference Include="System.ComponentModel.Composition" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="default_translations.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\DVLangHelper.Data.dll&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;" />
+		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\DVLangHelper.Data.dll&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\default_translations.json&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;" />
 	</Target>
 </Project>

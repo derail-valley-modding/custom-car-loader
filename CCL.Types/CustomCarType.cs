@@ -32,6 +32,7 @@ namespace CCL.Types
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
         public TranslationData NameTranslations;
+        public ExtraTranslations ExtraTranslations;
 
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
@@ -91,6 +92,11 @@ namespace CCL.Types
 
             brakesJson = JSONObject.ToJson(brakes);
             damageJson = JSONObject.ToJson(damage);
+
+            if (ExtraTranslations)
+            {
+                ExtraTranslations.OnValidate();
+            }
         }
 
         public void ForceValidation()
@@ -132,6 +138,11 @@ namespace CCL.Types
 
             brakes = JSONObject.FromJson<BrakesSetup>(brakesJson) ?? new BrakesSetup();
             damage = JSONObject.FromJson<DamageSetup>(damageJson) ?? new DamageSetup();
+
+            if (ExtraTranslations)
+            {
+                ExtraTranslations.AfterImport();
+            }
 
             if (liveries != null)
             {

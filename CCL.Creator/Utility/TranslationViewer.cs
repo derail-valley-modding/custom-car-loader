@@ -370,7 +370,7 @@ namespace CCL.Creator.Utility
                 .Select(l => l.Split(','))
                 .ToList();
 
-            if (lines.Count < 1 || HeaderEquals("Key", lines[0][0]))
+            if (lines.Count < 1 || !HeaderEquals(lines[0][0], "Key"))
             {
                 throw new FormatException("Invalid translation CSV header format");
             }
