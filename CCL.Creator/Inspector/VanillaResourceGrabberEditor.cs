@@ -1,4 +1,6 @@
-﻿using CCL.Types.Components;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
+using CCL.Types.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ using UnityEngine;
 namespace CCL.Creator.Inspector
 {
     [CustomEditor(typeof(VanillaResourceGrabber<>), true)]
-    internal class VanillaResourceGrabberEditor : UnityEditor.Editor
+    internal class VanillaResourceGrabberEditor : Editor
     {
         private struct AllowedFieldInfo
         {
@@ -93,19 +95,25 @@ namespace CCL.Creator.Inspector
 
         private static void DrawReplacement(SerializedProperty replacement, IVanillaResourceGrabber grabber, IEnumerable<AllowedFieldInfo> fields)
         {
-            SerializedProperty nameI = replacement.FindPropertyRelative("NameIndex");
-            SerializedProperty field = replacement.FindPropertyRelative("FieldName");
-            SerializedProperty array = replacement.FindPropertyRelative("IsArray");
-            SerializedProperty index = replacement.FindPropertyRelative("ArrayIndex");
+            SerializedProperty rName = replacement.FindPropertyRelative(nameof(ResourceReplacement.ReplacementName));
+            SerializedProperty field = replacement.FindPropertyRelative(nameof(ResourceReplacement.FieldName));
+            SerializedProperty array = replacement.FindPropertyRelative(nameof(ResourceReplacement.IsArray));
+            SerializedProperty index = replacement.FindPropertyRelative(nameof(ResourceReplacement.ArrayIndex));
 
             using (new EditorGUI.IndentLevelScope())
             {
-                nameI.intValue = EditorGUILayout.Popup("Replacement Name", nameI.intValue, grabber.GetNames());
+                EditorHelpers.StringWithSearchField(rName, grabber.GetNames(), EditorGUIUtility.singleLineHeight * 4, 40);
                 EditorGUILayout.PropertyField(field);
                 EditorGUILayout.PropertyField(array);
                 GUI.enabled = array.boolValue;
                 EditorGUILayout.PropertyField(index);
                 GUI.enabled = true;
+
+                // Warn if the key doesn't exist.
+                if (!grabber.GetNames().Contains(rName.stringValue))
+                {
+                    EditorGUILayout.HelpBox($"Name '{rName.stringValue}' does not exist!", MessageType.Error);
+                }
 
                 // Warn if the field does not exist.
                 if (!fields.Any(x => x.Name == field.stringValue))

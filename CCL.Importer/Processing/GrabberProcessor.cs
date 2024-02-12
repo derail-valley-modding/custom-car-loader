@@ -123,7 +123,7 @@ namespace CCL.Importer.Processing
 
                 foreach (var replacement in grabber.Replacements)
                 {
-                    string name = grabber.GetNames()[replacement.NameIndex];
+                    string name = replacement.ReplacementName;
 
                     // Try to find the cached value.
                     if (cache.Cache.TryGetValue(name, out TGrabType grabbed))
@@ -153,7 +153,7 @@ namespace CCL.Importer.Processing
                     }
                     else
                     {
-                        CCLPlugin.Error($"Could not find cached key '{name}' (index {replacement.NameIndex})!");
+                        CCLPlugin.Error($"Could not find cached key '{replacement.ReplacementName}'!");
                     }
                 }
 
@@ -171,9 +171,9 @@ namespace CCL.Importer.Processing
                     // Copy the copy, to assign later, or it won't actually reflect the changes.
                     var mats = renderer.sharedMaterials;
 
-                    foreach (var index in grabber.Indeces)
+                    foreach (var index in grabber.Replacements)
                     {
-                        string name = MaterialGrabber.MaterialNames[index.NameIndex];
+                        string name = index.ReplacementName;
 
                         if (s_materialCache.Cache.TryGetValue(name, out Material mat))
                         {
@@ -188,7 +188,7 @@ namespace CCL.Importer.Processing
                         }
                         else
                         {
-                            CCLPlugin.Error($"Could not find cached key '{name}' (index {index.NameIndex})!");
+                            CCLPlugin.Error($"Could not find cached key '{name}' (index {index.ReplacementName})!");
                         }
                     }
 

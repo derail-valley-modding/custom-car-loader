@@ -15,6 +15,7 @@ namespace CCL.Importer.Types
         public TranslationData NameTranslations = new();
         public LoadableCargo? CargoTypes;
         public GameObject[] ExtraModels = new GameObject[0];
+        public ExtraTranslations ExtraTranslations;
 
         public GameObject SimAudioPrefab;
 

@@ -49,6 +49,20 @@ namespace CCL.Types
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
         public bool UseCustomBuffers => BufferType == BufferType.Custom;
 
+        public IEnumerable<GameObject> AllPrefabs
+        {
+            get
+            {
+                if (prefab) yield return prefab!;
+
+                if (interiorPrefab) yield return interiorPrefab!;
+                if (explodedInteriorPrefab) yield return explodedInteriorPrefab!;
+
+                if (externalInteractablesPrefab) yield return externalInteractablesPrefab!;
+                if (explodedExternalInteractablesPrefab) yield return explodedExternalInteractablesPrefab!;
+            }
+        }
+
         private void OnValidate()
         {
             localizationKey = $"ccl/livery/{id}";

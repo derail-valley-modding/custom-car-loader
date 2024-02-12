@@ -12,19 +12,27 @@
 
 	<ItemGroup>
 		<Reference Include="DVLangHelper.Data" />
+		<Reference Include="Unity.TextMeshPro" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AssetBundleModule" />
 		<Reference Include="UnityEngine.AudioModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.IMGUIModule" />
+		<Reference Include="UnityEngine.UnityWebRequestModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="UnityEngine.TextRenderingModule" />
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="System.ComponentModel.Composition" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="default_translations.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\DVLangHelper.Data.dll&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;" />
+		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\DVLangHelper.Data.dll&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\default_translations.json&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;" />
 	</Target>
 </Project>

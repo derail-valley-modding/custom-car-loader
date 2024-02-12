@@ -38,7 +38,7 @@ namespace CCL.Importer.Patches
         private static readonly MethodInfo trainCarGetPrefab = AccessTools.Method(typeof(TrainCar), nameof(TrainCar.GetCarPrefab));
 
         [HarmonyTranspiler]
-        [HarmonyPatch("InstantiateCar")]
+        [HarmonyPatch(nameof(CarsSaveManager.InstantiateCarFromSavegame))]
         public static IEnumerable<CodeInstruction> TranspileInstantiateCar(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             // arg 0 - JObject carData

@@ -166,13 +166,15 @@ namespace CCL.Creator.Wizards
             livery.FrontBogie = GetBogieFromBase(settings.BaseCarType);
             livery.RearBogie = livery.FrontBogie;
 
-            carType.liveries = new List<CustomCarVariant>() { livery };
+            string liveryPath = Path.Combine(relativeCarFolder, $"{settings.ID}_livery.asset");
+            AssetDatabase.CreateAsset(livery, liveryPath);
+            var savedLivery = AssetDatabase.LoadAssetAtPath<CustomCarVariant>(liveryPath);
+
+            carType.liveries = new List<CustomCarVariant>() { savedLivery };
             carType.ForceValidation();
 
             string carTypePath = Path.Combine(relativeCarFolder, $"{settings.ID}_cartype.asset");
-            string liveryPath = Path.Combine(relativeCarFolder, $"{settings.ID}_livery.asset");
             AssetDatabase.CreateAsset(carType, carTypePath);
-            AssetDatabase.CreateAsset(livery, liveryPath);
             EditorSceneManager.SaveScene(scene, scenePath);
 
             Selection.activeObject = carType;
