@@ -10,23 +10,20 @@ namespace CCL.Importer.Proxies
     {
         public AudioProxyReplacer()
         {
-            CreateMap<DopplerProxy, Doppler>().AutoCacheAndMap();
-            CreateMap<AudioLayerProxy, LayeredAudio.Layer>();
-            CreateMap<LayeredAudioProxy, LayeredAudio>().AutoCacheAndMap()
-                .AfterMap(DestroyLayerProxies);
+            CreateMap<DopplerProxy, Doppler>().AutoCacheAndMap()
+                .AfterMap(EliminateSourceWithPrejudice);
+            CreateMap<AudioLayerProxy, LayeredAudio.Layer>()
+                .AfterMap(EliminateSourceWithPrejudice);
+            CreateMap<LayeredAudioProxy, LayeredAudio>().AutoCacheAndMap();
 
             CreateMap<AudioClipPortReaderProxy, AudioClipPortReader>().AutoCacheAndMap();
             CreateMap<LayeredAudioPortReaderProxy, LayeredAudioPortReader>().AutoCacheAndMap();
         }
 
-        private static void DestroyLayerProxies(LayeredAudioProxy proxy, LayeredAudio _)
+        private static void EliminateSourceWithPrejudice<TSrc, TDest>(TSrc obj, TDest _)
+            where TSrc : Object
         {
-            if (proxy.layers == null) return;
-
-            foreach (var layerProxy in proxy.layers)
-            {
-                Object.Destroy(layerProxy);
-            }
+            Object.DestroyImmediate(obj);
         }
     }
 }
