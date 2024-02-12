@@ -3,6 +3,8 @@ using System.Linq;
 using UnityEngine;
 using System.ComponentModel.Composition;
 using CCL.Types.Proxies;
+using DV.ThingTypes;
+using DV.ThingTypes.TransitionHelpers;
 
 namespace CCL.Importer.Processing
 {
@@ -102,9 +104,16 @@ namespace CCL.Importer.Processing
             }
 
             // No more base livery so what a mess this is.
-            Transform baseBogieColliderRoot = context.Car.FrontBogie.ToTypePrefab().transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
+            var basePrefab = context.Car.UseCustomFrontBogie ?
+                TrainCarType.FlatbedEmpty.ToV2().prefab :
+                context.Car.FrontBogie.ToTypePrefab();
+            Transform baseBogieColliderRoot = basePrefab.transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
             var c1 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().First();
-            baseBogieColliderRoot = context.Car.RearBogie.ToTypePrefab().transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
+
+            basePrefab = context.Car.UseCustomRearBogie ?
+                TrainCarType.FlatbedEmpty.ToV2().prefab :
+                context.Car.RearBogie.ToTypePrefab();
+            baseBogieColliderRoot = basePrefab.transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
             var c2 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().Last();
             BaseBogieColliders = new[] { c1, c2 };
         }
