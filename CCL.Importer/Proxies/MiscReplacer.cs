@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CCL.Types;
 using CCL.Types.Proxies;
 using DV;
 
@@ -23,6 +24,21 @@ namespace CCL.Importer.Proxies
                 .AutoCacheAndMap()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance))
                 .ForMember(s => s.scriptsToDisable, o => o.MapFrom(s => Mapper.GetFromCacheOrSelf(s.scriptsToDisable)));
+
+            CreateMap<InteriorNonStandardLayerProxy, InteriorNonStandardLayer>().AutoCacheAndMap()
+                .AfterMap(InteriorNonStandardLayerAfter);
+        }
+
+        private void InteriorNonStandardLayerAfter(InteriorNonStandardLayerProxy src, InteriorNonStandardLayer dest)
+        {
+            if (src.includeChildren)
+            {
+                dest.gameObject.SetLayersRecursive(src.Layer);
+            }
+            else
+            {
+                dest.gameObject.SetLayer(src.Layer);
+            }
         }
     }
 }
