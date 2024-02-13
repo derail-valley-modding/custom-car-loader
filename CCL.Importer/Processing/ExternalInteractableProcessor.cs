@@ -7,6 +7,8 @@ using DV.ThingTypes.TransitionHelpers;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
+using static CCL.Types.CarPartNames.FuelPorts;
+using static CCL.Types.CarPartNames.Interactables;
 
 namespace CCL.Importer.Processing
 {
@@ -23,24 +25,32 @@ namespace CCL.Importer.Processing
         private static readonly GameObject _dh4Handbrake;
         private static readonly GameObject _microshunterHandbrake;
 
+        private static readonly GameObject _de2FuelPort;
+        private static readonly GameObject _be2ChargePort;
+
         static ExternalInteractableProcessor()
         {
             var flatbedInteractables = TrainCarType.FlatbedEmpty.ToV2().externalInteractablesPrefab;
-            _flatbedHandbrake = flatbedInteractables.transform.Find(CarPartNames.HANDBRAKE_SMALL).gameObject;
-            _flatbedBrakeRelease = flatbedInteractables.transform.Find(CarPartNames.BRAKE_CYL_RELEASE).gameObject;
+            _flatbedHandbrake = flatbedInteractables.transform.Find(HANDBRAKE_SMALL).gameObject;
+            _flatbedBrakeRelease = flatbedInteractables.transform.Find(BRAKE_CYL_RELEASE).gameObject;
 
             _s060Handbrake = TrainCarType.LocoS060.ToV2().interiorPrefab
-                .transform.Find(CarPartNames.HANDBRAKE_S060).gameObject;
+                .transform.Find(HANDBRAKE_S060).gameObject;
             _s282Handbrake = TrainCarType.Tender.ToV2().externalInteractablesPrefab
-                .transform.Find(CarPartNames.HANDBRAKE_S282).gameObject;
+                .transform.Find(HANDBRAKE_S282).gameObject;
             _de2Handbrake = TrainCarType.LocoShunter.ToV2().interiorPrefab
-                .transform.Find(CarPartNames.HANDBRAKE_DE2).gameObject;
+                .transform.Find(HANDBRAKE_DE2).gameObject;
             _dm3Handbrake = TrainCarType.LocoDM3.ToV2().interiorPrefab
-                .transform.Find(CarPartNames.HANDBRAKE_DM3).gameObject;
+                .transform.Find(HANDBRAKE_DM3).gameObject;
             _dh4Handbrake = TrainCarType.LocoDH4.ToV2().interiorPrefab
-                .transform.Find(CarPartNames.HANDBRAKE_DH4).gameObject;
+                .transform.Find(HANDBRAKE_DH4).gameObject;
             _microshunterHandbrake = TrainCarType.LocoMicroshunter.ToV2().interiorPrefab
-                .transform.Find(CarPartNames.HANDBRAKE_MICROSHUNTER).gameObject;
+                .transform.Find(HANDBRAKE_MICROSHUNTER).gameObject;
+
+            _de2FuelPort = TrainCarType.LocoShunter.ToV2().prefab
+                .transform.Find($"{FUEL_CAP_ROOT}/{FUEL_CAP_DE2}").gameObject;
+            _be2ChargePort = TrainCarType.LocoMicroshunter.ToV2().prefab
+                .transform.Find($"{CHARGE_PORT_ROOT}/{CHARGE_PORT_BE2}").gameObject;
         }
 
         public override void ExecuteStep(ModelProcessor context)
@@ -60,6 +70,16 @@ namespace CCL.Importer.Processing
                 var optimizer = interactables.AddComponent<PlayerOnCarScriptsOptimizer>();
                 optimizer.scriptsToDisable = new MonoBehaviour[] { keyboardCtrl };
             }
+
+            SetupExternalConnectors(context.Car.prefab);
+        }
+
+        private static void Replace(Transform parent, Transform current, GameObject newModel)
+        {
+            var newGo = Object.Instantiate(newModel, parent);
+            newGo.transform.localPosition = current.localPosition;
+            newGo.transform.localRotation = current.localRotation;
+            Object.Destroy(current.gameObject);
         }
 
         private static void SetupFreightInteractables(GameObject interactables)
@@ -70,39 +90,31 @@ namespace CCL.Importer.Processing
 
             foreach (var current in existingChildren)
             {
-                void Replace(GameObject go)
-                {
-                    var newGo = Object.Instantiate(go, interactables.transform);
-                    newGo.transform.localPosition = current.localPosition;
-                    newGo.transform.localRotation = current.localRotation;
-                    Object.Destroy(current.gameObject);
-                }
-
                 switch (current.name)
                 {
-                    case CarPartNames.DUMMY_HANDBRAKE_SMALL:
-                        Replace(_flatbedHandbrake);
+                    case DUMMY_HANDBRAKE_SMALL:
+                        Replace(interactables.transform, current, _flatbedHandbrake);
                         break;
-                    case CarPartNames.DUMMY_BRAKE_RELEASE:
-                        Replace(_flatbedBrakeRelease);
+                    case DUMMY_BRAKE_RELEASE:
+                        Replace(interactables.transform, current, _flatbedBrakeRelease);
                         break;
-                    case CarPartNames.DUMMY_HANDBRAKE_S060:
-                        Replace(_s060Handbrake);
+                    case DUMMY_HANDBRAKE_S060:
+                        Replace(interactables.transform, current, _s060Handbrake);
                         break;
-                    case CarPartNames.DUMMY_HANDBRAKE_S282:
-                        Replace(_s282Handbrake);
+                    case DUMMY_HANDBRAKE_S282:
+                        Replace(interactables.transform, current, _s282Handbrake);
                         break;
-                    case CarPartNames.DUMMY_HANDBRAKE_DE2:
-                        Replace(_de2Handbrake);
+                    case DUMMY_HANDBRAKE_DE2:
+                        Replace(interactables.transform, current, _de2Handbrake);
                         break;
-                    case CarPartNames.DUMMY_HANDBRAKE_DM3:
-                        Replace(_dm3Handbrake);
+                    case DUMMY_HANDBRAKE_DM3:
+                        Replace(interactables.transform, current, _dm3Handbrake);
                         break;
-                    case CarPartNames.DUMMY_HANDBRAKE_DH4:
-                        Replace(_dh4Handbrake);
+                    case DUMMY_HANDBRAKE_DH4:
+                        Replace(interactables.transform, current, _dh4Handbrake);
                         break;
-                    case CarPartNames.DUMMY_HANDBRAKE_MICROSHUNTER:
-                        Replace(_microshunterHandbrake);
+                    case DUMMY_HANDBRAKE_MICROSHUNTER:
+                        Replace(interactables.transform, current, _microshunterHandbrake);
                         break;
                     default:
                         break;
@@ -111,6 +123,27 @@ namespace CCL.Importer.Processing
 
             interactables.SetLayersRecursive(DVLayer.Interactable);
             FixControlColliders(interactables);
+        }
+
+        private static void SetupExternalConnectors(GameObject prefab)
+        {
+            var existingChildren = Enumerable.Range(0, prefab.transform.childCount)
+                .Select(i => prefab.transform.GetChild(i))
+                .ToList();
+
+            foreach (var current in existingChildren)
+            {
+                switch (current.name)
+                {
+                    case DUMMY_FUEL_CAP_DE2:
+                        Replace(prefab.transform, current, _de2FuelPort);
+                        break;
+
+                    case DUMMY_CHARGE_PORT_BE2:
+                        Replace(prefab.transform, current, _be2ChargePort);
+                        break;
+                }
+            }
         }
 
         private static void FixControlColliders(GameObject root)
