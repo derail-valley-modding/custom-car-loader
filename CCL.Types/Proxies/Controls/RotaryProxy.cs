@@ -4,17 +4,6 @@ namespace CCL.Types.Proxies.Controls
 {
     public class RotaryProxy : ControlSpecProxy
     {
-        private new void OnValidate()
-        {
-            base.OnValidate();
-
-            if (this.nonVrStaticInteractionArea != null && this.nonVrStaticInteractionArea.gameObject.activeInHierarchy)
-            {
-                Debug.LogWarning("nonVrStaticInteractionArea gameObject must be disabled in prefabs! Forcing disable on nonVrStaticInteractionArea gameObject", this);
-                this.nonVrStaticInteractionArea.gameObject.SetActive(false);
-            }
-        }
-
         public float rigidbodyMass = 1f;
         public float rigidbodyAngularDrag = 0.03f;
         public float blockAngularDrag;
@@ -44,9 +33,6 @@ namespace CCL.Types.Proxies.Controls
 
         [Tooltip("A value between joint min and max limit")]
         public float jointStartingPos;
-
-        [Header("Static non-vr interaction area - optional")]
-        public StaticInteractionAreaProxy nonVrStaticInteractionArea;
 
         [Header("Audio")]
         public AudioClip notch;

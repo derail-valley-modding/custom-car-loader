@@ -34,6 +34,7 @@ namespace CCL.Creator.Wizards
             public string ControlName = "newControl";
             public DVControlClass ControlType;
 
+            public bool AddStaticInteractionArea = true;
             public bool IsFuseControl = false;
 
             [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)]
@@ -60,6 +61,7 @@ namespace CCL.Creator.Wizards
 
             EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlName)));
             EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlType)));
+            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AddStaticInteractionArea)));
 
             var fuseProp = serialized.FindProperty(nameof(Settings.IsFuseControl));
             EditorGUILayout.PropertyField(fuseProp);
@@ -115,11 +117,15 @@ namespace CCL.Creator.Wizards
 
         private static void CreateControl(Settings settings)
         {
-            var newControl = new GameObject(settings.ControlName);
-            newControl.transform.SetParent(settings.TargetObject.transform, false);
+            var holder = new GameObject(settings.ControlName);
+            holder.transform.SetParent(settings.TargetObject.transform, false);
+
+            // Control Spec
+            var newControl = new GameObject($"C_{settings.ControlName}");
+            newControl.transform.SetParent(holder.transform, false);
 
             var specType = GetSpecType(settings.ControlType);
-            newControl.AddComponent(specType);
+            var spec = (ControlSpecProxy)newControl.AddComponent(specType);
 
             if (settings.IsFuseControl)
             {
@@ -130,6 +136,21 @@ namespace CCL.Creator.Wizards
             {
                 var feeder = newControl.AddComponent<InteractablePortFeederProxy>();
                 feeder.portId = settings.ControlledPortId;
+            }
+
+            // Interaction Area
+            if (settings.AddStaticInteractionArea)
+            {
+                var interactionArea = new GameObject($"IA_{settings.ControlName}");
+                interactionArea.transform.SetParent(holder.transform.transform, false);
+                interactionArea.SetActive(false);
+
+                var staticIAProxy = interactionArea.AddComponent<StaticInteractionAreaProxy>();
+                spec.nonVrStaticInteractionArea = staticIAProxy;
+
+                var collider = interactionArea.AddComponent<SphereCollider>();
+                collider.radius = 0.03f;
+                collider.isTrigger = true;
             }
 
             EditorUtility.SetDirty(settings.TargetObject);
