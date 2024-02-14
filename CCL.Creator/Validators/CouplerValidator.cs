@@ -11,10 +11,10 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
 
-            var frontRig = livery.prefab!.transform.FindSafe(CarPartNames.COUPLER_RIG_FRONT);
+            var frontRig = livery.prefab!.transform.FindSafe(CarPartNames.Couplers.RIG_FRONT);
             if (!frontRig)
             {
-                result.Fail("Missing front coupler rig " + CarPartNames.COUPLER_RIG_FRONT);
+                result.Fail("Missing front coupler rig " + CarPartNames.Couplers.RIG_FRONT);
             }
             else
             {
@@ -25,7 +25,7 @@ namespace CCL.Creator.Validators
 
                 if (livery.UseCustomBuffers)
                 {
-                    foreach (string name in CarPartNames.BUFFER_FRONT_PADS)
+                    foreach (string name in CarPartNames.Buffers.FRONT_PADS)
                     {
                         var pad = frontRig.FindSafe(name);
                         if (!pad)
@@ -36,10 +36,10 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            var rearRig = livery.prefab.transform.FindSafe(CarPartNames.COUPLER_RIG_REAR);
+            var rearRig = livery.prefab.transform.FindSafe(CarPartNames.Couplers.RIG_REAR);
             if (!rearRig)
             {
-                result.Fail("Missing rear coupler rig " + CarPartNames.COUPLER_RIG_REAR);
+                result.Fail("Missing rear coupler rig " + CarPartNames.Couplers.RIG_REAR);
             }
             else
             {
@@ -50,7 +50,7 @@ namespace CCL.Creator.Validators
 
                 if (livery.UseCustomBuffers)
                 {
-                    foreach (string name in CarPartNames.BUFFER_REAR_PADS)
+                    foreach (string name in CarPartNames.Buffers.REAR_PADS)
                     {
                         var pad = rearRig.FindSafe(name);
                         if (!pad)

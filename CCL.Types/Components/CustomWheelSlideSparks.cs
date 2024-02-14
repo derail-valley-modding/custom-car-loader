@@ -22,13 +22,13 @@ namespace CCL.Types.Components
             if (parent == null)
             {
                 Debug.Log($"Cancelling auto setup (component is in the car root, " +
-                    $"should be in a child named {CarPartNames.WHEEL_SPARKS} instead)");
+                    $"should be in a child named {CarPartNames.Particles.WHEEL_SPARKS} instead)");
                 return;
             }
 
             AutoSetupWithBogies(
-                parent.Find($"{CarPartNames.BOGIE_FRONT}/{CarPartNames.BOGIE_CAR}"),
-                parent.Find($"{CarPartNames.BOGIE_REAR}/{CarPartNames.BOGIE_CAR}"));
+                parent.Find($"{CarPartNames.Bogies.FRONT}/{CarPartNames.Bogies.BOGIE_CAR}"),
+                parent.Find($"{CarPartNames.Bogies.REAR}/{CarPartNames.Bogies.BOGIE_CAR}"));
         }
 
         public void AutoSetupWithBogies(Transform bogie1, Transform bogie2)
@@ -55,7 +55,7 @@ namespace CCL.Types.Components
 
         private List<Transform> SetupBogie(Transform bogie)
         {
-            Transform contacts = bogie.Find(CarPartNames.BOGIE_CONTACT_POINTS);
+            Transform contacts = bogie.Find(CarPartNames.Bogies.CONTACT_POINTS);
             List<Transform> points = new List<Transform>();
 
             // Contact point objects already exist. This also works when grabbing
@@ -71,7 +71,7 @@ namespace CCL.Types.Components
             }
 
             // If it doesn't exist, create a new contacts object in the bogie.
-            contacts = new GameObject(CarPartNames.BOGIE_CONTACT_POINTS).transform;
+            contacts = new GameObject(CarPartNames.Bogies.CONTACT_POINTS).transform;
             contacts.parent = bogie;
             contacts.localPosition = Vector3.zero;
             // For sequential naming.
@@ -79,7 +79,7 @@ namespace CCL.Types.Components
 
             foreach (Transform t in bogie)
             {
-                if (!t.name.Equals(CarPartNames.AXLE))
+                if (!t.name.Equals(CarPartNames.Bogies.AXLE))
                 {
                     continue;
                 }

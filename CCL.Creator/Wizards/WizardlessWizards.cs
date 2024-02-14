@@ -12,7 +12,7 @@ namespace CCL.Creator.Wizards
         {
             var target = (GameObject)command.context;
 
-            var cab = new GameObject(CarPartNames.CAB_TELEPORT_ROOT);
+            var cab = new GameObject(CarPartNames.Cab.TELEPORT_ROOT);
             cab.transform.parent = target.transform;
 
             var comp = cab.AddComponent<CabTeleportDestinationProxy>();

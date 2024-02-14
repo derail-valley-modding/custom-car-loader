@@ -22,22 +22,22 @@ namespace CCL.Importer.Processing
             var newFab = context.Car.prefab;
 
             // [colliders]
-            Transform colliderRoot = newFab.transform.Find(CarPartNames.COLLIDERS_ROOT);
+            Transform colliderRoot = newFab.transform.Find(CarPartNames.Colliders.ROOT);
             if (!colliderRoot)
             {
                 // collider should be initialized in prefab, but make sure
                 CCLPlugin.Warning("Adding collision root to car, should have been part of prefab!");
 
-                GameObject colliders = new GameObject(CarPartNames.COLLIDERS_ROOT);
+                GameObject colliders = new GameObject(CarPartNames.Colliders.ROOT);
                 colliderRoot = colliders.transform;
                 colliderRoot.parent = newFab.transform;
             }
 
             // [collision]
-            Transform collision = colliderRoot.Find(CarPartNames.COLLISION_ROOT);
+            Transform collision = colliderRoot.Find(CarPartNames.Colliders.COLLISION);
             if (!collision)
             {
-                var collisionObj = new GameObject(CarPartNames.COLLISION_ROOT);
+                var collisionObj = new GameObject(CarPartNames.Colliders.COLLISION);
                 collision = collisionObj.transform;
                 collision.parent = colliderRoot.transform;
             }
@@ -46,15 +46,15 @@ namespace CCL.Importer.Processing
 
             // find [walkable]
             // copy walkable to items if items doesn't exist
-            Transform walkable = colliderRoot.Find(CarPartNames.WALKABLE_COLLIDERS);
+            Transform walkable = colliderRoot.Find(CarPartNames.Colliders.WALKABLE);
             if (walkable)
             {
-                Transform items = colliderRoot.Find(CarPartNames.ITEM_COLLIDERS);
+                Transform items = colliderRoot.Find(CarPartNames.Colliders.ITEMS);
                 if (!items)
                 {
                     CCLPlugin.LogVerbose("Reusing walkable colliders as item colliders");
                     GameObject newItemsObj = UnityEngine.Object.Instantiate(walkable.gameObject, colliderRoot);
-                    newItemsObj.name = CarPartNames.ITEM_COLLIDERS;
+                    newItemsObj.name = CarPartNames.Colliders.ITEMS;
                     newItemsObj.SetLayersRecursive(DVLayer.Interactable);
                 }
 
@@ -93,12 +93,12 @@ namespace CCL.Importer.Processing
             }
 
             // [bogies]
-            NewBogieColliderRoot = colliderRoot.transform.Find(CarPartNames.BOGIE_COLLIDERS);
+            NewBogieColliderRoot = colliderRoot.transform.Find(CarPartNames.Colliders.BOGIES);
             if (!NewBogieColliderRoot)
             {
                 CCLPlugin.LogVerbose("Adding bogie collider root");
 
-                GameObject bogiesRoot = new GameObject(CarPartNames.BOGIE_COLLIDERS);
+                GameObject bogiesRoot = new GameObject(CarPartNames.Colliders.BOGIES);
                 NewBogieColliderRoot = bogiesRoot.transform;
                 NewBogieColliderRoot.parent = colliderRoot.transform;
             }
@@ -107,13 +107,13 @@ namespace CCL.Importer.Processing
             var basePrefab = context.Car.UseCustomFrontBogie ?
                 TrainCarType.FlatbedEmpty.ToV2().prefab :
                 context.Car.FrontBogie.ToTypePrefab();
-            Transform baseBogieColliderRoot = basePrefab.transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
+            Transform baseBogieColliderRoot = basePrefab.transform.Find($"{CarPartNames.Colliders.ROOT}/{CarPartNames.Colliders.BOGIES}");
             var c1 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().First();
 
             basePrefab = context.Car.UseCustomRearBogie ?
                 TrainCarType.FlatbedEmpty.ToV2().prefab :
                 context.Car.RearBogie.ToTypePrefab();
-            baseBogieColliderRoot = basePrefab.transform.Find(CarPartNames.COLLIDERS_ROOT).Find(CarPartNames.BOGIE_COLLIDERS);
+            baseBogieColliderRoot = basePrefab.transform.Find($"{CarPartNames.Colliders.ROOT}/{CarPartNames.Colliders.BOGIES}");
             var c2 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().Last();
             BaseBogieColliders = new[] { c1, c2 };
         }

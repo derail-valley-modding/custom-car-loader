@@ -21,13 +21,13 @@ namespace CCL.Importer.Processing
             Bogie frontBogie, rearBogie;
 
             // Find existing bogie transforms
-            Transform newFrontBogieTransform = newFab.transform.Find(CarPartNames.BOGIE_FRONT);
+            Transform newFrontBogieTransform = newFab.transform.Find(CarPartNames.Bogies.FRONT);
             if (!newFrontBogieTransform)
             {
                 CCLPlugin.Error("Front bogie transform is missing from prefab!");
             }
 
-            Transform newRearBogieTransform = newFab.transform.Find(CarPartNames.BOGIE_REAR);
+            Transform newRearBogieTransform = newFab.transform.Find(CarPartNames.Bogies.REAR);
             if (!newRearBogieTransform)
             {
                 CCLPlugin.Error("Rear bogie transform is missing from prefab!");
@@ -78,7 +78,7 @@ namespace CCL.Importer.Processing
 
             //GameObject origBogie = baseCar.Bogies[0].gameObject;
             GameObject copiedObject = Object.Instantiate(origBogie.gameObject, carRoot);
-            copiedObject.name = CarPartNames.BOGIE_FRONT;
+            copiedObject.name = CarPartNames.Bogies.FRONT;
             copiedObject.transform.localPosition = bogiePosition;
 
             Bogie newBogie = copiedObject.GetComponent<Bogie>();
@@ -105,7 +105,7 @@ namespace CCL.Importer.Processing
 
             // Front bogie pads.
             Transform? padsF = front.transform.FindSafe(
-                $"{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
+                $"{CarPartNames.Bogies.BOGIE_CAR}/{CarPartNames.Bogies.BRAKE_ROOT}/{CarPartNames.Bogies.BRAKE_PADS}");
 
             if (padsF)
             {
@@ -115,7 +115,7 @@ namespace CCL.Importer.Processing
 
             // Rear bogie pads.
             Transform? padsR = rear.transform.FindSafe(
-                $"{CarPartNames.BOGIE_CAR}/{CarPartNames.BOGIE_BRAKE_ROOT}/{CarPartNames.BOGIE_BRAKE_PADS}");
+                $"{CarPartNames.Bogies.BOGIE_CAR}/{CarPartNames.Bogies.BRAKE_ROOT}/{CarPartNames.Bogies.BRAKE_PADS}");
 
             if (padsR)
             {
@@ -156,11 +156,11 @@ namespace CCL.Importer.Processing
             // setup the sparks, then treat it as usual.
             if (controller == null)
             {
-                var sparks = new GameObject(CarPartNames.WHEEL_SPARKS);
+                var sparks = new GameObject(CarPartNames.Particles.WHEEL_SPARKS);
                 sparks.transform.parent = newFab.transform;
                 sparks.transform.localPosition = Vector3.zero;
                 controller = sparks.gameObject.AddComponent<CustomWheelSlideSparks>();
-                controller.AutoSetupWithBogies(front.transform.Find(CarPartNames.BOGIE_CAR), rear.transform.Find(CarPartNames.BOGIE_CAR));
+                controller.AutoSetupWithBogies(front.transform.Find(CarPartNames.Bogies.BOGIE_CAR), rear.transform.Find(CarPartNames.Bogies.BOGIE_CAR));
             }
 
             var temp = controller.gameObject.AddComponent<WheelSlideSparksController>();
@@ -178,14 +178,14 @@ namespace CCL.Importer.Processing
             }
 
             // Try to reparent if the anchors are in the fake bogies.
-            if (parent.parent.name.Equals(CarPartNames.BOGIE_CAR))
+            if (parent.parent.name.Equals(CarPartNames.Bogies.BOGIE_CAR))
             {
-                if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_FRONT))
+                if (parent.parent.parent.name.Equals(CarPartNames.Bogies.FRONT))
                 {
                     parent.parent = frontBogie;
                     return true;
                 }
-                if (parent.parent.parent.name.Equals(CarPartNames.BOGIE_REAR))
+                if (parent.parent.parent.name.Equals(CarPartNames.Bogies.REAR))
                 {
                     parent.parent = rearBogie;
                     return true;
