@@ -92,24 +92,38 @@
         public const string CABOOSE_REMOTE_CHARGER = "RemoteControllerCharger";
         public const string CABOOSE_REMOTE_ANTENNA = "RemoteControllerSignalBooster";
 
-        // Interactables
-        public const string HANDBRAKE_SMALL = "HandbrakeSmall";
-        public const string BRAKE_CYL_RELEASE = "BrakeCylinderRelease";
-        public const string HANDBRAKE_S060 = "Back/Handbrake";
-        public const string HANDBRAKE_S282 = "HandbrakeEU3-TenderOverride";
-        public const string HANDBRAKE_DE2 = "Handbrake";
-        public const string HANDBRAKE_DM3 = "Handbrake_04";
-        public const string HANDBRAKE_DH4 = "RearCluster/HandbrakeLargeEU";
-        public const string HANDBRAKE_MICROSHUNTER = "HandbrakeLargeEU";
+        public static class Interactables
+        {
+            public const string HANDBRAKE_SMALL = "HandbrakeSmall";
+            public const string BRAKE_CYL_RELEASE = "BrakeCylinderRelease";
+            public const string HANDBRAKE_S060 = "Back/Handbrake";
+            public const string HANDBRAKE_S282 = "HandbrakeEU3-TenderOverride";
+            public const string HANDBRAKE_DE2 = "Handbrake";
+            public const string HANDBRAKE_DM3 = "Handbrake_04";
+            public const string HANDBRAKE_DH4 = "RearCluster/HandbrakeLargeEU";
+            public const string HANDBRAKE_MICROSHUNTER = "HandbrakeLargeEU";
 
-        public const string DUMMY_HANDBRAKE_SMALL = "[brake small]";
-        public const string DUMMY_BRAKE_RELEASE = "[brake release]";
-        public const string DUMMY_HANDBRAKE_S060 = "[brake s060]";
-        public const string DUMMY_HANDBRAKE_S282 = "[brake s282]";
-        public const string DUMMY_HANDBRAKE_DE2 = "[brake de2]";
-        public const string DUMMY_HANDBRAKE_DM3 = "[brake dm3]";
-        public const string DUMMY_HANDBRAKE_DH4 = "[brake dh4]";
-        public const string DUMMY_HANDBRAKE_MICROSHUNTER = "[brake microshunter]";
+            public const string DUMMY_HANDBRAKE_SMALL = "[brake small]";
+            public const string DUMMY_BRAKE_RELEASE = "[brake release]";
+            public const string DUMMY_HANDBRAKE_S060 = "[brake s060]";
+            public const string DUMMY_HANDBRAKE_S282 = "[brake s282]";
+            public const string DUMMY_HANDBRAKE_DE2 = "[brake de2]";
+            public const string DUMMY_HANDBRAKE_DM3 = "[brake dm3]";
+            public const string DUMMY_HANDBRAKE_DH4 = "[brake dh4]";
+            public const string DUMMY_HANDBRAKE_MICROSHUNTER = "[brake microshunter]";
+        }
+
+        public static class FuelPorts
+        {
+            public const string FUEL_CAP_ROOT = "[fuel tank cap]";
+            public const string FUEL_CAP_DE2 = "FuelTankCap";
+
+            public const string CHARGE_PORT_ROOT = "[battery charge port]";
+            public const string CHARGE_PORT_BE2 = "BatteryChargePort";
+
+            public const string DUMMY_FUEL_CAP_DE2 = "[fuel de2]";
+            public const string DUMMY_CHARGE_PORT_BE2 = "[charge be2]";
+        }
 
         public static class Audio
         {

@@ -13,5 +13,15 @@ namespace CCL.Types
 
             Gizmos.matrix = oldMatrix;
         }
+
+        public static void DrawLocalRay(Transform pivot, Vector3 start, Vector3 direction, float length)
+        {
+            var oldMatrix = Gizmos.matrix;
+
+            Gizmos.matrix = pivot.localToWorldMatrix;
+            Gizmos.DrawRay(start, direction.normalized * length);
+            
+            Gizmos.matrix = oldMatrix;
+        }
     }
 }

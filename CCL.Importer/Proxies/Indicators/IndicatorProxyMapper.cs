@@ -30,7 +30,7 @@ namespace CCL.Importer.Proxies.Indicators
             CreateMap<LampControlProxy, LampControl>().AutoCacheAndMap()
                 .WithCachedMember(d => d.lampInd);
 
-            CreateMap<LabelLocalizer, Localize>().AutoCacheAndMap();
+            CreateMap<LabelLocalizer, Localize>();
         }
     }
 }
