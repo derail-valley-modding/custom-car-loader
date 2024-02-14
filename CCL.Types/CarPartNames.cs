@@ -63,6 +63,7 @@
         public const string EXHAUST_SMOKE = "ExhaustEngineSmoke";
         public const string HIGH_TEMP_SMOKE = "HighTempEngineSmoke";
         public const string DAMAGED_SMOKE = "DamagedEngineSmoke";
+        public const string CAB_HIGHLIGHT_GLOW = "[cab]/CabHighlightGlow/Quad";
 
         // Steam Loco Particles
         public const string CHIMNEY_STEAM = "steam_lit";
