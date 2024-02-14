@@ -34,6 +34,7 @@ namespace CCL.Creator.Wizards
             public string ControlName = "newControl";
             public DVControlClass ControlType;
 
+            public bool AddStaticInteractionArea = true;
             public bool IsFuseControl = false;
 
             [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)]
@@ -60,6 +61,7 @@ namespace CCL.Creator.Wizards
 
             EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlName)));
             EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlType)));
+            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AddStaticInteractionArea)));
 
             var fuseProp = serialized.FindProperty(nameof(Settings.IsFuseControl));
             EditorGUILayout.PropertyField(fuseProp);
@@ -137,16 +139,19 @@ namespace CCL.Creator.Wizards
             }
 
             // Interaction Area
-            var interactionArea = new GameObject($"IA_{settings.ControlName}");
-            interactionArea.transform.SetParent(holder.transform.transform, false);
-            interactionArea.SetActive(false);
+            if (settings.AddStaticInteractionArea)
+            {
+                var interactionArea = new GameObject($"IA_{settings.ControlName}");
+                interactionArea.transform.SetParent(holder.transform.transform, false);
+                interactionArea.SetActive(false);
 
-            var staticIAProxy = interactionArea.AddComponent<StaticInteractionAreaProxy>();
-            spec.nonVrStaticInteractionArea = staticIAProxy;
+                var staticIAProxy = interactionArea.AddComponent<StaticInteractionAreaProxy>();
+                spec.nonVrStaticInteractionArea = staticIAProxy;
 
-            var collider = interactionArea.AddComponent<SphereCollider>();
-            collider.radius = 0.03f;
-            collider.isTrigger = true;
+                var collider = interactionArea.AddComponent<SphereCollider>();
+                collider.radius = 0.03f;
+                collider.isTrigger = true;
+            }
 
             EditorUtility.SetDirty(settings.TargetObject);
             Selection.activeObject = newControl;
