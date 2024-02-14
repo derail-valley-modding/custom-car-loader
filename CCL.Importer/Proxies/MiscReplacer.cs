@@ -2,11 +2,20 @@
 using CCL.Types;
 using CCL.Types.Proxies;
 using DV;
+using DV.Interaction;
+using DV.ThingTypes.TransitionHelpers;
+using UnityEngine;
 
 namespace CCL.Importer.Proxies
 {
     internal class MiscReplacer : Profile
     {
+        private static GameObject? s_cabHightlightGlow = null;
+
+        private static GameObject CabHighlightGlow =>
+            Extensions.GetCached(ref s_cabHightlightGlow,
+                () => DV.ThingTypes.TrainCarType.LocoShunter.ToV2().prefab.transform.Find(CarPartNames.CAB_HIGHLIGHT_GLOW).gameObject);
+
         public MiscReplacer()
         {
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
@@ -27,6 +36,11 @@ namespace CCL.Importer.Proxies
 
             CreateMap<InteriorNonStandardLayerProxy, InteriorNonStandardLayer>().AutoCacheAndMap()
                 .AfterMap(InteriorNonStandardLayerAfter);
+            CreateMap<CabTeleportDestinationProxy, CabTeleportDestination>().AutoCacheAndMap()
+                .ForMember(m => m.hoverGlow, o => o.MapFrom(m => Mapper.GetFromCache(m.hoverGlow)));
+            CreateMap<TeleportHoverGlowProxy, TeleportHoverGlow>().AutoCacheAndMap()
+                .AfterMap(TeleportHoverGlowAfter);
+            CreateMap<GrabberRaycastPassThroughProxy, GrabberRaycastPassThrough>().AutoCacheAndMap();
         }
 
         private void InteriorNonStandardLayerAfter(InteriorNonStandardLayerProxy src, InteriorNonStandardLayer dest)
@@ -39,6 +53,11 @@ namespace CCL.Importer.Proxies
             {
                 dest.gameObject.SetLayer(src.Layer);
             }
+        }
+
+        private void TeleportHoverGlowAfter(TeleportHoverGlowProxy src, TeleportHoverGlow dest)
+        {
+            dest.highlight = Object.Instantiate(CabHighlightGlow, dest.transform);
         }
     }
 }
