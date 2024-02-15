@@ -18,15 +18,15 @@ namespace CCL.Importer.Processing
                 context.Car.BufferType.ToTypePrefab();
 
             GameObject copiedObject;
-            GameObject frontCoupler = basePrefab.transform.Find(CarPartNames.COUPLER_FRONT).gameObject;
+            GameObject frontCoupler = basePrefab.transform.Find(CarPartNames.Couplers.COUPLER_FRONT).gameObject;
             copiedObject = Object.Instantiate(frontCoupler, context.Car.prefab.transform);
-            copiedObject.name = CarPartNames.COUPLER_FRONT;
+            copiedObject.name = CarPartNames.Couplers.COUPLER_FRONT;
             var frontCouplerPosition = buffers.FrontRigPosition + CarPartOffset.COUPLER_FRONT;
             copiedObject.transform.localPosition = frontCouplerPosition;
 
-            GameObject rearCoupler = basePrefab.transform.Find(CarPartNames.COUPLER_REAR).gameObject;
+            GameObject rearCoupler = basePrefab.transform.Find(CarPartNames.Couplers.COUPLER_REAR).gameObject;
             copiedObject = Object.Instantiate(rearCoupler, context.Car.prefab.transform);
-            copiedObject.name = CarPartNames.COUPLER_REAR;
+            copiedObject.name = CarPartNames.Couplers.COUPLER_REAR;
             var rearCouplerPosition = buffers.RearRigPosition + CarPartOffset.COUPLER_REAR;
             copiedObject.transform.localPosition = rearCouplerPosition;
         }

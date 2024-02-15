@@ -14,7 +14,7 @@ namespace CCL.Importer.Proxies
 
         private static GameObject CabHighlightGlow =>
             Extensions.GetCached(ref s_cabHightlightGlow,
-                () => DV.ThingTypes.TrainCarType.LocoShunter.ToV2().prefab.transform.Find(CarPartNames.CAB_HIGHLIGHT_GLOW).gameObject);
+                () => DV.ThingTypes.TrainCarType.LocoShunter.ToV2().prefab.transform.Find(CarPartNames.Cab.HIGHLIGHT_GLOW).gameObject);
 
         public MiscReplacer()
         {

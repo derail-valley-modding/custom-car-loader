@@ -77,10 +77,10 @@ namespace CCL.Creator.Wizards
             Debug.Log("Successfully aligned bogie colliders");
         }
 
-        private static Transform? GetFrontBogie(GameObject prefab) => prefab.transform.FindSafe(CarPartNames.BOGIE_FRONT);
-        private static Transform? GetRearBogie(GameObject prefab) => prefab.transform.FindSafe(CarPartNames.BOGIE_REAR);
+        private static Transform? GetFrontBogie(GameObject prefab) => prefab.transform.FindSafe(CarPartNames.Bogies.FRONT);
+        private static Transform? GetRearBogie(GameObject prefab) => prefab.transform.FindSafe(CarPartNames.Bogies.REAR);
 
-        private const string BOGIE_COLLIDERS = CarPartNames.COLLIDERS_ROOT + "/" + CarPartNames.BOGIE_COLLIDERS;
+        private const string BOGIE_COLLIDERS = CarPartNames.Colliders.ROOT + "/" + CarPartNames.Colliders.BOGIES;
 
         private static CapsuleCollider? GetFrontBogieCollider(GameObject prefab)
         {
@@ -111,7 +111,7 @@ namespace CCL.Creator.Wizards
                 return new Transform[0];
             }
 
-            Transform? axleParent = bogie.transform.FindSafe(CarPartNames.BOGIE_CAR);
+            Transform? axleParent = bogie.transform.FindSafe(CarPartNames.Bogies.BOGIE_CAR);
 
             if (axleParent == null)
             {
@@ -122,7 +122,7 @@ namespace CCL.Creator.Wizards
 
             foreach (Transform t in axleParent)
             {
-                if (t.name == CarPartNames.AXLE)
+                if (t.name == CarPartNames.Bogies.AXLE)
                 {
                     axles.Add(t);
                 }

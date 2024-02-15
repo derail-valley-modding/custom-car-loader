@@ -41,20 +41,20 @@ namespace CCL.Creator.Validators
         private void CheckModelVariant(ValidationResult result, GameObject model)
         {
             // check colliders
-            var collidersRoot = model.transform.FindSafe(CarPartNames.COLLIDERS_ROOT);
+            var collidersRoot = model.transform.FindSafe(CarPartNames.Colliders.ROOT);
             if (!collidersRoot)
             {
-                result.Fail($"Cargo {model.name} model {CarPartNames.COLLIDERS_ROOT} root is missing");
+                result.Fail($"Cargo {model.name} model {CarPartNames.Colliders.ROOT} root is missing");
                 return;
             }
 
             // bounding collider
-            var collision = collidersRoot.FindSafe(CarPartNames.COLLISION_ROOT);
+            var collision = collidersRoot.FindSafe(CarPartNames.Colliders.COLLISION);
             var collisionComp = collision ? collision!.GetComponentInChildren<Collider>() : null;
 
             if (!(collision && collisionComp))
             {
-                result.Warning($"Cargo {model.name} bounding {CarPartNames.COLLISION_ROOT} collider is missing");
+                result.Warning($"Cargo {model.name} bounding {CarPartNames.Colliders.COLLISION} collider is missing");
             }
         }
     }

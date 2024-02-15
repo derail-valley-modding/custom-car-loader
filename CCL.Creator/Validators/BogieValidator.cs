@@ -12,7 +12,7 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
 
-            var bogieF = livery.prefab!.transform.FindSafe(CarPartNames.BOGIE_FRONT);
+            var bogieF = livery.prefab!.transform.FindSafe(CarPartNames.Bogies.FRONT);
             if (!bogieF)
             {
                 result.Fail($"{livery.id} - Missing front bogie transform");
@@ -26,10 +26,10 @@ namespace CCL.Creator.Validators
 
                 if (livery.UseCustomFrontBogie)
                 {
-                    var bogieCar = bogieF.FindSafe(CarPartNames.BOGIE_CAR);
+                    var bogieCar = bogieF.FindSafe(CarPartNames.Bogies.BOGIE_CAR);
                     if (!bogieCar)
                     {
-                        result.Fail($"{livery.id} - Missing {CarPartNames.BOGIE_CAR} child for custom front bogie");
+                        result.Fail($"{livery.id} - Missing {CarPartNames.Bogies.BOGIE_CAR} child for custom front bogie");
                     }
                     else
                     {
@@ -48,7 +48,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            var bogieR = livery.prefab.transform.FindSafe(CarPartNames.BOGIE_REAR);
+            var bogieR = livery.prefab.transform.FindSafe(CarPartNames.Bogies.REAR);
             if (!bogieR)
             {
                 result.Fail($"{livery.id} - Missing rear bogie transform");
@@ -62,10 +62,10 @@ namespace CCL.Creator.Validators
 
                 if (livery.UseCustomRearBogie)
                 {
-                    var bogieCar = bogieR.FindSafe(CarPartNames.BOGIE_CAR);
+                    var bogieCar = bogieR.FindSafe(CarPartNames.Bogies.BOGIE_CAR);
                     if (!bogieCar)
                     {
-                        result.Fail($"{livery.id} - Missing {CarPartNames.BOGIE_CAR} child for custom rear bogie");
+                        result.Fail($"{livery.id} - Missing {CarPartNames.Bogies.BOGIE_CAR} child for custom rear bogie");
                     }
                     else
                     {

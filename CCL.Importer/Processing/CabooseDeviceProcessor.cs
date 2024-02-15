@@ -60,17 +60,17 @@ namespace CCL.Importer.Processing
 
         private static GameObject? _careerManager;
         private static GameObject CareerManager =>
-            Extensions.GetCached(ref _careerManager, () => CabooseInterior.transform.Find(CarPartNames.CABOOSE_CAREER_MANAGER).gameObject);
+            Extensions.GetCached(ref _careerManager, () => CabooseInterior.transform.Find(CarPartNames.Caboose.CAREER_MANAGER).gameObject);
 
 
         private static GameObject? _remoteCharger;
         private static GameObject RemoteCharger =>
-            Extensions.GetCached(ref _remoteCharger, () => CabooseInterior.transform.Find(CarPartNames.CABOOSE_REMOTE_CHARGER).gameObject);
+            Extensions.GetCached(ref _remoteCharger, () => CabooseInterior.transform.Find(CarPartNames.Caboose.REMOTE_CHARGER).gameObject);
 
 
         private static GameObject? _remoteAntenna;
         private static GameObject RemoteAntenna =>
-            Extensions.GetCached(ref _remoteAntenna, () => CabooseInterior.transform.Find(CarPartNames.CABOOSE_REMOTE_ANTENNA).gameObject);
+            Extensions.GetCached(ref _remoteAntenna, () => CabooseInterior.transform.Find(CarPartNames.Caboose.REMOTE_ANTENNA).gameObject);
 
     }
 }

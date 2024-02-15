@@ -2,95 +2,113 @@
 {
     public static class CarPartNames
     {
-        // Buffers
-        public const string BUFFERS_ROOT = "[buffers]";
-        public const string BUFFER_PLATE_FRONT = "HookPlate_F";
-        public const string BUFFER_PLATE_REAR = "HookPlate_R";
-        public static readonly string[] BUFFER_STEMS = { "BufferStems", "CabooseExteriorBufferStems" };
+        public static class Buffers
+        {
+            public const string ROOT = "[buffers]";
+            public const string PLATE_FRONT = "HookPlate_F";
+            public const string PLATE_REAR = "HookPlate_R";
+            public static readonly string[] STEMS = { "BufferStems", "CabooseExteriorBufferStems" };
 
-        public const string BUFFER_PAD_FL = "Buffer_FL";
-        public const string BUFFER_PAD_FR = "Buffer_FR";
-        public const string BUFFER_PAD_RL = "Buffer_RL";
-        public const string BUFFER_PAD_RR = "Buffer_RR";
+            public const string PAD_FL = "Buffer_FL";
+            public const string PAD_FR = "Buffer_FR";
+            public const string PAD_RL = "Buffer_RL";
+            public const string PAD_RR = "Buffer_RR";
 
-        public static readonly string[] BUFFER_FRONT_PADS = { BUFFER_PAD_FL, BUFFER_PAD_FR };
-        public static readonly string[] BUFFER_REAR_PADS = { BUFFER_PAD_RL, BUFFER_PAD_RR };
+            public static readonly string[] FRONT_PADS = { PAD_FL, PAD_FR };
+            public static readonly string[] REAR_PADS = { PAD_RL, PAD_RR };
 
-        public static readonly string[] BUFFER_ANCHORS = { "buffer anchor left", "buffer anchor right" };
+            public static readonly string[] ANCHORS = { "buffer anchor left", "buffer anchor right" };
 
-        public const string BUFFER_CHAIN_REGULAR = "BuffersAndChainRig";
-        public const string BUFFER_CHAIN_MU = "BuffersAndChainRigMU";
-        public static readonly string[] BUFFER_CHAIN_RIGS = { BUFFER_CHAIN_REGULAR, BUFFER_CHAIN_MU }; // same name front and rear
+            public const string CHAIN_REGULAR = "BuffersAndChainRig";
+            public const string CHAIN_MU = "BuffersAndChainRigMU";
+            public static readonly string[] CHAIN_RIGS = { CHAIN_REGULAR, CHAIN_MU }; // same name front and rear
+        }
 
-        // Chains & Hoses
-        public const string CHAIN_ROOT = "ChainCoupler";
-        public const string HOSES_ROOT = "hoses";
-        public const string AIR_HOSE = "CouplingHoseRig";
-        public const string MU_CONNECTOR = "CouplingHoseRigMU";
+        public static class Couplers
+        {
+            public const string CHAIN_ROOT = "ChainCoupler";
+            public const string HOSES_ROOT = "hoses";
+            public const string AIR_HOSE = "CouplingHoseRig";
+            public const string MU_CONNECTOR = "CouplingHoseRigMU";
 
-        // Collider parts
-        public const string COLLIDERS_ROOT = "[colliders]";
-        public const string COLLISION_ROOT = "[collision]";
-        public const string WALKABLE_COLLIDERS = "[walkable]";
-        public const string ITEM_COLLIDERS = "[items]";
-        public const string BOGIE_COLLIDERS = "[bogies]";
-        public const string CAMERA_DAMP_COLLIDERS = "[camera dampening]";
+            public const string RIG_FRONT = "[coupler_rig_front]";
+            public const string RIG_REAR = "[coupler_rig_rear]";
+            public const string COUPLER_FRONT = "[coupler front]";
+            public const string COUPLER_REAR = "[coupler rear]";
+        }
 
-        // Couplers
-        public const string COUPLER_RIG_FRONT = "[coupler_rig_front]";
-        public const string COUPLER_RIG_REAR = "[coupler_rig_rear]";
-        public const string COUPLER_FRONT = "[coupler front]";
-        public const string COUPLER_REAR = "[coupler rear]";
+        public static class Colliders
+        {
+            public const string ROOT = "[colliders]";
+            public const string COLLISION = "[collision]";
+            public const string WALKABLE = "[walkable]";
+            public const string ITEMS = "[items]";
+            public const string BOGIES = "[bogies]";
+            public const string CAMERA_DAMPENING = "[camera dampening]";
+        }
 
-        // Bogies
-        public const string BOGIE_FRONT = "BogieF";
-        public const string BOGIE_REAR = "BogieR";
-        public const string BOGIE_CAR = "bogie_car";
-        public const string BOGIE_BRAKE_ROOT = "bogie2brakes";
-        public const string BOGIE_BRAKE_PADS = "Bogie2BrakePads";
-        public const string BOGIE_CONTACT_POINTS = "ContactPoints";
-        public const string AXLE = "[axle]";
+        public static class Bogies
+        {
+            public const string FRONT = "BogieF";
+            public const string REAR = "BogieR";
+            public const string BOGIE_CAR = "bogie_car";
+            public const string BRAKE_ROOT = "bogie2brakes";
+            public const string BRAKE_PADS = "Bogie2BrakePads";
+            public const string CONTACT_POINTS = "ContactPoints";
+            public const string AXLE = "[axle]";
+        }
 
         // Info Plates
         public static readonly string[] INFO_PLATES = { "[car plate anchor1]", "[car plate anchor2]" };
 
-        public const string CAB_TELEPORT_ROOT = "[cab]";
-        
-        // Particle Effects
-        public const string PARTICLE_ROOT = "[particles]";
-        public const string WHEEL_SPARKS = "[wheel sparks]";
-        public const string SMOKE_EMITTER = "[smoke emitter]";
-        public const string EXHAUST_SMOKE = "ExhaustEngineSmoke";
-        public const string HIGH_TEMP_SMOKE = "HighTempEngineSmoke";
-        public const string DAMAGED_SMOKE = "DamagedEngineSmoke";
-        public const string CAB_HIGHLIGHT_GLOW = "[cab]/CabHighlightGlow/Quad";
+        public static class Cab
+        {
+            public const string TELEPORT_ROOT = "[cab]";
+            public const string HIGHLIGHT_GLOW = "[cab]/CabHighlightGlow/Quad";
+        }
 
-        // Steam Loco Particles
-        public const string CHIMNEY_STEAM = "steam_lit";
-        public const string STEAM_CHUFF_L = "SteamChuff L";
-        public const string STEAM_CHUFF_R = "SteamChuff R";
-        public const string STEAM_CHUFF_NAME = "SteamChuffParticles";
+        public static class Particles
+        {
+            public const string ROOT = "[particles]";
+            public const string WHEEL_SPARKS = "[wheel sparks]";
+            public const string SMOKE_EMITTER = "[smoke emitter]";
+            public const string EXHAUST_SMOKE = "ExhaustEngineSmoke";
+            public const string HIGH_TEMP_SMOKE = "HighTempEngineSmoke";
+            public const string DAMAGED_SMOKE = "DamagedEngineSmoke";
 
-        public const string STEAM_RELEASE_L = "SteamRelease L";
-        public const string STEAM_RELEASE_R = "SteamRelease R";
-        public const string STEAM_RELEASE_SAFETY = "SteamSafetyRelease";
-        public const string STEAM_RELEASE_NAME = "SteamReleaseParticles";
+            public static class Steam
+            {
+                public const string CHIMNEY_STEAM = "steam_lit";
+                public const string STEAM_CHUFF_L = "SteamChuff L";
+                public const string STEAM_CHUFF_R = "SteamChuff R";
+                public const string STEAM_CHUFF_NAME = "SteamChuffParticles";
 
-        public const string STEAM_WHISTLE_M = "Whistle Mid";
-        public const string STEAM_WHISTLE_F = "Whistle F";
-        public const string STEAM_WHISTLE_NAME = "SteamWhistleParticles";
+                public const string STEAM_RELEASE_L = "SteamRelease L";
+                public const string STEAM_RELEASE_R = "SteamRelease R";
+                public const string STEAM_RELEASE_SAFETY = "SteamSafetyRelease";
+                public const string STEAM_RELEASE_NAME = "SteamReleaseParticles";
 
-        // Firebox
-        public const string FIREBOX_ROOT = "I firebox";
-        public const string FIREBOX_COAL = "firebox_coal_pivot";
-        public const string FIREBOX_FLAMES = "firebox_coal_pivot/fire";
-        public const string FIREBOX_SPARKS = "sparks";
-        public const string FIREBOX_MESH = "Firebox";
+                public const string STEAM_WHISTLE_M = "Whistle Mid";
+                public const string STEAM_WHISTLE_F = "Whistle F";
+                public const string STEAM_WHISTLE_NAME = "SteamWhistleParticles";
+            }
+        }
 
-        // Caboose
-        public const string CABOOSE_CAREER_MANAGER = "CareerManagerTrainInterior";
-        public const string CABOOSE_REMOTE_CHARGER = "RemoteControllerCharger";
-        public const string CABOOSE_REMOTE_ANTENNA = "RemoteControllerSignalBooster";
+        public static class Firebox
+        {
+            public const string ROOT = "I firebox";
+            public const string COAL = "firebox_coal_pivot";
+            public const string FLAMES = "firebox_coal_pivot/fire";
+            public const string SPARKS = "sparks";
+            public const string MESH = "Firebox";
+        }
+
+        public static class Caboose
+        {
+            public const string CAREER_MANAGER = "CareerManagerTrainInterior";
+            public const string REMOTE_CHARGER = "RemoteControllerCharger";
+            public const string REMOTE_ANTENNA = "RemoteControllerSignalBooster";
+        }
 
         public static class Interactables
         {

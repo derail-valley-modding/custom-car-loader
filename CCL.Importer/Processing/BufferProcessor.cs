@@ -21,9 +21,9 @@ namespace CCL.Importer.Processing
                 context.Car.BufferType.ToTypePrefab();
 
             // copy main buffer part cohort
-            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
+            GameObject bufferRoot = basePrefab.transform.Find(CarPartNames.Buffers.ROOT).gameObject;
             bufferRoot = Object.Instantiate(bufferRoot, context.Car.prefab.transform);
-            bufferRoot.name = CarPartNames.BUFFERS_ROOT;
+            bufferRoot.name = CarPartNames.Buffers.ROOT;
 
             PositionPair bufferPositions;
             if (context.Car.UseCustomBuffers)
@@ -42,7 +42,7 @@ namespace CCL.Importer.Processing
         private static PositionPair SetupDefaultBuffers(GameObject newPrefab)
         {
             // yeet the dummy buffer rigs so they aren't duplicated
-            Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
+            Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.Couplers.RIG_FRONT);
             Vector3 frontRigPosition;
             if (frontCouplerRig)
             {
@@ -55,7 +55,7 @@ namespace CCL.Importer.Processing
                 CCLPlugin.Error("Missing front coupler rig from prefab!");
             }
 
-            Transform rearCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_REAR);
+            Transform rearCouplerRig = newPrefab.transform.Find(CarPartNames.Couplers.RIG_REAR);
             Vector3 rearRigPosition;
             if (rearCouplerRig)
             {
@@ -69,7 +69,7 @@ namespace CCL.Importer.Processing
             }
 
             // get copied buffer part cohort
-            GameObject bufferRoot = newPrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
+            GameObject bufferRoot = newPrefab.transform.Find(CarPartNames.Buffers.ROOT).gameObject;
 
             // adjust transforms of buffer components
             for (int i = 0; i < bufferRoot.transform.childCount; i++)
@@ -77,34 +77,34 @@ namespace CCL.Importer.Processing
                 Transform child = bufferRoot.transform.GetChild(i);
                 string childName = child.name.Trim();
 
-                if (CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName))
+                if (CarPartNames.Buffers.CHAIN_RIGS.Contains(childName))
                 {
                     // front or rear chain rig
                     // determine whether front or rear chain rig: +z is front
                     child.localPosition = (child.localPosition.z > 0) ? frontRigPosition : rearRigPosition;
                 }
-                else if (CarPartNames.BUFFER_PLATE_FRONT.Equals(childName))
+                else if (CarPartNames.Buffers.PLATE_FRONT.Equals(childName))
                 {
                     // front hook plate
                     child.localPosition = frontRigPosition + CarPartOffset.HOOK_PLATE_F;
                 }
-                else if (CarPartNames.BUFFER_PLATE_REAR.Equals(childName))
+                else if (CarPartNames.Buffers.PLATE_REAR.Equals(childName))
                 {
                     // rear hook plate
                     child.localPosition = rearRigPosition + CarPartOffset.HOOK_PLATE_R;
                 }
-                else if (CarPartNames.BUFFER_STEMS.Contains(childName))
+                else if (CarPartNames.Buffers.STEMS.Contains(childName))
                 {
                     // stems
                     Object.Destroy(child.gameObject);
                 }
-                else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName))
+                else if (CarPartNames.Buffers.FRONT_PADS.Contains(childName))
                 {
                     // front buffer pads
                     Vector3 xShiftBase = new Vector3(child.localPosition.x, frontRigPosition.y, frontRigPosition.z);
                     child.localPosition = xShiftBase + CarPartOffset.BUFFER_PAD_F;
                 }
-                else if (CarPartNames.BUFFER_REAR_PADS.Contains(childName))
+                else if (CarPartNames.Buffers.REAR_PADS.Contains(childName))
                 {
                     // rear buffer pads
                     Vector3 xShiftBase = new Vector3(child.localPosition.x, rearRigPosition.y, rearRigPosition.z);
@@ -121,14 +121,14 @@ namespace CCL.Importer.Processing
 
         private static PositionPair SetupCustomBuffers(GameObject newPrefab, CCL_CarVariant carSetup)
         {
-            Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_FRONT);
+            Transform frontCouplerRig = newPrefab.transform.Find(CarPartNames.Couplers.RIG_FRONT);
             Vector3 frontRigPosition = frontCouplerRig.position;
 
-            Transform rearCouplerRig = newPrefab.transform.Find(CarPartNames.COUPLER_RIG_REAR);
+            Transform rearCouplerRig = newPrefab.transform.Find(CarPartNames.Couplers.RIG_REAR);
             Vector3 rearRigPosition = rearCouplerRig.position;
 
             // get copied buffer part cohort
-            GameObject bufferRoot = newPrefab.transform.Find(CarPartNames.BUFFERS_ROOT).gameObject;
+            GameObject bufferRoot = newPrefab.transform.Find(CarPartNames.Buffers.ROOT).gameObject;
 
             Transform newFrontBufferRig = null!;
             Transform newRearBufferRig = null!;
@@ -139,7 +139,7 @@ namespace CCL.Importer.Processing
                 Transform child = bufferRoot.transform.GetChild(i);
                 string childName = child.name.Trim(' ', '1');
 
-                if (CarPartNames.BUFFER_CHAIN_RIGS.Contains(childName))
+                if (CarPartNames.Buffers.CHAIN_RIGS.Contains(childName))
                 {
                     // front or rear chain rig
                     // determine whether front or rear chain rig: +z is front
@@ -156,7 +156,7 @@ namespace CCL.Importer.Processing
                         CCLPlugin.LogVerbose($"Set newRearBufferRig {newRearBufferRig.name}");
                     }
                 }
-                else if (CarPartNames.BUFFER_PLATE_FRONT.Equals(childName))
+                else if (CarPartNames.Buffers.PLATE_FRONT.Equals(childName))
                 {
                     // front hook plate
                     if (carSetup.HideFrontCoupler)
@@ -170,7 +170,7 @@ namespace CCL.Importer.Processing
                         CCLPlugin.LogVerbose("Adjust Hook Plate F");
                     }
                 }
-                else if (CarPartNames.BUFFER_PLATE_REAR.Equals(childName))
+                else if (CarPartNames.Buffers.PLATE_REAR.Equals(childName))
                 {
                     // rear hook plate
                     if (carSetup.HideBackCoupler)
@@ -184,13 +184,13 @@ namespace CCL.Importer.Processing
                         CCLPlugin.LogVerbose("Adjust Hook Plate R");
                     }
                 }
-                else if (CarPartNames.BUFFER_STEMS.Contains(childName))
+                else if (CarPartNames.Buffers.STEMS.Contains(childName))
                 {
                     // destroy stems
                     Object.Destroy(child.gameObject);
                     CCLPlugin.LogVerbose("Destroy buffer stems");
                 }
-                else if (CarPartNames.BUFFER_FRONT_PADS.Contains(childName) || CarPartNames.BUFFER_REAR_PADS.Contains(childName))
+                else if (CarPartNames.Buffers.FRONT_PADS.Contains(childName) || CarPartNames.Buffers.REAR_PADS.Contains(childName))
                 {
                     // destroy template buffer pads since we're overriding
                     Object.Destroy(child.gameObject);
@@ -240,15 +240,15 @@ namespace CCL.Importer.Processing
                 if (rig == frontCouplerRig)
                 {
                     if (carSetup.HideFrontCoupler) continue;
-                    lPadName = CarPartNames.BUFFER_PAD_FL;
-                    rPadName = CarPartNames.BUFFER_PAD_FR;
+                    lPadName = CarPartNames.Buffers.PAD_FL;
+                    rPadName = CarPartNames.Buffers.PAD_FR;
                     newBufferRig = newFrontBufferRig;
                 }
                 else
                 {
                     if (carSetup.HideBackCoupler) continue;
-                    lPadName = CarPartNames.BUFFER_PAD_RL;
-                    rPadName = CarPartNames.BUFFER_PAD_RR;
+                    lPadName = CarPartNames.Buffers.PAD_RL;
+                    rPadName = CarPartNames.Buffers.PAD_RR;
                     newBufferRig = newRearBufferRig;
                 }
 
@@ -285,11 +285,11 @@ namespace CCL.Importer.Processing
                 }
 
                 // Adjust new anchors to match positions in prefab
-                Transform? bufferChainRig = rig.FindSafe(CarPartNames.BUFFER_CHAIN_REGULAR);
+                Transform? bufferChainRig = rig.FindSafe(CarPartNames.Buffers.CHAIN_REGULAR);
 
                 CCLPlugin.LogVerbose($"Adjust anchors for {newBufferRig.name} - {bufferChainRig?.name}");
 
-                foreach (string anchorName in CarPartNames.BUFFER_ANCHORS)
+                foreach (string anchorName in CarPartNames.Buffers.ANCHORS)
                 {
                     var anchor = bufferChainRig.FindSafe(anchorName);
                     var newAnchor = newBufferRig.Find(anchorName);
@@ -305,25 +305,25 @@ namespace CCL.Importer.Processing
                 {
                     CCLPlugin.LogVerbose($"Adjust hoses for {newBufferRig?.name}");
 
-                    var hoseRoot = bufferChainRig.FindSafe(CarPartNames.HOSES_ROOT);
-                    var newHoseRoot = newBufferRig.FindSafe(CarPartNames.HOSES_ROOT);
+                    var hoseRoot = bufferChainRig.FindSafe(CarPartNames.Couplers.HOSES_ROOT);
+                    var newHoseRoot = newBufferRig.FindSafe(CarPartNames.Couplers.HOSES_ROOT);
 
-                    Transform? airHose = hoseRoot.FindSafe(CarPartNames.AIR_HOSE);
+                    Transform? airHose = hoseRoot.FindSafe(CarPartNames.Couplers.AIR_HOSE);
                     CCLPlugin.LogVerbose($"Air hose = {!!airHose}");
                     if (airHose)
                     {
-                        var newAir = newHoseRoot.FindSafe(CarPartNames.AIR_HOSE);
+                        var newAir = newHoseRoot.FindSafe(CarPartNames.Couplers.AIR_HOSE);
                         if (newAir)
                         {
                             newAir!.localPosition = airHose!.localPosition;
                         }
                     }
 
-                    Transform? muHose = hoseRoot.FindSafe(CarPartNames.MU_CONNECTOR);
+                    Transform? muHose = hoseRoot.FindSafe(CarPartNames.Couplers.MU_CONNECTOR);
                     CCLPlugin.LogVerbose($"MU hose = {!!muHose}");
                     if (muHose)
                     {
-                        var newMU = newHoseRoot.FindSafe(CarPartNames.MU_CONNECTOR);
+                        var newMU = newHoseRoot.FindSafe(CarPartNames.Couplers.MU_CONNECTOR);
                         if (newMU)
                         {
                             newMU!.localPosition = muHose!.localPosition;
