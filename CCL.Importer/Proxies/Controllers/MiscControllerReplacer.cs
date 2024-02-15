@@ -2,6 +2,7 @@
 using CCL.Types.Proxies.Controllers;
 using DV.Damage;
 using DV.Simulation.Brake;
+using DV.Simulation.Controllers;
 
 namespace CCL.Importer.Proxies.Controllers
 {
@@ -11,6 +12,8 @@ namespace CCL.Importer.Proxies.Controllers
         {
             CreateMap<DamageControllerProxy, DamageController>().AutoCacheAndMap();
             CreateMap<CompressorSimControllerProxy, CompressorSimController>().AutoCacheAndMap();
+            CreateMap<MagicShovellingProxy, MagicShoveling>();
+            CreateMap<CoalPileSimControllerProxy, CoalPileSimController>();
         }
     }
 }

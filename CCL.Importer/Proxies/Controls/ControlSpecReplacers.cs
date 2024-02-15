@@ -36,6 +36,8 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<InteractableFuseFeederProxy, InteractableFuseFeeder>().AutoCacheAndMap();
             CreateMap<HandbrakeFeederProxy, HandbrakeFeeder>().AutoCacheAndMap();
             CreateMap<ManualTransmissionInputDefinitionProxy, ManualTransmissionInputDefinition>().AutoCacheAndMap();
+
+            CreateMap<ShovelCoalPileProxy, ShovelCoalPile>().AutoCacheAndMap();
         }
     }
 }

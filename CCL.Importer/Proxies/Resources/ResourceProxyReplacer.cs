@@ -4,9 +4,9 @@ using LocoSim.Definitions;
 
 namespace CCL.Importer.Proxies.Resources
 {
-    public class ResourceContainerProxyReplacer : Profile
+    public class ResourceProxyReplacer : Profile
     {
-        public ResourceContainerProxyReplacer()
+        public ResourceProxyReplacer()
         {
             CreateMap<ResourceContainerProxy, CoalContainerDefinition>()
                 .AutoCacheAndMap(x => x.type == ResourceContainerType.Coal);
@@ -18,6 +18,8 @@ namespace CCL.Importer.Proxies.Resources
                 .AutoCacheAndMap(x => x.type == ResourceContainerType.Sand);
             CreateMap<ResourceContainerProxy, WaterContainerDefinition>()
                 .AutoCacheAndMap(x => x.type == ResourceContainerType.Water);
+
+            CreateMap<LocoResourceReceiverProxy, LocoResourceReceiver>().AutoCacheAndMap();
         }
     }
 }
