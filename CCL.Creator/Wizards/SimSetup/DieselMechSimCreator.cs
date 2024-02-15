@@ -5,6 +5,7 @@ using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
+using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 
 namespace CCL.Creator.Wizards.SimSetup
@@ -114,6 +115,15 @@ namespace CCL.Creator.Wizards.SimSetup
             gearInputAB.aReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_A");
             gearInputAB.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_B");
             gearInputAB.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "GEAR");
+
+            // wheelslip
+            var axlesNum = CreateSibling<ConstantPortDefinitionProxy>(traction, "poweredAxles");
+            axlesNum.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
+
+            var slipControl = CreateSibling<WheelslipControllerProxy>(traction);
+            slipControl.numberOfPoweredAxlesPortId = FullPortId(axlesNum, axlesNum.port.ID);
+            slipControl.sandCoefPortId = FullPortId(sander, "SAND_COEF");
+            slipControl.engineBrakingActivePortId = FullPortId(engine, "RETARDER_BRAKE_EFFECT");
 
             // connections
             _damageController.mechanicalPTDamagerPortIds = new[]
