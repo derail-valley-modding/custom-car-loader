@@ -1,12 +1,7 @@
-﻿using CCL.Importer.Types;
-using CCL.Types;
-using DV.CabControls.Spec;
+﻿using CCL.Types;
 using DV.ThingTypes;
 using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
-using static CCL.Types.CustomCarVariant;
-using static UnityEditor.UIElements.ToolbarMenu;
 
 namespace CCL.Importer.Patches
 {
@@ -18,12 +13,14 @@ namespace CCL.Importer.Patches
         {
             CCLPlugin.Log($"Finding loco spawn groups to inject into '{__instance.name}'");
 
+            // Get the groups from the liveries.
             foreach (var car in CarManager.CustomCarTypes)
             {
                 foreach (var variant in car.Variants)
                 {
-                    foreach (var group in variant.LocoSpawnGroupsIds)
+                    foreach (var group in variant.LocoSpawnGroups)
                     {
+                        // If the group is supposed to use this spawner...
                         if (group.Track.ToName() == __instance.name)
                         {
                             CCLPlugin.Log($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.Liveries)}]");
@@ -32,9 +29,12 @@ namespace CCL.Importer.Patches
                     }
                 }
             }
+
+            // Randomise spawn index again so it doesn't always spawn vanilla the first time.
+            __instance.nextLocoGroupSpawnIndex = UnityEngine.Random.Range(0, __instance.locoTypeGroupsToSpawn.Count);
         }
 
-        private static ListTrainCarTypeWrapper FromGroup(TrainCarLivery variant, LocoSpawnGroupIds group)
+        private static ListTrainCarTypeWrapper FromGroup(TrainCarLivery variant, LocoSpawnGroup group)
         {
             List<TrainCarLivery> variants = new() { variant };
 
@@ -43,6 +43,10 @@ namespace CCL.Importer.Patches
                 if (DV.Globals.G.Types.TryGetLivery(item, out TrainCarLivery livery))
                 {
                     variants.Add(livery);
+                }
+                else
+                {
+                    CCLPlugin.Error($"Could not find livery '{item}'");
                 }
             }
 

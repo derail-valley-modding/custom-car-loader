@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types
 {
+    // A copy of the above class, but with only the livery IDs.
     [Serializable]
     public class LocoSpawnGroup
     {
@@ -37,25 +38,13 @@ namespace CCL.Types
         };
 
         [Tooltip("The track where the loco(s) will spawn")]
-        public SpawnTrack Track = SpawnTrack.MachineFactoryA1;
-        [Tooltip("Extra locos/tenders to spawn together (in order)")]
-        public CustomCarVariant[] Others = new CustomCarVariant[0];
-    }
-
-    // A copy of the above class, but with only the livery IDs.
-    [Serializable]
-    public class LocoSpawnGroupIds
-    {
         public SpawnTrack Track;
+        [Tooltip("Extra locos/tenders to spawn together (in order)")]
         public string[] Liveries;
 
-        public LocoSpawnGroupIds(LocoSpawnGroup group)
-        {
-            Track = group.Track;
-            Liveries = group.Others.Select(x => x.id!).ToArray();
-        }
+        public LocoSpawnGroup() : this(SpawnTrack.MachineFactoryA1, new string[0]) { }
 
-        public LocoSpawnGroupIds(SpawnTrack track, string[] liveries)
+        public LocoSpawnGroup(SpawnTrack track, string[] liveries)
         {
             Track = track;
             Liveries = liveries;
