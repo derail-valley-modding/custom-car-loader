@@ -20,6 +20,8 @@ namespace CCL.Importer.Types
         public bool HideFrontCoupler;
         public bool HideBackCoupler;
 
+        public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
+
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
         public bool UseCustomBuffers => BufferType == BufferType.Custom;
