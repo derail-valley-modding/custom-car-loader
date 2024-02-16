@@ -117,10 +117,7 @@ namespace CCL.Types
                 NameTranslations = TranslationData.Default();
             }
 
-            if (!string.IsNullOrEmpty(_spawnGroupJson))
-            {
-                LocoSpawnGroups = JSONObject.FromJson<LocoSpawnGroup[]>(_spawnGroupJson);
-            }
+            LocoSpawnGroups = JSONObject.FromJson(_spawnGroupJson, () => LocoSpawnGroups);
         }
     }
 }
