@@ -39,6 +39,9 @@ namespace CCL.Types
         [Header("Audio (Optional)")]
         public GameObject SimAudioPrefab;
 
+        [Header("HUD - optional")]
+        public GameObject hudPrefab = null!;
+
         [Header("Physics")]
         public float mass;
         public float bogieSuspensionMultiplier = 1;
