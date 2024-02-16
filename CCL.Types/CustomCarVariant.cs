@@ -2,11 +2,12 @@
 using UnityEngine;
 using DVLangHelper.Data;
 using CCL.Types.Json;
+using System.Linq;
 
 namespace CCL.Types
 {
     [CreateAssetMenu(menuName = "CCL/Car Variant")]
-    public class CustomCarVariant : ScriptableObject
+    public partial class CustomCarVariant : ScriptableObject
     {
         [Header("Basic Properties")]
         public CustomCarType? parentType;
@@ -40,6 +41,13 @@ namespace CCL.Types
 
         public bool HideFrontCoupler = false;
         public bool HideBackCoupler = false;
+
+        // 3 variables for the same thing...
+        public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
+        [HideInInspector]
+        public LocoSpawnGroupIds[] LocoSpawnGroupsIds = new LocoSpawnGroupIds[0];
+        [SerializeField, HideInInspector]
+        private string? _spawnGroupJson = string.Empty;
 
         [RenderMethodButtons]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
@@ -76,6 +84,9 @@ namespace CCL.Types
             }
 
             NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
+
+            LocoSpawnGroupsIds = LocoSpawnGroups.Select(x => new LocoSpawnGroupIds(x)).ToArray();
+            _spawnGroupJson = JSONObject.ToJson(LocoSpawnGroupsIds);
         }
 
         public void ForceValidation()
@@ -108,6 +119,11 @@ namespace CCL.Types
             else
             {
                 NameTranslations = TranslationData.Default();
+            }
+
+            if (!string.IsNullOrEmpty(_spawnGroupJson))
+            {
+                LocoSpawnGroupsIds = JSONObject.FromJson<LocoSpawnGroupIds[]>(_spawnGroupJson);
             }
         }
     }

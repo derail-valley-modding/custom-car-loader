@@ -16,5 +16,10 @@ namespace CCL.Types
 
             return list;
         }
+
+        public static string ToName(this SpawnTrack track)
+        {
+            return LocoSpawnGroup.TrackToSpawnerName[track];
+        }
     }
 }

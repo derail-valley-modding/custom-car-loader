@@ -12,6 +12,7 @@ namespace CCL.Types
         Caboose,
         Loco,
         Tender,
+        Slug
     }
 
     [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
