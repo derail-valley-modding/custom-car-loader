@@ -103,7 +103,7 @@ namespace CCL.Creator.Inspector
             using (new EditorGUI.IndentLevelScope())
             {
                 EditorHelpers.StringWithSearchField(rName, grabber.GetNames(), EditorGUIUtility.singleLineHeight * 4, 40);
-                EditorGUILayout.PropertyField(field);
+                EditorHelpers.StringWithSearchField(field, fields.Select(x => x.Name), EditorGUIUtility.singleLineHeight * 4, 40, true);
                 EditorGUILayout.PropertyField(array);
                 GUI.enabled = array.boolValue;
                 EditorGUILayout.PropertyField(index);

@@ -61,14 +61,11 @@ namespace CCL.Types.Components
         }
 
         /// <summary>
-        /// The array of possible names for the replacements.
-        /// This will be shown as a popup, with the name's index
-        /// being the actual stored value.
+        /// The possible names for the replacements.
         /// </summary>
-        /// <returns></returns>
-        public virtual string[] GetNames()
+        public virtual HashSet<string> GetNames()
         {
-            return new string[0];
+            return new HashSet<string>();
         }
 
         public ResourceReplacement[] GetReplacements()

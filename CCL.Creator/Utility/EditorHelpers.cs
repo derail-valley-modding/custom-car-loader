@@ -156,7 +156,7 @@ namespace CCL.Creator.Utility
         }
 
         private const string SearchFieldControlName = "SearchFieldText";
-        private static Vector2 _searchScroll = Vector2.zero;
+        private static Vector2 s_searchScroll = Vector2.zero;
 
         /// <summary>
         /// Draws a string property, and uses its value to search through a list of options.
@@ -165,19 +165,20 @@ namespace CCL.Creator.Utility
         /// <param name="searchOptions">The available options for picking.</param>
         /// <param name="searchMaxHeight">The maximum height of the search box.</param>
         /// <param name="maxResults">The maximum results to display.</param>
+        /// <param name="displayIfEmpty">Display results while the search input is empty.</param>
         /// <remarks>Please ensure the property has a string value.</remarks>
-        public static void StringWithSearchField(SerializedProperty property, IEnumerable<string> searchOptions, float searchMaxHeight, int maxResults)
+        public static void StringWithSearchField(SerializedProperty property, IEnumerable<string> searchOptions, float searchMaxHeight, int maxResults, bool displayIfEmpty = false)
         {
             GUI.SetNextControlName(SearchFieldControlName);
             EditorGUILayout.PropertyField(property);
             string s = property.stringValue;
 
-            if (GUI.GetNameOfFocusedControl() != SearchFieldControlName || string.IsNullOrEmpty(s))
+            if (GUI.GetNameOfFocusedControl() != SearchFieldControlName || (string.IsNullOrEmpty(s) && !displayIfEmpty))
             {
                 return;
             }
 
-            _searchScroll = EditorGUILayout.BeginScrollView(_searchScroll, false, true, GUILayout.MaxHeight(searchMaxHeight));
+            s_searchScroll = EditorGUILayout.BeginScrollView(s_searchScroll, false, true, GUILayout.MaxHeight(searchMaxHeight));
 
             var results = searchOptions.Where(x => x.StartsWith(s, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x).Take(maxResults);
 
