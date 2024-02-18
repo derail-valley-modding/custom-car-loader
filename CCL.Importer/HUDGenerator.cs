@@ -85,8 +85,8 @@ namespace CCL.Importer
 
         private static GameObject CreateCustomHUD(VanillaHUDLayout layout)
         {
-            // Steal the DE2's HUD as a base.
-            var newHUD = Object.Instantiate(HudDE2, Holder);
+            // Steal the DE6's HUD as a base.
+            var newHUD = Object.Instantiate(HudDE6, Holder);
 
             newHUD.text.powertrainTypeText.SetTextValue(layout.CustomHUDSettings.Powertrain);
             SetupBasicControls(newHUD.basicControls, layout.CustomHUDSettings.BasicControls);
@@ -100,6 +100,7 @@ namespace CCL.Importer
 
         private static void SetupBasicControls(HUDLocoControls.BasicControlsReferences newHUD, BasicControls layout)
         {
+            // Slot 0.
             if (layout.AmpMeter == ShouldDisplay.None)
             {
                 newHUD.ampMeter.gameObject.SetActive(false);
@@ -121,7 +122,7 @@ namespace CCL.Importer
                     break;
             }
 
-
+            // Slot 1.
             switch (layout.TMOrOilTemp)
             {
                 case BasicControls.Slot1A.None:
@@ -156,13 +157,13 @@ namespace CCL.Importer
                     break;
             }
 
-
+            // Slot 2.
             if (layout.GearboxA == ShouldDisplay.Display)
             {
                 newHUD.gearboxA.gameObject.SetActive(true);
             }
 
-
+            // Slot 3.
             if (layout.Speedometer == ShouldDisplay.None)
             {
                 newHUD.speedMeter.gameObject.SetActive(false);
@@ -173,7 +174,7 @@ namespace CCL.Importer
                 newHUD.gearboxB.gameObject.SetActive(true);
             }
 
-
+            // Slot 4.
             if (layout.RPM == ShouldDisplay.None)
             {
                 newHUD.rpmMeter.gameObject.SetActive(false);
@@ -203,7 +204,7 @@ namespace CCL.Importer
                 newHUD.powerMeter.gameObject.SetActive(true);
             }
 
-
+            // Slot 5.
             if (layout.WheelslipIndicator == ShouldDisplay.None)
             {
                 newHUD.wheelSlipIndicator.gameObject.SetActive(false);
@@ -217,7 +218,60 @@ namespace CCL.Importer
 
         private static void SetupBrakeControls(HUDLocoControls.BrakingReferences newHUD, Braking layout)
         {
+            // Slot 7.
+            if (layout.BrakePipe == ShouldDisplay.None)
+            {
+                newHUD.brakePipeMeter.gameObject.SetActive(false);
+            }
 
+            switch (layout.BrakeType)
+            {
+                case Braking.Slot7B.None:
+                    newHUD.trainBrake.gameObject.SetActive(false);
+                    break;
+                case Braking.Slot7B.NonSelfLapping:
+                    var brake = Object.Instantiate(HudDM3.braking.trainBrake, newHUD.trainBrake.transform.parent);
+                    brake.gameObject.SetActive(true);
+                    Object.Destroy(newHUD.trainBrake.gameObject);
+                    newHUD.trainBrake = brake;
+                    break;
+                default:
+                    // Keep the self-lapping brakes.
+                    break;
+            }
+
+            // Slot 8.
+            if (layout.MainReservoir == ShouldDisplay.None)
+            {
+                newHUD.mainResMeter.gameObject.SetActive(false);
+            }
+
+            if (layout.IndependentBrake == ShouldDisplay.None)
+            {
+                newHUD.indBrake.gameObject.SetActive(false);
+            }
+
+            // Slot 9.
+            if (layout.BrakeCylinder == ShouldDisplay.None)
+            {
+                newHUD.brakeCylMeter.gameObject.SetActive(false);
+            }
+
+            if (layout.DynamicBrake == ShouldDisplay.None)
+            {
+                newHUD.dynBrake.gameObject.SetActive(false);
+            }
+
+            // Slot 10.
+            if (layout.ReleaseCylinder == ShouldDisplay.None)
+            {
+                newHUD.releaseCyl.gameObject.SetActive(false);
+            }
+
+            if (layout.Handbrake == ShouldDisplay.None)
+            {
+                newHUD.handbrake.gameObject.SetActive(false);
+            }
         }
 
         private static void SetupSteamControls(HUDLocoControls.SteamReferences newHUD, Steam layout)
