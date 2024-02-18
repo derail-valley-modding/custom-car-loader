@@ -90,6 +90,10 @@ namespace CCL.Importer
 
             newHUD.text.powertrainTypeText.SetTextValue(layout.CustomHUDSettings.Powertrain);
             SetupBasicControls(newHUD.basicControls, layout.CustomHUDSettings.BasicControls);
+            SetupBrakeControls(newHUD.braking, layout.CustomHUDSettings.Braking);
+            SetupSteamControls(newHUD.steam, layout.CustomHUDSettings.Steam);
+            SetupCabControls(newHUD.cab, layout.CustomHUDSettings.Cab);
+            SetupMechanicalControls(newHUD.mechanical, layout.CustomHUDSettings.Mechanical);
 
             return newHUD.gameObject;
         }
@@ -108,6 +112,7 @@ namespace CCL.Importer
                     break;
                 case BasicControls.Slot0B.Regulator:
                     var regulator = Object.Instantiate(HudS060.basicControls.throttle, newHUD.throttle.transform.parent);
+                    regulator.gameObject.SetActive(true);
                     Object.Destroy(newHUD.throttle.gameObject);
                     newHUD.throttle = regulator;
                     break;
@@ -115,6 +120,119 @@ namespace CCL.Importer
                     // Keep throttle as is.
                     break;
             }
+
+
+            switch (layout.TMOrOilTemp)
+            {
+                case BasicControls.Slot1A.None:
+                    newHUD.tmTempMeter.gameObject.SetActive(false);
+                    newHUD.oilTempMeter.gameObject.SetActive(false);
+                    break;
+                case BasicControls.Slot1A.OilTemp:
+                    newHUD.tmTempMeter.gameObject.SetActive(false);
+                    var oilTemp = Object.Instantiate(HudDM3.basicControls.oilTempMeter, newHUD.oilTempMeter.transform.parent);
+                    oilTemp.gameObject.SetActive(true);
+                    Object.Destroy(newHUD.oilTempMeter.gameObject);
+                    newHUD.oilTempMeter = oilTemp;
+                    break;
+                default:
+                    // Keep TM temp visible.
+                    break;
+            }
+
+            switch (layout.Reverser)
+            {
+                case BasicControls.Slot1B.None:
+                    newHUD.reverser.gameObject.SetActive(false);
+                    break;
+                case BasicControls.Slot1B.Cutoff:
+                    var cutoff = Object.Instantiate(HudS060.basicControls.reverser, newHUD.reverser.transform.parent);
+                    cutoff.gameObject.SetActive(true);
+                    Object.Destroy(newHUD.reverser.gameObject);
+                    newHUD.reverser = cutoff;
+                    break;
+                default:
+                    // Keep reverser as is.
+                    break;
+            }
+
+
+            if (layout.GearboxA == ShouldDisplay.Display)
+            {
+                newHUD.gearboxA.gameObject.SetActive(true);
+            }
+
+
+            if (layout.Speedometer == ShouldDisplay.None)
+            {
+                newHUD.speedMeter.gameObject.SetActive(false);
+            }
+
+            if (layout.GearboxB == ShouldDisplay.Display)
+            {
+                newHUD.gearboxB.gameObject.SetActive(true);
+            }
+
+
+            if (layout.RPM == ShouldDisplay.None)
+            {
+                newHUD.rpmMeter.gameObject.SetActive(false);
+            }
+
+            switch (layout.TurbineOrVoltage)
+            {
+                case BasicControls.Slot4B.TurbineRPM:
+                    var turbine = Object.Instantiate(HudDH4.basicControls.turbineRpmMeter, newHUD.turbineRpmMeter.transform.parent);
+                    turbine.gameObject.SetActive(true);
+                    Object.Destroy(newHUD.turbineRpmMeter.gameObject);
+                    newHUD.turbineRpmMeter = turbine;
+                    break;
+                case BasicControls.Slot4B.Voltage:
+                    var voltage = Object.Instantiate(HudBE2.basicControls.voltageMeter, newHUD.voltageMeter.transform.parent);
+                    voltage.gameObject.SetActive(true);
+                    Object.Destroy(newHUD.voltageMeter.gameObject);
+                    newHUD.voltageMeter = voltage;
+                    break;
+                default:
+                    // Keep not displaying any.
+                    break;
+            }
+
+            if (layout.Power == ShouldDisplay.Display)
+            {
+                newHUD.powerMeter.gameObject.SetActive(true);
+            }
+
+
+            if (layout.WheelslipIndicator == ShouldDisplay.None)
+            {
+                newHUD.wheelSlipIndicator.gameObject.SetActive(false);
+            }
+
+            if (layout.Sander == ShouldDisplay.None)
+            {
+                newHUD.sand.gameObject.SetActive(false);
+            }
+        }
+
+        private static void SetupBrakeControls(HUDLocoControls.BrakingReferences newHUD, Braking layout)
+        {
+
+        }
+
+        private static void SetupSteamControls(HUDLocoControls.SteamReferences newHUD, Steam layout)
+        {
+
+        }
+
+        private static void SetupCabControls(HUDLocoControls.CabReferences newHUD, Cab layout)
+        {
+
+        }
+
+        private static void SetupMechanicalControls(HUDLocoControls.MechanicalReferences newHUD, Mechanical layout)
+        {
+
         }
     }
 }
