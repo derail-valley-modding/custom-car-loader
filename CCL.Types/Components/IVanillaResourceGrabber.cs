@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Components
@@ -15,7 +16,7 @@ namespace CCL.Types.Components
 
         public bool IsSupportedType(Type type, out bool isIList);
 
-        public string[] GetNames();
+        public HashSet<string> GetNames();
 
         public ResourceReplacement[] GetReplacements();
     }

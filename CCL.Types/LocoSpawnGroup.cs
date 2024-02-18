@@ -53,11 +53,11 @@ namespace CCL.Types
 
     public enum SpawnTrack
     {
-        CoalMine,
         CitySouthWest,
+        CoalMine,
+        Farm,
         FoodFactory1,
         FoodFactory2,
-        Farm,
         ForestCentral,
         ForestSouth,
         GoodsFactory1,
@@ -74,8 +74,8 @@ namespace CCL.Types
         MachineFactoryRoundhouse3,
         MachineFactoryRoundhouse4,
         MachineFactoryRoundhouse7,
+        Sawmill,
         SteelMillTurntable1,
-        SteelMillTurntable2,
-        Sawmill
+        SteelMillTurntable2
     }
 }
