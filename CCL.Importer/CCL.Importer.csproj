@@ -42,6 +42,7 @@
 		<Reference Include="DV.NAudio" />
 		<Reference Include="DV.Simulation" />
 		<Reference Include="DV.ThingTypes" />
+		<Reference Include="DV.UI" />
 		<Reference Include="DV.Utils" />
 		<Reference Include="DV.WeatherSystem" />
 	</ItemGroup>

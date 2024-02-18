@@ -1,11 +1,11 @@
-﻿using CCL.Types.Json;
-using System;
+﻿using System;
 using UnityEngine;
-using static CCL.Types.Components.BasicControls;
-using static CCL.Types.Components.Cab;
-using static CCL.Types.Components.VanillaHUDLayout;
 
-namespace CCL.Types.Components
+using static CCL.Types.Components.HUD.BasicControls;
+using static CCL.Types.Components.HUD.Cab;
+using static CCL.Types.Components.HUD.CustomHUDLayout;
+
+namespace CCL.Types.Components.HUD
 {
     // =========================
     //
@@ -15,7 +15,8 @@ namespace CCL.Types.Components
     //       HUD  ELEMENTS
     //
     // =========================
-    public class VanillaHUDLayout : MonoBehaviour, ICustomSerialized
+    [Serializable]
+    public class CustomHUDLayout
     {
         public enum ShouldDisplay
         {
@@ -31,35 +32,6 @@ namespace CCL.Types.Components
         public Steam Steam = new Steam();
         public Cab Cab = new Cab();
         public Mechanical Mechanical = new Mechanical();
-
-        [SerializeField, HideInInspector]
-        private string? _basic;
-        [SerializeField, HideInInspector]
-        private string? _brake;
-        [SerializeField, HideInInspector]
-        private string? _steam;
-        [SerializeField, HideInInspector]
-        private string? _cab;
-        [SerializeField, HideInInspector]
-        private string? _mecha;
-
-        public void AfterImport()
-        {
-            BasicControls = JSONObject.FromJson(_basic, () => new BasicControls());
-            Braking = JSONObject.FromJson(_brake, () => new Braking());
-            Steam = JSONObject.FromJson(_steam, () => new Steam());
-            Cab = JSONObject.FromJson(_cab, () => new Cab());
-            Mechanical = JSONObject.FromJson(_mecha, () => new Mechanical());
-        }
-
-        public void OnValidate()
-        {
-            _basic = JSONObject.ToJson(BasicControls);
-            _brake = JSONObject.ToJson(Braking);
-            _steam = JSONObject.ToJson(Steam);
-            _cab = JSONObject.ToJson(Cab);
-            _mecha = JSONObject.ToJson(Mechanical);
-        }
 
         public void SetToDE()
         {

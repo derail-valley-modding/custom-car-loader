@@ -165,6 +165,12 @@ namespace CCL.Importer
                 ModelProcessor.DoBasicProcessing(extraModel);
             }
 
+            if (carType.hudPrefab != null)
+            {
+                CCLPlugin.Log("HUD prefab found, generating...");
+                carType.hudPrefab = HUDGenerator.CreateHUD(carType.hudPrefab);
+            }
+
             return true;
         }
 
