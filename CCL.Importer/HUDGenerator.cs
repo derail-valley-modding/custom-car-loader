@@ -372,7 +372,53 @@ namespace CCL.Importer
 
         private static void SetupMechanicalControls(HUDLocoControls.MechanicalReferences newHUD, Mechanical layout)
         {
+            // Slot 27.
+            if (layout.Pantograph == ShouldDisplay.Display)
+            {
+                newHUD.pantograph.gameObject.SetActive(true);
+            }
 
+            if (layout.CabOrientation == ShouldDisplay.Display)
+            {
+                newHUD.cabOrient.gameObject.SetActive(true);
+            }
+
+            // Slot 28.
+            if (layout.TMOfflineIndicator == ShouldDisplay.None)
+            {
+                newHUD.tmOfflineIndicator.gameObject.SetActive(false);
+            }
+
+            if (layout.StarterFuse == ShouldDisplay.None)
+            {
+                newHUD.starterFuse.gameObject.SetActive(false);
+            }
+
+            if (layout.ElectricsFuse == ShouldDisplay.None)
+            {
+                newHUD.electricsFuse.gameObject.SetActive(false);
+            }
+
+            if (layout.TractionMotorFuse == ShouldDisplay.None)
+            {
+                newHUD.tractionMotorFuse.gameObject.SetActive(false);
+            }
+
+            // Slot 29.
+            if (layout.Alerter == ShouldDisplay.Display)
+            {
+                newHUD.alerter.gameObject.SetActive(true);
+            }
+
+            if (layout.Starter == ShouldDisplay.None)
+            {
+                newHUD.starterControl.gameObject.SetActive(false);
+            }
+
+            if (layout.FuelCutoff == ShouldDisplay.None)
+            {
+                newHUD.fuelCutoff.gameObject.SetActive(false);
+            }
         }
     }
 }

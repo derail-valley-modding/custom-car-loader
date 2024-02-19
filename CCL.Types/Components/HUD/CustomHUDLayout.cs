@@ -63,7 +63,7 @@ namespace CCL.Types.Components.HUD
             // Mechanical.
             Mechanical.Pantograph = ShouldDisplay.None;
 
-            Mechanical.TMOffline = ShouldDisplay.Display;
+            Mechanical.TMOfflineIndicator = ShouldDisplay.Display;
             Mechanical.StarterFuse = ShouldDisplay.Display;
             Mechanical.ElectricsFuse = ShouldDisplay.Display;
             Mechanical.TractionMotorFuse = ShouldDisplay.Display;
@@ -104,7 +104,7 @@ namespace CCL.Types.Components.HUD
             // Mechanical.
             Mechanical.Pantograph = ShouldDisplay.None;
 
-            Mechanical.TMOffline = ShouldDisplay.None;
+            Mechanical.TMOfflineIndicator = ShouldDisplay.None;
             Mechanical.StarterFuse = ShouldDisplay.Display;
             Mechanical.ElectricsFuse = ShouldDisplay.Display;
             Mechanical.TractionMotorFuse = ShouldDisplay.None;
@@ -145,7 +145,7 @@ namespace CCL.Types.Components.HUD
             // Mechanical.
             Mechanical.Pantograph = ShouldDisplay.None;
 
-            Mechanical.TMOffline = ShouldDisplay.None;
+            Mechanical.TMOfflineIndicator = ShouldDisplay.None;
             Mechanical.StarterFuse = ShouldDisplay.Display;
             Mechanical.ElectricsFuse = ShouldDisplay.Display;
             Mechanical.TractionMotorFuse = ShouldDisplay.None;
@@ -184,7 +184,7 @@ namespace CCL.Types.Components.HUD
             // Mechanical.
             Mechanical.Pantograph = ShouldDisplay.None;
 
-            Mechanical.TMOffline = ShouldDisplay.Display;
+            Mechanical.TMOfflineIndicator = ShouldDisplay.Display;
             Mechanical.StarterFuse = ShouldDisplay.None;
             Mechanical.ElectricsFuse = ShouldDisplay.Display;
             Mechanical.TractionMotorFuse = ShouldDisplay.Display;
@@ -247,7 +247,7 @@ namespace CCL.Types.Components.HUD
             // Mechanical.
             Mechanical.Pantograph = ShouldDisplay.None;
 
-            Mechanical.TMOffline = ShouldDisplay.None;
+            Mechanical.TMOfflineIndicator = ShouldDisplay.None;
             Mechanical.StarterFuse = ShouldDisplay.None;
             Mechanical.TractionMotorFuse = ShouldDisplay.None;
 
@@ -387,7 +387,7 @@ namespace CCL.Types.Components.HUD
         public ShouldDisplay CabOrientation;
 
         [Header("Slot 25")]
-        public ShouldDisplay TMOffline;
+        public ShouldDisplay TMOfflineIndicator;
         public ShouldDisplay StarterFuse;
         public ShouldDisplay ElectricsFuse;
         public ShouldDisplay TractionMotorFuse;
