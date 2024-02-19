@@ -34,6 +34,24 @@ namespace CCL.Types.Components.HUD
         public Cab Cab = new Cab();
         public Mechanical Mechanical = new Mechanical();
 
+        public void Validate()
+        {
+            if (Cab.CabLightStyle == Slot22B.DashAndCabLight)
+            {
+                Cab.GearLight = ShouldDisplay.None;
+            }
+
+            if (Cab.BellOrWater == Slot24A.BellButton && Cab.Headlights2 == Slot24B.BellSlider)
+            {
+                Cab.Headlights2 = Slot24B.None;
+            }
+
+            if (Cab.Headlights2 == Slot24B.BellSlider && Cab.BellOrWater == Slot24A.BellButton)
+            {
+                Cab.BellOrWater = Slot24A.None;
+            }
+        }
+
         public void SetToDE()
         {
             Powertrain = "DE";
@@ -394,12 +412,15 @@ namespace CCL.Types.Components.HUD
         [Header("Slot 20")]
         public ShouldDisplay OilLevel;
         public Slot22B CabLightStyle;
+        [Tooltip("Gear light only works when Cab Light Style is set to None or Slider")]
+        public ShouldDisplay GearLight;
 
         [Header("Slot 21")]
         public ShouldDisplay SandLevel;
         public Slot23B Headlights1;
 
         [Header("Slot 22")]
+        [Tooltip("Will override the next choice if set to Bell")]
         public Slot24A BellOrWater;
         public Slot24B Headlights2;
 

@@ -92,7 +92,7 @@ namespace CCL.Importer
             SetupBasicControls(newHUD.basicControls, layout.CustomHUDSettings.BasicControls);
             SetupBrakeControls(newHUD.braking, layout.CustomHUDSettings.Braking);
             SetupSteamControls(newHUD.steam, layout.CustomHUDSettings.Steam);
-            SetupCabControls(newHUD.cab, layout.CustomHUDSettings.Cab);
+            SetupCabControls(newHUD, layout.CustomHUDSettings);
             SetupMechanicalControls(newHUD.mechanical, layout.CustomHUDSettings.Mechanical);
 
             return newHUD.gameObject;
@@ -347,10 +347,7 @@ namespace CCL.Importer
             // Slot 18.
             if (layout.FuelDump == ShouldDisplay.Display)
             {
-                var dump = Object.Instantiate(HudS060.steam.coalDump, newHUD.coalDump.transform.parent);
-                dump.gameObject.SetActive(true);
-                Object.Destroy(newHUD.coalDump.gameObject);
-                newHUD.coalDump = dump;
+                newHUD.coalDump.gameObject.SetActive(true);
             }
 
             // Slot 19.
@@ -373,9 +370,157 @@ namespace CCL.Importer
             }
         }
 
-        private static void SetupCabControls(HUDLocoControls.CabReferences newHUD, Cab layout)
+        private static void SetupCabControls(HUDLocoControls newHUDFull, CustomHUDLayout layoutFull)
         {
+            var newHUD = newHUDFull.cab;
+            var layout = layoutFull.Cab;
 
+            // Slot 21
+            switch (layout.FuelDisplay)
+            {
+                case Cab.Slot21A.None:
+                    newHUD.fuelLevelMeter.gameObject.SetActive(false);
+                    break;
+                case Cab.Slot21A.BatteryLevel:
+                    newHUD.fuelLevelMeter.gameObject.SetActive(false);
+                    newHUD.batteryLevelMeter = Object.Instantiate(HudBE2.cab.batteryLevelMeter, newHUD.fuelLevelMeter.transform.parent);
+                    newHUD.batteryLevelMeter.gameObject.SetActive(true);
+                    break;
+                default:
+                    // Keep fuel display.
+                    break;
+            }
+
+            switch (layout.Wipers)
+            {
+                case Cab.Slot21B.None:
+                    newHUD.wipers.gameObject.SetActive(false);
+                    break;
+                case Cab.Slot21B.DM3Wipers:
+                    newHUD.wipers.gameObject.SetActive(false);
+                    newHUD.indWipers1.gameObject.SetActive(true);
+                    newHUD.indWipers1.transform.localPosition = HudDM3.cab.indWipers1.transform.localPosition;
+                    newHUD.indWipers2.gameObject.SetActive(true);
+                    newHUD.indWipers2.transform.localPosition = HudDM3.cab.indWipers2.transform.localPosition;
+                    break;
+                default:
+                    // Keep default wipers.
+                    break;
+            }
+
+            // Slot 22
+            if (layout.OilLevel == ShouldDisplay.None)
+            {
+                newHUD.oilLevelMeter.gameObject.SetActive(false);
+            }
+
+            switch (layout.CabLightStyle)
+            {
+                case Cab.Slot22B.None:
+                    newHUD.cabLight.gameObject.SetActive(false);
+                    newHUD.indCabLight.gameObject.SetActive(false);
+                    newHUD.indDashLight.gameObject.SetActive(false);
+                    break;
+                case Cab.Slot22B.CabLightsSlider:
+                    newHUD.cabLight.gameObject.SetActive(true);
+                    newHUD.indCabLight.gameObject.SetActive(false);
+                    newHUD.indDashLight.gameObject.SetActive(false);
+                    break;
+                default:
+                    // Keep dash and cab light buttons.
+                    break;
+            }
+
+            if (layout.GearLight == ShouldDisplay.Display)
+            {
+                newHUD.indCabLight = Object.Instantiate(HudS282.cab.indCabLight, newHUDFull.steam.dynamo.transform.parent);
+                newHUD.indCabLight.gameObject.SetActive(true);
+            }
+
+            // Slot 23
+            if (layout.SandLevel == ShouldDisplay.None)
+            {
+                newHUD.sandMeter.gameObject.SetActive(false);
+            }
+
+            switch (layout.Headlights1)
+            {
+                case Cab.Slot23B.None:
+                    newHUD.headlightsFront.gameObject.SetActive(false);
+                    break;
+                case Cab.Slot23B.DM3Headlights:
+                    newHUD.headlightsFront.gameObject.SetActive(false);
+                    newHUD.indHeadlightsTypeFront = Object.Instantiate(HudDM3.cab.indHeadlightsTypeFront);
+                    newHUD.indHeadlights1Front = Object.Instantiate(HudDM3.cab.indHeadlights1Front);
+                    newHUD.indHeadlights2Front = Object.Instantiate(HudDM3.cab.indHeadlights2Front);
+                    newHUD.indHeadlightsTypeFront.gameObject.SetActive(true);
+                    newHUD.indHeadlights1Front.gameObject.SetActive(true);
+                    newHUD.indHeadlights2Front.gameObject.SetActive(true);
+                    break;
+                default:
+                    break;
+            }
+
+            // Slot 24
+            switch (layout.BellOrWater)
+            {
+                case Cab.Slot24A.None:
+                    newHUD.bell.gameObject.SetActive(false);
+                    break;
+                case Cab.Slot24A.TenderWater:
+                    newHUD.bell.gameObject.SetActive(false);
+                    newHUDFull.steam.tenderWaterLevel = Object.Instantiate(HudS282.steam.tenderWaterLevel, newHUD.bell.transform.parent);
+                    newHUDFull.steam.tenderWaterLevel.gameObject.SetActive(true);
+                    break;
+                default:
+                    // Keep the bell button.
+                    break;
+            }
+
+            switch (layout.Headlights2)
+            {
+                case Cab.Slot24B.None:
+                    newHUD.headlightsRear.gameObject.SetActive(false);
+                    break;
+                case Cab.Slot24B.DM3Headlights:
+                    newHUD.headlightsRear.gameObject.SetActive(false);
+                    newHUD.indHeadlightsTypeRear = Object.Instantiate(HudDM3.cab.indHeadlightsTypeRear);
+                    newHUD.indHeadlights1Rear = Object.Instantiate(HudDM3.cab.indHeadlights1Rear);
+                    newHUD.indHeadlights2Rear = Object.Instantiate(HudDM3.cab.indHeadlights2Rear);
+                    newHUD.indHeadlightsTypeRear.gameObject.SetActive(true);
+                    newHUD.indHeadlights1Rear.gameObject.SetActive(true);
+                    newHUD.indHeadlights2Rear.gameObject.SetActive(true);
+                    break;
+                case Cab.Slot24B.BellSlider:
+                    newHUD.headlightsRear.gameObject.SetActive(false);
+                    newHUD.bell = Object.Instantiate(HudS282.cab.bell, newHUD.bell.transform.parent);
+                    newHUD.bell.gameObject.SetActive(true);
+                    break;
+                default:
+                    break;
+            }
+
+            // Slot 25
+            if (layout.TenderCoal == ShouldDisplay.Display)
+            {
+                newHUDFull.steam.tenderCoalLevel = Object.Instantiate(HudS282.steam.tenderCoalLevel, newHUD.horn.transform.parent);
+                newHUDFull.steam.tenderCoalLevel.gameObject.SetActive(true);
+            }
+
+            switch (layout.HornStyle)
+            {
+                case Cab.Slot25B.None:
+                    newHUD.horn.gameObject.SetActive(false);
+                    break;
+                case Cab.Slot25B.Whistle:
+                    newHUD.horn.gameObject.SetActive(false);
+                    newHUD.horn = Object.Instantiate(HudS060.cab.horn, newHUD.horn.transform.parent);
+                    newHUD.horn.gameObject.SetActive(true);
+                    break;
+                default:
+                    // Keep horn.
+                    break;
+            }
         }
 
         private static void SetupMechanicalControls(HUDLocoControls.MechanicalReferences newHUD, Mechanical layout)

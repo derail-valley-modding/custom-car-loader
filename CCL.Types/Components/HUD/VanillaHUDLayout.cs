@@ -27,6 +27,7 @@ namespace CCL.Types.Components.HUD
 
         public void OnValidate()
         {
+            CustomHUDSettings.Validate();
             _json = JSONObject.ToJson(CustomHUDSettings);
         }
 
