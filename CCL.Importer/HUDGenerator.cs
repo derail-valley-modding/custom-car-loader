@@ -10,6 +10,9 @@ namespace CCL.Importer
 {
     internal static class HUDGenerator
     {
+        private const string Slot6 = "bg/Controls/HUDSlot (6)";
+        private const string Slot20 = "bg/Controls/HUDSlot (20)";
+
         private static Transform? s_holder;
         private static HUDLocoControls? s_hudDE2;
         private static HUDLocoControls? s_hudDM3;
@@ -89,7 +92,7 @@ namespace CCL.Importer
             var newHUD = Object.Instantiate(HudDE6, Holder);
 
             newHUD.text.powertrainTypeText.SetTextValue(layout.CustomHUDSettings.Powertrain);
-            SetupBasicControls(newHUD.basicControls, layout.CustomHUDSettings.BasicControls);
+            SetupBasicControls(newHUD, layout.CustomHUDSettings.BasicControls);
             SetupBrakeControls(newHUD.braking, layout.CustomHUDSettings.Braking);
             SetupSteamControls(newHUD.steam, layout.CustomHUDSettings.Steam);
             SetupCabControls(newHUD, layout.CustomHUDSettings);
@@ -98,8 +101,10 @@ namespace CCL.Importer
             return newHUD.gameObject;
         }
 
-        private static void SetupBasicControls(HUDLocoControls.BasicControlsReferences newHUD, BasicControls layout)
+        private static void SetupBasicControls(HUDLocoControls newHUDFull, BasicControls layout)
         {
+            var newHUD = newHUDFull.basicControls;
+
             // Slot 0.
             if (layout.AmpMeter == ShouldDisplay.None)
             {
@@ -135,6 +140,10 @@ namespace CCL.Importer
                     oilTemp.gameObject.SetActive(true);
                     Object.Destroy(newHUD.oilTempMeter.gameObject);
                     newHUD.oilTempMeter = oilTemp;
+                    break;
+                case BasicControls.Slot1A.BothAlt:
+                    newHUD.oilTempMeter = Object.Instantiate(HudDM3.basicControls.oilTempMeter, newHUD.gearboxA.transform.parent);
+                    newHUD.oilTempMeter.gameObject.SetActive(true);
                     break;
                 default:
                     // Keep TM temp visible.
@@ -191,6 +200,17 @@ namespace CCL.Importer
                 case BasicControls.Slot4B.Voltage:
                     var voltage = Object.Instantiate(HudBE2.basicControls.voltageMeter, newHUD.voltageMeter.transform.parent);
                     voltage.gameObject.SetActive(true);
+                    Object.Destroy(newHUD.voltageMeter.gameObject);
+                    newHUD.voltageMeter = voltage;
+                    break;
+                case BasicControls.Slot4B.BothAlt:
+                    turbine = Object.Instantiate(HudDH4.basicControls.turbineRpmMeter, newHUD.turbineRpmMeter.transform.parent);
+                    turbine.gameObject.SetActive(true);
+                    Object.Destroy(newHUD.turbineRpmMeter.gameObject);
+                    newHUD.turbineRpmMeter = turbine;
+                    voltage = Object.Instantiate(HudBE2.basicControls.voltageMeter, newHUDFull.transform.Find(Slot6));
+                    voltage.gameObject.SetActive(true);
+                    voltage.transform.localPosition = HudDE6.basicControls.rpmMeter.transform.localPosition;
                     Object.Destroy(newHUD.voltageMeter.gameObject);
                     newHUD.voltageMeter = voltage;
                     break;
@@ -384,6 +404,10 @@ namespace CCL.Importer
                 case Cab.Slot21A.BatteryLevel:
                     newHUD.fuelLevelMeter.gameObject.SetActive(false);
                     newHUD.batteryLevelMeter = Object.Instantiate(HudBE2.cab.batteryLevelMeter, newHUD.fuelLevelMeter.transform.parent);
+                    newHUD.batteryLevelMeter.gameObject.SetActive(true);
+                    break;
+                case Cab.Slot21A.BothAlt:
+                    newHUD.batteryLevelMeter = Object.Instantiate(HudBE2.cab.batteryLevelMeter, newHUDFull.transform.Find(Slot20));
                     newHUD.batteryLevelMeter.gameObject.SetActive(true);
                     break;
                 default:

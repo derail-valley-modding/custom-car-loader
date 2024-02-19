@@ -307,9 +307,9 @@ namespace CCL.Types.Components.HUD
     public class BasicControls
     {
         public enum Slot0B { None, Throttle, Regulator }
-        public enum Slot1A { None, TMTemp, OilTemp }
+        public enum Slot1A { None, TMTemp, OilTemp, BothAlt }
         public enum Slot1B { None, Reverser, Cutoff }
-        public enum Slot4B { None, TurbineRPM, Voltage }
+        public enum Slot4B { None, TurbineRPM, Voltage, BothAlt }
 
         [Header("Slot 1")]
         public ShouldDisplay AmpMeter;
@@ -397,7 +397,7 @@ namespace CCL.Types.Components.HUD
     [Serializable]
     public class Cab
     {
-        public enum Slot21A { None, FuelLevel, BatteryLevel }
+        public enum Slot21A { None, FuelLevel, BatteryLevel, BothAlt }
         public enum Slot21B { None, SimpleWipers, DM3Wipers }
         public enum Slot22B { None, CabLightsSlider, DashAndCabLight }
         public enum Slot23B { None, HeadlightsSlider, DM3Headlights }
