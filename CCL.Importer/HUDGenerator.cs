@@ -276,7 +276,93 @@ namespace CCL.Importer
 
         private static void SetupSteamControls(HUDLocoControls.SteamReferences newHUD, Steam layout)
         {
+            // Slot 12.
+            if (layout.SteamMeter == ShouldDisplay.Display)
+            {
+                newHUD.steamMeter.gameObject.SetActive(true);
+            }
 
+            if (layout.CylinderCocks == ShouldDisplay.Display)
+            {
+                newHUD.cylCock.gameObject.SetActive(true);
+            }
+
+            // Slot 13.
+            if (layout.BoilerWater == ShouldDisplay.Display)
+            {
+                newHUD.locoWaterMeter.gameObject.SetActive(true);
+            }
+
+            if (layout.Injector == ShouldDisplay.Display)
+            {
+                newHUD.injector.gameObject.SetActive(true);
+            }
+
+            // Slot 14.
+            if (layout.FireboxCoal == ShouldDisplay.Display)
+            {
+                newHUD.locoCoalMeter.gameObject.SetActive(true);
+            }
+
+            if (layout.Damper == ShouldDisplay.Display)
+            {
+                newHUD.damper.gameObject.SetActive(true);
+            }
+
+            // Slot 15.
+            if (layout.FireTemperature == ShouldDisplay.Display)
+            {
+                newHUD.fireTemp.gameObject.SetActive(true);
+            }
+
+            if (layout.Blower == ShouldDisplay.Display)
+            {
+                newHUD.blower.gameObject.SetActive(true);
+            }
+
+            // Slot 16.
+            if (layout.Shovel == ShouldDisplay.Display)
+            {
+                newHUD.shovel.gameObject.SetActive(true);
+            }
+
+            if (layout.Firedoor == ShouldDisplay.Display)
+            {
+                newHUD.firedoor.gameObject.SetActive(true);
+            }
+
+            // Slot 17.
+            if (layout.LightFirebox == ShouldDisplay.Display)
+            {
+                newHUD.lightFirebox.gameObject.SetActive(true);
+            }
+
+            if (layout.Blowdown == ShouldDisplay.Display)
+            {
+                newHUD.blowdown.gameObject.SetActive(true);
+            }
+
+            // Slot 18.
+            if (layout.FuelDump == ShouldDisplay.Display)
+            {
+                newHUD.coalDump.gameObject.SetActive(true);
+            }
+
+            // Slot 19.
+            if (layout.Dynamo == ShouldDisplay.Display)
+            {
+                newHUD.dynamo.gameObject.SetActive(true);
+            }
+
+            if (layout.AirPump == ShouldDisplay.Display)
+            {
+                newHUD.airPump.gameObject.SetActive(true);
+            }
+
+            if (layout.Lubricator == ShouldDisplay.Display)
+            {
+                newHUD.lubricator.gameObject.SetActive(true);
+            }
         }
 
         private static void SetupCabControls(HUDLocoControls.CabReferences newHUD, Cab layout)
