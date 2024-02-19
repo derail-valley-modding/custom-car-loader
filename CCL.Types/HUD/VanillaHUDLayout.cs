@@ -1,9 +1,10 @@
 ﻿using CCL.Types.Json;
 using UnityEngine;
 
-namespace CCL.Types.Components.HUD
+namespace CCL.Types.HUD
 {
-    public class VanillaHUDLayout : MonoBehaviour, ICustomSerialized
+    [CreateAssetMenu(menuName = "CCL/HUD Layout")]
+    public class VanillaHUDLayout : ScriptableObject, ICustomSerialized
     {
         public enum BaseHUD
         {

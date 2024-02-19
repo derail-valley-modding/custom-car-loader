@@ -135,6 +135,13 @@ namespace CCL.Importer
                     return null;
                 }
 
+                // Create the HUD if it exists.
+                if (serializedCar.HUDLayout != null)
+                {
+                    CCLPlugin.Log("Generating HUD from layout settings...");
+                    carType.hudPrefab = HUDGenerator.CreateHUD(serializedCar.HUDLayout);
+                }
+
                 CCLPlugin.Log($"Successfully loaded car type {carId}");
 
                 assetBundle.Unload(false);
@@ -163,12 +170,6 @@ namespace CCL.Importer
             foreach (var extraModel in carType.ExtraModels)
             {
                 ModelProcessor.DoBasicProcessing(extraModel);
-            }
-
-            if (carType.hudPrefab != null)
-            {
-                CCLPlugin.Log("HUD prefab found, generating...");
-                carType.hudPrefab = HUDGenerator.CreateHUD(carType.hudPrefab);
             }
 
             return true;

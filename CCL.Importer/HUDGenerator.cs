@@ -1,16 +1,18 @@
-﻿using CCL.Types.Components.HUD;
+﻿using CCL.Types.HUD;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using DV.UI.LocoHUD;
 using UnityEngine;
 
-using static CCL.Types.Components.HUD.CustomHUDLayout;
+using static CCL.Types.HUD.CustomHUDLayout;
 
 namespace CCL.Importer
 {
     internal static class HUDGenerator
     {
+        // Unused HUD slots, to place overlapping controls.
         private const string Slot6 = "bg/Controls/HUDSlot (6)";
+        private const string Slot11 = "bg/Controls/HUDSlot (11)";
         private const string Slot20 = "bg/Controls/HUDSlot (20)";
 
         private static Transform? s_holder;
@@ -51,16 +53,8 @@ namespace CCL.Importer
             return hudHolder.transform;
         }
 
-        public static GameObject CreateHUD(GameObject original)
+        public static GameObject CreateHUD(VanillaHUDLayout layout)
         {
-            var layout = original.GetComponent<VanillaHUDLayout>();
-
-            if (layout == null)
-            {
-                CCLPlugin.Warning("No VanillaHUDLayout component found at the root, destroying HUD.");
-                return null!;
-            }
-
             layout.AfterImport();
 
             switch (layout.HUDType)
@@ -81,8 +75,11 @@ namespace CCL.Importer
                     return HudBE2.gameObject;
                 case VanillaHUDLayout.BaseHUD.Handcar:
                     return HudHandcar.gameObject;
-                default:
+                case VanillaHUDLayout.BaseHUD.Custom:
                     return CreateCustomHUD(layout);
+                default:
+                    CCLPlugin.Error($"HUD configuration not supported ({layout.HUDType})");
+                    return null!;
             }
         }
 
@@ -204,13 +201,34 @@ namespace CCL.Importer
                     newHUD.voltageMeter = voltage;
                     break;
                 case BasicControls.Slot4B.BothAlt:
-                    turbine = Object.Instantiate(HudDH4.basicControls.turbineRpmMeter, newHUD.turbineRpmMeter.transform.parent);
+                    if (layout.RPM == ShouldDisplay.Display)
+                    {
+                        if (layout.Power == ShouldDisplay.Display)
+                        {
+                            // If both RPM and power are displayed, voltage gets moved out to slot 6.
+                            turbine = Object.Instantiate(HudDH4.basicControls.turbineRpmMeter, newHUD.turbineRpmMeter.transform.parent);
+                            voltage = Object.Instantiate(HudBE2.basicControls.voltageMeter, newHUDFull.transform.Find(Slot6));
+                            voltage.transform.localPosition = HudDE6.basicControls.rpmMeter.transform.localPosition;
+                        }
+                        else
+                        {
+                            // If power is not displayed, move voltage down to its position.
+                            turbine = Object.Instantiate(HudDH4.basicControls.turbineRpmMeter, newHUD.turbineRpmMeter.transform.parent);
+                            voltage = Object.Instantiate(HudBE2.basicControls.voltageMeter, newHUD.voltageMeter.transform.parent);
+                            voltage.transform.localPosition = HudDE6.basicControls.powerMeter.transform.localPosition;
+                        }
+                    }
+                    else
+                    {
+                        // If the RPM isn't displayed, move the turbine RPM up.
+                        turbine = Object.Instantiate(HudDH4.basicControls.turbineRpmMeter, newHUD.turbineRpmMeter.transform.parent);
+                        turbine.transform.localPosition = HudDE6.basicControls.rpmMeter.transform.localPosition;
+                        voltage = Object.Instantiate(HudBE2.basicControls.voltageMeter, newHUD.voltageMeter.transform.parent);
+                    }
                     turbine.gameObject.SetActive(true);
                     Object.Destroy(newHUD.turbineRpmMeter.gameObject);
                     newHUD.turbineRpmMeter = turbine;
-                    voltage = Object.Instantiate(HudBE2.basicControls.voltageMeter, newHUDFull.transform.Find(Slot6));
                     voltage.gameObject.SetActive(true);
-                    voltage.transform.localPosition = HudDE6.basicControls.rpmMeter.transform.localPosition;
                     Object.Destroy(newHUD.voltageMeter.gameObject);
                     newHUD.voltageMeter = voltage;
                     break;

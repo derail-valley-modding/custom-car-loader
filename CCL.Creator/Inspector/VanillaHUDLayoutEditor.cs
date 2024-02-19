@@ -1,5 +1,4 @@
-﻿using CCL.Creator.Utility;
-using CCL.Types.Components.HUD;
+﻿using CCL.Types.HUD;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,44 +19,77 @@ namespace CCL.Creator.Inspector
 
         public override void OnInspectorGUI()
         {
+            serializedObject.Update();
+
             _layout = (VanillaHUDLayout)target;
 
             EditorGUILayout.PropertyField(_type);
+            EditorGUILayout.Space();
 
-            if (_layout.HUDType != VanillaHUDLayout.BaseHUD.Custom)
+            bool isCustom = _layout.HUDType == VanillaHUDLayout.BaseHUD.Custom;
+
+            GUI.enabled = isCustom;
+            EditorGUILayout.Foldout(isCustom, "Custom Layout Settings");
+            GUI.enabled = true;
+
+            if (!isCustom)
             {
                 serializedObject.ApplyModifiedProperties();
                 return;
             }
 
-            EditorGUILayout.Space();
-            EditorGUILayout.HelpBox("Custom HUD layouts are currently a work in progress! Please use a vanilla layout for now.", MessageType.Error);
-            EditorGUILayout.Space();
+            using (new EditorGUI.IndentLevelScope())
+            {
+                EditorGUILayout.PropertyField(_custom.FindPropertyRelative(nameof(CustomHUDLayout.Powertrain)));
 
-            EditorGUILayout.PropertyField(_custom);
+                EditorGUILayout.PropertyField(_custom.FindPropertyRelative(nameof(CustomHUDLayout.BasicControls)));
+
+                if (_layout.CustomHUDSettings.BasicControls.TMOrOilTemp == BasicControls.Slot1A.BothAlt)
+                {
+                    WarningBox("Displaying both Traction Motor Temperature and Oil Temperature is not supported correctly and so " +
+                        "Oil Temperature will be moved to an empty slot.");
+                }
+
+                if (_layout.CustomHUDSettings.IsRPMTurbineVoltageAndPower())
+                {
+                    WarningBox("All options in slot 5 selected, this is not supported correctly and so " +
+                        "Voltage will be moved to an empty slot.");
+                }
+
+                EditorGUILayout.PropertyField(_custom.FindPropertyRelative(nameof(CustomHUDLayout.Braking)));
+                EditorGUILayout.PropertyField(_custom.FindPropertyRelative(nameof(CustomHUDLayout.Steam)));
+                EditorGUILayout.PropertyField(_custom.FindPropertyRelative(nameof(CustomHUDLayout.Cab)));
+
+                if (_layout.CustomHUDSettings.Cab.FuelDisplay == Cab.Slot21A.BothAlt)
+                {
+                    WarningBox("Displaying both fuel and battery is not supported correctly and so " +
+                        "Battery will be moved to an empty slot.");
+                }
+
+                EditorGUILayout.PropertyField(_custom.FindPropertyRelative(nameof(CustomHUDLayout.Mechanical)));
+            }
 
             serializedObject.ApplyModifiedProperties();
-            bool button = false;
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Diesel HUDs", EditorStyles.boldLabel);
 
             if (GUILayout.Button("Set to Diesel-Electric"))
             {
+                Undo.RecordObject(_layout, "Set to Diesel-Electric");
                 _layout.CustomHUDSettings.SetToDE();
-                button = true;
             }
 
             if (GUILayout.Button("Set to Diesel-Hydraulic"))
             {
+                Undo.RecordObject(_layout, "Set to Diesel-Hydraulic");
                 _layout.CustomHUDSettings.SetToDH();
-                button = true;
             }
 
             if (GUILayout.Button("Set to Diesel-Mechanical"))
             {
+                Undo.RecordObject(_layout, "Set to Diesel-Mechanical");
                 _layout.CustomHUDSettings.SetToDM();
-                button = true;
             }
 
             EditorGUILayout.Space();
@@ -65,8 +97,8 @@ namespace CCL.Creator.Inspector
 
             if (GUILayout.Button("Set to Battery-Electric"))
             {
+                Undo.RecordObject(_layout, "Set to Battery-Electric");
                 _layout.CustomHUDSettings.SetToBE();
-                button = true;
             }
 
             EditorGUILayout.Space();
@@ -74,8 +106,8 @@ namespace CCL.Creator.Inspector
 
             if (GUILayout.Button("Set to Steam"))
             {
+                Undo.RecordObject(_layout, "Set to Steam");
                 _layout.CustomHUDSettings.SetToS();
-                button = true;
             }
 
             EditorGUILayout.Space();
@@ -83,20 +115,22 @@ namespace CCL.Creator.Inspector
 
             if (GUILayout.Button("Self-lapping"))
             {
+                Undo.RecordObject(_layout, "Self-lapping Brake Setup");
                 _layout.CustomHUDSettings.SelfLappingBrakeSetup();
-                button = true;
             }
 
             if (GUILayout.Button("Non Self-lapping"))
             {
+                Undo.RecordObject(_layout, "Non Self-lapping Brake Setup");
                 _layout.CustomHUDSettings.NonSelfLappingBrakeSetup();
-                button = true;
             }
+        }
 
-            if (button)
-            {
-                AssetHelper.SaveAsset(_layout);
-            }
+        private static void WarningBox(string message)
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.HelpBox(message, MessageType.Warning);
+            EditorGUILayout.Space();
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-using static CCL.Types.Components.HUD.BasicControls;
-using static CCL.Types.Components.HUD.Braking;
-using static CCL.Types.Components.HUD.Cab;
-using static CCL.Types.Components.HUD.CustomHUDLayout;
+using static CCL.Types.HUD.BasicControls;
+using static CCL.Types.HUD.Braking;
+using static CCL.Types.HUD.Cab;
+using static CCL.Types.HUD.CustomHUDLayout;
 
-namespace CCL.Types.Components.HUD
+namespace CCL.Types.HUD
 {
     // =========================
     //
@@ -50,6 +50,13 @@ namespace CCL.Types.Components.HUD
             {
                 Cab.BellOrWater = Slot24A.None;
             }
+        }
+
+        public bool IsRPMTurbineVoltageAndPower()
+        {
+            return BasicControls.RPM == ShouldDisplay.Display &&
+                BasicControls.TurbineOrVoltage == Slot4B.BothAlt &&
+                BasicControls.Power == ShouldDisplay.Display;
         }
 
         public void SetToDE()
