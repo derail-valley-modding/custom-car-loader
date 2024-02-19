@@ -2,6 +2,7 @@
 using UnityEngine;
 
 using static CCL.Types.Components.HUD.BasicControls;
+using static CCL.Types.Components.HUD.Braking;
 using static CCL.Types.Components.HUD.Cab;
 using static CCL.Types.Components.HUD.CustomHUDLayout;
 
@@ -253,6 +254,34 @@ namespace CCL.Types.Components.HUD
 
             Mechanical.Starter = ShouldDisplay.None;
             Mechanical.FuelCutoff = ShouldDisplay.None;
+        }
+
+        public void SelfLappingBrakeSetup()
+        {
+            Braking.BrakePipe = ShouldDisplay.Display;
+            Braking.BrakeType = Slot7B.SelfLapping;
+
+            Braking.MainReservoir = ShouldDisplay.Display;
+            Braking.IndependentBrake = ShouldDisplay.Display;
+
+            Braking.BrakeCylinder = ShouldDisplay.Display;
+
+            Braking.ReleaseCylinder = ShouldDisplay.Display;
+            Braking.Handbrake = ShouldDisplay.Display;
+        }
+
+        public void NonSelfLappingBrakeSetup()
+        {
+            Braking.BrakePipe = ShouldDisplay.Display;
+            Braking.BrakeType = Slot7B.NonSelfLapping;
+
+            Braking.MainReservoir = ShouldDisplay.Display;
+            Braking.IndependentBrake = ShouldDisplay.Display;
+
+            Braking.BrakeCylinder = ShouldDisplay.Display;
+
+            Braking.ReleaseCylinder = ShouldDisplay.Display;
+            Braking.Handbrake = ShouldDisplay.Display;
         }
     }
 

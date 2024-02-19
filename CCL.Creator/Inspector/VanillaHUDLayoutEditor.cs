@@ -1,4 +1,5 @@
-﻿using CCL.Types.Components.HUD;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Components.HUD;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,6 +37,7 @@ namespace CCL.Creator.Inspector
             EditorGUILayout.PropertyField(_custom);
 
             serializedObject.ApplyModifiedProperties();
+            bool button = false;
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Diesel HUDs", EditorStyles.boldLabel);
@@ -43,16 +45,19 @@ namespace CCL.Creator.Inspector
             if (GUILayout.Button("Set to Diesel-Electric"))
             {
                 _layout.CustomHUDSettings.SetToDE();
+                button = true;
             }
 
             if (GUILayout.Button("Set to Diesel-Hydraulic"))
             {
                 _layout.CustomHUDSettings.SetToDH();
+                button = true;
             }
 
             if (GUILayout.Button("Set to Diesel-Mechanical"))
             {
                 _layout.CustomHUDSettings.SetToDM();
+                button = true;
             }
 
             EditorGUILayout.Space();
@@ -61,6 +66,7 @@ namespace CCL.Creator.Inspector
             if (GUILayout.Button("Set to Battery-Electric"))
             {
                 _layout.CustomHUDSettings.SetToBE();
+                button = true;
             }
 
             EditorGUILayout.Space();
@@ -69,6 +75,27 @@ namespace CCL.Creator.Inspector
             if (GUILayout.Button("Set to Steam"))
             {
                 _layout.CustomHUDSettings.SetToS();
+                button = true;
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Quick brake setup", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("Self-lapping"))
+            {
+                _layout.CustomHUDSettings.SelfLappingBrakeSetup();
+                button = true;
+            }
+
+            if (GUILayout.Button("Non Self-lapping"))
+            {
+                _layout.CustomHUDSettings.NonSelfLappingBrakeSetup();
+                button = true;
+            }
+
+            if (button)
+            {
+                AssetHelper.SaveAsset(_layout);
             }
         }
     }

@@ -302,6 +302,7 @@ namespace CCL.Importer
             if (layout.FireboxCoal == ShouldDisplay.Display)
             {
                 newHUD.locoCoalMeter.gameObject.SetActive(true);
+                newHUD.locoCoalMeter.transform.localPosition = HudS060.steam.locoCoalMeter.transform.localPosition;
             }
 
             if (layout.Damper == ShouldDisplay.Display)
@@ -335,6 +336,7 @@ namespace CCL.Importer
             if (layout.LightFirebox == ShouldDisplay.Display)
             {
                 newHUD.lightFirebox.gameObject.SetActive(true);
+                newHUD.lightFirebox.transform.localPosition = HudS060.steam.lightFirebox.transform.localPosition;
             }
 
             if (layout.Blowdown == ShouldDisplay.Display)
@@ -345,23 +347,29 @@ namespace CCL.Importer
             // Slot 18.
             if (layout.FuelDump == ShouldDisplay.Display)
             {
-                newHUD.coalDump.gameObject.SetActive(true);
+                var dump = Object.Instantiate(HudS060.steam.coalDump, newHUD.coalDump.transform.parent);
+                dump.gameObject.SetActive(true);
+                Object.Destroy(newHUD.coalDump.gameObject);
+                newHUD.coalDump = dump;
             }
 
             // Slot 19.
             if (layout.Dynamo == ShouldDisplay.Display)
             {
                 newHUD.dynamo.gameObject.SetActive(true);
+                newHUD.dynamo.transform.localPosition = HudS060.steam.dynamo.transform.localPosition;
             }
 
             if (layout.AirPump == ShouldDisplay.Display)
             {
                 newHUD.airPump.gameObject.SetActive(true);
+                newHUD.airPump.transform.localPosition = HudS060.steam.airPump.transform.localPosition;
             }
 
             if (layout.Lubricator == ShouldDisplay.Display)
             {
                 newHUD.lubricator.gameObject.SetActive(true);
+                newHUD.lubricator.transform.localPosition = HudS060.steam.lubricator.transform.localPosition;
             }
         }
 
