@@ -23,7 +23,7 @@ namespace CCL.Types
         [Tooltip("Used by Gondola, S060")]
         Buffer04        = 550,
         [Tooltip("Used by DE6, DE6 Slug, Microshunter")]
-        Buffer05        = 40,
+        Buffer05        = 70,
         [Tooltip("Used by Boxcar Military, Refrigerator")]
         Buffer06        = 450,
         [Tooltip("Used by Caboose, Tank, Short Tank")]
