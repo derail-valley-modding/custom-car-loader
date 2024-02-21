@@ -1,5 +1,6 @@
 ﻿using DV.CabControls.Spec;
 using DV.Damage;
+using DV.HUD;
 using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
 using DV.Simulation.Fuses;
@@ -29,6 +30,10 @@ namespace CCL.Importer.Processing
             if (livery.interiorPrefab)
             {
                 AddAdditionalControllers(livery.interiorPrefab);
+                if (!livery.interiorPrefab.GetComponent<InteriorControlsManager>())
+                {
+                    livery.interiorPrefab.AddComponent<InteriorControlsManager>();
+                }
             }
             if (livery.externalInteractablesPrefab)
             {

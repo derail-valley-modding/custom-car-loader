@@ -31,7 +31,8 @@ namespace CCL.Importer.Processing
                     {
                         if (field.FieldType.IsArray)
                         {
-                            var array = (string[])field.GetValue(component);
+                            if (field.GetValue(component) is not string[] array) continue;
+
                             for (int i = 0; i < array.Length; i++)
                             {
                                 if (string.IsNullOrWhiteSpace(array[i]))

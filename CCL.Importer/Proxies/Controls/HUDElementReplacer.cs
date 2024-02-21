@@ -17,6 +17,7 @@ namespace CCL.Importer.Proxies.Controls
                 .ForAllMembers(o => o.MapFrom(m => Mapper.GetFromCache(m)));
             CreateMap<LocoLampReaderProxy, LocoLampReader>().AutoCacheAndMap()
                 .ForAllMembers(o => o.MapFrom(m => Mapper.GetFromCache(m)));
+            CreateMap<LocoFuseBoxReferenceProxy, LocoFuseBoxReference>().AutoCacheAndMap();
         }
     }
 }
