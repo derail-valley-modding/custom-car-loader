@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using DVLangHelper.Data;
 using CCL.Types.Json;
-using CCL.Types.HUD;
 
 namespace CCL.Types
 {
@@ -39,9 +38,6 @@ namespace CCL.Types
 
         [Header("Audio (Optional)")]
         public GameObject SimAudioPrefab;
-
-        [Header("HUD - optional")]
-        public VanillaHUDLayout HUDLayout = null!;
 
         [Header("Physics")]
         public float mass;
