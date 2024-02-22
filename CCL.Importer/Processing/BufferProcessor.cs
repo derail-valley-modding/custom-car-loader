@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
+using DV.MultipleUnit;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using System.ComponentModel.Composition;
@@ -11,6 +12,11 @@ namespace CCL.Importer.Processing
     [Export(typeof(IModelProcessorStep))]
     internal class BufferProcessor : ModelProcessorStep
     {
+        private static Transform? s_buffersDE2;
+
+        private static Transform BuffersDE2 => Extensions.GetCached(ref s_buffersDE2,
+            () => TrainCarType.LocoShunter.ToV2().prefab.transform.Find(CarPartNames.Buffers.ROOT));
+
         public Vector3 FrontRigPosition;
         public Vector3 RearRigPosition;
 
@@ -25,6 +31,12 @@ namespace CCL.Importer.Processing
             bufferRoot = Object.Instantiate(bufferRoot, context.Car.prefab.transform);
             bufferRoot.name = CarPartNames.Buffers.ROOT;
 
+            // Replace rig with MU rig in case we want the MU cable. Also add the MU component to the root.
+            if (context.Car.HasMUCable)
+            {
+                ReplaceRigWithMU(bufferRoot);
+            }
+
             PositionPair bufferPositions;
             if (context.Car.UseCustomBuffers)
             {
@@ -37,6 +49,37 @@ namespace CCL.Importer.Processing
 
             FrontRigPosition = bufferPositions.Front;
             RearRigPosition = bufferPositions.Rear;
+        }
+
+        private static void ReplaceRigWithMU(GameObject bufferRoot)
+        {
+            var ogControllers = bufferRoot.GetComponentsInChildren<TrainBufferController>().OrderBy(x => x.transform.position.z);
+            var replacements = BuffersDE2.GetComponentsInChildren<TrainBufferController>().OrderBy(x => x.transform.position.z);
+
+            // Clone the originals and put them into position.
+            var front = Object.Instantiate(replacements.Last(), bufferRoot.transform);
+            var rear = Object.Instantiate(replacements.First(), bufferRoot.transform);
+            front.transform.position = ogControllers.Last().transform.position;
+            rear.transform.position = ogControllers.First().transform.position;
+            front.name = CarPartNames.Buffers.CHAIN_MU;
+            rear.name = CarPartNames.Buffers.CHAIN_MU;
+
+            // Assign the models.
+            front.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_FL);
+            front.bufferModelRight = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_FR);
+            rear.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_RL);
+            rear.bufferModelRight = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_RR);
+
+            // Add the MUM and assign the adapters.
+            var mum = bufferRoot.transform.parent.gameObject.AddComponent<MultipleUnitModule>();
+            mum.frontCableAdapter = front.GetComponentInChildren<CouplingHoseMultipleUnitAdapter>(true);
+            mum.rearCableAdapter = rear.GetComponentInChildren<CouplingHoseMultipleUnitAdapter>(true);
+
+            // Destroy the original rigs.
+            foreach (var item in ogControllers)
+            {
+                Object.Destroy(item.gameObject);
+            }
         }
 
         private static PositionPair SetupDefaultBuffers(GameObject newPrefab)
