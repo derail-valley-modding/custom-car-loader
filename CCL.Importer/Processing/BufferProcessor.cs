@@ -34,7 +34,7 @@ namespace CCL.Importer.Processing
             // Replace rig with MU rig in case we want the MU cable. Also add the MU component to the root.
             if (context.Car.HasMUCable)
             {
-                ReplaceRigWithMU(bufferRoot);
+                ReplaceRigWithMU(bufferRoot, context.Car.BufferType);
             }
 
             PositionPair bufferPositions;
@@ -51,29 +51,40 @@ namespace CCL.Importer.Processing
             RearRigPosition = bufferPositions.Rear;
         }
 
-        private static void ReplaceRigWithMU(GameObject bufferRoot)
+        private static void ReplaceRigWithMU(GameObject bufferRoot, BufferType bufferType)
         {
             var ogControllers = bufferRoot.GetComponentsInChildren<TrainBufferController>().OrderBy(x => x.transform.position.z);
             var replacements = BuffersDE2.GetComponentsInChildren<TrainBufferController>().OrderBy(x => x.transform.position.z);
 
-            // Clone the originals and put them into position.
-            var front = Object.Instantiate(replacements.Last(), bufferRoot.transform);
-            var rear = Object.Instantiate(replacements.First(), bufferRoot.transform);
-            front.transform.position = ogControllers.Last().transform.position;
-            rear.transform.position = ogControllers.First().transform.position;
-            front.name = CarPartNames.Buffers.CHAIN_MU;
-            rear.name = CarPartNames.Buffers.CHAIN_MU;
-
-            // Assign the models.
-            front.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_FL);
-            front.bufferModelRight = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_FR);
-            rear.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_RL);
-            rear.bufferModelRight = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_RR);
-
-            // Add the MUM and assign the adapters.
             var mum = bufferRoot.transform.parent.gameObject.AddComponent<MultipleUnitModule>();
-            mum.frontCableAdapter = front.GetComponentInChildren<CouplingHoseMultipleUnitAdapter>(true);
-            mum.rearCableAdapter = rear.GetComponentInChildren<CouplingHoseMultipleUnitAdapter>(true);
+
+            // If there is a front connector...
+            if (bufferType != BufferType.S282B)
+            {
+                // Clone the originals and put them into position.
+                var front = Object.Instantiate(replacements.Last(), bufferRoot.transform);
+                front.transform.position = ogControllers.Last().transform.position;
+                front.name = CarPartNames.Buffers.CHAIN_MU;
+
+                // Assign the models.
+                front.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_FL);
+                front.bufferModelRight = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_FR);
+
+                mum.frontCableAdapter = front.GetComponentInChildren<CouplingHoseMultipleUnitAdapter>(true);
+            }
+
+            // If there is a rear connector...
+            if (bufferType != BufferType.S282A)
+            {
+                var rear = Object.Instantiate(replacements.First(), bufferRoot.transform);
+                rear.transform.position = ogControllers.First().transform.position;
+                rear.name = CarPartNames.Buffers.CHAIN_MU;
+
+                rear.bufferModelLeft = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_RL);
+                rear.bufferModelRight = bufferRoot.transform.Find(CarPartNames.Buffers.PAD_RR);
+
+                mum.rearCableAdapter = rear.GetComponentInChildren<CouplingHoseMultipleUnitAdapter>(true);
+            }
 
             // Destroy the original rigs.
             foreach (var item in ogControllers)
