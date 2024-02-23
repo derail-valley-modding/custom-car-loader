@@ -15,6 +15,7 @@ namespace CCL.Importer.Proxies.Controls.VR
             CreateMap<PointHandSnapperProxy, PointHandSnapper>().AutoCacheAndMap();
 
             CreateMap<SpeedZoneControlTouchBehaviourProxy, SpeedZoneControlTouchBehaviour>().AutoCacheAndMap();
+            CreateMap<DoorClosedVRTouchDisableProxy, DoorClosedVRTouchDisable>().AutoCacheAndMap();
         }
     }
 }
