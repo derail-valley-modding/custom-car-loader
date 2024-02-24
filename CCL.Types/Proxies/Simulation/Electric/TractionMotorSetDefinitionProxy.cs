@@ -93,6 +93,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         };
 
         [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
+        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
         [RenderMethodButtons]
         public bool buttonRender;
 
@@ -197,7 +198,148 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
         public void ApplyDE6Defaults()
         {
-            throw new NotImplementedException();
+            maxMotorRpm = 2200.0f;
+            motorResistance = 0.015f;
+            motorTorqueFactor = 0.003f;
+            externalResistance = 0.015f;
+            ampsSmoothTime = 0.5f;
+            ampsSmoothMaxSpeed = 5000.0f;
+            numberOfTractionMotors = 6;
+
+            dynamicBrakePeakForceRpm = 700.0f;
+            dynamicBrakeGridResistance = 0.15f;
+            dynamicBrakeMaxCurrent = 700.0f;
+            dynamicBrakeCoolerSmoothTime = 2.0f;
+
+            circuitConnectionStages = 1;
+            circuitConnectionTime = 1.0f;
+            circuitConnectionTimeRandomization = 0.1f;
+            transitionMaxAmps = 100.0f;
+            configurations = new[]
+            {
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 1.0f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0, 3, 4 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1, 2, 5 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 500.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_ABOVE_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_ABOVE_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 1.0f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0, 3 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1, 4 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 2, 5 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 900.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_ABOVE_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 450.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.78f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0, 3 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1, 4 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 2, 5 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 1100.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_ABOVE_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 850.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.6f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0, 3 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1, 4 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 2, 5 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 00.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_ABOVE_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 1000.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                }
+            };
+
+            overheatingTemperatureThreshold = 120.0f;
+            overheatingMaxTime = 5.0f;
+            overheatingTmKillPercentage = 0.2f;
+            setTmOnFireOnKillPercentage = 0.3f;
+            rpmDamagePerSecond = 0.015f;
+            overspeedDamageFactor = 0.001f;
+            overheatingDamagePerSecond = 0.1f;
+            damagePerFuseBlow = 20.0f;
+            damagePerTmBlow = 300.0f;
         }
 
         #endregion
