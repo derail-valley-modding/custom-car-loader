@@ -36,6 +36,7 @@ namespace CCL.Types
 
         [Header("Buffers")]
         public BufferType BufferType = BufferType.Buffer09;
+        public bool HasMUCable = false;
         public bool UseCustomHosePositions = false;
 
         public bool HideFrontCoupler = false;
