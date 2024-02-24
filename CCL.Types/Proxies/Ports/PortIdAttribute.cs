@@ -60,6 +60,7 @@ namespace CCL.Types.Proxies.Ports
         HEAT_RATE = 107,
         PRESSURE = 108,
         MASS_RATE = 109,
+        OHMS = 110,
         FUEL = 200,
         OIL = 201,
         SAND = 202,

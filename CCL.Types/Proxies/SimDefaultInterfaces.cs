@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CCL.Types.Proxies
+﻿namespace CCL.Types.Proxies
 {
     public interface IDM3Defaults
     {
@@ -14,5 +8,15 @@ namespace CCL.Types.Proxies
     public interface IDH4Defaults
     {
         void ApplyDH4Defaults();
+    }
+
+    public interface IDE2Defaults
+    {
+        void ApplyDE2Defaults();
+    }
+
+    public interface IDE6Defaults
+    {
+        void ApplyDE6Defaults();
     }
 }
