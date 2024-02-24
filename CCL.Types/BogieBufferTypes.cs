@@ -8,7 +8,7 @@ namespace CCL.Types
         DE2             = 10,
         DE6             = 40,
         DH4             = 50,
-        S282            = 200,
+        S282            = 20,
         Handcar         = 700,
         Microshunter    = 70,
         Custom          = 10000
