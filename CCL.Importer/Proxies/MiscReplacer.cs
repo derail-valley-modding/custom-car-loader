@@ -3,6 +3,7 @@ using CCL.Types;
 using CCL.Types.Proxies;
 using DV;
 using DV.Interaction;
+using DV.Simulation.Cars;
 using DV.ThingTypes.TransitionHelpers;
 using UnityEngine;
 
@@ -41,6 +42,8 @@ namespace CCL.Importer.Proxies
             CreateMap<TeleportHoverGlowProxy, TeleportHoverGlow>().AutoCacheAndMap()
                 .AfterMap(TeleportHoverGlowAfter);
             CreateMap<GrabberRaycastPassThroughProxy, GrabberRaycastPassThrough>().AutoCacheAndMap();
+
+            CreateMap<MultipleUnitStateObserverProxy, MultipleUnitStateObserver>().AutoCacheAndMap();
         }
 
         private void InteriorNonStandardLayerAfter(InteriorNonStandardLayerProxy src, InteriorNonStandardLayer dest)
