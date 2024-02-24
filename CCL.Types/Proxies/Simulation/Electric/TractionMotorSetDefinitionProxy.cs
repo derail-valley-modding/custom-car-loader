@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
-    public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized, IDE2Defaults, IDE6Defaults
+    public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         [Header("Motor")]
         public float maxMotorRpm;
@@ -94,6 +94,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
         [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
         [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
+        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
         [RenderMethodButtons]
         public bool buttonRender;
 
@@ -337,6 +338,240 @@ namespace CCL.Types.Proxies.Simulation.Electric
             setTmOnFireOnKillPercentage = 0.3f;
             rpmDamagePerSecond = 0.015f;
             overspeedDamageFactor = 0.001f;
+            overheatingDamagePerSecond = 0.1f;
+            damagePerFuseBlow = 20.0f;
+            damagePerTmBlow = 300.0f;
+        }
+
+        public void ApplyBE2Defaults()
+        {
+            maxMotorRpm = 1700.0f;
+            motorResistance = 0.015f;
+            motorTorqueFactor = 0.03f;
+            externalResistance = 0.01f;
+            ampsSmoothTime = 0.5f;
+            ampsSmoothMaxSpeed = 1000.0f;
+            numberOfTractionMotors = 2;
+
+            dynamicBrakePeakForceRpm = 1300.0f;
+            dynamicBrakeGridResistance = 1.0f;
+            dynamicBrakeMaxCurrent = 700.0f;
+            dynamicBrakeCoolerSmoothTime = 5.0f;
+
+            circuitConnectionStages = 1;
+            circuitConnectionTime = 0.0f;
+            circuitConnectionTimeRandomization = 0.1f;
+            transitionMaxAmps = 10.0f;
+            configurations = new[]
+            {
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 1.0f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.86f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.7396f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.636056f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.5470082f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.470427f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.4045672f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                },
+                new ElectricalConfigurationDefinition()
+                {
+                    excitationMultiplier = 0.3479278f,
+                    motorGroups = new[]
+                    {
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 0 }
+                        },
+                        new MotorGroupDefinition()
+                        {
+                            motorIndexes = new[] { 1 }
+                        }
+                    },
+                    forwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    },
+                    backwardTransition = new TransitionDefinition()
+                    {
+                        thresholdValue = 0.0f,
+                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                    }
+                }
+            };
+
+            overheatingTemperatureThreshold = 120.0f;
+            overheatingMaxTime = 5.0f;
+            overheatingTmKillPercentage = 0.2f;
+            setTmOnFireOnKillPercentage = 0.3f;
+            rpmDamagePerSecond = 0.05f;
+            overspeedDamageFactor = 0.01f;
             overheatingDamagePerSecond = 0.1f;
             damagePerFuseBlow = 20.0f;
             damagePerTmBlow = 300.0f;

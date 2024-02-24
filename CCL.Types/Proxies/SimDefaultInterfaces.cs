@@ -19,4 +19,9 @@
     {
         void ApplyDE6Defaults();
     }
+
+    public interface IBE2Defaults
+    {
+        void ApplyBE2Defaults();
+    }
 }
