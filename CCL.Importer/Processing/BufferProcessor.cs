@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Proxies;
 using DV.MultipleUnit;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
@@ -90,6 +91,11 @@ namespace CCL.Importer.Processing
             foreach (var item in ogControllers)
             {
                 Object.Destroy(item.gameObject);
+            }
+
+            if (!bufferRoot.transform.root.GetComponentInChildren<MultipleUnitStateObserverProxy>())
+            {
+                bufferRoot.transform.root.gameObject.AddComponent<MultipleUnitStateObserverProxy>();
             }
         }
 
