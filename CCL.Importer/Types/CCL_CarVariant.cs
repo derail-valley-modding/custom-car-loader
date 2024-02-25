@@ -15,6 +15,7 @@ namespace CCL.Importer.Types
         public BogieType RearBogie;
 
         public BufferType BufferType;
+        public bool HasMUCable;
         public bool UseCustomHosePositions;
 
         public bool HideFrontCoupler;
