@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using CCL.Types.Proxies.Ports;
-using UnityEngine;
 
 namespace CCL.Types.Proxies.Resources
 {
@@ -83,6 +78,7 @@ namespace CCL.Types.Proxies.Resources
             capacity = type switch
             {
                 ResourceContainerType.Sand => 400,
+                ResourceContainerType.ElectricCharge => 360,
                 _ => 100,
             };
             defaultValue = capacity;

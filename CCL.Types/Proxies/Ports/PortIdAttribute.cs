@@ -65,7 +65,8 @@ namespace CCL.Types.Proxies.Ports
         OIL = 201,
         SAND = 202,
         WATER = 203,
-        COAL = 204
+        COAL = 204,
+        ELECTRIC_CHARGE = 205
     }
 
     public enum DVPortType
