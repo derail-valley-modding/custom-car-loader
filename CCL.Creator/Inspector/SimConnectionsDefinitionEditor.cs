@@ -30,6 +30,7 @@ namespace CCL.Creator.Inspector
             if (GUILayout.Button("Populate Components"))
             {
                 _proxy.PopulateComponents();
+                AssetHelper.SaveAsset(_proxy);
             }
             if (GUILayout.Button("Connection Wizard"))
             {
