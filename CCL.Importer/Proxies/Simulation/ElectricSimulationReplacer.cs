@@ -13,6 +13,8 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<TractionMotorSetDefinitionProxy.ElectricalConfigurationDefinition, TractionMotorSetDefinition.ElectricalConfigurationDefinition>();
             CreateMap<TractionMotorSetDefinitionProxy.MotorGroupDefinition, TractionMotorSetDefinition.MotorGroupDefinition>();
             CreateMap<TractionMotorSetDefinitionProxy.TransitionDefinition, TractionMotorSetDefinition.TransitionDefinition>();
+
+            CreateMap<TractionGeneratorDefinitionProxy, TractionGeneratorDefinition>().AutoCacheAndMap();
         }
     }
 }
