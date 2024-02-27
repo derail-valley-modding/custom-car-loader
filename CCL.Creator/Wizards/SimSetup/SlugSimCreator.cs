@@ -56,7 +56,7 @@ namespace CCL.Creator.Wizards.SimSetup
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
 
             ConnectPorts(tm, "TORQUE_OUT", transmission, "TORQUE_IN");
-            ConnectPorts(transmission, "TORQUE_OUT", tm, "TORQUE_IN");
+            ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
 
             ConnectPortRef(sand, "AMOUNT", sander, "SAND");
             ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");

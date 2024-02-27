@@ -23,7 +23,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var reverser = CreateReverserControl();
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
-            ExternalControlDefinitionProxy dynBrake;
+            ExternalControlDefinitionProxy dynBrake = null!;
 
             if (basisIndex == 1)
             {
@@ -36,6 +36,12 @@ namespace CCL.Creator.Wizards.SimSetup
             var sander = CreateOverridableControl(OverridableControlType.Sander);
 
             var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
+            var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
+            loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
+            loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
+            loadTorque.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE_TOTAL");
+            loadTorque.transform.parent = engine.transform;
+
             var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
             var airController = CreateSibling<CompressorSimControllerProxy>(compressor);
             airController.activationSignalExtInPortId = FullPortId(compressor, "ACTIVATION_SIGNAL_EXT_IN");
@@ -47,20 +53,34 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var tractionGen = CreateSimComponent<TractionGeneratorDefinitionProxy>("tractionGenerator");
             var slugPowerCalc = CreateSimComponent<SlugsPowerCalculatorDefinitionProxy>("slugsPowerCalculator");
-            var slugPowerProv = CreateSibling<SlugsPowerProviderModuleProxy>(slugPowerCalc);
             slugPowerCalc.transform.parent = tractionGen.transform;
+            var slugPowerProv = CreateSibling<SlugsPowerProviderModuleProxy>(slugPowerCalc);
+            slugPowerProv.generatorVoltagePortId = FullPortId(tractionGen, "VOLTAGE");
+            slugPowerProv.slugsEffectiveResistancePortId = FullPortId(slugPowerCalc, "EXTERNAL_EFFECTIVE_RESISTANCE_EXT_IN");
+            slugPowerProv.slugsTotalAmpsPortId = FullPortId(slugPowerCalc, "EXTERNAL_AMPS_EXT_IN");
 
             var tm = CreateSimComponent<TractionMotorSetDefinitionProxy>("tm");
             var deadTMs = CreateSibling<DeadTractionMotorsControllerProxy>(tm);
+            deadTMs.overheatFuseOffPortId = FullPortId(tm, "OVERHEAT_POWER_FUSE_OFF");
             var tmExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(tm);
+            tmExplosion.explosionSignalPortId = FullPortId(tm, "OVERSPEED_EXPLOSION_TRIGGER");
             tmExplosion.bodyDamagePercentage = 0.05f;
 
             var cooler = CreateSimComponent<PassiveCoolerDefinitionProxy>("tmPassiveCooler");
             cooler.transform.parent = tm.transform;
             var heat = CreateSimComponent<HeatReservoirDefinitionProxy>("tmHeat");
             heat.transform.parent = tm.transform;
+            heat.inputs = new[]
+            {
+                new PortReferenceDefinition(DVPortValueType.HEAT_RATE, "HEAT_IN_0"),
+                new PortReferenceDefinition(DVPortValueType.HEAT_RATE, "HEAT_IN_1")
+            };
 
             var tmRpm = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("tmRpmCalculator");
+            tmRpm.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
+            tmRpm.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_RATIO");
+            tmRpm.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "TM_RPM");
+
             var transmission = CreateSimComponent<TransmissionFixedGearDefinitionProxy>("transmission");
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
             var tractionFeeders = CreateSibling<TractionPortFeedersProxy>(traction);
@@ -75,7 +95,74 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ENGINE_STARTER", false),
                 new FuseDefinition("TM_POWER", false),
             };
+
             engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
+            tractionGen.powerFuseId = FullPortId(fusebox, "TM_POWER");
+            deadTMs.tmFuseId = FullPortId(fusebox, "TM_POWER");
+
+            ConnectPorts(tm, "TORQUE_OUT", transmission, "TORQUE_IN");
+            ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
+
+            ConnectPortRef(throttle, "EXT_IN", thrtPowr, "THROTTLE");
+            ConnectPortRef(engine, "IDLE_RPM_NORMALIZED", thrtPowr, "IDLE_RPM_NORMALIZED");
+            ConnectPortRef(engine, "MAX_POWER_RPM_NORMALIZED", thrtPowr, "MAX_POWER_RPM_NORMALIZED");
+            ConnectPortRef(engine, "MAX_POWER", thrtPowr, "MAX_POWER");
+
+            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
+            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+
+            ConnectPortRef(tractionGen, "THROTTLE", engine, "THROTTLE");
+
+            ConnectPortRef(fuel, "AMOUNT", engine, "FUEL");
+            ConnectPortRef(fuel, "CONSUME_EXT_IN", engine, "FUEL_CONSUMPTION");
+            ConnectPortRef(oil, "AMOUNT", engine, "OIL");
+            ConnectPortRef(oil, "CONSUME_EXT_IN", engine, "OIL_CONSUMPTION");
+
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_TOTAL", engine, "LOAD_TORQUE");
+            ConnectPortRef(compressor, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_0");
+            ConnectPortRef(tractionGen, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_1");
+
+            ConnectPortRef(engine, "RPM_NORMALIZED", compressor, "ENGINE_RPM_NORMALIZED");
+
+            ConnectPortRef(tm, "EFFECTIVE_RESISTANCE", slugPowerCalc, "INTERNAL_EFFECTIVE_RESISTANCE");
+            ConnectPortRef(tm, "TOTAL_AMPS", slugPowerCalc, "INTERNAL_AMPS");
+
+            ConnectPortRef(thrtPowr, "GOAL_POWER", tractionGen, "GOAL_POWER");
+            ConnectPortRef(thrtPowr, "GOAL_RPM_NORMALIZED", tractionGen, "GOAL_RPM_NORMALIZED");
+
+            if (basisIndex == 1)
+            {
+                ConnectPortRef(dynBrake, "EXT_IN", tractionGen, "DYNAMIC_BRAKE");
+            }
+
+            ConnectPortRef(engine, "RPM", tractionGen, "RPM");
+            ConnectPortRef(engine, "RPM_NORMALIZED", tractionGen, "RPM_NORMALIZED");
+
+            ConnectPortRef(tm, "CURRENT_DROP_REQUEST", tractionGen, "CURRENT_DROP_REQUEST");
+
+            ConnectPortRef(slugPowerCalc, "TOTAL_AMPS", tractionGen, "TOTAL_AMPS");
+            ConnectPortRef(slugPowerCalc, "EFFECTIVE_RESISTANCE", tractionGen, "EFFECTIVE_RESISTANCE");
+
+            ConnectPortRef(throttle, "EXT_IN", tm, "THROTTLE");
+            ConnectPortRef(reverser, "REVERSER", tm, "REVERSER");
+
+            if (basisIndex == 1)
+            {
+                ConnectPortRef(dynBrake, "EXT_IN", tm, "DYNAMIC_BRAKE");
+            }
+
+            ConnectPortRef(tmRpm, "TM_RPM", tm, "MOTOR_RPM");
+
+            ConnectPortRef(tractionGen, "VOLTAGE", tm, "APPLIED_VOLTAGE");
+
+            ConnectPortRef(heat, "TEMPERATURE", tm, "TM_TEMPERATURE");
+            ConnectPortRef(heat, "TEMPERATURE", cooler, "TEMPERATURE");
+
+            ConnectPortRef(tm, "HEAT_OUT", heat, "HEAT_IN_0");
+            ConnectPortRef(cooler, "HEAT_OUT", heat, "HEAT_IN_1");
+
+            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", tmRpm, "WHEEL_RPM");
+            ConnectPortRef(transmission, "GEAR_RATIO", tmRpm, "GEAR_RATIO");
 
             switch (basisIndex)
             {
