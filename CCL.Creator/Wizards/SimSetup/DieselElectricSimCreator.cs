@@ -99,7 +99,15 @@ namespace CCL.Creator.Wizards.SimSetup
 
             engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
             tractionGen.powerFuseId = FullPortId(fusebox, "TM_POWER");
+            tm.powerFuseId = FullPortId(fusebox, "TM_POWER");
             deadTMs.tmFuseId = FullPortId(fusebox, "TM_POWER");
+
+            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_DAMAGE") };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN") };
+            _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
+
+            _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
+            _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
 
             ConnectPorts(tm, "TORQUE_OUT", transmission, "TORQUE_IN");
             ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");

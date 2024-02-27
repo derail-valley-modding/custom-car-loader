@@ -1,7 +1,5 @@
 ﻿using CCL.Types.Proxies.Ports;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
@@ -14,6 +12,9 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public float smoothTime = 0.3f;
 
         [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]
+        [MethodButton(nameof(ApplyDH4Defaults), "Apply DM4 Defaults")]
+        [MethodButton(nameof(ApplyDE2Defaults), "Apply DM2 Defaults")]
+        [MethodButton(nameof(ApplyDE6Defaults), "Apply DM6 Defaults")]
         [RenderMethodButtons]
         public bool renderButtons;
 

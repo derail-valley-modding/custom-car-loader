@@ -44,6 +44,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "ENGINE_ON"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "RPM_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "IDLE_RPM_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "MAX_POWER_RPM_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "MAX_POWER"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "MAX_RPM"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "RETARDER_BRAKE_EFFECT"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.FUEL, "FUEL_CONSUMPTION_NORMALIZED"),
