@@ -1,9 +1,5 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CCL.Types.Proxies.Resources
 {
@@ -13,7 +9,8 @@ namespace CCL.Types.Proxies.Resources
         Fuel,
         Oil,
         Sand,
-        Water
+        Water,
+        ElectricCharge
     }
 
     public static class ResourceContainerTypeExtensions
@@ -27,6 +24,7 @@ namespace CCL.Types.Proxies.Resources
                 ResourceContainerType.Oil => DVPortValueType.OIL,
                 ResourceContainerType.Sand => DVPortValueType.SAND,
                 ResourceContainerType.Water => DVPortValueType.WATER,
+                ResourceContainerType.ElectricCharge => DVPortValueType.ELECTRIC_CHARGE,
                 _ => throw new NotImplementedException(),
             };
         }

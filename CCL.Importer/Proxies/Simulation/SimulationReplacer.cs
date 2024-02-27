@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Simulation;
+using CCL.Types.Proxies.Simulation.Electric;
 using DV.Simulation.Cars;
 using DV.Simulation.Ports;
 using LocoSim.Definitions;
+using LocoSim.DVExtensions.Slugs;
 
 namespace CCL.Importer.Proxies.Simulation
 {
@@ -19,6 +21,10 @@ namespace CCL.Importer.Proxies.Simulation
                 .AfterMap((_, dest) => AddDrivingForce(dest));
 
             CreateMap<TractionPortFeedersProxy, TractionPortsFeeder>().AutoCacheAndMap();
+
+            CreateMap<SlugModuleProxy, SlugModule>().AutoCacheAndMap();
+            CreateMap<SlugsPowerCalculatorDefinitionProxy, SlugsPowerCalculatorDefinition>().AutoCacheAndMap();
+            CreateMap<SlugsPowerProviderModuleProxy, SlugsPowerProviderModule>().AutoCacheAndMap();
         }
 
         private static void AddDrivingForce(TractionDefinition traction)

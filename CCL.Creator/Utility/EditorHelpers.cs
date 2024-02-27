@@ -197,6 +197,46 @@ namespace CCL.Creator.Utility
 
             EditorGUILayout.EndScrollView();
         }
+
+        /// <summary>
+        /// Draws an array property with buttons to reorder its elements.
+        /// </summary>
+        public static void ReorderableArrayField(SerializedProperty property)
+        {
+            property.isExpanded = EditorGUILayout.Foldout(property.isExpanded, property.displayName);
+
+            if (!property.isExpanded)
+            {
+                return;
+            }
+
+            int length = EditorGUILayout.DelayedIntField("Size", property.arraySize);
+            property.arraySize = length;
+
+            var width = GUILayout.Width(EditorGUIUtility.singleLineHeight);
+            EditorGUIUtility.labelWidth -= EditorGUIUtility.singleLineHeight * 3;
+
+            for (int i = 0; i < length; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUI.enabled = i < length - 1;
+                if (GUILayout.Button("\u2193", EditorStyles.textField, width))
+                {
+                    property.MoveArrayElement(i, i + 1);
+                }
+                GUI.enabled = i > 0;
+                if (GUILayout.Button("\u2191", EditorStyles.textField, width))
+                {
+                    property.MoveArrayElement(i, i - 1);
+                }
+                GUI.enabled = true;
+                GUILayout.Space(EditorGUIUtility.singleLineHeight);
+                EditorGUILayout.PropertyField(property.GetArrayElementAtIndex(i));
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUIUtility.labelWidth = 0;
+        }
     }
 
     internal class GUIColorScope : IDisposable

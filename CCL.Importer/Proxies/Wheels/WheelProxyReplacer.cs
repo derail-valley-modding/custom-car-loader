@@ -18,12 +18,23 @@ namespace CCL.Importer.Proxies.Wheels
             CreateMap<PoweredWheelRotationViaCodeProxy, PoweredWheelRotationViaCode>().AutoCacheAndMap();
 
             CreateMap<PoweredWheelsManagerProxy, PoweredWheelsManager>().AutoCacheAndMap()
-                .ForMember(s => s.poweredWheels, o => o.MapFrom(s => Mapper.GetFromCache(s.poweredWheels).ToArray()));
+                .ForMember(s => s.poweredWheels, o => o.MapFrom(s => Mapper.GetFromCache(s.poweredWheels).ToArray()))
+                .AfterMap(PoweredWheelsManagerProxyAfter);
             CreateMap<PoweredWheelProxy, PoweredWheel>().AutoCacheAndMap();
 
             CreateMap<WheelslipControllerProxy, WheelslipController>().AutoCacheAndMap();
             CreateMap<PoweredWheelRotationViaAnimationProxy.AnimatorStartTimeOffsetPair, PoweredWheelRotationViaAnimation.AnimatorStartTimeOffsetPair>();
             CreateMap<PoweredWheelRotationViaCodeProxy.TransformRotationConfig, TransformRotationConfig>();
+        }
+
+        private void PoweredWheelsManagerProxyAfter(PoweredWheelsManagerProxy proxy, PoweredWheelsManager real)
+        {
+            if (proxy.GetWheelsFromDefaultBogies)
+            {
+                var wheels = real.poweredWheels.ToList();
+                wheels.AddRange(real.transform.root.GetComponentsInChildren<PoweredWheel>());
+                real.poweredWheels = wheels.ToArray();
+            }
         }
     }
 }

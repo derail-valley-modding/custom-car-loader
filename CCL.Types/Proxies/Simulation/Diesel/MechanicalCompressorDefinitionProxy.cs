@@ -1,11 +1,9 @@
 ﻿using CCL.Types.Proxies.Ports;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class MechanicalCompressorDefinitionProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults
+    public class MechanicalCompressorDefinitionProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults
     {
         public float loadTorque = 400f;
         public float maxProductionRate = 250f;
@@ -14,6 +12,9 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public float smoothTime = 0.3f;
 
         [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]
+        [MethodButton(nameof(ApplyDH4Defaults), "Apply DM4 Defaults")]
+        [MethodButton(nameof(ApplyDE2Defaults), "Apply DM2 Defaults")]
+        [MethodButton(nameof(ApplyDE6Defaults), "Apply DM6 Defaults")]
         [RenderMethodButtons]
         public bool renderButtons;
 
@@ -49,6 +50,24 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             maxProductionRate = 75;
             activationPressureThreshold = 7;
             mainReservoirVolume = 80;
+            smoothTime = 0.3f;
+        }
+
+        public void ApplyDE2Defaults()
+        {
+            loadTorque = 200.0f;
+            maxProductionRate = 50.0f;
+            activationPressureThreshold = 7.0f;
+            mainReservoirVolume = 100.0f;
+            smoothTime = 0.3f;
+        }
+
+        public void ApplyDE6Defaults()
+        {
+            loadTorque = 400.0f;
+            maxProductionRate = 100.0f;
+            activationPressureThreshold = 7.0f;
+            mainReservoirVolume = 200.0f;
             smoothTime = 0.3f;
         }
     }
