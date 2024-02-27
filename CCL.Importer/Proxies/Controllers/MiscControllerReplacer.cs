@@ -6,6 +6,7 @@ using DV.Simulation.Controllers;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using LocoSim.Definitions;
+using System;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies.Controllers
@@ -52,28 +53,17 @@ namespace CCL.Importer.Proxies.Controllers
             controller.tmBlowPrefab = DE6DeadTM.tmBlowPrefab;
         }
 
-        private void ExplosionActivationOnSignalAfter(ExplosionActivationOnSignalProxy _, ExplosionActivationOnSignal explosion)
+        private void ExplosionActivationOnSignalAfter(ExplosionActivationOnSignalProxy proxy, ExplosionActivationOnSignal explosion)
         {
-            switch (_.explosion)
+            explosion.explosionPrefab = proxy.explosion switch
             {
-                case ExplosionPrefab.ExplosionBoiler:
-                    explosion.explosionPrefab = BoilerExplosion;
-                    break;
-                case ExplosionPrefab.ExplosionElectric:
-                    explosion.explosionPrefab = ElectricExplosion;
-                    break;
-                case ExplosionPrefab.ExplosionHydraulic:
-                    explosion.explosionPrefab = HydraulicExplosion;
-                    break;
-                case ExplosionPrefab.ExplosionMechanical:
-                    explosion.explosionPrefab = MechanicalExplosion;
-                    break;
-                case ExplosionPrefab.ExplosionTMOverspeed:
-                    explosion.explosionPrefab = TMOverspeedExplosion;
-                    break;
-                default:
-                    break;
-            }
+                ExplosionPrefab.ExplosionBoiler => BoilerExplosion,
+                ExplosionPrefab.ExplosionElectric => ElectricExplosion,
+                ExplosionPrefab.ExplosionHydraulic => HydraulicExplosion,
+                ExplosionPrefab.ExplosionMechanical => MechanicalExplosion,
+                ExplosionPrefab.ExplosionTMOverspeed => TMOverspeedExplosion,
+                _ => null!
+            };
         }
     }
 }
