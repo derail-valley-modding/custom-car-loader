@@ -1,15 +1,12 @@
 ﻿using CCL.Types.Json;
 using CCL.Types.Proxies.Ports;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
+    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults
     {
         public float heatCapacity = 1f;
 
@@ -50,6 +47,18 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             {
                 inputs = new PortReferenceDefinition[0];
             }
+        }
+
+        public void ApplyDE2Defaults()
+        {
+            heatCapacity = 1000.0f;
+            overheatingTemperatureThreshold = 120.0f;
+        }
+
+        public void ApplyDE6Defaults()
+        {
+            heatCapacity = 15000.0f;
+            overheatingTemperatureThreshold = 120.0f;
         }
     }
 }

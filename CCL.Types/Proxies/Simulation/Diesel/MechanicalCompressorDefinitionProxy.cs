@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class MechanicalCompressorDefinitionProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults
+    public class MechanicalCompressorDefinitionProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults
     {
         public float loadTorque = 400f;
         public float maxProductionRate = 250f;
@@ -49,6 +49,24 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             maxProductionRate = 75;
             activationPressureThreshold = 7;
             mainReservoirVolume = 80;
+            smoothTime = 0.3f;
+        }
+
+        public void ApplyDE2Defaults()
+        {
+            loadTorque = 200.0f;
+            maxProductionRate = 50.0f;
+            activationPressureThreshold = 7.0f;
+            mainReservoirVolume = 100.0f;
+            smoothTime = 0.3f;
+        }
+
+        public void ApplyDE6Defaults()
+        {
+            loadTorque = 400.0f;
+            maxProductionRate = 100.0f;
+            activationPressureThreshold = 7.0f;
+            mainReservoirVolume = 200.0f;
             smoothTime = 0.3f;
         }
     }

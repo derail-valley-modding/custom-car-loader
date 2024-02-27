@@ -4,6 +4,7 @@ using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Electric;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Creator.Wizards.SimSetup
@@ -73,6 +74,10 @@ namespace CCL.Creator.Wizards.SimSetup
             // tm.TM_TEMPERATURE
 
             ApplyMethodToAll<IDE6Defaults>(s => s.ApplyDE6Defaults());
+
+            // Only difference to DE6.
+            tm.configurations = tm.configurations.Take(1).ToArray();
+            tm.configurations[0].forwardTransition.thresholdValue = 0;
         }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults
+    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDE2Defaults, IDE6Defaults
     {
         [Header("RPM Range")]
         public float rotationalInertia;
@@ -142,6 +142,44 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                     }
                 }
             };
+        }
+
+        public void ApplyDE2Defaults()
+        {
+            rotationalInertia = 5.0f;
+            viscousDampingFactor = 20.0f;
+            engineRpmMax = 2000.0f;
+            engineRpmIdle = 600.0f;
+
+            retarderBrakingTorque = 0.0f;
+
+            fuelInjection = 0.3f;
+            oilConsumptionRate = 0.02f;
+
+            noOilDamagePerSecond = 30.0f;
+            rpmDamagePerSecond = 0.005f;
+            rpmDamageImmunityTime = 2.0f;
+            overheatingThreshold = 110.0f;
+            overheatingDamagePerDegreePerSecond = 0.1f;
+        }
+
+        public void ApplyDE6Defaults()
+        {
+            rotationalInertia = 50.0f;
+            viscousDampingFactor = 100.0f;
+            engineRpmMax = 950.0f;
+            engineRpmIdle = 315.0f;
+
+            retarderBrakingTorque = 0.0f;
+
+            fuelInjection = 1.6f;
+            oilConsumptionRate = 0.05f;
+
+            noOilDamagePerSecond = 30.0f;
+            rpmDamagePerSecond = 0.015f;
+            rpmDamageImmunityTime = 2.0f;
+            overheatingThreshold = 110.0f;
+            overheatingDamagePerDegreePerSecond = 0.1f;
         }
 
         #endregion
