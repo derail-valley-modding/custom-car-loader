@@ -30,6 +30,7 @@ namespace CCL.Creator.Inspector
             if (GUILayout.Button("Pick children"))
             {
                 _grabber.PickChildren();
+                AssetHelper.SaveAsset(_grabber);
             }
 
             EditorGUILayout.Space();

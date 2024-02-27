@@ -1,6 +1,5 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types.Components;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -37,6 +36,7 @@ namespace CCL.Creator.Inspector
             if (GUILayout.Button("Pick Filter In Object"))
             {
                 _grabber.PickSame();
+                AssetHelper.SaveAsset(_grabber);
             }
         }
     }

@@ -28,5 +28,11 @@ namespace CCL.Types
         {
             return source?.IndexOf(toCheck, comp) >= 0;
         }
+
+        public static bool IsDefined<T>(this T enumValue)
+            where T : Enum
+        {
+            return Enum.IsDefined(typeof(T), enumValue);
+        }
     }
 }
