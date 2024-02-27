@@ -165,6 +165,11 @@ namespace CCL.Importer
                 }
             }
 
+            if (carType.SimAudioPrefab)
+            {
+                ModelProcessor.DoBasicProcessing(carType.SimAudioPrefab);
+            }
+
             CCLPlugin.Log($"Extra models: {carType.ExtraModels.Length}");
 
             foreach (var extraModel in carType.ExtraModels)

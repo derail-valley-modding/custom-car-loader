@@ -46,7 +46,6 @@ namespace CCL.Importer
                 if (carType.SimAudioPrefab)
                 {
                     var simAudioFab = ModelProcessor.CreateModifiablePrefab(carType.SimAudioPrefab);
-                    ModelProcessor.DoBasicProcessing(simAudioFab);
 
                     simAudioFab.transform.SetParent(newAudioFab.transform, false);
                     simAudioFab.SetActive(true);
