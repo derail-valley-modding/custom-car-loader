@@ -10,7 +10,7 @@ namespace CCL.Types.Proxies.Controllers
         public float wheelsDamagePercentage;
         public float mechanicalPTDamagePercentage;
         public float electricalPTDamagePercentage;
-        public GameObject explosionPrefab;
+        public ExplosionPrefab explosion;
         public float explosionParticlesDuration = 4f;
         public float windowsBreakingDelay = 0.5f;
         public Transform explosionAnchor;
@@ -22,5 +22,14 @@ namespace CCL.Types.Proxies.Controllers
         {
             new PortIdField(this, nameof(explosionSignalPortId), explosionSignalPortId, DVPortValueType.GENERIC),
         };
+    }
+
+    public enum ExplosionPrefab
+    {
+        ExplosionBoiler,
+        ExplosionElectric,
+        ExplosionHydraulic,
+        ExplosionMechanical,
+        ExplosionTMOverspeed,
     }
 }

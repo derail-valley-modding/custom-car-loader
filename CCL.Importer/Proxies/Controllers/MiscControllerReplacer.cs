@@ -5,6 +5,7 @@ using DV.Simulation.Brake;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
+using LocoSim.Definitions;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies.Controllers
@@ -12,11 +13,26 @@ namespace CCL.Importer.Proxies.Controllers
     internal class MiscControllerReplacer : Profile
     {
         private static DeadTractionMotorsController? s_de6deadTM;
-        private static GameObject? s_tmExplosion;
+        private static GameObject? s_boilerExplosion;
+        private static GameObject? s_electricExplosion;
+        private static GameObject? s_hydraulicExplosion;
+        private static GameObject? s_mechanicalExplosion;
+        private static GameObject? s_tmOverspeedExplosion;
 
         private static DeadTractionMotorsController DE6DeadTM => Extensions.GetCached(ref s_de6deadTM,
             () => TrainCarType.LocoDiesel.ToV2().prefab.GetComponentInChildren<DeadTractionMotorsController>());
-        private static GameObject TMExplosion => Extensions.GetCached(ref s_tmExplosion,
+        private static GameObject BoilerExplosion => Extensions.GetCached(ref s_boilerExplosion,
+            () => TrainCarType.LocoSteamHeavy.ToV2().prefab.GetComponentInChildren<BoilerDefinition>()
+                .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+        private static GameObject ElectricExplosion => Extensions.GetCached(ref s_electricExplosion,
+            () => DE6DeadTM.tmBlowPrefab);
+        private static GameObject HydraulicExplosion => Extensions.GetCached(ref s_hydraulicExplosion,
+            () => TrainCarType.LocoDH4.ToV2().prefab.GetComponentInChildren<HydraulicTransmissionDefinition>()
+                .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+        private static GameObject MechanicalExplosion => Extensions.GetCached(ref s_mechanicalExplosion,
+            () => TrainCarType.LocoDM3.ToV2().prefab.GetComponentInChildren<DieselEngineDirectDefinition>()
+                .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+        private static GameObject TMOverspeedExplosion => Extensions.GetCached(ref s_tmOverspeedExplosion,
             () => DE6DeadTM.GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
 
         public MiscControllerReplacer()
@@ -38,7 +54,26 @@ namespace CCL.Importer.Proxies.Controllers
 
         private void ExplosionActivationOnSignalAfter(ExplosionActivationOnSignalProxy _, ExplosionActivationOnSignal explosion)
         {
-            explosion.explosionPrefab = TMExplosion;
+            switch (_.explosion)
+            {
+                case ExplosionPrefab.ExplosionBoiler:
+                    explosion.explosionPrefab = BoilerExplosion;
+                    break;
+                case ExplosionPrefab.ExplosionElectric:
+                    explosion.explosionPrefab = ElectricExplosion;
+                    break;
+                case ExplosionPrefab.ExplosionHydraulic:
+                    explosion.explosionPrefab = HydraulicExplosion;
+                    break;
+                case ExplosionPrefab.ExplosionMechanical:
+                    explosion.explosionPrefab = MechanicalExplosion;
+                    break;
+                case ExplosionPrefab.ExplosionTMOverspeed:
+                    explosion.explosionPrefab = TMOverspeedExplosion;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
