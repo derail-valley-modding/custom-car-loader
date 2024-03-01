@@ -1,7 +1,7 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 
-namespace CCL.Types.Proxies.Simulation.Diesel
+namespace CCL.Types.Proxies.Simulation
 {
     public class PassiveCoolerDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults
     {

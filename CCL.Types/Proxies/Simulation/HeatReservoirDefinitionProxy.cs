@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CCL.Types.Proxies.Simulation.Diesel
+namespace CCL.Types.Proxies.Simulation
 {
     public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults
     {
