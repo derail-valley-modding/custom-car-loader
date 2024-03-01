@@ -3,6 +3,7 @@ using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
+using CCL.Types.Proxies.Simulation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             DieselMechanical,
             DieselElectric,
+            BatteryElectric,
             Slug
         }
 
@@ -55,6 +57,7 @@ namespace CCL.Creator.Wizards.SimSetup
                     {
                         SimulationType.DieselMechanical => new DieselMechSimCreator(_targetRoot),
                         SimulationType.DieselElectric => new DieselElectricSimCreator(_targetRoot),
+                        SimulationType.BatteryElectric => new BatteryElectricSimCreator(_targetRoot),
                         SimulationType.Slug => new SlugSimCreator(_targetRoot),
                         _ => throw new NotImplementedException(),
                     };
@@ -245,6 +248,29 @@ namespace CCL.Creator.Wizards.SimSetup
             overrider.ControlType = OverridableControlType.Reverser;
             overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
             return control;
+        }
+
+        protected SanderDefinitionProxy CreateSanderControl(string? idOverride = null)
+        {
+            idOverride ??= "sander";
+            var control = CreateSimComponent<SanderDefinitionProxy>(idOverride);
+            var overrider = CreateSibling<OverridableControlProxy>(control);
+            overrider.ControlType = OverridableControlType.Sander;
+            overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
+            return control;
+        }
+
+        protected CompressorSimControllerProxy CreateCompressorSim(SimComponentDefinitionProxy compressor)
+        {
+            var airController = CreateSibling<CompressorSimControllerProxy>(compressor);
+            airController.activationSignalExtInPortId = FullPortId(compressor, "ACTIVATION_SIGNAL_EXT_IN");
+            airController.isPoweredPortId = FullPortId(compressor, "IS_POWERED");
+            airController.productionRateOutPortId = FullPortId(compressor, "PRODUCTION_RATE");
+            airController.mainReservoirVolumePortId = FullPortId(compressor, "MAIN_RES_VOLUME");
+            airController.activationPressureThresholdPortId = FullPortId(compressor, "ACTIVATION_PRESSURE_THRESHOLD");
+            airController.compressorHealthStatePortId = FullPortId(compressor, "COMPRESSOR_HEALTH_EXT_IN");
+
+            return airController;
         }
 
         protected string FullPortId(SimComponentDefinitionProxy component, string portId) => $"{component.ID}.{portId}";

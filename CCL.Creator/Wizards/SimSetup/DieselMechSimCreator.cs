@@ -66,13 +66,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             // compressor
             var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
-            var airController = CreateSibling<CompressorSimControllerProxy>(compressor);
-            airController.activationSignalExtInPortId = FullPortId(compressor, "ACTIVATION_SIGNAL_EXT_IN");
-            airController.isPoweredPortId = FullPortId(compressor, "IS_POWERED");
-            airController.productionRateOutPortId = FullPortId(compressor, "PRODUCTION_RATE");
-            airController.mainReservoirVolumePortId = FullPortId(compressor, "MAIN_RES_VOLUME");
-            airController.activationPressureThresholdPortId = FullPortId(compressor, "ACTIVATION_PRESSURE_THRESHOLD");
-            airController.compressorHealthStatePortId = FullPortId(compressor, "COMPRESSOR_HEALTH_EXT_IN");
+            var airController = CreateCompressorSim(compressor);
 
             // resources
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
@@ -106,7 +100,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var horn = CreateSibling<HornDefinitionProxy>(hornControl, "horn");
             horn.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
 
-            var sander = CreateSimComponent<SanderDefinitionProxy>("sander");
+            var sander = CreateSanderControl();
             sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
 
             var gearInputA = CreateSimComponent<ManualTransmissionInputDefinitionProxy>("gearInputA");

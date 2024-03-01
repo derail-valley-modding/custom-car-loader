@@ -33,7 +33,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
-            var sander = CreateOverridableControl(OverridableControlType.Sander);
+            var sander = CreateSanderControl();
 
             var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
@@ -43,13 +43,7 @@ namespace CCL.Creator.Wizards.SimSetup
             loadTorque.transform.parent = engine.transform;
 
             var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
-            var airController = CreateSibling<CompressorSimControllerProxy>(compressor);
-            airController.activationSignalExtInPortId = FullPortId(compressor, "ACTIVATION_SIGNAL_EXT_IN");
-            airController.isPoweredPortId = FullPortId(compressor, "IS_POWERED");
-            airController.productionRateOutPortId = FullPortId(compressor, "PRODUCTION_RATE");
-            airController.mainReservoirVolumePortId = FullPortId(compressor, "MAIN_RES_VOLUME");
-            airController.activationPressureThresholdPortId = FullPortId(compressor, "ACTIVATION_PRESSURE_THRESHOLD");
-            airController.compressorHealthStatePortId = FullPortId(compressor, "COMPRESSOR_HEALTH_EXT_IN");
+            var airController = CreateCompressorSim(compressor);
 
             var tractionGen = CreateSimComponent<TractionGeneratorDefinitionProxy>("tractionGenerator");
             var slugPowerCalc = CreateSimComponent<SlugsPowerCalculatorDefinitionProxy>("slugsPowerCalculator");
@@ -97,6 +91,7 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("TM_POWER", false),
             };
 
+            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
             engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
             tractionGen.powerFuseId = FullPortId(fusebox, "TM_POWER");
             tm.powerFuseId = FullPortId(fusebox, "TM_POWER");
