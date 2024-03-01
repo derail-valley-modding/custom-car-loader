@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
-    public class BatteryDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields
+    public class BatteryDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IBE2Defaults
     {
         public readonly BatteryChemistry chemistry = BatteryChemistry.LeadAcid;
 
@@ -31,6 +31,13 @@ namespace CCL.Types.Proxies.Simulation.Electric
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
+
+        public void ApplyBE2Defaults()
+        {
+            numSeriesCells = 56;
+            internalResistance = 0.005f;
+            baseConsumptionMultiplier = 2f;
+        }
     }
 
     public enum BatteryChemistry

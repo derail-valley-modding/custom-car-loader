@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class PassiveCoolerDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults
+    public class PassiveCoolerDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         public float coolingRate = 12500f;
 
@@ -26,6 +26,11 @@ namespace CCL.Types.Proxies.Simulation
         public void ApplyDE6Defaults()
         {
             coolingRate = 250.0f;
+        }
+
+        public void ApplyBE2Defaults()
+        {
+            coolingRate = 6.0f;
         }
     }
 }

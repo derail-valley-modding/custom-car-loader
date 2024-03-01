@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults
+    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         public float heatCapacity = 1f;
 
@@ -58,6 +58,12 @@ namespace CCL.Types.Proxies.Simulation
         public void ApplyDE6Defaults()
         {
             heatCapacity = 15000.0f;
+            overheatingTemperatureThreshold = 120.0f;
+        }
+
+        public void ApplyBE2Defaults()
+        {
+            heatCapacity = 500.0f;
             overheatingTemperatureThreshold = 120.0f;
         }
     }

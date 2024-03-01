@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
-    public class ElectricCompressorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields
+    public class ElectricCompressorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IBE2Defaults
     {
         public float maxPower = 45000f;
         public float maxBarLiterProductionRate = 80f;
@@ -35,5 +35,18 @@ namespace CCL.Types.Proxies.Simulation.Electric
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
+
+        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
+        [RenderMethodButtons]
+        public bool buttonRender;
+
+        public void ApplyBE2Defaults()
+        {
+            maxPower = 30000.0f;
+            maxBarLiterProductionRate = 50.0f;
+            activationPressureThreshold = 7.0f;
+            mainReservoirVolume = 50.0f;
+            smoothTime = 0.3f;
+        }
     }
 }
