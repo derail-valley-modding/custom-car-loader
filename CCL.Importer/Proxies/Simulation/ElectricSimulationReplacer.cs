@@ -17,6 +17,7 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<TractionGeneratorDefinitionProxy, TractionGeneratorDefinition>().AutoCacheAndMap();
 
             CreateMap<BatteryDefinitionProxy, BatteryDefinition>().AutoCacheAndMap();
+            CreateMap<ElectricCompressorDefinitionProxy, ElectricCompressorDefinition>().AutoCacheAndMap();
         }
     }
 }

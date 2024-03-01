@@ -28,7 +28,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         };
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
-{
+        {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
     }
