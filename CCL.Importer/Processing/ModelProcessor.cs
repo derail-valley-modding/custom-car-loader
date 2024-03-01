@@ -119,6 +119,7 @@ namespace CCL.Importer.Processing
             CCLPlugin.LogVerbose($"Deserializing, processing grabbers and proxies for {prefab.name}");
             HandleCustomSerialization(prefab);
             GrabberProcessor.ProcessGrabbersOnPrefab(prefab);
+            ShaderProcessor.ReplaceShaderGrabbers(prefab);
             Mapper.ProcessConfigs(prefab);
             Mapper.ClearComponentCache();
         }

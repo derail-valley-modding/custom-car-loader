@@ -35,7 +35,7 @@ namespace CCL.Importer.Processing
             }
         }
 
-        private static void ReplaceGrabbedShaders(GameObject newFab)
+        public static void ReplaceShaderGrabbers(GameObject newFab)
         {
             var replacers = newFab.GetComponentsInChildren<ShaderGrabber>();
 
@@ -88,7 +88,7 @@ namespace CCL.Importer.Processing
         private static void UpdateShaders(GameObject prefab)
         {
             ApplyDefaultShader(prefab);
-            ReplaceGrabbedShaders(prefab);
+            ReplaceShaderGrabbers(prefab);
         }
 
         public override void ExecuteStep(ModelProcessor context)
