@@ -14,10 +14,6 @@ namespace CCL.Types.Proxies.Simulation.Electric
         [FuseId]
         public string powerFuseId;
 
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
-
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
@@ -36,12 +32,16 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
 
+        #region Defaults
+
         public void ApplyBE2Defaults()
         {
             numSeriesCells = 56;
             internalResistance = 0.005f;
             baseConsumptionMultiplier = 2f;
         }
+
+        #endregion
     }
 
     public enum BatteryChemistry

@@ -8,18 +8,14 @@ namespace CCL.Types.Proxies.Simulation
         public float gearRatio = 5.18f;
         public float transmissionEfficiency = 1f;
 
-        [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
-        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
-
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.IN, DVPortValueType.TORQUE, "TORQUE_IN"),
             new PortDefinition(DVPortType.OUT, DVPortValueType.TORQUE, "TORQUE_OUT"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "GEAR_RATIO"),
         };
+
+        #region Defaults
 
         public void ApplyDE2Defaults()
         {
@@ -38,5 +34,7 @@ namespace CCL.Types.Proxies.Simulation
             gearRatio = 4.133333f;
             transmissionEfficiency = 1.0f;
         }
+
+        #endregion
     }
 }

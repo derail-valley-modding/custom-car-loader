@@ -15,14 +15,6 @@ namespace CCL.Types.Proxies.Simulation
         [FuseId]
         public string powerFuseId;
 
-        [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]
-        [MethodButton(nameof(ApplyDH4Defaults), "Apply DH4 Defaults")]
-        [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
-        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
-
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "CONTROL_EXT_IN"),
@@ -40,6 +32,8 @@ namespace CCL.Types.Proxies.Simulation
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
+
+        #region Defaults
 
         public void ApplyDM3Defaults()
         {
@@ -70,5 +64,7 @@ namespace CCL.Types.Proxies.Simulation
             sandConsumptionRate = 0.5f;
             sandCoeficientMax = 2.25f;
         }
+
+        #endregion
     }
 }

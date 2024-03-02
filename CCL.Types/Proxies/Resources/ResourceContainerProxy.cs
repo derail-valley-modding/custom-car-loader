@@ -25,6 +25,8 @@ namespace CCL.Types.Proxies.Resources
             }
         }
 
+        #region Defaults
+
         public void ApplyDM3Defaults()
         {
             capacity = type switch
@@ -83,5 +85,7 @@ namespace CCL.Types.Proxies.Resources
             };
             defaultValue = capacity;
         }
+
+        #endregion
     }
 }

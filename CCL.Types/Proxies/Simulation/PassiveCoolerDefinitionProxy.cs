@@ -6,12 +6,6 @@ namespace CCL.Types.Proxies.Simulation
     public class PassiveCoolerDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         public float coolingRate = 12500f;
-        
-        [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
-        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
@@ -23,6 +17,8 @@ namespace CCL.Types.Proxies.Simulation
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TEMPERATURE"),
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TARGET_TEMPERATURE"),
         };
+
+        #region Defaults
 
         public void ApplyDE2Defaults()
         {
@@ -38,5 +34,7 @@ namespace CCL.Types.Proxies.Simulation
         {
             coolingRate = 6.0f;
         }
+
+        #endregion
     }
 }

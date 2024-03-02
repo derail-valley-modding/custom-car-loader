@@ -18,10 +18,14 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortReferenceDefinition(DVPortValueType.GENERIC, "IN", false)
         };
 
+        #region Defaults
+
         public void ApplyBE2Defaults()
         {
             multiplier = 1.0f;
             exponent = 2.0f;
         }
+
+        #endregion
     }
 }

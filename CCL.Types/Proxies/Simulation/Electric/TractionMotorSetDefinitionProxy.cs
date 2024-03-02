@@ -92,12 +92,6 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
 
-        [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
-        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool buttonRender;
-
         [Serializable]
         public class ElectricalConfigurationDefinition
         {

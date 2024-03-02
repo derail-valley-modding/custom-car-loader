@@ -18,12 +18,6 @@ namespace CCL.Types.Proxies.Simulation
         [SerializeField, HideInInspector]
         private string? _inputsJson;
 
-        [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
-        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
-
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "TEMPERATURE"),
@@ -54,6 +48,7 @@ namespace CCL.Types.Proxies.Simulation
             }
         }
 
+        #region Defaults
         public void ApplyDE2Defaults()
         {
             heatCapacity = 1000.0f;
@@ -71,5 +66,7 @@ namespace CCL.Types.Proxies.Simulation
             heatCapacity = 500.0f;
             overheatingTemperatureThreshold = 120.0f;
         }
+
+        #endregion
     }
 }

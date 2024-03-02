@@ -14,10 +14,6 @@ namespace CCL.Types.Proxies.Simulation.Electric
         [FuseId]
         public string powerFuseId;
 
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
-
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "ACTIVATION_SIGNAL_EXT_IN"),
@@ -40,9 +36,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
 
-        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
-        [RenderMethodButtons]
-        public bool buttonRender;
+        #region Defaults
 
         public void ApplyBE2Defaults()
         {
@@ -52,5 +46,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             mainReservoirVolume = 50.0f;
             smoothTime = 0.3f;
         }
+
+        #endregion
     }
 }
