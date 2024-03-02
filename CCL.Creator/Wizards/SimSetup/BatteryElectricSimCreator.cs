@@ -79,6 +79,7 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             sander.powerFuseId = FullPortId(fusebox, "ELECTRICS_MAIN");
+            batteryController.powerFuseId = FullPortId(fusebox, "ELECTRICS_MAIN");
             tm.powerFuseId = FullPortId(fusebox, "TM_POWER");
             deadTMs.tmFuseId = FullPortId(fusebox, "TM_POWER");
             compressor.powerFuseId = FullPortId(fusebox, "ELECTRICS_MAIN");
