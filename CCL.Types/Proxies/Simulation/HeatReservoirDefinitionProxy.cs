@@ -9,7 +9,6 @@ namespace CCL.Types.Proxies.Simulation
     public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         public float heatCapacity = 1f;
-
         public float overheatingTemperatureThreshold = 120f;
 
         [Delayed]
@@ -18,6 +17,12 @@ namespace CCL.Types.Proxies.Simulation
         public PortReferenceDefinition[] inputs;
         [SerializeField, HideInInspector]
         private string? _inputsJson;
+
+        [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
+        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
+        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
+        [RenderMethodButtons]
+        public bool renderButtons;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {

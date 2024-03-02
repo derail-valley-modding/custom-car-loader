@@ -14,6 +14,10 @@ namespace CCL.Types.Proxies.Simulation.Electric
         [FuseId]
         public string powerFuseId;
 
+        [MethodButton(nameof(ApplyBE2Defaults), "Apply BE2 Defaults")]
+        [RenderMethodButtons]
+        public bool renderButtons;
+
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),

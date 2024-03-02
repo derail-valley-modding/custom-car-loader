@@ -26,6 +26,11 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
         [FuseId]
         public string powerFuseId;
+        
+        [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
+        [MethodButton(nameof(ApplyDE6Defaults), "Apply DE6 Defaults")]
+        [RenderMethodButtons]
+        public bool renderButtons;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
