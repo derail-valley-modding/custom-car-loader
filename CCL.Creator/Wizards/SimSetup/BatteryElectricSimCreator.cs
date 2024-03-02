@@ -55,11 +55,8 @@ namespace CCL.Creator.Wizards.SimSetup
             cooler.transform.parent = tm.transform;
             var heat = CreateSimComponent<HeatReservoirDefinitionProxy>("tmHeat");
             heat.transform.parent = tm.transform;
-            heat.inputs = new[]
-            {
-                new PortReferenceDefinition(DVPortValueType.HEAT_RATE, "HEAT_IN_0"),
-                new PortReferenceDefinition(DVPortValueType.HEAT_RATE, "HEAT_IN_1")
-            };
+            heat.inputCount = 2;
+            heat.OnValidate();
 
             var compressor = CreateSimComponent<ElectricCompressorDefinitionProxy>("compressor");
             var airController = CreateCompressorSim(compressor);
