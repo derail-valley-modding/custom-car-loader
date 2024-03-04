@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Types;
 using DV.ThingTypes;
+using DV.ThingTypes.TransitionHelpers;
 using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace CCL.Importer.Patches
 
         private static float GetCargoAmount(CCL_CarType carType, CargoType cargo)
         {
-            if (carType.CargoAmounts.TryGetValue(cargo, out float amount))
+            if (carType.CargoAmounts.TryGetValue(cargo.ToV2().id, out float amount))
             {
                 return amount;
             }

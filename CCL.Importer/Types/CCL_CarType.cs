@@ -1,6 +1,7 @@
 ﻿using CCL.Types;
 using DV;
 using DV.ThingTypes;
+using DV.ThingTypes.TransitionHelpers;
 using DVLangHelper.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +21,8 @@ namespace CCL.Importer.Types
 
         public GameObject SimAudioPrefab;
 
-        private Dictionary<CargoType, float>? _cargoAmounts;
-        public Dictionary<CargoType, float> CargoAmounts => Extensions.GetCached(ref _cargoAmounts, GenerateCargoAmounts);
+        private Dictionary<string, float>? _cargoAmounts;
+        public Dictionary<string, float> CargoAmounts => Extensions.GetCached(ref _cargoAmounts, GenerateCargoAmounts);
 
         public IEnumerable<GameObject> AllCargoModels
         {
@@ -41,9 +42,9 @@ namespace CCL.Importer.Types
             }
         }
 
-        private Dictionary<CargoType, float> GenerateCargoAmounts()
+        private Dictionary<string, float> GenerateCargoAmounts()
         {
-            Dictionary<CargoType, float> dict = new();
+            Dictionary<string, float> dict = new();
 
             if (CargoTypes == null || CargoTypes.IsEmpty)
             {
@@ -52,13 +53,13 @@ namespace CCL.Importer.Types
 
             foreach (var item in CargoTypes.Entries)
             {
-                CargoType c;
+                string id;
 
                 if (item.IsCustom)
                 {
-                    if (Globals.G.types.TryGetCargo(item.CustomCargoId, out var cargo))
+                    if (Globals.G.types.TryGetCargo(item.CustomCargoId, out _))
                     {
-                        c = cargo.v1;
+                        id = item.CustomCargoId;
                     }
                     else
                     {
@@ -67,12 +68,12 @@ namespace CCL.Importer.Types
                 }
                 else
                 {
-                    c = (CargoType)item.CargoType;
+                    id = ((CargoType)item.CargoType).ToV2().id;
                 }
 
-                if (!dict.ContainsKey(c))
+                if (!dict.ContainsKey(id))
                 {
-                    dict.Add(c, item.AmountPerCar);
+                    dict.Add(id, item.AmountPerCar);
                 }
             }
 
