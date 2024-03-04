@@ -33,7 +33,7 @@ namespace CCL.Creator.Validators
                 {
                     if (hashId.Contains(cargo.CustomCargoId))
                     {
-                        result.Warning($"Repeated instance of custom cargo {cargo.CustomCargoId}");
+                        result.Warning($"Repeated instance of custom cargo '{cargo.CustomCargoId}'");
                     }
                     else
                     {
@@ -44,7 +44,7 @@ namespace CCL.Creator.Validators
                 {
                     if (hashCargo.Contains(cargo.CargoType))
                     {
-                        result.Warning($"Repeated instance of cargo {cargo.CustomCargoId}");
+                        result.Warning($"Repeated instance of cargo '{cargo.CargoType}'");
                     }
                     else
                     {
