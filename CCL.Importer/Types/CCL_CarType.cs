@@ -1,4 +1,6 @@
 ﻿using CCL.Types;
+using DV;
+using DV.Logic.Job;
 using DV.ThingTypes;
 using DVLangHelper.Data;
 using System.Collections.Generic;
@@ -19,6 +21,9 @@ namespace CCL.Importer.Types
 
         public GameObject SimAudioPrefab;
 
+        private Dictionary<CargoType, float>? _cargoAmounts;
+        public Dictionary<CargoType, float> CargoAmounts => Extensions.GetCached(ref _cargoAmounts, GenerateCargoAmounts);
+
         public IEnumerable<GameObject> AllCargoModels
         {
             get
@@ -35,6 +40,44 @@ namespace CCL.Importer.Types
                     }
                 }
             }
+        }
+
+        private Dictionary<CargoType, float> GenerateCargoAmounts()
+        {
+            Dictionary<CargoType, float> dict = new();
+
+            if (CargoTypes == null || CargoTypes.IsEmpty)
+            {
+                return dict;
+            }
+
+            foreach (var item in CargoTypes.Entries)
+            {
+                CargoType c;
+
+                if (item.IsCustom)
+                {
+                    if (Globals.G.types.TryGetCargo(item.CustomCargoId, out var cargo))
+                    {
+                        c = cargo.v1;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    c = (CargoType)item.CargoType;
+                }
+
+                if (!dict.ContainsKey(c))
+                {
+                    dict.Add(c, item.AmountPerCar);
+                }
+            }
+
+            return dict;
         }
     }
 }
