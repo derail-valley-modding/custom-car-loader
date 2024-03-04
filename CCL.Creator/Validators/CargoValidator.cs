@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -15,6 +16,9 @@ namespace CCL.Creator.Validators
             }
 
             var result = Pass();
+            var hashCargo = new HashSet<BaseCargoType>();
+            var hashId = new HashSet<string>();
+
             foreach (var cargo in car.CargoTypes.Entries)
             {
                 if (cargo.AmountPerCar <= 0)
@@ -24,6 +28,28 @@ namespace CCL.Creator.Validators
                 if (cargo.CargoType == BaseCargoType.None)
                 {
                     result.Fail("Cannot load cargo of type None");
+                }
+                else if (cargo.IsCustom)
+                {
+                    if (hashId.Contains(cargo.CustomCargoId))
+                    {
+                        result.Warning($"Repeated instance of custom cargo {cargo.CustomCargoId}");
+                    }
+                    else
+                    {
+                        hashId.Add(cargo.CustomCargoId);
+                    }
+                }
+                else
+                {
+                    if (hashCargo.Contains(cargo.CargoType))
+                    {
+                        result.Warning($"Repeated instance of cargo {cargo.CustomCargoId}");
+                    }
+                    else
+                    {
+                        hashCargo.Add(cargo.CargoType);
+                    }
                 }
 
                 if (cargo.ModelVariants != null)
