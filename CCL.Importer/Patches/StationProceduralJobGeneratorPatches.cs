@@ -11,7 +11,7 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(StationProceduralJobGenerator))]
     internal class StationProceduralJobGeneratorPatches
     {
-        [HarmonyPostfix, HarmonyPatch(nameof(StationProceduralJobGenerator.GenerateBaseCargoTrainData))]
+        //[HarmonyPostfix, HarmonyPatch(nameof(StationProceduralJobGenerator.GenerateBaseCargoTrainData))]
         public static void GenerateBaseCargoTrainDataPostfix(List<CarTypesPerCargoTypeData> __result)
         {
             for (int i = 0; i < __result.Count; i++)
