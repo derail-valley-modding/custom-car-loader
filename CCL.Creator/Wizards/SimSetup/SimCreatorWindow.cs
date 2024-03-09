@@ -17,7 +17,8 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             DieselMechanical,
             DieselElectric,
-            Slug
+            Slug,
+            Tender
         }
 
         private static SimCreatorWindow? _instance;
@@ -56,6 +57,7 @@ namespace CCL.Creator.Wizards.SimSetup
                         SimulationType.DieselMechanical => new DieselMechSimCreator(_targetRoot),
                         SimulationType.DieselElectric => new DieselElectricSimCreator(_targetRoot),
                         SimulationType.Slug => new SlugSimCreator(_targetRoot),
+                        SimulationType.Tender => new TenderSimCreator(_targetRoot),
                         _ => throw new NotImplementedException(),
                     };
                     _selectedType = value;
@@ -254,7 +256,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var provider = CreateSibling<BroadcastPortValueProviderProxy>(existing);
             provider.providerPortId = FullPortId(existing, id);
             provider.connection = connectionType;
-            provider.tag = tag;
+            provider.connectionTag = tag;
             return provider;
         }
 
@@ -264,7 +266,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var consumer = CreateSibling<BroadcastPortValueConsumerProxy>(existing);
             consumer.consumerPortId = FullPortId(existing, id);
             consumer.connection = connectionType;
-            consumer.tag = tag;
+            consumer.connectionTag = tag;
             consumer.disconnectedValue = disconnectValue;
             consumer.propagateConsumerValueChangeBackToProvider = propagateChangeBack;
             return consumer;
