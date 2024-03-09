@@ -8,11 +8,6 @@ namespace CCL.Types.Proxies.Ports
 {
     public class SimConnectionsDefinitionProxy : MonoBehaviour, ICustomSerialized
     {
-        [RenderMethodButtons]
-        [MethodButton(nameof(PopulateComponents), "Populate Components")]
-        [MethodButton("CCL.Creator.Wizards.SimulationEditorWindow:ShowWindow", "Connection Wizard")]
-        public bool renderButtons;
-
         public List<SimComponentDefinitionProxy> executionOrder;
 
         public List<PortConnectionProxy> connections;

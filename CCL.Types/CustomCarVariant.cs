@@ -36,10 +36,16 @@ namespace CCL.Types
 
         [Header("Buffers")]
         public BufferType BufferType = BufferType.Buffer09;
+        public bool HasMUCable = false;
         public bool UseCustomHosePositions = false;
 
         public bool HideFrontCoupler = false;
         public bool HideBackCoupler = false;
+
+        [Header("Spawning")]
+        public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
+        [SerializeField, HideInInspector]
+        private string? _spawnGroupJson = string.Empty;
 
         [RenderMethodButtons]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
@@ -76,6 +82,8 @@ namespace CCL.Types
             }
 
             NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
+
+            _spawnGroupJson = JSONObject.ToJson(LocoSpawnGroups);
         }
 
         public void ForceValidation()
@@ -109,6 +117,8 @@ namespace CCL.Types
             {
                 NameTranslations = TranslationData.Default();
             }
+
+            LocoSpawnGroups = JSONObject.FromJson(_spawnGroupJson, () => LocoSpawnGroups);
         }
     }
 }

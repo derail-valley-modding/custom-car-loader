@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types
@@ -15,6 +16,23 @@ namespace CCL.Types
             }
 
             return list;
+        }
+
+        public static string ToName(this SpawnTrack track)
+        {
+            return LocoSpawnGroup.TrackToSpawnerName[track];
+        }
+
+        // https://stackoverflow.com/a/444818
+        public static bool Contains(this string source, string toCheck, StringComparison comp)
+        {
+            return source?.IndexOf(toCheck, comp) >= 0;
+        }
+
+        public static bool IsDefined<T>(this T enumValue)
+            where T : Enum
+        {
+            return Enum.IsDefined(typeof(T), enumValue);
         }
     }
 }

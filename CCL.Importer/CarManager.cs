@@ -135,6 +135,13 @@ namespace CCL.Importer
                     return null;
                 }
 
+                // Create the HUD if it exists.
+                if (serializedCar.HUDLayout != null)
+                {
+                    CCLPlugin.Log("Generating HUD from layout settings...");
+                    carType.hudPrefab = HUDGenerator.CreateHUD(serializedCar.HUDLayout);
+                }
+
                 CCLPlugin.Log($"Successfully loaded car type {carId}");
 
                 assetBundle.Unload(false);
@@ -156,6 +163,11 @@ namespace CCL.Importer
                 {
                     return false;
                 }
+            }
+
+            if (carType.SimAudioPrefab)
+            {
+                ModelProcessor.DoBasicProcessing(carType.SimAudioPrefab);
             }
 
             CCLPlugin.Log($"Extra models: {carType.ExtraModels.Length}");

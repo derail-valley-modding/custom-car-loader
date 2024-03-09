@@ -15,7 +15,9 @@ namespace CCL.Creator.Wizards.SimSetup
     {
         public enum SimulationType
         {
-            DieselMechanical
+            DieselMechanical,
+            DieselElectric,
+            Slug
         }
 
         private static SimCreatorWindow? _instance;
@@ -52,6 +54,8 @@ namespace CCL.Creator.Wizards.SimSetup
                     _creator = value switch
                     {
                         SimulationType.DieselMechanical => new DieselMechSimCreator(_targetRoot),
+                        SimulationType.DieselElectric => new DieselElectricSimCreator(_targetRoot),
+                        SimulationType.Slug => new SlugSimCreator(_targetRoot),
                         _ => throw new NotImplementedException(),
                     };
                     _selectedType = value;

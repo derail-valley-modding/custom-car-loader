@@ -12,6 +12,16 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
 
+            if (!livery.FrontBogie.IsDefined())
+            {
+                result.Fail($"{livery.id} - Front bogie type not defined");
+            }
+
+            if (!livery.RearBogie.IsDefined())
+            {
+                result.Fail($"{livery.id} - Rear bogie type not defined");
+            }
+
             var bogieF = livery.prefab!.transform.FindSafe(CarPartNames.Bogies.FRONT);
             if (!bogieF)
             {

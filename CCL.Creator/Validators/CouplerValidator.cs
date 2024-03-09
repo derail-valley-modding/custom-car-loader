@@ -11,6 +11,11 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
 
+            if (!livery.BufferType.IsDefined())
+            {
+                result.Fail($"{livery.id} - Buffer type not defined");
+            }
+
             var frontRig = livery.prefab!.transform.FindSafe(CarPartNames.Couplers.RIG_FRONT);
             if (!frontRig)
             {

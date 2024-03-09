@@ -15,10 +15,13 @@ namespace CCL.Importer.Types
         public BogieType RearBogie;
 
         public BufferType BufferType;
+        public bool HasMUCable;
         public bool UseCustomHosePositions;
 
         public bool HideFrontCoupler;
         public bool HideBackCoupler;
+
+        public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;

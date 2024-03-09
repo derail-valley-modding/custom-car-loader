@@ -18,6 +18,8 @@ namespace CCL.Importer.Proxies.Resources
                 .AutoCacheAndMap(x => x.type == ResourceContainerType.Sand);
             CreateMap<ResourceContainerProxy, WaterContainerDefinition>()
                 .AutoCacheAndMap(x => x.type == ResourceContainerType.Water);
+            CreateMap<ResourceContainerProxy, ElectricChargeContainerDefinition>()
+                .AutoCacheAndMap(x => x.type == ResourceContainerType.ElectricCharge);
 
             CreateMap<LocoResourceReceiverProxy, LocoResourceReceiver>().AutoCacheAndMap();
         }

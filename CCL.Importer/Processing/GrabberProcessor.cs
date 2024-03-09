@@ -1,5 +1,4 @@
-﻿using CCL.Types;
-using CCL.Types.Components;
+﻿using CCL.Types.Components;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -19,6 +18,7 @@ namespace CCL.Importer.Processing
         private class CachedResource<T> where T : UnityEngine.Object
         {
             private Dictionary<string, T>? _cachedResources = null;
+            private Func<IEnumerable<string>> _nameGetter;
 
             public Dictionary<string, T> Cache
             {
@@ -33,15 +33,9 @@ namespace CCL.Importer.Processing
                 }
             }
 
-            private int _expectedResources;
-
-            /// <param name="expectedResources">
-            /// The number of resources expected in the cache. This is only
-            /// used to check if the cache has been correctly built.
-            /// </param>
-            public CachedResource(int expectedResources)
+            public CachedResource(Func<IEnumerable<string>> nameGetter)
             {
-                _expectedResources = expectedResources;
+                _nameGetter = nameGetter;
             }
 
             public void BuildCache()
@@ -53,17 +47,29 @@ namespace CCL.Importer.Processing
 
                 //_cachedResources = Resources.FindObjectsOfTypeAll<T>().ToDictionary(k => k.name, v => v);
 
+                // Cache all resources of a type for easy access.
                 _cachedResources = Resources.FindObjectsOfTypeAll<T>()
                     .GroupBy(x => x.name, StringComparer.Ordinal)
                     .ToDictionary(k => k.Key, v => v.First());
 
-                CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} items.");
+                // Hash set for quick checking if everything is here.
+                var hashes = _cachedResources.Keys.ToHashSet();
 
-                // If we have more names that elements in the cache, it's possible one of the required
-                // resources has not been loaded, so log an error.
-                if (_cachedResources.Count != _expectedResources)
+                CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} items.");
+                List<string> missing = new List<string>();
+
+                foreach (var item in _nameGetter())
                 {
-                    CCLPlugin.Error($"Possible miscreation of {typeof(T).Name} cache ({_cachedResources.Count}/{_expectedResources})");
+                    if (!hashes.Contains(item))
+                    {
+                        missing.Add(item);
+                    }
+                }
+
+                // We have a value that the user can get that isn't in the cache. That's bad.
+                if (missing.Count > 0)
+                {
+                    CCLPlugin.Error($"Cache is missing values! ['{string.Join("', '", missing)}']");
                 }
             }
 
@@ -83,9 +89,9 @@ namespace CCL.Importer.Processing
             }
         }
 
-        // Removed some items from the possible choices, more info on each class.
-        private static CachedResource<AudioClip> s_soundCache = new CachedResource<AudioClip>(SoundGrabber.SoundNames.Length);
-        private static CachedResource<Material> s_materialCache = new CachedResource<Material>(MaterialGrabber.MaterialNames.Length - 1);
+        private static CachedResource<AudioClip> s_soundCache = new CachedResource<AudioClip>(() => SoundGrabber.SoundNames);
+        private static CachedResource<Material> s_materialCache = new CachedResource<Material>(() => MaterialGrabber.MaterialNames);
+        private static CachedResource<Mesh> s_meshCache = new CachedResource<Mesh>(() => MeshGrabber.MeshNames);
 
         public override void ExecuteStep(ModelProcessor context)
         {
@@ -99,8 +105,11 @@ namespace CCL.Importer.Processing
         {
             ProcessGrabberOnPrefab<SoundGrabber, AudioClip>(prefab, s_soundCache);
             ProcessGrabberOnPrefab<MaterialGrabber, Material>(prefab, s_materialCache);
+            ProcessGrabberOnPrefab<MeshGrabber, Mesh>(prefab, s_meshCache);
 
             ProcessMaterialGrabberRenderer(prefab);
+            ProcessMeshGrabberFilter(prefab);
+            ProcessSoundGrabberSource(prefab);
         }
 
         /// <summary>
@@ -188,7 +197,7 @@ namespace CCL.Importer.Processing
                         }
                         else
                         {
-                            CCLPlugin.Error($"Could not find cached key '{name}' (index {index.ReplacementName})!");
+                            CCLPlugin.Error($"Could not find cached key '{name}'!");
                         }
                     }
 
@@ -199,10 +208,63 @@ namespace CCL.Importer.Processing
             }
         }
 
+        private static void ProcessMeshGrabberFilter(GameObject prefab)
+        {
+            foreach (var grabber in prefab.GetComponentsInChildren<MeshGrabberFilter>())
+            {
+                if (grabber.Filter != null)
+                {
+                    if (s_meshCache.Cache.TryGetValue(grabber.ReplacementName, out Mesh mesh))
+                    {
+                        grabber.Filter.mesh = mesh;
+                    }
+                    else
+                    {
+                        CCLPlugin.Error($"Could not find cached key '{grabber.ReplacementName}'!");
+                    }
+                }
+                else
+                {
+                    CCLPlugin.Error($"No filter in this MeshGrabberFilter ({grabber.name})!");
+                }
+
+                UnityEngine.Object.Destroy(grabber);
+            }
+        }
+
+        private static void ProcessSoundGrabberSource(GameObject prefab)
+        {
+            foreach (var grabber in prefab.GetComponentsInChildren<SoundGrabberSource>())
+            {
+                if (grabber.Source != null)
+                {
+                    if (s_soundCache.Cache.TryGetValue(grabber.ReplacementName, out AudioClip clip))
+                    {
+                        grabber.Source.clip = clip;
+                    }
+                    else
+                    {
+                        CCLPlugin.Error($"Could not find cached key '{grabber.ReplacementName}'!");
+                    }
+                }
+                else
+                {
+                    CCLPlugin.Error($"No filter in this MeshGrabberFilter ({grabber.name})!");
+                }
+
+                UnityEngine.Object.Destroy(grabber);
+            }
+        }
+
         public static void BuildAllCaches()
         {
             s_soundCache.BuildCache();
             s_materialCache.BuildCache();
+            s_meshCache.BuildCache();
+
+            //s_soundCache.PrintCache("\",\n\"");
+            //s_materialCache.PrintCache("\",\n\"");
+            //s_meshCache.PrintCache("\",\n\"");
         }
     }
 }
