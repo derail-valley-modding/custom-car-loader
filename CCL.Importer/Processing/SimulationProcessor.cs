@@ -74,6 +74,11 @@ namespace CCL.Importer.Processing
             {
                 AttachDummyDamageController(livery.prefab);
             }
+
+            if (simConnections != null)
+            {
+                SetupBroadcastPorts(livery.prefab, simConnections);
+            }
         }
 
         private static void AttachDummyDamageController(GameObject prefab)
@@ -128,5 +133,18 @@ namespace CCL.Importer.Processing
             return simConnections;
         }
 
+        private static void SetupBroadcastPorts(GameObject prefab, SimConnectionDefinition simConnection)
+        {
+            var providers = prefab.GetComponentsInChildren<BroadcastPortValueProvider>(true);
+            var consumers = prefab.GetComponentsInChildren<BroadcastPortValueConsumer>(true);
+
+            if (providers.Length > 0 || consumers.Length > 0)
+            {
+                var controller = simConnection.gameObject.AddComponent<BroadcastPortController>();
+
+                controller.providers = providers;
+                controller.consumers = consumers;
+            }
+        }
     }
 }

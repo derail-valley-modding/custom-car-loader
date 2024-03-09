@@ -117,6 +117,7 @@ namespace CCL.Creator.Wizards.SimSetup
         protected GameObject _sim;
         protected DamageControllerProxy _damageController;
         protected SimConnectionsDefinitionProxy _connectionDef;
+        protected BaseControlsOverriderProxy _baseControls;
 
         public SimCreator(GameObject prefabRoot)
         {
@@ -176,7 +177,7 @@ namespace CCL.Creator.Wizards.SimSetup
             _connectionDef.connections = new List<PortConnectionProxy>();
             _connectionDef.portReferenceConnections = new List<PortReferenceConnectionProxy>();
 
-            _sim.AddComponent<BaseControlsOverriderProxy>();
+            _baseControls = _sim.AddComponent<BaseControlsOverriderProxy>();
         }
 
         private void AbortAndCleanup()
@@ -245,6 +246,28 @@ namespace CCL.Creator.Wizards.SimSetup
             overrider.ControlType = OverridableControlType.Reverser;
             overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
             return control;
+        }
+
+        protected BroadcastPortValueProviderProxy CreateBroadcastProvider(SimComponentDefinitionProxy existing, string id,
+            DVPortForwardConnectionType connectionType, string tag)
+        {
+            var provider = CreateSibling<BroadcastPortValueProviderProxy>(existing);
+            provider.providerPortId = FullPortId(existing, id);
+            provider.connection = connectionType;
+            provider.tag = tag;
+            return provider;
+        }
+
+        protected BroadcastPortValueConsumerProxy CreateBroadcastConsumer(SimComponentDefinitionProxy existing, string id,
+            DVPortForwardConnectionType connectionType, string tag, float disconnectValue, bool propagateChangeBack)
+        {
+            var consumer = CreateSibling<BroadcastPortValueConsumerProxy>(existing);
+            consumer.consumerPortId = FullPortId(existing, id);
+            consumer.connection = connectionType;
+            consumer.tag = tag;
+            consumer.disconnectedValue = disconnectValue;
+            consumer.propagateConsumerValueChangeBackToProvider = propagateChangeBack;
+            return consumer;
         }
 
         protected string FullPortId(SimComponentDefinitionProxy component, string portId) => $"{component.ID}.{portId}";
