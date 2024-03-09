@@ -57,8 +57,11 @@ namespace CCL.Importer.Processing
                 AttachSimConnectionsToPrefab(livery.prefab);
             }
 
+            var broadcastController = SetupBroadcastPortsIfNeeded(livery.prefab);
+
             // If we have something that can use a sim controller and don't already have a sim controller
             var needsSimController = (livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ||
+                broadcastController != null ||
                 livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0) &&
                 !livery.prefab.GetComponentInChildren<SimController>(true);
             if (needsSimController)
@@ -73,11 +76,6 @@ namespace CCL.Importer.Processing
             if (needsDamageController)
             {
                 AttachDummyDamageController(livery.prefab);
-            }
-
-            if (simConnections != null)
-            {
-                SetupBroadcastPorts(livery.prefab, simConnections);
             }
         }
 
@@ -133,18 +131,22 @@ namespace CCL.Importer.Processing
             return simConnections;
         }
 
-        private static void SetupBroadcastPorts(GameObject prefab, SimConnectionDefinition simConnection)
+        private static BroadcastPortController? SetupBroadcastPortsIfNeeded(GameObject prefab)
         {
             var providers = prefab.GetComponentsInChildren<BroadcastPortValueProvider>(true);
             var consumers = prefab.GetComponentsInChildren<BroadcastPortValueConsumer>(true);
 
             if (providers.Length > 0 || consumers.Length > 0)
             {
-                var controller = simConnection.gameObject.AddComponent<BroadcastPortController>();
+                var controller = prefab.AddComponent<BroadcastPortController>();
 
                 controller.providers = providers;
                 controller.consumers = consumers;
+
+                return controller;
             }
+
+            return null;
         }
     }
 }
