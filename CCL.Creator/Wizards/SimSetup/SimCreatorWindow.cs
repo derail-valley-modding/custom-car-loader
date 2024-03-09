@@ -230,6 +230,15 @@ namespace CCL.Creator.Wizards.SimSetup
             return container;
         }
 
+        protected CoalPileSimControllerProxy CreateCoalPile(ResourceContainerProxy coal)
+        {
+            var pile = CreateSibling<CoalPileSimControllerProxy>(coal);
+            pile.coalAvailablePortId = FullPortId(coal, "AMOUNT");
+            pile.coalCapacityPortId = FullPortId(coal, "CAPACITY");
+            pile.coalConsumePortId = FullPortId(coal, "CONSUME_EXT_IN");
+            return pile;
+        }
+
         protected ExternalControlDefinitionProxy CreateOverridableControl(OverridableControlType type, string? idOverride = null)
         {
             idOverride ??= Enum.GetName(typeof(OverridableControlType), type).ToLower();

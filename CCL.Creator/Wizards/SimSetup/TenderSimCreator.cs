@@ -13,6 +13,7 @@ namespace CCL.Creator.Wizards.SimSetup
         public override void CreateSimForBasisImpl(int basisIndex)
         {
             var coal = CreateResourceContainer(ResourceContainerType.Coal);
+            CreateCoalPile(coal);
             CreateBroadcastProvider(coal, "NORMALIZED", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_COAL_NORMALIZED");
             CreateBroadcastProvider(coal, "CAPACITY", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_COAL_CAPACITY");
 

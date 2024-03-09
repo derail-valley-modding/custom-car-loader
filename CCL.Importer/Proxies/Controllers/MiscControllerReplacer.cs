@@ -45,8 +45,8 @@ namespace CCL.Importer.Proxies.Controllers
             CreateMap<ExplosionActivationOnSignalProxy, ExplosionActivationOnSignal>().AutoCacheAndMap()
                 .AfterMap(ExplosionActivationOnSignalAfter);
 
-            CreateMap<MagicShovellingProxy, MagicShoveling>();
-            CreateMap<CoalPileSimControllerProxy, CoalPileSimController>();
+            CreateMap<MagicShovellingProxy, MagicShoveling>().AutoCacheAndMap();
+            CreateMap<CoalPileSimControllerProxy, CoalPileSimController>().AutoCacheAndMap();
         }
 
         private void DeadTractionMotorsControllerAfter(DeadTractionMotorsControllerProxy _, DeadTractionMotorsController controller)

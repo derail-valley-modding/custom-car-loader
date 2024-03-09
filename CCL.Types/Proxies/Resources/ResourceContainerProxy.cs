@@ -3,7 +3,7 @@ using CCL.Types.Proxies.Ports;
 
 namespace CCL.Types.Proxies.Resources
 {
-    public class ResourceContainerProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults
+    public class ResourceContainerProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults, IS060Defaults, IS282Defaults
     {
         public float capacity = 100;
         public float defaultValue = 100;
@@ -16,7 +16,7 @@ namespace CCL.Types.Proxies.Resources
                 var valueType = type.PortValueType();
                 return new[]
                 {
-                    new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "CAPACITY"),
+                    new PortDefinition(DVPortType.READONLY_OUT, valueType, "CAPACITY"),
                     new PortDefinition(DVPortType.EXTERNAL_IN, valueType, "REFILL_EXT_IN"),
                     new PortDefinition(DVPortType.EXTERNAL_IN, valueType, "CONSUME_EXT_IN"),
                     new PortDefinition(DVPortType.READONLY_OUT, valueType, "AMOUNT"),
@@ -79,6 +79,32 @@ namespace CCL.Types.Proxies.Resources
             {
                 ResourceContainerType.Sand => 400,
                 ResourceContainerType.ElectricCharge => 360,
+                _ => 100,
+            };
+            defaultValue = capacity;
+        }
+
+        public void ApplySE060Defaults()
+        {
+            capacity = type switch
+            {
+                ResourceContainerType.Coal => 10000,
+                ResourceContainerType.Oil => 100,
+                ResourceContainerType.Sand => 600,
+                ResourceContainerType.Water => 30000,
+                _ => 100,
+            };
+            defaultValue = capacity;
+        }
+
+        public void ApplySE282Defaults()
+        {
+            capacity = type switch
+            {
+                ResourceContainerType.Coal => 1200,
+                ResourceContainerType.Oil => 100,
+                ResourceContainerType.Sand => 240,
+                ResourceContainerType.Water => 4500,
                 _ => 100,
             };
             defaultValue = capacity;
