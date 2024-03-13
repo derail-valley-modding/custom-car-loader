@@ -22,7 +22,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var dynBrake = CreateOverridableControl(OverridableControlType.DynamicBrake);
 
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
-            var sander = CreateOverridableControl(OverridableControlType.Sander);
+            var sander = CreateSanderControl();
 
             var tm = CreateSimComponent<TractionMotorSetDefinitionProxy>("tm");
             var tmRpm = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("tmRpmCalculator");
@@ -51,6 +51,9 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 new FuseDefinition("ELECTRONICS_MAIN", true)
             };
+
+            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            tm.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
 
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };

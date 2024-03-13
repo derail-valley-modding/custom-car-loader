@@ -1,5 +1,7 @@
 ﻿using CCL.Types;
+using DV;
 using DV.ThingTypes;
+using DV.ThingTypes.TransitionHelpers;
 using DVLangHelper.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +21,9 @@ namespace CCL.Importer.Types
 
         public GameObject SimAudioPrefab;
 
+        private Dictionary<string, float>? _cargoAmounts;
+        public Dictionary<string, float> CargoAmounts => Extensions.GetCached(ref _cargoAmounts, GenerateCargoAmounts);
+
         public IEnumerable<GameObject> AllCargoModels
         {
             get
@@ -35,6 +40,44 @@ namespace CCL.Importer.Types
                     }
                 }
             }
+        }
+
+        private Dictionary<string, float> GenerateCargoAmounts()
+        {
+            Dictionary<string, float> dict = new();
+
+            if (CargoTypes == null || CargoTypes.IsEmpty)
+            {
+                return dict;
+            }
+
+            foreach (var item in CargoTypes.Entries)
+            {
+                string id;
+
+                if (item.IsCustom)
+                {
+                    if (Globals.G.types.TryGetCargo(item.CustomCargoId, out _))
+                    {
+                        id = item.CustomCargoId;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    id = ((CargoType)item.CargoType).ToV2().id;
+                }
+
+                if (!dict.ContainsKey(id))
+                {
+                    dict.Add(id, item.AmountPerCar);
+                }
+            }
+
+            return dict;
         }
     }
 }
