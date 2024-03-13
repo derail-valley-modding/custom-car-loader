@@ -62,9 +62,9 @@ namespace CCL.Types
         public BrakesSetup brakes;
         public DamageSetup damage;
 
-        [Header("Unused car delete prevention")]
         public UnusedCarDeletePreventionMode unusedCarDeletePreventionMode;
 
+        [Space]
         [Tooltip("Any extra prefab that has scripts on it should be added here")]
         public GameObject[] ExtraModels = new GameObject[0];
 

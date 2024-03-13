@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Types.Proxies;
+using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using UnityEngine;
 
@@ -30,6 +31,8 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             _baseControls.propagateNeutralStateToFront = true;
+
+            ApplyMethodToAll<IS282Defaults>(s => s.ApplySE282Defaults());
         }
     }
 }
