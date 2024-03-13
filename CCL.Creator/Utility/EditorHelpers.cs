@@ -263,37 +263,37 @@ namespace CCL.Creator.Utility
 
             if (component is IDE2Defaults de2)
             {
-                drawButton("Apply DE2 Defaults", () => de2.ApplyDE2Defaults());
+                drawButton("Apply DE2 Defaults", de2.ApplyDE2Defaults);
             }
 
             if (component is IDE6Defaults de6)
             {
-                drawButton("Apply DE6 Defaults", () => de6.ApplyDE6Defaults());
+                drawButton("Apply DE6 Defaults", de6.ApplyDE6Defaults);
             }
 
             if (component is IDH4Defaults dh4)
             {
-                drawButton("Apply DH4 Defaults", () => dh4.ApplyDH4Defaults());
+                drawButton("Apply DH4 Defaults", dh4.ApplyDH4Defaults);
             }
 
             if (component is IDM3Defaults dm3)
             {
-                drawButton("Apply DM3 Defaults", () => dm3.ApplyDM3Defaults());
+                drawButton("Apply DM3 Defaults", dm3.ApplyDM3Defaults);
             }
 
             if (component is IBE2Defaults be2)
             {
-                drawButton("Apply BE2 Defaults", () => be2.ApplyBE2Defaults());
+                drawButton("Apply BE2 Defaults", be2.ApplyBE2Defaults);
             }
 
             if (component is IS060Defaults s060)
             {
-                drawButton("Apply S060 Defaults", () => s060.ApplySE060Defaults());
+                drawButton("Apply S060 Defaults", s060.ApplySE060Defaults);
             }
 
             if (component is IS282Defaults s282)
             {
-                drawButton("Apply S282 Defaults", () => s282.ApplySE282Defaults());
+                drawButton("Apply S282 Defaults", s282.ApplySE282Defaults);
             }
         }
 
