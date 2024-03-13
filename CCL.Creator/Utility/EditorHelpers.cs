@@ -247,63 +247,53 @@ namespace CCL.Creator.Utility
         {
             bool first = true;
 
-            void drawHeader()
+            void drawButton(string text, Action action)
             {
                 if (first)
                 {
                     DrawHeader("Defaults");
                     first = false;
                 }
+
+                if (GUILayout.Button(text))
+                {
+                    action();
+                }
             }
 
             if (component is IDE2Defaults de2)
             {
-                drawHeader();
-
-                if (GUILayout.Button("Apply DE2 Defaults"))
-                {
-                    de2.ApplyDE2Defaults();
-                }
+                drawButton("Apply DE2 Defaults", () => de2.ApplyDE2Defaults());
             }
 
             if (component is IDE6Defaults de6)
             {
-                drawHeader();
-
-                if (GUILayout.Button("Apply DE6 Defaults"))
-                {
-                    de6.ApplyDE6Defaults();
-                }
+                drawButton("Apply DE6 Defaults", () => de6.ApplyDE6Defaults());
             }
 
             if (component is IDH4Defaults dh4)
             {
-                drawHeader();
-
-                if (GUILayout.Button("Apply DH4 Defaults"))
-                {
-                    dh4.ApplyDH4Defaults();
-                }
+                drawButton("Apply DH4 Defaults", () => dh4.ApplyDH4Defaults());
             }
 
             if (component is IDM3Defaults dm3)
             {
-                drawHeader();
-
-                if (GUILayout.Button("Apply DM3 Defaults"))
-                {
-                    dm3.ApplyDM3Defaults();
-                }
+                drawButton("Apply DM3 Defaults", () => dm3.ApplyDM3Defaults());
             }
 
             if (component is IBE2Defaults be2)
             {
-                drawHeader();
+                drawButton("Apply BE2 Defaults", () => be2.ApplyBE2Defaults());
+            }
 
-                if (GUILayout.Button("Apply BE2 Defaults"))
-                {
-                    be2.ApplyBE2Defaults();
-                }
+            if (component is IS060Defaults s060)
+            {
+                drawButton("Apply S060 Defaults", () => s060.ApplySE060Defaults());
+            }
+
+            if (component is IS282Defaults s282)
+            {
+                drawButton("Apply S282 Defaults", () => s282.ApplySE282Defaults());
             }
         }
 
