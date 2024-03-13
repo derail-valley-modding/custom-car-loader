@@ -14,6 +14,11 @@ namespace CCL.Importer.Proxies.Simulation
         {
             CreateMap<SanderDefinitionProxy, SanderDefinition>().AutoCacheAndMap();
 
+            // heat
+            CreateMap<PassiveCoolerDefinitionProxy, PassiveCoolerDefinition>().AutoCacheAndMap();
+            CreateMap<DirectionalCoolerDefinitionProxy, DirectionalMovementCoolerDefinition>().AutoCacheAndMap();
+            CreateMap<HeatReservoirDefinitionProxy, HeatReservoirDefinition>().AutoCacheAndMap();
+
             CreateMap<SmoothTransmissionDefinitionProxy, SmoothTransmissionDefinition>().AutoCacheAndMap();
             CreateMap<TransmissionFixedGearDefinitionProxy, TransmissionFixedGearDefinition>().AutoCacheAndMap();
             CreateMap<TractionDefinitionProxy, TractionDefinition>()

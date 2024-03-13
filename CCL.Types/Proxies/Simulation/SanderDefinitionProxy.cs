@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDH4Defaults
+    public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         public float sandConsumptionRate = 5f;
 
@@ -14,10 +14,6 @@ namespace CCL.Types.Proxies.Simulation
         [Header("Optional")]
         [FuseId]
         public string powerFuseId;
-
-        [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
@@ -37,6 +33,8 @@ namespace CCL.Types.Proxies.Simulation
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
 
+        #region Defaults
+
         public void ApplyDM3Defaults()
         {
             sandConsumptionRate = 0.5f;
@@ -48,5 +46,25 @@ namespace CCL.Types.Proxies.Simulation
             sandConsumptionRate = 0.5f;
             sandCoeficientMax = 1.5f;
         }
+
+        public void ApplyDE2Defaults()
+        {
+            sandConsumptionRate = 0.5f;
+            sandCoeficientMax = 2.25f;
+        }
+
+        public void ApplyDE6Defaults()
+        {
+            sandConsumptionRate = 1.7f;
+            sandCoeficientMax = 2.25f;
+        }
+
+        public void ApplyBE2Defaults()
+        {
+            sandConsumptionRate = 0.5f;
+            sandCoeficientMax = 2.25f;
+        }
+
+        #endregion
     }
 }

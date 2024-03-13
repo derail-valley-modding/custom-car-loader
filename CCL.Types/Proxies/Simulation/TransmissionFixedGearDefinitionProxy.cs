@@ -15,6 +15,8 @@ namespace CCL.Types.Proxies.Simulation
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "GEAR_RATIO"),
         };
 
+        #region Defaults
+
         public void ApplyDE2Defaults()
         {
             gearRatio = 4.0f;
@@ -32,5 +34,7 @@ namespace CCL.Types.Proxies.Simulation
             gearRatio = 4.133333f;
             transmissionEfficiency = 1.0f;
         }
+
+        #endregion
     }
 }

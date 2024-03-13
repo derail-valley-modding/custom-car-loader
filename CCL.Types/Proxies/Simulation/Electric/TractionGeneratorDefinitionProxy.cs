@@ -60,6 +60,8 @@ namespace CCL.Types.Proxies.Simulation.Electric
         [RenderMethodButtons]
         public bool buttonRender;
 
+        #region Defaults
+
         public void ApplyDE2Defaults()
         {
             maxVoltage = 1600.0f;
@@ -95,5 +97,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
             dynamicBrakeGoalRpmNormalized = 0.4578947f;
         }
+
+        #endregion
     }
 }

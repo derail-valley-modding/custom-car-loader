@@ -2,11 +2,11 @@ using CCL.Types;
 using System;
 using System.IO;
 using UnityEditor.Experimental.SceneManagement;
-using UnityEditor.SceneManagement;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using CCL.Types.Proxies;
 
 namespace CCL.Creator.Utility
 {
@@ -236,6 +236,81 @@ namespace CCL.Creator.Utility
             }
 
             EditorGUIUtility.labelWidth = 0;
+        }
+
+        /// <summary>
+        /// Draws buttons to apply default values to a class that implements a loco defaults interface.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="component"></param>
+        public static void DrawLocoDefaultsButtons<T>(T component)
+        {
+            bool first = true;
+
+            void drawHeader()
+            {
+                if (first)
+                {
+                    DrawHeader("Defaults");
+                    first = false;
+                }
+            }
+
+            if (component is IDE2Defaults de2)
+            {
+                drawHeader();
+
+                if (GUILayout.Button("Apply DE2 Defaults"))
+                {
+                    de2.ApplyDE2Defaults();
+                }
+            }
+
+            if (component is IDE6Defaults de6)
+            {
+                drawHeader();
+
+                if (GUILayout.Button("Apply DE6 Defaults"))
+                {
+                    de6.ApplyDE6Defaults();
+                }
+            }
+
+            if (component is IDH4Defaults dh4)
+            {
+                drawHeader();
+
+                if (GUILayout.Button("Apply DH4 Defaults"))
+                {
+                    dh4.ApplyDH4Defaults();
+                }
+            }
+
+            if (component is IDM3Defaults dm3)
+            {
+                drawHeader();
+
+                if (GUILayout.Button("Apply DM3 Defaults"))
+                {
+                    dm3.ApplyDM3Defaults();
+                }
+            }
+
+            if (component is IBE2Defaults be2)
+            {
+                drawHeader();
+
+                if (GUILayout.Button("Apply BE2 Defaults"))
+                {
+                    be2.ApplyBE2Defaults();
+                }
+            }
+        }
+
+        public static void DrawHeader(string title)
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
         }
     }
 

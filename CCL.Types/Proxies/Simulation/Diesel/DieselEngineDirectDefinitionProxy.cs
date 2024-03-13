@@ -70,10 +70,6 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new FuseIdField(this, nameof(engineStarterFuseId), engineStarterFuseId),
         };
 
-        [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]
-        [RenderMethodButtons]
-        public bool buttonRender;
-
         #region Defaults
 
         public void ApplyDM3Defaults()

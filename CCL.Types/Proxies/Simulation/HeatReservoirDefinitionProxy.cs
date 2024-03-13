@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CCL.Types.Proxies.Simulation.Diesel
+namespace CCL.Types.Proxies.Simulation
 {
-    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults
+    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         public float heatCapacity = 1f;
-
         public float overheatingTemperatureThreshold = 120f;
 
         [Delayed]
@@ -49,6 +48,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             }
         }
 
+        #region Defaults
         public void ApplyDE2Defaults()
         {
             heatCapacity = 1000.0f;
@@ -60,5 +60,13 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             heatCapacity = 15000.0f;
             overheatingTemperatureThreshold = 120.0f;
         }
+
+        public void ApplyBE2Defaults()
+        {
+            heatCapacity = 500.0f;
+            overheatingTemperatureThreshold = 120.0f;
+        }
+
+        #endregion
     }
 }
