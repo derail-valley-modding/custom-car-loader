@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using DVLangHelper.Data;
 using System;
 using System.Collections.Generic;
@@ -179,6 +180,8 @@ namespace CCL.Creator.Wizards
 
             savedLivery.parentType = carType;
             Selection.activeObject = carType;
+
+            AssetHelper.SaveAsset(savedLivery);
         }
 
         private static GameObject CreateFreightInteractables(string carId, string relativeCarFolder)
