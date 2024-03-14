@@ -177,6 +177,7 @@ namespace CCL.Creator.Wizards
             AssetDatabase.CreateAsset(carType, carTypePath);
             EditorSceneManager.SaveScene(scene, scenePath);
 
+            savedLivery.parentType = carType;
             Selection.activeObject = carType;
         }
 

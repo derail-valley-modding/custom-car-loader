@@ -154,5 +154,7 @@
             public const string WHEELS_LAYERS_WHEELSLIP = "WheelslipLayers";
             public const string WHEELS_LAYERS_DAMAGED = "WheelDamagedLayers";
         }
+
+        public const string CENTER_OF_MASS = "[center of mass]";
     }
 }

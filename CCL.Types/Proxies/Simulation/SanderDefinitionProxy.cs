@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults
+    public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields,
+        IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults, IS060Defaults, IS282Defaults
     {
         public float sandConsumptionRate = 5f;
 
@@ -63,6 +64,18 @@ namespace CCL.Types.Proxies.Simulation
         {
             sandConsumptionRate = 0.5f;
             sandCoeficientMax = 2.25f;
+        }
+
+        public void ApplySE060Defaults()
+        {
+            sandConsumptionRate = 0.5f;
+            sandCoeficientMax = 1.5f;
+        }
+
+        public void ApplySE282Defaults()
+        {
+            sandConsumptionRate = 0.5f;
+            sandCoeficientMax = 1.5f;
         }
 
         #endregion
