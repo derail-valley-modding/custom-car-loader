@@ -24,6 +24,10 @@ namespace CCL.Creator.Wizards.SimSetup
             CreateBroadcastProvider(water, "AMOUNT", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_AMOUNT");
             CreateBroadcastConsumer(water, "CONSUME_EXT_IN", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_CONSUME", 0, true);
 
+            var dynamo = CreateSimComponent<ConstantPortDefinitionProxy>("dynamoFlowDummy");
+            dynamo.port.ID = "DYNAMO_FLOW_NORMALIZED";
+            CreateBroadcastConsumer(dynamo, dynamo.port.ID, DVPortForwardConnectionType.COUPLED_FRONT, "DYNAMO_FLOW", 0, false);
+
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
