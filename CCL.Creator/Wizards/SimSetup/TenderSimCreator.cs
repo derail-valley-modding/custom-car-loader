@@ -1,6 +1,7 @@
 ﻿using CCL.Types.Proxies;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
+using CCL.Types.Proxies.Simulation;
 using UnityEngine;
 
 namespace CCL.Creator.Wizards.SimSetup
@@ -28,6 +29,8 @@ namespace CCL.Creator.Wizards.SimSetup
             dynamo.port.ID = "DYNAMO_FLOW_NORMALIZED";
             CreateBroadcastConsumer(dynamo, dynamo.port.ID, DVPortForwardConnectionType.COUPLED_FRONT, "DYNAMO_FLOW", 0, false);
 
+            var fuseController = CreateSimComponent<FuseControllerDefinitionProxy>("electronicsFuseControllerDummy");
+
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
@@ -35,6 +38,8 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             _baseControls.propagateNeutralStateToFront = true;
+
+            ConnectPortRef(dynamo, dynamo.port.ID, fuseController, fuseController.controllingPort.ID);
 
             ApplyMethodToAll<IS282Defaults>(s => s.ApplyS282Defaults());
         }
