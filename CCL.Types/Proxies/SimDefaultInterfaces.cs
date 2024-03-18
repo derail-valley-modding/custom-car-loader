@@ -27,11 +27,11 @@
 
     public interface IS060Defaults
     {
-        void ApplySE060Defaults();
+        void ApplyS060Defaults();
     }
 
     public interface IS282Defaults
     {
-        void ApplySE282Defaults();
+        void ApplyS282Defaults();
     }
 }

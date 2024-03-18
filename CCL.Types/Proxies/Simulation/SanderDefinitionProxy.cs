@@ -66,13 +66,13 @@ namespace CCL.Types.Proxies.Simulation
             sandCoeficientMax = 2.25f;
         }
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             sandConsumptionRate = 0.5f;
             sandCoeficientMax = 1.5f;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             sandConsumptionRate = 0.5f;
             sandCoeficientMax = 1.5f;

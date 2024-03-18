@@ -9,13 +9,13 @@ namespace CCL.Types.Proxies.Controls
         [Tooltip("Applies if infinite is true")]
         public float coalChunkMass;
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             isInfinite = false;
             coalChunkMass = 9.0f;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             isInfinite = false;
             coalChunkMass = 48.0f;

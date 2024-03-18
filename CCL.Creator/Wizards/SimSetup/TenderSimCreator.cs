@@ -32,7 +32,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             _baseControls.propagateNeutralStateToFront = true;
 
-            ApplyMethodToAll<IS282Defaults>(s => s.ApplySE282Defaults());
+            ApplyMethodToAll<IS282Defaults>(s => s.ApplyS282Defaults());
         }
     }
 }
