@@ -48,7 +48,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         #region Defaults
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             maxCoalCapacity = 45.0f;
             coalDumpRate = 4.0f;
@@ -62,7 +62,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             startupMaxPressure = 13.0f;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             maxCoalCapacity = 120.0f;
             coalDumpRate = 10.0f;

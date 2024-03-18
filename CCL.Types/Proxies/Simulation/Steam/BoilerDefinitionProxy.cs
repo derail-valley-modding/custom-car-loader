@@ -70,7 +70,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         #region Defaults
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             diameter = 1.4f;
             length = 3.0f;
@@ -98,7 +98,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             steamOutletNormalizedWaterLevel = 0.95f;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             diameter = 1.7f;
             length = 8.8f;

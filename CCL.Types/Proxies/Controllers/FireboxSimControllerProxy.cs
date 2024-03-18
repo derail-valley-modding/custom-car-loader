@@ -36,12 +36,12 @@ namespace CCL.Types.Proxies.Controllers
 
         #region Defaults
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             coalConsumptionMultiplier = 2.0f;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             coalConsumptionMultiplier = 4.0f;
         }

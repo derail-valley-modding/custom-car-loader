@@ -33,7 +33,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         #region Defaults
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             maxProductionRate = 20.0f;
             maxSteamConsumption = 1.0f;
@@ -43,7 +43,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             smoothTime = 2.0f;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             maxProductionRate = 20.0f;
             maxSteamConsumption = 1.0f;
