@@ -11,6 +11,8 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<FireboxDefinitionProxy, FireboxDefinition>().AutoCacheAndMap();
             CreateMap<BoilerDefinitionProxy, BoilerDefinition>().AutoCacheAndMap();
             CreateMap<SteamCompressorDefinitionProxy, SteamCompressorDefinition>().AutoCacheAndMap();
+            CreateMap<DynamoDefinitionProxy, DynamoDefinition>().AutoCacheAndMap();
+            CreateMap<MechanicalLubricatorDefinitionProxy, MechanicalLubricatorDefinition>().AutoCacheAndMap();
         }
     }
 }

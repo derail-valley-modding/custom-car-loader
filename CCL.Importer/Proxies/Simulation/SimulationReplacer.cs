@@ -30,6 +30,8 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<SlugModuleProxy, SlugModule>().AutoCacheAndMap();
             CreateMap<SlugsPowerCalculatorDefinitionProxy, SlugsPowerCalculatorDefinition>().AutoCacheAndMap();
             CreateMap<SlugsPowerProviderModuleProxy, SlugsPowerProviderModule>().AutoCacheAndMap();
+
+            CreateMap<FuseControllerDefinitionProxy, FuseControllerDefinition>().AutoCacheAndMap();
         }
 
         private static void AddDrivingForce(TractionDefinition traction)
