@@ -13,6 +13,8 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<SteamCompressorDefinitionProxy, SteamCompressorDefinition>().AutoCacheAndMap();
             CreateMap<DynamoDefinitionProxy, DynamoDefinition>().AutoCacheAndMap();
             CreateMap<MechanicalLubricatorDefinitionProxy, MechanicalLubricatorDefinition>().AutoCacheAndMap();
+            CreateMap<SteamBellDefinitionProxy, SteamBellDefinition>().AutoCacheAndMap();
+            CreateMap<ReciprocatingSteamEngineDefinitionProxy, ReciprocatingSteamEngineDefinition>().AutoCacheAndMap();
         }
     }
 }

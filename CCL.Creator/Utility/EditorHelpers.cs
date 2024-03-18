@@ -258,6 +258,11 @@ namespace CCL.Creator.Utility
                 if (GUILayout.Button(text))
                 {
                     action();
+
+                    if (component is UnityEngine.Object obj)
+                    {
+                        AssetHelper.SaveAsset(obj);
+                    }
                 }
             }
 
