@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CCL.Types;
+using HarmonyLib;
 
 namespace CCL.Importer.Patches
 {
@@ -28,6 +29,18 @@ namespace CCL.Importer.Patches
             {
                 __instance.loadedExternalInteractables.gameObject.SetActive(true);
                 CCLPlugin.LogVerbose($"Activating interior on {__instance.loadedExternalInteractables.gameObject.name}");
+            }
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(nameof(TrainCar.SetupRigidbody))]
+        public static void SetupCOMOverride(TrainCar __instance)
+        {
+            var t = __instance.transform.Find(CarPartNames.CENTER_OF_MASS);
+
+            if (t != null)
+            {
+                __instance.centerOfMassOverride = t;
             }
         }
     }

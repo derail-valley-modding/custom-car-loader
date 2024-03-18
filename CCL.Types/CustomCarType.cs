@@ -62,6 +62,9 @@ namespace CCL.Types
         public BrakesSetup brakes;
         public DamageSetup damage;
 
+        public UnusedCarDeletePreventionMode unusedCarDeletePreventionMode;
+
+        [Space]
         [Tooltip("Any extra prefab that has scripts on it should be added here")]
         public GameObject[] ExtraModels = new GameObject[0];
 
@@ -222,5 +225,15 @@ namespace CCL.Types
     public interface IAssetLoadCallback
     {
         void AfterAssetLoad(AssetBundle bundle);
+    }
+
+    public enum UnusedCarDeletePreventionMode
+    {
+        None = 0,
+        TimeBasedCarVisit = 10,
+        TimeBasedCarVisitPropagatedToFrontCar = 11,
+        TimeBasedCarVisitPropagatedToRearCar = 12,
+        TimeBasedCarVisitPropagatedToFrontAndRearCar = 13,
+        OnlyManualDeletePossible = 20
     }
 }
