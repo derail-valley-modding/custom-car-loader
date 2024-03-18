@@ -13,12 +13,12 @@ namespace CCL.Types.Proxies.Controllers
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.COAL, true)]
         public string coalConsumePortId = string.Empty;
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             coalChunkMass = 9.0f;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             coalChunkMass = 48.0f;
         }

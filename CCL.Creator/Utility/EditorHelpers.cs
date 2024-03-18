@@ -288,12 +288,12 @@ namespace CCL.Creator.Utility
 
             if (component is IS060Defaults s060)
             {
-                drawButton("Apply S060 Defaults", s060.ApplySE060Defaults);
+                drawButton("Apply S060 Defaults", s060.ApplyS060Defaults);
             }
 
             if (component is IS282Defaults s282)
             {
-                drawButton("Apply S282 Defaults", s282.ApplySE282Defaults);
+                drawButton("Apply S282 Defaults", s282.ApplyS282Defaults);
             }
         }
 

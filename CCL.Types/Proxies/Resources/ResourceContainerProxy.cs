@@ -86,7 +86,7 @@ namespace CCL.Types.Proxies.Resources
             defaultValue = capacity;
         }
 
-        public void ApplySE060Defaults()
+        public void ApplyS060Defaults()
         {
             capacity = type switch
             {
@@ -99,7 +99,7 @@ namespace CCL.Types.Proxies.Resources
             defaultValue = capacity;
         }
 
-        public void ApplySE282Defaults()
+        public void ApplyS282Defaults()
         {
             capacity = type switch
             {
