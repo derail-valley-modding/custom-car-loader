@@ -15,6 +15,7 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<MechanicalLubricatorDefinitionProxy, MechanicalLubricatorDefinition>().AutoCacheAndMap();
             CreateMap<SteamBellDefinitionProxy, SteamBellDefinition>().AutoCacheAndMap();
             CreateMap<ReciprocatingSteamEngineDefinitionProxy, ReciprocatingSteamEngineDefinition>().AutoCacheAndMap();
+            CreateMap<SteamExhaustDefinitionProxy, SteamExhaustDefinition>().AutoCacheAndMap();
         }
     }
 }
