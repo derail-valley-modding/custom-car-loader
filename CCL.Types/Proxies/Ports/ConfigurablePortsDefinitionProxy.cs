@@ -1,4 +1,5 @@
 ﻿using CCL.Types.Json;
+using System;
 
 namespace CCL.Types.Proxies.Ports
 {
@@ -19,6 +20,7 @@ namespace CCL.Types.Proxies.Ports
         }
     }
 
+    [Serializable]
     public class PortStartValue
     {
         public PortDefinition Port;
