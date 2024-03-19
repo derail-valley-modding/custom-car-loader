@@ -2,6 +2,7 @@
 using CCL.Types.Proxies.Ports;
 using DV.Simulation.Controllers;
 using LocoSim.Definitions;
+using System.Linq;
 
 namespace CCL.Importer.Proxies
 {
@@ -16,6 +17,9 @@ namespace CCL.Importer.Proxies
             CreateMap<ConstantPortDefinitionProxy, ConfigurablePortDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableAddDefinitionProxy, ConfigurableAddDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableMultiplierDefinitionProxy, ConfigurableMultiplierDefinition>().AutoCacheAndMap();
+            CreateMap<ConfigurablePortsDefinitionProxy, ConfigurablePortsDefinition>().AutoCacheAndMap()
+                .ForMember(d => d.ports, o => o.MapFrom(s => s.Ports.Select(p => p.Port).ToArray()))
+                .ForMember(d => d.startingValues, o => o.MapFrom(s => s.Ports.Select(p => p.StartingValue).ToArray()));
             CreateMap<MultiplePortSumDefinitionProxy, MultiplePortSumDefinition>().AutoCacheAndMap();
 
             CreateMap<IndependentFusesDefinitionProxy, IndependentFusesDefinition>().AutoCacheAndMap();
