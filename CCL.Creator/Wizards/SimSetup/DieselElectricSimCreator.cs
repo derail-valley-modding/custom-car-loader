@@ -7,6 +7,7 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Electric;
+using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 using static CCL.Types.CarPartNames;
 
@@ -89,6 +90,10 @@ namespace CCL.Creator.Wizards.SimSetup
             var transmission = CreateSimComponent<TransmissionFixedGearDefinitionProxy>("transmission");
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
             var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(tm, "WORKING_TRACTION_MOTORS");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
+            wheelslip.engineBrakingActivePortId = FullPortId(tm, "DYNAMIC_BRAKE_ACTIVE");
 
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]

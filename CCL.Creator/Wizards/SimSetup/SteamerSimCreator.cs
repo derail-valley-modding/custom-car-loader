@@ -6,6 +6,7 @@ using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Steam;
+using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 using static CCL.Types.Proxies.Controls.BaseControlsOverriderProxy;
 using static CCL.Types.Proxies.Ports.ConfigurablePortsDefinitionProxy;
@@ -117,6 +118,9 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
             var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(poweredAxles, "NUM");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
 
             SimComponentDefinitionProxy water = null!;
             SimComponentDefinitionProxy coal = null!;
@@ -166,6 +170,8 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 new FuseDefinition("ELECTRONICS_MAIN", false)
             };
+
+            fuseController.fuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
 
             switch (basisIndex)
             {
@@ -259,7 +265,10 @@ namespace CCL.Creator.Wizards.SimSetup
                     break;
             }
 
-            _root.AddComponent<MagicShovellingProxy>();
+            if (!_root.TryGetComponent(out MagicShovellingProxy shovelling))
+            {
+                shovelling = _root.AddComponent<MagicShovellingProxy>();
+            }
         }
     }
 }
