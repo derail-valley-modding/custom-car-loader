@@ -125,6 +125,9 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(cooler, "HEAT_OUT", heat, "HEAT_IN_1");
 
             ApplyMethodToAll<IBE2Defaults>(s => s.ApplyBE2Defaults());
+
+            _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
+            _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
         }
     }
 }

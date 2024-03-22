@@ -269,6 +269,11 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 shovelling = _root.AddComponent<MagicShovellingProxy>();
             }
+
+            _damageController.bodyHealthStateExternalInPortIds = new[] { FullPortId(boiler, "BODY_HEALTH_EXT_IN") };
+
+            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(steamEngine, "GENERATED_MECHANICAL_DAMAGE") };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(steamEngine, "HEALTH_STATE_EXT_IN") };
         }
     }
 }
