@@ -1,4 +1,5 @@
 ﻿using CCL.Types.Proxies.Ports;
+using CCL.Types.Proxies.Simulation.Steam;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,6 +34,24 @@ namespace CCL.Types.Proxies.Controllers
             new PortIdField(this, nameof(fireboxCoalControlPortId), fireboxCoalControlPortId, DVPortValueType.GENERIC),
             new PortIdField(this, nameof(fireboxIgnitionPortId), fireboxIgnitionPortId, DVPortValueType.GENERIC)
         };
+
+        private void Reset()
+        {
+            if (gameObject.TryGetComponent(out FireboxDefinitionProxy firebox))
+            {
+                ConnectFirebox(firebox);
+            }
+        }
+
+        public void ConnectFirebox(FireboxDefinitionProxy firebox)
+        {
+            fireboxCapacityPortId = firebox.GetFullPortId("COAL_CAPACITY");
+            fireboxContentsPortId = firebox.GetFullPortId("COAL_LEVEL");
+            combustionRateNormalizedPortId = firebox.GetFullPortId("COMBUSTION_RATE_NORMALIZED");
+            fireOnPortId = firebox.GetFullPortId("FIRE_ON");
+            fireboxCoalControlPortId = firebox.GetFullPortId("COAL_CONTROL_EXT_IN");
+            fireboxIgnitionPortId = firebox.GetFullPortId("IGNITION_EXT_IN");
+        }
 
         #region Defaults
 

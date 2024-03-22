@@ -56,5 +56,7 @@ namespace CCL.Types.Proxies.Ports
             }
             _previousId = ID;
         }
+
+        public string GetFullPortId(string portId) => $"{ID}.{portId}";
     }
 }

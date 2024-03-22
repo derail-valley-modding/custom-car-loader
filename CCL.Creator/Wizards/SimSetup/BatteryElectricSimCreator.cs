@@ -63,10 +63,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var transmission = CreateSimComponent<TransmissionFixedGearDefinitionProxy>("transmission");
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
-            var tractionFeeders = CreateSibling<TractionPortFeedersProxy>(traction);
-            tractionFeeders.forwardSpeedPortId = FullPortId(traction, "FORWARD_SPEED_EXT_IN");
-            tractionFeeders.wheelRpmPortId = FullPortId(traction, "WHEEL_RPM_EXT_IN");
-            tractionFeeders.wheelSpeedKmhPortId = FullPortId(traction, "WHEEL_SPEED_KMH_EXT_IN");
+            var tractionFeeders = CreateTractionFeeders(traction);
 
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]

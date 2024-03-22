@@ -29,5 +29,13 @@ namespace CCL.Types.Proxies.Ports
     {
         public PortDefinition Port;
         public float StartingValue;
+
+        public PortStartValue() { }
+
+        public PortStartValue(PortDefinition port, float startingValue)
+        {
+            Port = port;
+            StartingValue = startingValue;
+        }
     }
 }
