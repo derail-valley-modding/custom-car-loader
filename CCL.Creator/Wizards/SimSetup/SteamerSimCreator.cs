@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies;
+﻿using CCL.Types;
+using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -54,6 +55,10 @@ namespace CCL.Creator.Wizards.SimSetup
             fireboxSimController.fireboxDoorPortId = FullPortId(fireDoor, "EXT_IN");
             var engineOn = CreateSibling<EngineOnReaderProxy>(firebox);
             engineOn.portId = FullPortId(firebox, "FIRE_ON");
+            // Power Off Control
+            var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(firebox);
+            environmentDamage.damagerPortId = FullPortId(firebox, "COAL_ENV_DAMAGE_METER");
+            environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageCoal;
 
             var steamCalc = CreateSimComponent<MultiplePortSumDefinitionProxy>("steamConsumptionCalculator");
             steamCalc.inputs = new[]

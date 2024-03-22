@@ -45,6 +45,7 @@ namespace CCL.Importer.Proxies.Controllers
             CreateMap<ExplosionActivationOnSignalProxy, ExplosionActivationOnSignal>().AutoCacheAndMap()
                 .AfterMap(ExplosionActivationOnSignalAfter);
             CreateMap<EngineOnReaderProxy, EngineOnReader>().AutoCacheAndMap();
+            CreateMap<EnvironmentDamagerProxy, EnvironmentDamager>().AutoCacheAndMap();
 
             CreateMap<MagicShovellingProxy, MagicShoveling>().AutoCacheAndMap();
             CreateMap<CoalPileSimControllerProxy, CoalPileSimController>().AutoCacheAndMap();

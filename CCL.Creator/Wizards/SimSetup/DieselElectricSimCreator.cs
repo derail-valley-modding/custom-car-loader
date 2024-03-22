@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies;
+﻿using CCL.Types;
+using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -7,6 +8,7 @@ using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Electric;
 using UnityEngine;
+using static CCL.Types.CarPartNames;
 
 namespace CCL.Creator.Wizards.SimSetup
 {
@@ -36,6 +38,12 @@ namespace CCL.Creator.Wizards.SimSetup
             var sander = CreateSanderControl();
 
             var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
+            var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
+            engineOn.portId = FullPortId(engine, "ENGINE_ON");
+            var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(engine);
+            environmentDamage.damagerPortId = FullPortId(engine, "FUEL_ENV_DAMAGE_METER");
+            environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageFuel;
+
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
             loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
