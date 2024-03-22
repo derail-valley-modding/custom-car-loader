@@ -14,6 +14,11 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class DieselElectricSimCreator : SimCreator
     {
+        // TODO:
+        // Horn
+        // Headlights
+        // Power off
+
         public DieselElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "DE2", "DE6" };

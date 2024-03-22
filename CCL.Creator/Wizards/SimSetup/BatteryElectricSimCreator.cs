@@ -11,6 +11,10 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class BatteryElectricSimCreator : SimCreator
     {
+        // TODO:
+        // Horn
+        // Headlights
+
         public BatteryElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "BE2" };

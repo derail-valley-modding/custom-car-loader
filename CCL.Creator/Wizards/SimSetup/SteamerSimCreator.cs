@@ -14,6 +14,11 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class SteamerSimCreator : SimCreator
     {
+        // TODO:
+        // Whistle
+        // Headlights
+        // Power off
+
         public SteamerSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "S060", "S282" };

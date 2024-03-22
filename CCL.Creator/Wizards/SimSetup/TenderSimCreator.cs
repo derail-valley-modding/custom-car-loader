@@ -8,6 +8,9 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class TenderSimCreator : SimCreator
     {
+        // TODO:
+        // Headlights
+
         public TenderSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "S282B" };
