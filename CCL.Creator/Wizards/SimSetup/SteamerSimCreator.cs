@@ -15,7 +15,7 @@ namespace CCL.Creator.Wizards.SimSetup
     internal class SteamerSimCreator : SimCreator
     {
         // TODO:
-        // Whistle
+        // Whistle control
         // Headlights
         // Power off
 
@@ -31,7 +31,8 @@ namespace CCL.Creator.Wizards.SimSetup
             // Lights.
 
             var blower = CreateExternalControl("blower");
-            // Whistle.
+            var whistle = CreateExternalControl("whistle");
+            // Whistle control.
             var damper = CreateExternalControl("damper");
             var cylCock = CreateExternalControl("cylinderCock");
             var fireDoor = CreateExternalControl("fireboxDoor");
@@ -95,7 +96,6 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var dynamoControl = CreateExternalControl("dynamoControl");
             var dynamo = CreateSimComponent<DynamoDefinitionProxy>("dynamo");
-            CreateBroadcastProvider(dynamo, "DYNAMO_FLOW_NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "DYNAMO_FLOW");
 
             var fuseController = CreateSimComponent<FuseControllerDefinitionProxy>("electronicsFuseController");
             fuseController.controllingPort = new PortReferenceDefinition(DVPortValueType.STATE, "CONTROLLING_PORT");
@@ -171,6 +171,7 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 case 1:
                     _baseControls.propagateNeutralStateToRear = true;
+                    CreateBroadcastProvider(dynamo, "DYNAMO_FLOW_NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "DYNAMO_FLOW");
                     break;
                 default:
                     break;
@@ -244,7 +245,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(steamEngine, "STEAM_FLOW", exhaust, "EXHAUST_FLOW");
             ConnectPortRef(boiler, "PRESSURE", exhaust, "BOILER_PRESSURE");
             ConnectPortRef(blower, "EXT_IN", exhaust, "BLOWER_CONTROL");
-            //ConnectPortRef(whistle, "EXT_IN", exhaust, "WHISTLE_CONTROL");
+            ConnectPortRef(whistle, "EXT_IN", exhaust, "WHISTLE_CONTROL");
 
             switch (basisIndex)
             {
@@ -257,6 +258,8 @@ namespace CCL.Creator.Wizards.SimSetup
                 default:
                     break;
             }
+
+            _root.AddComponent<MagicShovellingProxy>();
         }
     }
 }
