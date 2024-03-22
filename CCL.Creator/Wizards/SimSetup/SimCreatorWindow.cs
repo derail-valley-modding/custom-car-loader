@@ -254,9 +254,12 @@ namespace CCL.Creator.Wizards.SimSetup
             return control;
         }
 
-        protected ExternalControlDefinitionProxy CreateExternalControl(string id)
+        protected ExternalControlDefinitionProxy CreateExternalControl(string id, bool saveState = false, float defaultValue = 0)
         {
-            return CreateSimComponent<ExternalControlDefinitionProxy>(id);
+            var control = CreateSimComponent<ExternalControlDefinitionProxy>(id);
+            control.saveState = saveState;
+            control.defaultValue = defaultValue;
+            return control;
         }
 
         protected ReverserDefinitionProxy CreateReverserControl(string? idOverride = null)

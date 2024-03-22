@@ -34,13 +34,14 @@ namespace CCL.Creator.Wizards.SimSetup
             var blower = CreateExternalControl("blower");
             var whistle = CreateExternalControl("whistle");
             // Whistle control.
-            var damper = CreateExternalControl("damper");
-            var cylCock = CreateExternalControl("cylinderCock");
-            var fireDoor = CreateExternalControl("fireboxDoor");
-            var injector = CreateExternalControl("injector");
-            var blowdown = CreateExternalControl("blowdown");
+            var damper = CreateExternalControl("damper", true, 1.0f);
+            var cylCock = CreateExternalControl("cylinderCock", true);
+            var fireDoor = CreateExternalControl("fireboxDoor", true);
+            var injector = CreateExternalControl("injector", true);
+            var blowdown = CreateExternalControl("blowdown", true);
 
             var reverser = CreateReverserControl();
+            reverser.isAnalog = true;
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
 
             var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
@@ -55,7 +56,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
-            var coalDump = CreateExternalControl("coalDumpControl");
+            var coalDump = CreateExternalControl("coalDumpControl", true);
             var firebox = CreateSimComponent<FireboxDefinitionProxy>("firebox");
             var fireboxSimController = CreateSibling<FireboxSimControllerProxy>(firebox);
             fireboxSimController.ConnectFirebox(firebox);
@@ -91,11 +92,11 @@ namespace CCL.Creator.Wizards.SimSetup
             explosion.explosionSignalPortId = FullPortId(boiler, "IS_BROKEN");
             explosion.explodeTrainCar = true;
 
-            var compressorControl = CreateExternalControl("compressorControl");
+            var compressorControl = CreateExternalControl("compressorControl", true);
             var compressor = CreateSimComponent<SteamCompressorDefinitionProxy>("compressor");
             var airController = CreateCompressorSim(compressor);
 
-            var dynamoControl = CreateExternalControl("dynamoControl");
+            var dynamoControl = CreateExternalControl("dynamoControl", true);
             var dynamo = CreateSimComponent<DynamoDefinitionProxy>("dynamo");
 
             var fuseController = CreateSimComponent<FuseControllerDefinitionProxy>("electronicsFuseController");
@@ -107,10 +108,10 @@ namespace CCL.Creator.Wizards.SimSetup
             throttleCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.PRESSURE, "STEAM_CHEST_PRESSURE");
 
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
-            var lubricatorControl = CreateExternalControl("lubricatorControl");
+            var lubricatorControl = CreateExternalControl("lubricatorControl", true);
             var lubricator = CreateSimComponent<MechanicalLubricatorDefinitionProxy>("lubricator");
 
-            var bellControl = CreateExternalControl("bellControl");
+            var bellControl = CreateExternalControl("bellControl", true);
             var bell = CreateSimComponent<SteamBellDefinitionProxy>("bell");
 
             var steamEngine = CreateSimComponent<ReciprocatingSteamEngineDefinitionProxy>("steamEngine");
@@ -144,6 +145,7 @@ namespace CCL.Creator.Wizards.SimSetup
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "AMOUNT"), 0),
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "CONSUME_EXT_IN"), 0)
                     };
+                    tenderWater.OnValidate();
                     CreateBroadcastConsumer(tenderWater, "NORMALIZED", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_NORMALIZED", 0, false);
                     CreateBroadcastConsumer(tenderWater, "CAPACITY", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_CAPACITY", 1, false);
                     CreateBroadcastConsumer(tenderWater, "AMOUNT", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_AMOUNT", 0, false);
@@ -155,6 +157,7 @@ namespace CCL.Creator.Wizards.SimSetup
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "NORMALIZED"), 0),
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "CAPACITY"), 10000),
                     };
+                    tenderCoal.OnValidate();
                     CreateBroadcastConsumer(tenderCoal, "NORMALIZED", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_COAL_NORMALIZED", 0, false);
                     CreateBroadcastConsumer(tenderCoal, "CAPACITY", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_COAL_CAPACITY", 1, false);
 
