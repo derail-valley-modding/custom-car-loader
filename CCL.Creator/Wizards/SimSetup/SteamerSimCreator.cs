@@ -6,6 +6,8 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Steam;
 using UnityEngine;
+using static CCL.Types.Proxies.Controls.BaseControlsOverriderProxy;
+using static CCL.Types.Proxies.Ports.ConfigurablePortsDefinitionProxy;
 
 namespace CCL.Creator.Wizards.SimSetup
 {
@@ -50,9 +52,11 @@ namespace CCL.Creator.Wizards.SimSetup
             var fireboxSimController = CreateSibling<FireboxSimControllerProxy>(firebox);
             fireboxSimController.ConnectFirebox(firebox);
             fireboxSimController.fireboxDoorPortId = FullPortId(fireDoor, "EXT_IN");
+            var engineOn = CreateSibling<EngineOnReaderProxy>(firebox);
+            engineOn.portId = FullPortId(firebox, "FIRE_ON");
 
-            var steamConsume = CreateSimComponent<MultiplePortSumDefinitionProxy>("steamConsumptionCalculator");
-            steamConsume.inputs = new[]
+            var steamCalc = CreateSimComponent<MultiplePortSumDefinitionProxy>("steamConsumptionCalculator");
+            steamCalc.inputs = new[]
             {
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "EXHAUST"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "COMPRESSOR"),
@@ -61,7 +65,7 @@ namespace CCL.Creator.Wizards.SimSetup
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "DYNAMO"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "BELL"),
             };
-            steamConsume.output = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "OUT");
+            steamCalc.output = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "OUT");
 
             var boiler = CreateSimComponent<BoilerDefinitionProxy>("boiler");
             var boilerSimController = CreateSibling<BoilerSimControllerProxy>(boiler);
@@ -104,8 +108,8 @@ namespace CCL.Creator.Wizards.SimSetup
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
             var tractionFeeders = CreateTractionFeeders(traction);
 
-            SimComponentDefinitionProxy water;
-            SimComponentDefinitionProxy coal;
+            SimComponentDefinitionProxy water = null!;
+            SimComponentDefinitionProxy coal = null!;
 
             switch (basisIndex)
             {
@@ -152,6 +156,85 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 new FuseDefinition("ELECTRONICS_MAIN", false)
             };
+
+            switch (basisIndex)
+            {
+                case 1:
+                    _baseControls.propagateNeutralStateToRear = true;
+                    break;
+                default:
+                    break;
+            }
+
+            _baseControls.neutralStateSetters = new[]
+            {
+                new PortSetter(FullPortId(injector, "EXT_IN"), 0),
+                new PortSetter(FullPortId(blower, "EXT_IN"), 0),
+                new PortSetter(FullPortId(blowdown, "EXT_IN"), 0),
+                new PortSetter(FullPortId(bellControl, "EXT_IN"), 0),
+                new PortSetter(FullPortId(lubricatorControl, "EXT_IN"), 0),
+                new PortSetter(FullPortId(dynamoControl, "EXT_IN"), 0),
+                new PortSetter(FullPortId(compressorControl, "EXT_IN"), 0)
+            };
+
+            ConnectPorts(steamEngine, "TORQUE_OUT", traction, "TORQUE_IN");
+
+            ConnectPortRef(oil, "AMOUNT", lubricator, "OIL");
+            ConnectPortRef(oil, "CONSUME_EXT_IN", lubricator, "OIL_CONSUMPTION");
+            ConnectPortRef(lubricatorControl, "EXT_IN", lubricator, "LUBRICATOR_CONTROL");
+            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", lubricator, "WHEEL_RPM");
+
+            ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
+            ConnectPortRef(boiler, "PRESSURE", bell, "STEAM_PRESSURE");
+
+            ConnectPortRef(damper, "EXT_IN", firebox, "DAMPER_CONTROL");
+            ConnectPortRef(coalDump, "EXT_IN", firebox, "COAL_DUMP_CONTROL");
+            ConnectPortRef(exhaust, "AIR_FLOW", firebox, "AIR_FLOW");
+            ConnectPortRef(traction, "FORWARD_SPEED_EXT_IN", firebox, "FORWARD_SPEED");
+            ConnectPortRef(boiler, "PRESSURE", firebox, "BOILER_PRESSURE");
+            ConnectPortRef(boiler, "TEMPERATURE", firebox, "BOILER_TEMPERATURE");
+
+            ConnectPortRef(exhaust, "STEAM_CONSUMPTION", steamCalc, "EXHAUST");
+            ConnectPortRef(compressor, "STEAM_CONSUMPTION", steamCalc, "COMPRESSOR");
+            ConnectPortRef(steamEngine, "STEAM_FLOW", steamCalc, "ENGINE");
+            ConnectPortRef(steamEngine, "DUMPED_FLOW", steamCalc, "CYLINDER_DUMP");
+            ConnectPortRef(dynamo, "STEAM_CONSUMPTION", steamCalc, "DYNAMO");
+            ConnectPortRef(bell, "STEAM_CONSUMPTION", steamCalc, "BELL");
+
+            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
+            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+
+            ConnectPortRef(injector, "EXT_IN", boiler, "INJECTOR");
+            ConnectPortRef(blowdown, "EXT_IN", boiler, "BLOWDOWN");
+            ConnectPortRef(firebox, "HEAT", boiler, "HEAT");
+            ConnectPortRef(firebox, "TEMPERATURE", boiler, "FIREBOX_TEMPERATURE");
+            //ConnectPortRef(, "", boiler, "FEEDWATER_TEMPERATURE");
+            ConnectPortRef(steamCalc, "OUT", boiler, "STEAM_CONSUMPTION");
+            ConnectPortRef(water, "AMOUNT", boiler, "WATER");
+            ConnectPortRef(water, "CONSUME_EXT_IN", boiler, "WATER_CONSUMPTION");
+
+            ConnectPortRef(compressorControl, "EXT_IN", compressor, "COMPRESSOR_CONTROL");
+            ConnectPortRef(boiler, "PRESSURE", compressor, "STEAM_PRESSURE");
+            ConnectPortRef(dynamoControl, "EXT_IN", dynamo, "CONTROL");
+            ConnectPortRef(boiler, "PRESSURE", dynamo, "STEAM_PRESSURE");
+
+            ConnectPortRef(dynamo, "DYNAMO_FLOW_NORMALIZED", fuseController, "CONTROLLING_PORT");
+
+            ConnectPortRef(boiler, "PRESSURE", throttleCalc, "BOILER_PRESSURE");
+            ConnectPortRef(throttle, "EXT_IN", throttleCalc, "THROTTLE");
+
+            ConnectPortRef(reverser, "REVERSER", steamEngine, "REVERSER_CONTROL");
+            ConnectPortRef(cylCock, "EXT_IN", steamEngine, "CYLINDER_COCK_CONTROL");
+            ConnectPortRef(throttleCalc, "STEAM_CHEST_PRESSURE", steamEngine, "STEAM_CHEST_PRESSURE");
+            ConnectPortRef(firebox, "TEMPERATURE", steamEngine, "STEAM_CHEST_TEMPERATURE");
+            ConnectPortRef(boiler, "OUTLET_STEAM_QUALITY", steamEngine, "STEAM_QUALITY");
+            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", steamEngine, "CRANK_RPM");
+            ConnectPortRef(lubricator, "LUBRICATION_NORMALIZED", steamEngine, "LUBRICATION_NORMALIZED");
+
+            ConnectPortRef(steamEngine, "STEAM_FLOW", exhaust, "EXHAUST_FLOW");
+            ConnectPortRef(boiler, "PRESSURE", exhaust, "BOILER_PRESSURE");
+            ConnectPortRef(blower, "EXT_IN", exhaust, "BLOWER_CONTROL");
+            //ConnectPortRef(whistle, "EXT_IN", exhaust, "WHISTLE_CONTROL");
 
             switch (basisIndex)
             {
