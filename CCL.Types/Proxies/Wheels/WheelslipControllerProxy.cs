@@ -21,6 +21,10 @@ namespace CCL.Types.Proxies.Wheels
         [PortId(DVPortValueType.STATE, false)]
         public string engineBrakingActivePortId;
 
+        [RenderMethodButtons]
+        [MethodButton(nameof(SetCurveToDefault), "Set curve to default")]
+        public bool buttonRender;
+
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(numberOfPoweredAxlesPortId), numberOfPoweredAxlesPortId, DVPortValueType.GENERIC),
@@ -32,6 +36,11 @@ namespace CCL.Types.Proxies.Wheels
             new Keyframe(0, 1, 0, 0, 0.3333f, 1),
             new Keyframe(0.25f, 0.4f, -0.0085f, -0.0085f, 0.3333f, 0.3333f)
         );
+
+        private static void SetCurveToDefault(WheelslipControllerProxy proxy)
+        {
+            proxy.wheelslipToAdhesionDrop = proxy.DefaultAdhesionCurve;
+        }
 
         #region Defaults
 
