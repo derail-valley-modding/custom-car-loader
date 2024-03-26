@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
@@ -24,6 +25,7 @@ namespace CCL.Types.Proxies.Ports
 
         public PortStartValue[] Ports = new PortStartValue[0];
 
+        [SerializeField, HideInInspector]
         private string? _json;
 
         public override IEnumerable<PortDefinition> ExposedPorts => Ports.Select(p => p.Port);

@@ -57,6 +57,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var sander = CreateSanderControl();
 
             var coalDump = CreateExternalControl("coalDumpControl", true);
+            coalDump.defaultValue = 0.5f;
             var firebox = CreateSimComponent<FireboxDefinitionProxy>("firebox");
             var fireboxSimController = CreateSibling<FireboxSimControllerProxy>(firebox);
             fireboxSimController.ConnectFirebox(firebox);
@@ -143,7 +144,7 @@ namespace CCL.Creator.Wizards.SimSetup
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "NORMALIZED"), 0),
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "CAPACITY"), 30000),
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "AMOUNT"), 0),
-                        new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "CONSUME_EXT_IN"), 0)
+                        new PortStartValue(new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "CONSUME_EXT_IN"), 0)
                     };
                     tenderWater.OnValidate();
                     CreateBroadcastConsumer(tenderWater, "NORMALIZED", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_NORMALIZED", 0, false);
