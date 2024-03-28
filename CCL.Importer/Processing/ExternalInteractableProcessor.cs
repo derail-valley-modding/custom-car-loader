@@ -121,7 +121,7 @@ namespace CCL.Importer.Processing
                 }
             }
 
-            interactables.SetLayersRecursive(DVLayer.Interactable);
+            interactables.SetLayersRecursive(ModelProcessor.NonStandardLayerExclusion, DVLayer.Interactable);
             FixControlColliders(interactables);
         }
 

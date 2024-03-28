@@ -83,30 +83,48 @@ namespace CCL.Types
 
         public static void SetLayersRecursive(this GameObject go, int layer)
         {
-            SetLayerRecursiveInternal(go.transform, layer);
+            SetLayerRecursiveInternal(go.transform, (_) => (false, false), layer);
         }
 
         public static void SetLayersRecursive(this GameObject go, DVLayer layer)
         {
-            SetLayerRecursiveInternal(go.transform, (int)layer);
+            SetLayerRecursiveInternal(go.transform, (_) => (false, false), (int)layer);
+        }
+
+        public static void SetLayersRecursive(this GameObject go, Func<Transform, (bool ExcludeSelf, bool ExcludeChildren)> excludeCondition, DVLayer layer)
+        {
+            SetLayerRecursiveInternal(go.transform, excludeCondition, (int)layer);
         }
 
         public static void SetLayersRecursiveAndExclude(GameObject go, DVLayer layer, DVLayer exclude)
         {
-            SetLayerRecursiveInternal(go.transform, (int)layer, (int)exclude);
+            SetLayerRecursiveInternal(go.transform, (_) => (false, false), (int)layer, (int)exclude);
         }
 
-        private static void SetLayerRecursiveInternal(Transform tform, int layer, int? exclude = null)
+        public static void SetLayersRecursiveAndExclude(GameObject go, Func<Transform, (bool ExcludeSelf, bool ExcludeChildren)> excludeCondition, DVLayer layer, DVLayer exclude)
         {
-            if ((!exclude.HasValue || exclude.Value != tform.gameObject.layer) &&
-                !tform.TryGetComponent(out InteriorNonStandardLayerProxy _))
+            SetLayerRecursiveInternal(go.transform, excludeCondition, (int)layer, (int)exclude);
+        }
+
+        private static void SetLayerRecursiveInternal(Transform tform, Func<Transform, (bool ExcludeSelf, bool ExcludeChildren)> excludeCondition, int layer, int? exclude = null)
+        {
+            if (!exclude.HasValue || exclude.Value != tform.gameObject.layer)
             {
-                tform.gameObject.layer = layer;
+                var (excludeSelf, excludeChildren) = excludeCondition(tform);
+
+                if (!excludeSelf)
+                {
+                    tform.gameObject.layer = layer;
+                }
+                else if (excludeChildren)
+                {
+                    return;
+                }
             }
 
             for (int i = 0; i < tform.childCount; i++)
             {
-                SetLayerRecursiveInternal(tform.GetChild(i), layer, exclude);
+                SetLayerRecursiveInternal(tform.GetChild(i), excludeCondition, layer, exclude);
             }
         }
 

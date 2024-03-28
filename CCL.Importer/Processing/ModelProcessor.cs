@@ -123,5 +123,15 @@ namespace CCL.Importer.Processing
             Mapper.ProcessConfigs(prefab);
             Mapper.ClearComponentCache();
         }
+
+        public static (bool, bool) NonStandardLayerExclusion(Transform t)
+        {
+            if (t.gameObject.TryGetComponent(out InteriorNonStandardLayer comp))
+            {
+                return (true, comp.includeChildren);
+            }
+
+            return (false, false);
+        }
     }
 }
