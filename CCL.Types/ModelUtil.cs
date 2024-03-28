@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CCL.Types.Proxies;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -97,7 +98,8 @@ namespace CCL.Types
 
         private static void SetLayerRecursiveInternal(Transform tform, int layer, int? exclude = null)
         {
-            if (!exclude.HasValue || exclude.Value != tform.gameObject.layer)
+            if ((!exclude.HasValue || exclude.Value != tform.gameObject.layer) &&
+                !tform.TryGetComponent(out InteriorNonStandardLayerProxy _))
             {
                 tform.gameObject.layer = layer;
             }
