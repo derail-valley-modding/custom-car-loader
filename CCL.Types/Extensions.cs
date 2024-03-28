@@ -34,5 +34,10 @@ namespace CCL.Types
         {
             return Enum.IsDefined(typeof(T), enumValue);
         }
+
+        public static T AddComponentCopy<T>(this GameObject go, T component) where T : Component
+        {
+            return ComponentUtil.CopyComponent(component, go.AddComponent<T>());
+        }
     }
 }
