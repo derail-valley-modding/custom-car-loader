@@ -54,7 +54,6 @@ namespace CCL.Types.Proxies.Indicators
 
     public class IndicatorGaugeLaggingProxy : IndicatorGaugeProxy
     {
-        [Range(0f, 1f)]
-        public float needleAgility = 0.5f;
+        public float smoothTime = 0.5f;
     }
 }
