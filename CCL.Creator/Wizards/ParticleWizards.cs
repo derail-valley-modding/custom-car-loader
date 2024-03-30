@@ -177,7 +177,7 @@ namespace CCL.Creator.Wizards
         {
             var target = (GameObject)command.context;
 
-            var root = new GameObject(CarPartNames.Cab.TELEPORT_ROOT);
+            var root = new GameObject(CarPartNames.Particles.ROOT);
             root.transform.parent = target.transform;
 
             var comp = root.AddComponent<ParticlesPortReadersControllerProxy>();
