@@ -8,6 +8,8 @@ using UnityEngine;
 using CCL.Types.Proxies.VFX;
 using CCL.Types.Proxies.Simulation.Steam;
 using static CCL.Types.Proxies.VFX.ParticlesPortReadersControllerProxy;
+using CCL.Types.Proxies.Ports;
+using System.Linq;
 
 namespace CCL.Creator.Wizards
 {
@@ -47,7 +49,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = de != null ? de.GetFullPortId("RPM_NORMALIZED") : ".RPM_NORMALIZED",
+                            portId = de != null ? de.GetFullPortId("RPM_NORMALIZED") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -78,7 +80,7 @@ namespace CCL.Creator.Wizards
                         },
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = de != null ? de.GetFullPortId("ENGINE_ON") : ".ENGINE_ON",
+                            portId = de != null ? de.GetFullPortId("ENGINE_ON") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -100,7 +102,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = heat != null ? heat.GetFullPortId("TEMPERATURE") : ".TEMPERATURE",
+                            portId = heat != null ? heat.GetFullPortId("TEMPERATURE") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -129,7 +131,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = de != null ? de.GetFullPortId("ENGINE_ON") : ".ENGINE_ON",
+                            portId = de != null ? de.GetFullPortId("ENGINE_ON") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -144,7 +146,7 @@ namespace CCL.Creator.Wizards
                         },
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = de != null ? de.GetFullPortId("ENGINE_HEALTH_STATE_EXT_IN") : ".ENGINE_HEALTH_STATE_EXT_IN",
+                            portId = de != null ? de.GetFullPortId("ENGINE_HEALTH_STATE_EXT_IN") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -260,15 +262,15 @@ namespace CCL.Creator.Wizards
 
             var smoke = new GameObject("SteamSmoke").AddComponent<CopyVanillaParticleSystem>();
             smoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmoke;
-            smoke = smoke.gameObject.AddComponent<CopyVanillaParticleSystem>();
-            smoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmokeThick;
-            smoke.transform.parent = chimney.transform;
+            var thickSmoke = smoke.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            thickSmoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmokeThick;
+            thickSmoke.transform.parent = chimney.transform;
 
             var embers = new GameObject("SmokeEmbers").AddComponent<CopyVanillaParticleSystem>();
             embers.SystemToCopy = VanillaParticleSystem.SteamerEmberClusters;
-            embers = embers.gameObject.AddComponent<CopyVanillaParticleSystem>();
-            embers.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
-            embers.transform.parent = chimney.transform;
+            var embersSparks = embers.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            embersSparks.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
+            embersSparks.transform.parent = chimney.transform;
 
             chimney.smokeParticlesParent = smoke.gameObject;
             chimney.emberParticlesParent = embers.gameObject;
@@ -297,6 +299,12 @@ namespace CCL.Creator.Wizards
             crack = Object.Instantiate(steamLarge, crack.transform).gameObject;
             crack.name = steamLarge.name;
 
+            var leaksParent = new GameObject("RandomLeaks");
+            leaksParent.transform.parent = comp.transform;
+            var leaks = new GameObject("SteamLeaks").AddComponent<CopyVanillaParticleSystem>();
+            leaks.transform.parent = leaksParent.transform;
+            leaks.SystemToCopy = VanillaParticleSystem.SteamerSteamLeaks;
+
             #endregion
 
             Object.DestroyImmediate(steam);
@@ -308,6 +316,12 @@ namespace CCL.Creator.Wizards
             var exhaust = root.transform.root.GetComponentInChildren<SteamExhaustDefinitionProxy>();
             var boiler = root.transform.root.GetComponentInChildren<BoilerDefinitionProxy>();
             var engine = root.transform.root.GetComponentInChildren<ReciprocatingSteamEngineDefinitionProxy>();
+            var cylCock = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
+                .FirstOrDefault(x => x.ID == "cylinderCock");
+            var throttleCalculator = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
+                .FirstOrDefault(x => x.ID == "throttleCalculator");
+            var traction = root.transform.root.GetComponentInChildren<TractionDefinitionProxy>();
+            var firebox = root.transform.root.GetComponentInChildren<FireboxDefinitionProxy>();
 
             #endregion
 
@@ -320,7 +334,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = exhaust != null ? exhaust.GetFullPortId("WHISTLE_FLOW_NORMALIZED") : ".WHISTLE_FLOW_NORMALIZED",
+                            portId = exhaust != null ? exhaust.GetFullPortId("WHISTLE_FLOW_NORMALIZED") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -357,7 +371,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = boiler != null ? boiler.GetFullPortId("SAFETY_VALVE_NORMALIZED") : ".SAFETY_VALVE_NORMALIZED",
+                            portId = boiler != null ? boiler.GetFullPortId("SAFETY_VALVE_NORMALIZED") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -394,7 +408,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = boiler != null ? boiler.GetFullPortId("BLOWDOWN_FLOW_NORMALIZED") : ".BLOWDOWN_FLOW_NORMALIZED",
+                            portId = boiler != null ? boiler.GetFullPortId("BLOWDOWN_FLOW_NORMALIZED") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -430,7 +444,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = engine != null ? engine.GetFullPortId("CYLINDER_CRACK_FLOW_NORMALIZED") : ".CYLINDER_CRACK_FLOW_NORMALIZED",
+                            portId = engine != null ? engine.GetFullPortId("CYLINDER_CRACK_FLOW_NORMALIZED") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
@@ -458,6 +472,166 @@ namespace CCL.Creator.Wizards
                             }
                         }
                     }
+                },
+                new ParticlePortReader
+                {
+                    particlesParent = dripL.gameObject,
+                    particleUpdaters = new List<ParticlePortReader.PortParticleUpdateDefinition>
+                    {
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = engine != null ? engine.GetFullPortId("WATER_IN_CYLINDERS_NORMALIZED") : "",
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 1, 1),
+                                        new Keyframe(1, 1, 1, 1))
+                                }
+                            }
+                        },
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = cylCock != null ? cylCock.GetFullPortId("EXT_IN") : "",
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 1, 1),
+                                        new Keyframe(1, 1, 1, 1))
+                                }
+                            }
+                        }
+                    }
+                },
+                new ParticlePortReader
+                {
+                    particlesParent = dripR.gameObject,
+                    particleUpdaters = new List<ParticlePortReader.PortParticleUpdateDefinition>
+                    {
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = engine != null ? engine.GetFullPortId("WATER_IN_CYLINDERS_NORMALIZED") : "",
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 1, 1),
+                                        new Keyframe(1, 1, 1, 1))
+                                }
+                            }
+                        },
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = cylCock != null ? cylCock.GetFullPortId("EXT_IN") : "",
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 1, 1),
+                                        new Keyframe(1, 1, 1, 1))
+                                }
+                            }
+                        }
+                    }
+                },
+                new ParticlePortReader
+                {
+                    particlesParent = leaksParent,
+                    particleUpdaters = new List<ParticlePortReader.PortParticleUpdateDefinition>
+                    {
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = throttleCalculator != null ? throttleCalculator.GetFullPortId("STEAM_CHEST_PRESSURE") : "",
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 1, 1),
+                                        new Keyframe(1, 1, 1, 1))
+                                },
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.RATE_OVER_TIME,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 1 / 12f, 1 / 12f),
+                                        new Keyframe(12, 1, 1 / 12f, 1 / 12f))
+                                }
+                            }
+                        },
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = traction != null ? traction.GetFullPortId("FORWARD_SPEED_EXT_IN") : "",
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 1, -0.0852168f, -0.0852168f, 0, 0.08717979f),
+                                        new Keyframe(1.5f, 0, -0.9947581f, -0.9947581f, 0.041025322f, 0.15235536f))
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            comp.particleColorPortReaders = new List<ParticleColorPortReader>
+            {
+                new ParticleColorPortReader
+                {
+                    particlesParent = smoke.gameObject,
+                    portId = firebox != null ? firebox.GetFullPortId("SMOKE_DENSITY") : "",
+                    inputModifier = new ValueModifier(),
+                    changeType = ColorPropertyChange.RGB_ONLY,
+                    startColorMin = new Color(1, 1, 1, 1),
+                    startColorMax = new Color(0.122641504f, 0.122641504f, 0.122641504f, 1),
+                    colorLerpCurve = new AnimationCurve(
+                        new Keyframe(0, 0, 1, 1),
+                        new Keyframe(1, 1, 1, 1))
+                },
+                new ParticleColorPortReader
+                {
+                    particlesParent = smoke.gameObject,
+                    portId = exhaust != null ? exhaust.GetFullPortId("AIR_FLOW") : "",
+                    inputModifier = new ValueModifier(),
+                    changeType = ColorPropertyChange.ALPHA_ONLY,
+                    startColorMin = new Color(0.5019608f, 0.5019608f, 0.5019608f, 1),
+                    startColorMax = new Color(0.5019608f, 0.5019608f, 0.5019608f, 0.3137255f),
+                    colorLerpCurve = new AnimationCurve(
+                        new Keyframe(0, 0, 0.05f, 0.05f),
+                        new Keyframe(20, 1, 0.05f, 0.05f))
+                },
+                new ParticleColorPortReader
+                {
+                    particlesParent = thickSmoke.gameObject,
+                    portId = firebox != null ? firebox.GetFullPortId("SMOKE_DENSITY") : "",
+                    inputModifier = new ValueModifier(),
+                    changeType = ColorPropertyChange.ALL,
+                    startColorMin = new Color(1, 1, 1, 0),
+                    startColorMax = new Color(0.12156863f, 0.12156863f, 0.12156863f, 1),
+                    colorLerpCurve = new AnimationCurve(
+                        new Keyframe(0, 0, -0.0076235156f, -0.0076235156f, 0, 0.14615384f),
+                        new Keyframe(0.3f, 0, 0.0056568207f, 0.0056568207f, 1 / 3f, 0.17435893f),
+                        new Keyframe(0.7f, 1, 0.020209895f, 0.020209895f, 0.21227589f, 1 / 3f),
+                        new Keyframe(1.01f, 1.0027869f, 0.036841f, 0.036841f, 0.38064513f, 0))
                 }
             };
 
