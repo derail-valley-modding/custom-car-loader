@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CCL.Types.Proxies.Particles
+namespace CCL.Types.Proxies.VFX
 {
     public class CylinderCockParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, ICustomSerialized
     {

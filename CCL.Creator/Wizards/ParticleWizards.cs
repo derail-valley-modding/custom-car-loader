@@ -1,11 +1,11 @@
 ﻿using CCL.Types.Components;
-using CCL.Types.Proxies.Particles;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using CCL.Types.Proxies.VFX;
 
 namespace CCL.Creator.Wizards
 {
@@ -20,6 +20,7 @@ namespace CCL.Creator.Wizards
             root.transform.parent = target.transform;
 
             var comp = root.AddComponent<ParticlesPortReadersControllerProxy>();
+
             var exhaust = new GameObject("ExhaustEngineSmoke").AddComponent<CopyVanillaParticleSystem>();
             exhaust.SystemToCopy = VanillaParticleSystem.DieselExhaustSmoke1;
             exhaust.transform.parent = comp.transform;
@@ -181,6 +182,64 @@ namespace CCL.Creator.Wizards
             root.transform.parent = target.transform;
 
             var comp = root.AddComponent<ParticlesPortReadersControllerProxy>();
+
+            #region Template Objects
+
+            var steam = new GameObject("SteamExhaust").AddComponent<CopyVanillaParticleSystem>();
+            steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustWispy;
+            steam = steam.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustWave;
+            steam = steam.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustLeak;
+
+            var steamSmall = new GameObject("SteamExhaust Small").AddComponent<CopyVanillaParticleSystem>();
+            steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallWispy;
+            steamSmall = steamSmall.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallWave;
+            steamSmall = steamSmall.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallLeak;
+
+            var steamLarge = new GameObject("SteamExhaust Large").AddComponent<CopyVanillaParticleSystem>();
+            steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeWispy;
+            steamLarge = steamLarge.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeWave;
+            steamLarge = steamLarge.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeLeak;
+
+            CopyVanillaParticleSystem system;
+
+            #endregion
+
+            #region Cylinder Cocks
+
+            var cylCockDrip = new GameObject("CylCockWaterDrip");
+            cylCockDrip.transform.parent = comp.transform;
+            var dripL = new GameObject("CylCockWaterDrip L").AddComponent<CopyVanillaParticleSystem>();
+            dripL.transform.parent = cylCockDrip.transform;
+            dripL.SystemToCopy = VanillaParticleSystem.SteamerCylCockWaterDripParticles;
+            var dripR = new GameObject("CylCockWaterDrip R").AddComponent<CopyVanillaParticleSystem>();
+            dripR.transform.parent = cylCockDrip.transform;
+            dripR.SystemToCopy = VanillaParticleSystem.SteamerCylCockWaterDripParticles;
+
+            var cylCockSteam = new GameObject("CylCockSteam").AddComponent<CylinderCockParticlePortReaderProxy>();
+            cylCockSteam.transform.parent = comp.transform;
+
+            var ccFR = new GameObject("CylCockSteam FR");
+            ccFR.transform.parent = comp.transform;
+            system = Object.Instantiate(steamSmall, ccFR.transform);
+            system.name = "SteamExhaust Small";
+
+            var ccRR = Object.Instantiate(ccFR, comp.transform);
+            ccRR.transform.parent = comp.transform;
+            ccRR.name = "CylCockSteam RR";
+            var ccFL = Object.Instantiate(ccFR, comp.transform);
+            ccRR.transform.parent = comp.transform;
+            ccRR.name = "CylCockSteam FL";
+            var ccRL = Object.Instantiate(ccFR, comp.transform);
+            ccRR.transform.parent = comp.transform;
+            ccRR.name = "CylCockSteam RL";
+
+            #endregion
 
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");
         }

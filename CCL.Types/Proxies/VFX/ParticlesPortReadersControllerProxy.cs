@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CCL.Types.Proxies.Particles
+namespace CCL.Types.Proxies.VFX
 {
     public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized
     {
@@ -70,7 +70,7 @@ namespace CCL.Types.Proxies.Particles
             length = Mathf.Min(_goColorPort.Length, fakes.Count);
             particleColorPortReaders = new List<ParticleColorPortReader>(length);
 
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 particleColorPortReaders.Add(fakes[i].ToReal(_goColorPort[i]));
             }
@@ -107,7 +107,7 @@ namespace CCL.Types.Proxies.Particles
             [Serializable]
             public class PortParticleUpdateDefinition
             {
-            	[PortId(null, null, false)]
+                [PortId(null, null, false)]
                 public string portId;
                 public ValueModifier inputModifier;
                 public List<PropertyChangeDefinition> propertiesToUpdate;

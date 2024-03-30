@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using CCL.Types.Proxies.Particles;
+using CCL.Types.Proxies.VFX;
 using DV.Simulation.Controllers;
 using DV.VFX;
 
-namespace CCL.Importer.Proxies.Particles
+namespace CCL.Importer.Proxies.VFX
 {
-    internal class ParticleProxyReplacer : Profile
+    internal class VFXProxyReplacer : Profile
     {
-        public ParticleProxyReplacer()
+        public VFXProxyReplacer()
         {
             CreateMap<ParticlesPortReadersControllerProxy, ParticlesPortReadersController>().AutoCacheAndMap()
                 .AfterMap(ParticlesPortReadersControllerAfter);
