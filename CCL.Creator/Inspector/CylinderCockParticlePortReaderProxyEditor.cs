@@ -20,7 +20,13 @@ namespace CCL.Creator.Inspector
             EditorHelpers.DrawHeader("Quick curve setup");
 
             _index = Mathf.Clamp(EditorGUILayout.IntField("Cylinder setup index", _index), 0, _proxy.cylinderSetups.Length - 1);
-            var setup = _proxy.cylinderSetups[_index];
+            CylinderCockParticlePortReaderProxy.CylinderSetup setup = null!;
+
+            if (_proxy.cylinderSetups.Length == 0)
+            {
+                setup = _proxy.cylinderSetups[_index];
+                GUI.enabled = false;
+            }
 
             if (GUILayout.Button("Apply 0 degrees curves"))
             {
@@ -46,6 +52,7 @@ namespace CCL.Creator.Inspector
                 setup.rearActivityCurve = CylinderCockParticlePortReaderProxy.Curve90;
             }
 
+            GUI.enabled = true;
             EditorHelpers.DrawLocoDefaultsButtons(target);
         }
     }
