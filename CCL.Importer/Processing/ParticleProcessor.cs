@@ -10,7 +10,7 @@ namespace CCL.Importer.Processing
     [Export(typeof(IModelProcessorStep))]
     internal class ParticleProcessor : ModelProcessorStep
     {
-        private static Dictionary<VanillaParticleSystem, ParticleSystem> s_particles = new Dictionary<VanillaParticleSystem, ParticleSystem>();
+        private static Dictionary<VanillaParticleSystem, ParticleSystem> s_particles = new();
 
         public override void ExecuteStep(ModelProcessor context)
         {
@@ -28,115 +28,85 @@ namespace CCL.Importer.Processing
                 var system = Object.Instantiate(GetSystem(item.SystemToCopy), item.transform);
                 system.transform.localPosition = Vector3.zero;
                 system.transform.localRotation = Quaternion.identity;
+
+                if (item.ForcePlay)
+                {
+                    system.Play();
+                }
+
                 Object.Destroy(item);
             }
         }
 
         private static ParticleSystem GetSystem(VanillaParticleSystem system)
         {
-            ParticleSystem ps;
 
-            if (s_particles.TryGetValue(system, out ps))
+            if (s_particles.TryGetValue(system, out ParticleSystem ps))
             {
                 return ps;
             }
 
-            switch (system)
+            ps = system switch
             {
                 #region Diesel
 
-                case VanillaParticleSystem.DieselExhaustSmoke1:
-                    ps = TrainCarType.LocoShunter.ToV2().prefab.transform.Find(
-                        "[particles]/ExhaustEngineSmoke").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.DieselExhaustSmoke2:
-                    ps = TrainCarType.LocoDiesel.ToV2().prefab.transform.Find(
-                        "[particles]/ExhaustEngineSmoke").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.DieselHighTempSmoke:
-                    ps = TrainCarType.LocoShunter.ToV2().prefab.transform.Find(
-                        "[particles]/HighTempEngineSmoke").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.DieselDamageSmoke:
-                    ps = TrainCarType.LocoShunter.ToV2().prefab.transform.Find(
-                        "[particles]/DamagedEngineSmoke").GetComponent<ParticleSystem>();
-                    break;
+                VanillaParticleSystem.DieselExhaustSmoke1               => TrainCarType.LocoShunter.ToV2().prefab.transform.Find(
+                        "[particles]/ExhaustEngineSmoke").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.DieselExhaustSmoke2               => TrainCarType.LocoDiesel.ToV2().prefab.transform.Find(
+                        "[particles]/ExhaustEngineSmoke").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.DieselHighTempSmoke               => TrainCarType.LocoShunter.ToV2().prefab.transform.Find(
+                        "[particles]/HighTempEngineSmoke").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.DieselDamageSmoke                 => TrainCarType.LocoShunter.ToV2().prefab.transform.Find(
+                        "[particles]/DamagedEngineSmoke").GetComponent<ParticleSystem>(),
 
                 #endregion
 
                 #region Steam
 
-                case VanillaParticleSystem.SteamerSteamSmoke:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/SteamSmoke/SteamSmoke/SteamSmoke").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerSteamSmokeThick:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/SteamSmoke/SteamSmoke/SteamSmokeThick").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerEmberClusters:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/SteamSmoke/SmokeEmbers/EmberClusters").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerEmberSparks:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/SteamSmoke/SmokeEmbers/EmberSparks").GetComponent<ParticleSystem>();
-                    break;
+                VanillaParticleSystem.SteamerSteamSmoke                 => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/SteamSmoke/SteamSmoke/SteamSmoke").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerSteamSmokeThick            => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/SteamSmoke/SteamSmoke/SteamSmokeThick").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerEmberClusters              => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/SteamSmoke/SmokeEmbers/EmberClusters").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerEmberSparks                => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/SteamSmoke/SmokeEmbers/EmberSparks").GetComponent<ParticleSystem>(),
 
-                case VanillaParticleSystem.SteamerCylCockWaterDripParticles:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/CylCockWaterDrip/CylCockWaterDrip L/CylCockWaterDripParticles").GetComponent<ParticleSystem>();
-                    break;
 
-                case VanillaParticleSystem.SteamerExhaustSmallWispy:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasWispy").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerExhaustSmallWave:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasWave").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerExhaustSmallLeak:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasLeak").GetComponent<ParticleSystem>();
-                    break;
+                VanillaParticleSystem.SteamerCylCockWaterDripParticles  => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/CylCockWaterDrip/CylCockWaterDrip L/CylCockWaterDripParticles").GetComponent<ParticleSystem>(),
 
-                case VanillaParticleSystem.SteamerExhaustWispy:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasWispy").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerExhaustWave:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasWave").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerExhaustLeak:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasLeak").GetComponent<ParticleSystem>();
-                    break;
 
-                case VanillaParticleSystem.SteamerExhaustLargeWispy:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasWispy").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerExhaustLargeWave:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasWave").GetComponent<ParticleSystem>();
-                    break;
-                case VanillaParticleSystem.SteamerExhaustLargeLeak:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasLeak").GetComponent<ParticleSystem>();
-                    break;
+                VanillaParticleSystem.SteamerExhaustSmallWispy          => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasWispy").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerExhaustSmallWave           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasWave").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerExhaustSmallLeak           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasLeak").GetComponent<ParticleSystem>(),
 
-                case VanillaParticleSystem.SteamerSteamLeaks:
-                    ps = TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                        "LocoS282A_Particles/RandomLeaks/SteamLeaks/SteamLeaks").GetComponent<ParticleSystem>();
-                    break;
+
+                VanillaParticleSystem.SteamerExhaustWispy               => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasWispy").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerExhaustWave                => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasWave").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerExhaustLeak                => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasLeak").GetComponent<ParticleSystem>(),
+
+                VanillaParticleSystem.SteamerExhaustLargeWispy          => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasWispy").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerExhaustLargeWave           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasWave").GetComponent<ParticleSystem>(),
+                VanillaParticleSystem.SteamerExhaustLargeLeak           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasLeak").GetComponent<ParticleSystem>(),
+
+                VanillaParticleSystem.SteamerSteamLeaks                 => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                        "LocoS282A_Particles/RandomLeaks/SteamLeaks/SteamLeaks").GetComponent<ParticleSystem>(),
+
 
                 #endregion
 
-                default:
-                    throw new System.NotImplementedException();
-            }
+                _ => throw new System.NotImplementedException()
+            };
 
             s_particles.Add(system, ps);
             return ps;
