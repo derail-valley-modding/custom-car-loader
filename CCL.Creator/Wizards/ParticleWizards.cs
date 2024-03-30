@@ -225,21 +225,75 @@ namespace CCL.Creator.Wizards
             cylCockSteam.transform.parent = comp.transform;
 
             var ccFR = new GameObject("CylCockSteam FR");
-            ccFR.transform.parent = comp.transform;
+            ccFR.transform.parent = cylCockSteam.transform;
             system = Object.Instantiate(steamSmall, ccFR.transform);
-            system.name = "SteamExhaust Small";
+            system.name = steamSmall.name;
 
-            var ccRR = Object.Instantiate(ccFR, comp.transform);
-            ccRR.transform.parent = comp.transform;
+            var ccRR = Object.Instantiate(ccFR, cylCockSteam.transform);
             ccRR.name = "CylCockSteam RR";
-            var ccFL = Object.Instantiate(ccFR, comp.transform);
-            ccRR.transform.parent = comp.transform;
-            ccRR.name = "CylCockSteam FL";
-            var ccRL = Object.Instantiate(ccFR, comp.transform);
-            ccRR.transform.parent = comp.transform;
-            ccRR.name = "CylCockSteam RL";
+            var ccFL = Object.Instantiate(ccFR, cylCockSteam.transform);
+            ccFL.name = "CylCockSteam FL";
+            var ccRL = Object.Instantiate(ccFR, cylCockSteam.transform);
+            ccRL.name = "CylCockSteam RL";
+
+            cylCockSteam.ApplyS282Defaults();
+            cylCockSteam.cylinderSetups[0].frontParticlesParent = ccFR;
+            cylCockSteam.cylinderSetups[0].rearParticlesParent = ccRR;
+            cylCockSteam.cylinderSetups[1].frontParticlesParent = ccFL;
+            cylCockSteam.cylinderSetups[1].rearParticlesParent = ccRL;
 
             #endregion
+
+            #region Chimney
+
+            var chimney = new GameObject("SteamSmoke").AddComponent<SteamSmokeParticlePortReaderProxy>();
+            chimney.transform.parent = comp.transform;
+            chimney.ApplyS282Defaults();
+
+            var smoke = new GameObject("SteamSmoke").AddComponent<CopyVanillaParticleSystem>();
+            smoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmoke;
+            smoke = smoke.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            smoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmokeThick;
+            smoke.transform.parent = chimney.transform;
+
+            var embers = new GameObject("SmokeEmbers").AddComponent<CopyVanillaParticleSystem>();
+            embers.SystemToCopy = VanillaParticleSystem.SteamerEmberClusters;
+            embers = embers.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            embers.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
+            embers.transform.parent = chimney.transform;
+
+            chimney.smokeParticlesParent = smoke.gameObject;
+            chimney.emberParticlesParent = embers.gameObject;
+
+            #endregion
+
+            # region Other
+
+            var blowdown = new GameObject("Blowdown");
+            blowdown.transform.parent = comp.transform;
+            blowdown = Object.Instantiate(steamLarge, blowdown.transform).gameObject;
+            blowdown.name = steamLarge.name;
+
+            var whistle = new GameObject("Whistle");
+            whistle.transform.parent = comp.transform;
+            whistle = Object.Instantiate(steamSmall, whistle.transform).gameObject;
+            whistle.name = steamSmall.name;
+
+            var safety = new GameObject("SteamSafetyRelease");
+            safety.transform.parent = comp.transform;
+            safety = Object.Instantiate(steam, safety.transform).gameObject;
+            safety.name = steam.name;
+
+            var crack = new GameObject("Crack");
+            crack.transform.parent = comp.transform;
+            crack = Object.Instantiate(steamLarge, crack.transform).gameObject;
+            crack.name = steamLarge.name;
+
+            #endregion
+
+            Object.DestroyImmediate(steam);
+            Object.DestroyImmediate(steamSmall);
+            Object.DestroyImmediate(steamLarge);
 
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");
         }

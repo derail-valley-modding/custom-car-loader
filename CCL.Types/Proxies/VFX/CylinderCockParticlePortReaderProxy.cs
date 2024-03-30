@@ -5,8 +5,33 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.VFX
 {
-    public class CylinderCockParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, ICustomSerialized
+    public class CylinderCockParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, ICustomSerialized, IS060Defaults, IS282Defaults
     {
+        public static AnimationCurve Curve0 => new AnimationCurve(
+            new Keyframe(0.00f, 1),
+            new Keyframe(0.24f, 1),
+            new Keyframe(0.25f, 0),
+            new Keyframe(0.75f, 0),
+            new Keyframe(0.76f, 1),
+            new Keyframe(1.00f, 1));
+        public static AnimationCurve Curve90 => new AnimationCurve(
+            new Keyframe(0.00f, 1),
+            new Keyframe(0.49f, 1),
+            new Keyframe(0.50f, 0),
+            new Keyframe(1.00f, 0));
+        public static AnimationCurve Curve180 => new AnimationCurve(
+            new Keyframe(0.00f, 0),
+            new Keyframe(0.25f, 0),
+            new Keyframe(0.26f, 1),
+            new Keyframe(0.74f, 1),
+            new Keyframe(0.75f, 0),
+            new Keyframe(1.00f, 0));
+        public static AnimationCurve Curve270 => new AnimationCurve(
+            new Keyframe(0.00f, 0),
+            new Keyframe(0.50f, 0),
+            new Keyframe(0.51f, 1),
+            new Keyframe(1.00f, 1));
+
         [PortId(DVPortValueType.STATE, false)]
         public string crankRotationPortId;
         [PortId(DVPortValueType.CONTROL, false)]
@@ -73,6 +98,40 @@ namespace CCL.Types.Proxies.VFX
                     rearActivityCurve = _rearCurves[i]
                 };
             }
+        }
+
+        public void ApplyS060Defaults()
+        {
+            ApplyS282Defaults();
+        }
+
+        public void ApplyS282Defaults()
+        {
+            cylinderSetups = new[]
+            {
+                new CylinderSetup
+                {
+                    frontParticlesParent = null!,
+                    frontActivityCurve = Curve90,
+                    rearParticlesParent = null!,
+                    rearActivityCurve = Curve270
+                },
+                new CylinderSetup
+                {
+                    frontParticlesParent = null!,
+                    frontActivityCurve = Curve0,
+                    rearParticlesParent = null!,
+                    rearActivityCurve = Curve180
+                }
+            };
+
+            startSpeedMultiplierMin = 1.0f;
+            startSpeedMultiplierMax = 2.0f;
+            startSizeMultiplierMin = 1.0f;
+            startSizeMultiplierMax = 2.0f;
+            emissionRateMultiplierMin = 1.0f;
+            emissionRateMultiplierMax = 5.0f;
+            emissionRateMaxSpeedKmh = 60.0f;
         }
 
         [Serializable]
