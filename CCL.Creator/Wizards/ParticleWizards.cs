@@ -260,19 +260,21 @@ namespace CCL.Creator.Wizards
             chimney.transform.parent = comp.transform;
             chimney.ApplyS282Defaults();
 
+            var smokeParent = new GameObject("SteamSmoke");
             var smoke = new GameObject("SteamSmoke").AddComponent<CopyVanillaParticleSystem>();
             smoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmoke;
-            var thickSmoke = smoke.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            smoke.transform.parent = smokeParent.transform;
+            var thickSmoke = new GameObject("SteamSmokeThick").AddComponent<CopyVanillaParticleSystem>();
             thickSmoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmokeThick;
-            thickSmoke.transform.parent = chimney.transform;
+            thickSmoke.transform.parent = smokeParent.transform;
 
             var embers = new GameObject("SmokeEmbers").AddComponent<CopyVanillaParticleSystem>();
             embers.SystemToCopy = VanillaParticleSystem.SteamerEmberClusters;
-            var embersSparks = embers.gameObject.AddComponent<CopyVanillaParticleSystem>();
-            embersSparks.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
-            embersSparks.transform.parent = chimney.transform;
+            embers = embers.gameObject.AddComponent<CopyVanillaParticleSystem>();
+            embers.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
+            embers.transform.parent = chimney.transform;
 
-            chimney.smokeParticlesParent = smoke.gameObject;
+            chimney.smokeParticlesParent = smokeParent.gameObject;
             chimney.emberParticlesParent = embers.gameObject;
 
             #endregion
@@ -301,6 +303,7 @@ namespace CCL.Creator.Wizards
 
             var leaksParent = new GameObject("RandomLeaks");
             leaksParent.transform.parent = comp.transform;
+            leaksParent.SetActive(false);
             var leaks = new GameObject("SteamLeaks").AddComponent<CopyVanillaParticleSystem>();
             leaks.transform.parent = leaksParent.transform;
             leaks.SystemToCopy = VanillaParticleSystem.SteamerSteamLeaks;

@@ -133,8 +133,14 @@ namespace CCL.Types.Proxies.VFX
             public string portId;
             public ValueModifier inputModifier;
             public ColorPropertyChange changeType;
-            public Color startColorMin;
-            public Color startColorMax;
+            public float startColorMinR;
+            public float startColorMinG;
+            public float startColorMinB;
+            public float startColorMinA;
+            public float startColorMaxR;
+            public float startColorMaxG;
+            public float startColorMaxB;
+            public float startColorMaxA;
             public AnimationCurve colorLerpCurve;
 
             public FakeParticleColorPortReader(ParticleColorPortReader p)
@@ -142,8 +148,14 @@ namespace CCL.Types.Proxies.VFX
                 portId = p.portId;
                 inputModifier = p.inputModifier;
                 changeType = p.changeType;
-                startColorMin = p.startColorMin;
-                startColorMax = p.startColorMax;
+                startColorMinR = p.startColorMin.r;
+                startColorMinG = p.startColorMin.g;
+                startColorMinB = p.startColorMin.b;
+                startColorMinA = p.startColorMin.a;
+                startColorMaxR = p.startColorMax.r;
+                startColorMaxG = p.startColorMax.g;
+                startColorMaxB = p.startColorMax.b;
+                startColorMaxA = p.startColorMax.a;
                 colorLerpCurve = p.colorLerpCurve;
             }
 
@@ -155,8 +167,8 @@ namespace CCL.Types.Proxies.VFX
                     portId = portId,
                     inputModifier = inputModifier,
                     changeType = changeType,
-                    startColorMin = startColorMin,
-                    startColorMax = startColorMax,
+                    startColorMin = new Color(startColorMinR, startColorMinG, startColorMinB, startColorMinA),
+                    startColorMax = new Color(startColorMaxR, startColorMaxG, startColorMaxB, startColorMaxA),
                     colorLerpCurve = colorLerpCurve
                 };
             }
