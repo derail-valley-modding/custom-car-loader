@@ -143,6 +143,8 @@ namespace CCL.Types.Proxies.VFX
             public float startColorMaxA;
             public AnimationCurve colorLerpCurve;
 
+            public FakeParticleColorPortReader() { }
+
             public FakeParticleColorPortReader(ParticleColorPortReader p)
             {
                 portId = p.portId;
