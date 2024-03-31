@@ -261,6 +261,7 @@ namespace CCL.Creator.Wizards
             chimney.ApplyS282Defaults();
 
             var smokeParent = new GameObject("SteamSmoke");
+            smokeParent.transform.parent = chimney.transform;
             var smoke = new GameObject("SteamSmoke").AddComponent<CopyVanillaParticleSystem>();
             smoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmoke;
             smoke.transform.parent = smokeParent.transform;
