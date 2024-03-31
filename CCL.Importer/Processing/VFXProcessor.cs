@@ -8,7 +8,7 @@ using UnityEngine;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
-    internal class ParticleProcessor : ModelProcessorStep
+    internal class VFXProcessor : ModelProcessorStep
     {
         private static Dictionary<VanillaParticleSystem, ParticleSystem> s_particles = new();
 
@@ -28,6 +28,8 @@ namespace CCL.Importer.Processing
                 var system = Object.Instantiate(GetSystem(item.SystemToCopy), item.transform);
                 system.transform.localPosition = Vector3.zero;
                 system.transform.localRotation = Quaternion.identity;
+
+                item.InstancedGO = system.gameObject;
 
                 if (item.ForcePlay)
                 {

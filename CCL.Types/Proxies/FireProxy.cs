@@ -2,7 +2,7 @@
 
 namespace CCL.Types.Proxies
 {
-    public class FireProxy : MonoBehaviour
+    public class FireProxy : MonoBehaviour, ICanReplaceGO
     {
         public GameObject fireObj;
         public GameObject sparksObj;
@@ -13,5 +13,18 @@ namespace CCL.Types.Proxies
         public Light fireLight;
         public float minFireIntensity;
         public float maxFireIntensity = 1f;
+
+        public void CheckGOFields()
+        {
+            if (fireObj.TryGetComponent(out IInstancedGO go))
+            {
+                fireObj = go.InstancedGO!;
+            }
+
+            if (sparksObj.TryGetComponent(out go))
+            {
+                sparksObj = go.InstancedGO!;
+            }
+        }
     }
 }

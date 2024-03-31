@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.VFX
 {
-    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized
+    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceGO
     {
         public enum ColorPropertyChange
         {
@@ -73,6 +73,25 @@ namespace CCL.Types.Proxies.VFX
             for (int i = 0; i < length; i++)
             {
                 particleColorPortReaders.Add(fakes[i].ToReal(_goColorPort[i]));
+            }
+        }
+
+        public void CheckGOFields()
+        {
+            foreach (var item in particlePortReaders)
+            {
+                if (item.particlesParent.TryGetComponent(out IInstancedGO go))
+                {
+                    item.particlesParent = go.InstancedGO!;
+                }
+            }
+
+            foreach (var item in particleColorPortReaders)
+            {
+                if (item.particlesParent.TryGetComponent(out IInstancedGO go))
+                {
+                    item.particlesParent = go.InstancedGO!;
+                }
             }
         }
 

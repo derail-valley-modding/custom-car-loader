@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CCL.Types;
 using System;
 using System.Linq.Expressions;
 using UnityEngine;
@@ -48,6 +49,13 @@ namespace CCL.Importer
             where TMember : MonoBehaviour
         {
             return cfg.ForMember(member, opt => opt.MapFrom(s => Mapper.GetFromCache(s)));
+        }
+
+        public static IMappingExpression<TSource, TDestination> ReplaceGOs<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
+            where TSource : MonoBehaviour, ICanReplaceGO
+            where TDestination : MonoBehaviour
+        {
+            return cfg.BeforeMap((proxy, real) => proxy.CheckGOFields());
         }
     }
 }

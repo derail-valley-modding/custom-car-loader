@@ -10,6 +10,7 @@ namespace CCL.Importer.Proxies.VFX
         public VFXProxyReplacer()
         {
             CreateMap<ParticlesPortReadersControllerProxy, ParticlesPortReadersController>().AutoCacheAndMap()
+                .ReplaceGOs()
                 .AfterMap(ParticlesPortReadersControllerAfter);
             CreateMap<ParticlesPortReadersControllerProxy.ParticlePortReader, ParticlesPortReadersController.ParticlePortReader>();
             CreateMap<ParticlesPortReadersControllerProxy.ParticlePortReader.PortParticleUpdateDefinition,
