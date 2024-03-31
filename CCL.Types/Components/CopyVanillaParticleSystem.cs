@@ -32,5 +32,8 @@ namespace CCL.Types.Components
         SteamerExhaustLargeWave,
         SteamerExhaustLargeLeak,
         SteamerSteamLeaks,
+
+        FireboxFire,
+        FireboxSparks,
     }
 }
