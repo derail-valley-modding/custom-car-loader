@@ -20,6 +20,7 @@ namespace CCL.Importer.Proxies.VFX
             CreateMap<ParticlesPortReadersControllerProxy.ValueModifier, ParticlesPortReadersController.ValueModifier>();
 
             CreateMap<CylinderCockParticlePortReaderProxy, CylinderCockParticlePortReader>().AutoCacheAndMap();
+            CreateMap<CylinderCockParticlePortReaderProxy.CylinderSetup, CylinderCockParticlePortReader.CylinderSetup>();
             CreateMap<SteamSmokeParticlePortReaderProxy, SteamSmokeParticlePortReader>().AutoCacheAndMap();
 
             CreateMap<WorldMoverParticleSimulationSpaceProxy, WorldMoverParticleSimulationSpace>().AutoCacheAndMap();

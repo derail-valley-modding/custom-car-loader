@@ -22,7 +22,7 @@ namespace CCL.Importer.Processing
 
         public static void ProcessParticles(GameObject prefab)
         {
-            foreach (var item in prefab.GetComponentsInChildren<CopyVanillaParticleSystem>())
+            foreach (var item in prefab.GetComponentsInChildren<CopyVanillaParticleSystem>(true))
             {
                 //CopyParticleSystem(GetSystem(item.SystemToCopy), item.ParticleSystem);
                 var system = Object.Instantiate(GetSystem(item.SystemToCopy), item.transform);

@@ -52,9 +52,13 @@ namespace CCL.Types.Proxies.VFX
         public float emissionRateMultiplierMax;
         public float emissionRateMaxSpeedKmh = 60f;
 
+        [SerializeField, HideInInspector]
         private GameObject[] _frontParents = new GameObject[0];
+        [SerializeField, HideInInspector]
         private AnimationCurve[] _frontCurves = new AnimationCurve[0];
+        [SerializeField, HideInInspector]
         private GameObject[] _rearParents = new GameObject[0];
+        [SerializeField, HideInInspector]
         private AnimationCurve[] _rearCurves = new AnimationCurve[0];
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
