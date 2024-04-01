@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Controls
 
     public class ButtonUseKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType useKey;
+        public BaseKeyType useKey = BaseKeyType.Empty;
     }
     
     public class FireboxKeyboardInputProxy : AKeyboardInputProxy
@@ -17,35 +17,35 @@ namespace CCL.Types.Proxies.Controls
     
     public class MouseScrollKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType scrollUpKey;
-        public BaseKeyType scrollDownKey;
+        public BaseKeyType scrollUpKey = BaseKeyType.Empty;
+        public BaseKeyType scrollDownKey = BaseKeyType.Empty;
     }
     
     public class NotchedPortKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType positiveApplyKey;
-        public BaseKeyType negativeApplyKey;
+        public BaseKeyType positiveApplyKey = BaseKeyType.Empty;
+        public BaseKeyType negativeApplyKey = BaseKeyType.Empty;
     }
     
     public class PhysicsForceKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType positiveApplyKey;
-        public BaseKeyType negativeApplyKey;
+        public BaseKeyType positiveApplyKey = BaseKeyType.Empty;
+        public BaseKeyType negativeApplyKey = BaseKeyType.Empty;
     }
     
     public class PhysicsTorqueKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType positiveApplyKey;
-        public BaseKeyType negativeApplyKey;
+        public BaseKeyType positiveApplyKey = BaseKeyType.Empty;
+        public BaseKeyType negativeApplyKey = BaseKeyType.Empty;
     }
 
     public class ToggleSwitchUseKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType useKey;
+        public BaseKeyType useKey = BaseKeyType.Empty;
     }
 
     public class ToggleValueKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType toggleKey;
+        public BaseKeyType toggleKey = BaseKeyType.Empty;
     }
 }
