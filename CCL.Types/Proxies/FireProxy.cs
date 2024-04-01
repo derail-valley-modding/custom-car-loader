@@ -16,12 +16,12 @@ namespace CCL.Types.Proxies
 
         public void CheckGOFields()
         {
-            if (fireObj.TryGetComponent(out IInstancedGO go))
+            if (fireObj.TryGetComponent(out IInstancedGO go) && go.CanReplace)
             {
                 fireObj = go.InstancedGO!;
             }
 
-            if (sparksObj.TryGetComponent(out go))
+            if (sparksObj.TryGetComponent(out go) && go.CanReplace)
             {
                 sparksObj = go.InstancedGO!;
             }

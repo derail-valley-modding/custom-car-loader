@@ -10,5 +10,6 @@ namespace CCL.Types
     public interface IInstancedGO
     {
         public GameObject? InstancedGO { get; set; }
+        public bool CanReplace { get; }
     }
 }
