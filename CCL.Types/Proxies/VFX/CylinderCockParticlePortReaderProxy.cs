@@ -15,10 +15,10 @@ namespace CCL.Types.Proxies.VFX
             new Keyframe(0.76f, 1),
             new Keyframe(1.00f, 1));
         public static AnimationCurve Curve90 => new AnimationCurve(
-            new Keyframe(0.00f, 1),
-            new Keyframe(0.49f, 1),
+            new Keyframe(0.00f, 0),
             new Keyframe(0.50f, 0),
-            new Keyframe(1.00f, 0));
+            new Keyframe(0.51f, 1),
+            new Keyframe(1.00f, 1));
         public static AnimationCurve Curve180 => new AnimationCurve(
             new Keyframe(0.00f, 0),
             new Keyframe(0.25f, 0),
@@ -27,10 +27,10 @@ namespace CCL.Types.Proxies.VFX
             new Keyframe(0.75f, 0),
             new Keyframe(1.00f, 0));
         public static AnimationCurve Curve270 => new AnimationCurve(
-            new Keyframe(0.00f, 0),
+            new Keyframe(0.00f, 1),
+            new Keyframe(0.49f, 1),
             new Keyframe(0.50f, 0),
-            new Keyframe(0.51f, 1),
-            new Keyframe(1.00f, 1));
+            new Keyframe(1.00f, 0));
 
         [PortId(DVPortValueType.STATE, false)]
         public string crankRotationPortId;
@@ -116,9 +116,9 @@ namespace CCL.Types.Proxies.VFX
                 new CylinderSetup
                 {
                     frontParticlesParent = null!,
-                    frontActivityCurve = Curve90,
+                    frontActivityCurve = Curve270,
                     rearParticlesParent = null!,
-                    rearActivityCurve = Curve270
+                    rearActivityCurve = Curve90
                 },
                 new CylinderSetup
                 {
