@@ -22,9 +22,12 @@ namespace CCL.Creator.Inspector
             _index = Mathf.Clamp(EditorGUILayout.IntField("Cylinder setup index", _index), 0, _proxy.cylinderSetups.Length - 1);
             CylinderCockParticlePortReaderProxy.CylinderSetup setup = null!;
 
-            if (_proxy.cylinderSetups.Length == 0)
+            if (_proxy.cylinderSetups.Length > 0)
             {
                 setup = _proxy.cylinderSetups[_index];
+            }
+            else
+            {
                 GUI.enabled = false;
             }
 
@@ -32,24 +35,28 @@ namespace CCL.Creator.Inspector
             {
                 setup.frontActivityCurve = CylinderCockParticlePortReaderProxy.Curve0;
                 setup.rearActivityCurve = CylinderCockParticlePortReaderProxy.Curve180;
+                AssetHelper.SaveAsset(_proxy);
             }
 
             if (GUILayout.Button("Apply 90 degrees curves"))
             {
-                setup.frontActivityCurve = CylinderCockParticlePortReaderProxy.Curve90;
-                setup.rearActivityCurve = CylinderCockParticlePortReaderProxy.Curve270;
+                setup.frontActivityCurve = CylinderCockParticlePortReaderProxy.Curve270;
+                setup.rearActivityCurve = CylinderCockParticlePortReaderProxy.Curve90;
+                AssetHelper.SaveAsset(_proxy);
             }
 
             if (GUILayout.Button("Apply 180 degrees curves"))
             {
                 setup.frontActivityCurve = CylinderCockParticlePortReaderProxy.Curve180;
                 setup.rearActivityCurve = CylinderCockParticlePortReaderProxy.Curve0;
+                AssetHelper.SaveAsset(_proxy);
             }
 
             if (GUILayout.Button("Apply 270 degrees curves"))
             {
-                setup.frontActivityCurve = CylinderCockParticlePortReaderProxy.Curve270;
-                setup.rearActivityCurve = CylinderCockParticlePortReaderProxy.Curve90;
+                setup.frontActivityCurve = CylinderCockParticlePortReaderProxy.Curve90;
+                setup.rearActivityCurve = CylinderCockParticlePortReaderProxy.Curve270;
+                AssetHelper.SaveAsset(_proxy);
             }
 
             GUI.enabled = true;
