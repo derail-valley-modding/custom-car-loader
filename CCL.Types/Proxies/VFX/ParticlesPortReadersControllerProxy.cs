@@ -80,7 +80,7 @@ namespace CCL.Types.Proxies.VFX
         {
             foreach (var item in particlePortReaders)
             {
-                if (item.particlesParent.TryGetComponent(out IInstancedGO go))
+                if (item.particlesParent.TryGetComponent(out IInstancedGO go) && go.CanReplace)
                 {
                     item.particlesParent = go.InstancedGO!;
                 }
@@ -88,7 +88,7 @@ namespace CCL.Types.Proxies.VFX
 
             foreach (var item in particleColorPortReaders)
             {
-                if (item.particlesParent.TryGetComponent(out IInstancedGO go))
+                if (item.particlesParent.TryGetComponent(out IInstancedGO go) && go.CanReplace)
                 {
                     item.particlesParent = go.InstancedGO!;
                 }

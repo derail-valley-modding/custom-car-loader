@@ -6,8 +6,10 @@ namespace CCL.Types.Components
     {
         public VanillaParticleSystem SystemToCopy;
         public bool ForcePlay = false;
+        public bool AllowReplacing = true;
 
         public GameObject? InstancedGO { get; set; }
+        public bool CanReplace => AllowReplacing && InstancedGO != null;
     }
 
     public enum VanillaParticleSystem

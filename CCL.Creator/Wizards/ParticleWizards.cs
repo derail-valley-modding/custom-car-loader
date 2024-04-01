@@ -197,24 +197,33 @@ namespace CCL.Creator.Wizards
 
             var steam = new GameObject("SteamExhaust").AddComponent<CopyVanillaParticleSystem>();
             steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustWispy;
+            steam.AllowReplacing = false;
             steam = steam.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustWave;
+            steam.AllowReplacing = false;
             steam = steam.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustLeak;
+            steam.AllowReplacing = false;
 
             var steamSmall = new GameObject("SteamExhaust Small").AddComponent<CopyVanillaParticleSystem>();
             steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallWispy;
+            steamSmall.AllowReplacing = false;
             steamSmall = steamSmall.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallWave;
+            steamSmall.AllowReplacing = false;
             steamSmall = steamSmall.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallLeak;
+            steamSmall.AllowReplacing = false;
 
             var steamLarge = new GameObject("SteamExhaust Large").AddComponent<CopyVanillaParticleSystem>();
             steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeWispy;
+            steamLarge.AllowReplacing = false;
             steamLarge = steamLarge.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeWave;
+            steamLarge.AllowReplacing = false;
             steamLarge = steamLarge.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeLeak;
+            steamLarge.AllowReplacing = false;
 
             CopyVanillaParticleSystem system;
 
