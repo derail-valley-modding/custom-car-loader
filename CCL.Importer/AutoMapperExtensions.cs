@@ -51,11 +51,12 @@ namespace CCL.Importer
             return cfg.ForMember(member, opt => opt.MapFrom(s => Mapper.GetFromCache(s)));
         }
 
-        public static IMappingExpression<TSource, TDestination> ReplaceGOs<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
-            where TSource : MonoBehaviour, ICanReplaceGO
+        public static IMappingExpression<TSource, TDestination> ReplaceGOs<TSource, TDestination, TReplaceable>(this IMappingExpression<TSource, TDestination> cfg)
+            where TSource : ICanReplaceInstanced<TReplaceable>
             where TDestination : MonoBehaviour
+            where TReplaceable : UnityEngine.Object
         {
-            return cfg.BeforeMap((proxy, real) => proxy.CheckGOFields());
+            return cfg.BeforeMap((proxy, real) => proxy.CheckReplaceableFields());
         }
     }
 }

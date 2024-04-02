@@ -2,14 +2,14 @@
 
 namespace CCL.Types
 {
-    public interface ICanReplaceGO
+    public interface ICanReplaceInstanced<T> where T : Object
     {
-        public void CheckGOFields();
+        public void CheckReplaceableFields();
     }
 
-    public interface IInstancedGO
+    public interface IInstancedObject<T> where T : Object
     {
-        public GameObject? InstancedGO { get; set; }
+        public T? InstancedObject { get; set; }
         public bool CanReplace { get; }
     }
 }

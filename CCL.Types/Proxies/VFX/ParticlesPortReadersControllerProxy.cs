@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.VFX
 {
-    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceGO
+    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceInstanced<GameObject>
     {
         public enum ColorPropertyChange
         {
@@ -76,21 +76,21 @@ namespace CCL.Types.Proxies.VFX
             }
         }
 
-        public void CheckGOFields()
+        public void CheckReplaceableFields()
         {
             foreach (var item in particlePortReaders)
             {
-                if (item.particlesParent.TryGetComponent(out IInstancedGO go) && go.CanReplace)
+                if (item.particlesParent.TryGetComponent(out IInstancedObject<GameObject> go) && go.CanReplace)
                 {
-                    item.particlesParent = go.InstancedGO!;
+                    item.particlesParent = go.InstancedObject!;
                 }
             }
 
             foreach (var item in particleColorPortReaders)
             {
-                if (item.particlesParent.TryGetComponent(out IInstancedGO go) && go.CanReplace)
+                if (item.particlesParent.TryGetComponent(out IInstancedObject<GameObject> go) && go.CanReplace)
                 {
-                    item.particlesParent = go.InstancedGO!;
+                    item.particlesParent = go.InstancedObject!;
                 }
             }
         }
