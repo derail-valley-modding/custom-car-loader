@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.VFX
 {
-    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceInstanced<GameObject>
+    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceInstanced
     {
         public enum ColorPropertyChange
         {

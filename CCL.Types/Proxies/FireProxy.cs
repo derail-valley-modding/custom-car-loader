@@ -2,7 +2,7 @@
 
 namespace CCL.Types.Proxies
 {
-    public class FireProxy : MonoBehaviour, ICanReplaceInstanced<GameObject>
+    public class FireProxy : MonoBehaviour, ICanReplaceInstanced
     {
         public GameObject fireObj;
         public GameObject sparksObj;

@@ -2,7 +2,7 @@
 
 namespace CCL.Types
 {
-    public interface ICanReplaceInstanced<T> where T : Object
+    public interface ICanReplaceInstanced
     {
         public void CheckReplaceableFields();
     }

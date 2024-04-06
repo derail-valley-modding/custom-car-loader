@@ -6,6 +6,7 @@ namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
     [RequiresStep(typeof(ProxyScriptProcessor))]
+    [RequiresStep(typeof(ExternalInteractableProcessor))]
     internal class ControlsProcessor : ModelProcessorStep
     {
         public override void ExecuteStep(ModelProcessor context)
@@ -16,8 +17,12 @@ namespace CCL.Importer.Processing
 
                 if (keyboardControls.Length > 0)
                 {
-                    var controller = item.AddComponent<InteractablesKeyboardControl>();
-                    controller.OnValidate();
+                    if (!item.TryGetComponent(out InteractablesKeyboardControl controller))
+                    {
+                        controller = item.AddComponent<InteractablesKeyboardControl>();
+                    }
+
+                    controller.RefreshChildren();
                 }
             }
         }

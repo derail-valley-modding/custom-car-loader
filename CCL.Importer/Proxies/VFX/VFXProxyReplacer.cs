@@ -11,7 +11,7 @@ namespace CCL.Importer.Proxies.VFX
         public VFXProxyReplacer()
         {
             CreateMap<ParticlesPortReadersControllerProxy, ParticlesPortReadersController>().AutoCacheAndMap()
-                .ReplaceGOs<ParticlesPortReadersControllerProxy, ParticlesPortReadersController, GameObject>()
+                .ReplaceGOs()
                 .AfterMap(ParticlesPortReadersControllerAfter);
             CreateMap<ParticlesPortReadersControllerProxy.ParticlePortReader, ParticlesPortReadersController.ParticlePortReader>();
             CreateMap<ParticlesPortReadersControllerProxy.ParticlePortReader.PortParticleUpdateDefinition,
@@ -30,7 +30,7 @@ namespace CCL.Importer.Proxies.VFX
 
         private void ParticlesPortReadersControllerAfter(ParticlesPortReadersControllerProxy _, ParticlesPortReadersController comp)
         {
-            comp.OnValidate();
+            comp.RefreshChildren();
         }
     }
 }
