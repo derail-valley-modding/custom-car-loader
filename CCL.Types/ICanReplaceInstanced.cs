@@ -4,7 +4,7 @@ namespace CCL.Types
 {
     public interface ICanReplaceInstanced
     {
-        public void CheckReplaceableFields();
+        public void DoFieldReplacing();
     }
 
     public interface IInstancedObject<T> where T : Object

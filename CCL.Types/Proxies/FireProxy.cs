@@ -14,7 +14,7 @@ namespace CCL.Types.Proxies
         public float minFireIntensity;
         public float maxFireIntensity = 1f;
 
-        public void CheckReplaceableFields()
+        public void DoFieldReplacing()
         {
             if (fireObj.TryGetComponent(out IInstancedObject<GameObject> go) && go.CanReplace)
             {

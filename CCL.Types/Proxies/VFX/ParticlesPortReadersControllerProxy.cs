@@ -76,7 +76,7 @@ namespace CCL.Types.Proxies.VFX
             }
         }
 
-        public void CheckReplaceableFields()
+        public void DoFieldReplacing()
         {
             foreach (var item in particlePortReaders)
             {
