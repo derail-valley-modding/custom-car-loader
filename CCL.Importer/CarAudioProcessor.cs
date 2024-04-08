@@ -140,8 +140,9 @@ namespace CCL.Importer
 
                 item.InstancedObject = audio.gameObject;
                 var readers = audio.GetComponents<LayeredAudioPortReader>();
+                int length = Mathf.Min(readers.Length, item.Ports.Length);
 
-                for (int i = 0; i < readers.Length; i++)
+                for (int i = 0; i < length; i++)
                 {
                     readers[i].portId = item.Ports[i];
                 }
@@ -159,8 +160,43 @@ namespace CCL.Importer
 
             audio = audioSystem switch
             {
+                #region Steam
+
                 VanillaAudioSystem.SteamerCoalDump => AudioS282.transform.Find("[sim] Engine/CoalDump/SandFlowLayers")
                     .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerFire => AudioS282.transform.Find("[sim] Engine/Fire/Fire_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerFireboxWind => AudioS282.transform.Find("[sim] Engine/FireboxWind/WindFirebox_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerSand => AudioS282.transform.Find("[sim] Engine/Sand/SandFlowLayers")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerSafetyRelease => AudioS282.transform.Find("[sim] Engine/SteamSafetyRelease/SteamRelease_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerBlowdown => AudioS282.transform.Find("[sim] Engine/Blowdown/SteamRelease_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerChestAdmission => AudioS282.transform.Find("[sim] Engine/SteamChestAdmission/SteamChestAdmission_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerCylinderCrack => AudioS282.transform.Find("[sim] Engine/CylinderCrack/SteamRelease_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerInjector => AudioS282.transform.Find("[sim] Engine/Injector/WaterInFlow_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerValveGear => AudioS282.transform.Find("[sim] Engine/ValveGearMechanism/Mechanism_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerValveGearDamaged => AudioS282.transform.Find("[sim] Engine/ValveGearMechanism/DamagedMechanism_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerCrownSheet => AudioS282.transform.Find("[sim] Engine/CrownSheetBoiling/CrownSheetBoiling_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerAirPump => AudioS282.transform.Find("[sim] Engine/AirPump/AirPump_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerDynamo => AudioS282.transform.Find("[sim] Engine/Dynamo/Dynamo_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerBellRing => AudioS282.transform.Find("[sim] Engine/Bell_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerBellPump => AudioS282.transform.Find("[sim] Engine/Bell_Pump")
+                    .GetComponent<LayeredAudio>(),
+
+                #endregion
+
                 _ => throw new System.NotImplementedException(nameof(audio)),
             };
 

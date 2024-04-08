@@ -45,6 +45,10 @@ namespace CCL.Creator.Inspector
             {
                 case VanillaAudioSystem.SteamerChestAdmission:
                     return "Exhaust Pressure Port ID";
+                case VanillaAudioSystem.SteamerValveGearDamaged:
+                    return "Wheel RPM Port ID";
+                case VanillaAudioSystem.SteamerCrownSheet:
+                    return "Crown Sheet Temperature Port ID";
                 default:
                     return "Port ID";
             }
@@ -56,6 +60,10 @@ namespace CCL.Creator.Inspector
             {
                 case VanillaAudioSystem.SteamerChestAdmission:
                     return "Steam Injection Port ID";
+                case VanillaAudioSystem.SteamerValveGearDamaged:
+                    return "Lubrication Port ID";
+                case VanillaAudioSystem.SteamerCrownSheet:
+                    return "Boiler Broken Port ID";
                 default:
                     return null;
             }
