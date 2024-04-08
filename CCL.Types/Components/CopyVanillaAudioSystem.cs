@@ -30,18 +30,14 @@ namespace CCL.Types.Components
 
     public enum VanillaAudioSystem
     {
-        //FullDE2Audio,
-        //FullDE6Audio,
-        //FullDH4Audio,
-        //FullDM3Audio,
-        //FullS060Audio,
-        //FullS282Audio,
-        //FullMicroshunterAudio,
+        SandFlow = 0,
 
-        SteamerCoalDump = 200,
+        DE2Engine = 1000,
+        DE2EnginePiston,
+
+        SteamerCoalDump = 2000,
         SteamerFire,
         SteamerFireboxWind,
-        SteamerSand,
         SteamerSafetyRelease,
         SteamerBlowdown,
         SteamerChestAdmission,
@@ -54,6 +50,13 @@ namespace CCL.Types.Components
         SteamerAirPump,
         SteamerDynamo,
         SteamerBellRing,
-        SteamerBellPump
+        SteamerBellPump,
+
+        BE2ElectricMotor = 3000,
+        BE2TMOverspeed,
+        BE2TMController,
+        BE2Horn,
+
+        CabFan = 5000,
     }
 }

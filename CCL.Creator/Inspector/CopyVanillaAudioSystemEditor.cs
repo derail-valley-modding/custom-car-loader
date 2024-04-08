@@ -49,6 +49,10 @@ namespace CCL.Creator.Inspector
                     return "Wheel RPM Port ID";
                 case VanillaAudioSystem.SteamerCrownSheet:
                     return "Crown Sheet Temperature Port ID";
+                case VanillaAudioSystem.BE2ElectricMotor:
+                    return "Total Amps Port ID";
+                case VanillaAudioSystem.BE2TMOverspeed:
+                    return "TM Overspeed Port ID";
                 default:
                     return "Port ID";
             }
@@ -64,6 +68,9 @@ namespace CCL.Creator.Inspector
                     return "Lubrication Port ID";
                 case VanillaAudioSystem.SteamerCrownSheet:
                     return "Boiler Broken Port ID";
+                case VanillaAudioSystem.BE2ElectricMotor:
+                case VanillaAudioSystem.BE2TMOverspeed:
+                    return "Normalized RPM Port ID";
                 default:
                     return null;
             }

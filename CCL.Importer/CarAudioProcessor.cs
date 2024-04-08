@@ -18,14 +18,30 @@ namespace CCL.Importer
 {
     public static class CarAudioProcessor
     {
-        private static Dictionary<VanillaAudioSystem, LayeredAudio> s_audios = new Dictionary<VanillaAudioSystem, LayeredAudio>();
+        private static Dictionary<VanillaAudioSystem, LayeredAudio> s_audioSystems = new Dictionary<VanillaAudioSystem, LayeredAudio>();
 
-        private static GameObject? _dm3AudioPrefab = null;
+        private static GameObject? s_audioDE2;
+        private static GameObject? s_audioDE6;
+        private static GameObject? s_audioDH4;
+        private static GameObject? s_audioDM3;
+        private static GameObject? s_audioS060;
         private static GameObject? s_audioS282;
-        private static GameObject DM3AudioPrefab =>
-            Extensions.GetCached(ref _dm3AudioPrefab, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
-        private static GameObject AudioS282 => Extensions.GetCached(ref s_audioS282,
-            () => TrainCarType.LocoSteamHeavy.ToV2().parentType.audioPrefab);
+        private static GameObject? s_audioMicroshunter;
+
+        private static GameObject AudioDE2 =>
+            Extensions.GetCached(ref s_audioDE2, () => TrainCarType.LocoShunter.ToV2().parentType.audioPrefab);
+        private static GameObject AudioDH6 =>
+            Extensions.GetCached(ref s_audioDE6, () => TrainCarType.LocoDiesel.ToV2().parentType.audioPrefab);
+        private static GameObject AudioDH4 =>
+            Extensions.GetCached(ref s_audioDH4, () => TrainCarType.LocoDH4.ToV2().parentType.audioPrefab);
+        private static GameObject AudioDM3 =>
+            Extensions.GetCached(ref s_audioDM3, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
+        private static GameObject AudioS060 =>
+            Extensions.GetCached(ref s_audioS060, () => TrainCarType.LocoS060.ToV2().parentType.audioPrefab);
+        private static GameObject AudioS282 =>
+            Extensions.GetCached(ref s_audioS282, () => TrainCarType.LocoSteamHeavy.ToV2().parentType.audioPrefab);
+        private static GameObject AudioMicroshunter =>
+            Extensions.GetCached(ref s_audioMicroshunter, () => TrainCarType.LocoMicroshunter.ToV2().parentType.audioPrefab);
 
         private static bool NeedsWheelsAudioModule(CCL_CarType carType)
         {
@@ -63,7 +79,7 @@ namespace CCL.Importer
                     var rainLocation = simAudioFab.transform.Find(CarPartNames.Audio.RAIN_DUMMY_TRANSFORM);
                     if (rainLocation)
                     {
-                        var rainAudio = DM3AudioPrefab.transform.Find(CarPartNames.Audio.RAIN_MODULE).gameObject;
+                        var rainAudio = AudioDM3.transform.Find(CarPartNames.Audio.RAIN_MODULE).gameObject;
                         var newRainAudio = Object.Instantiate(rainAudio, newAudioFab.transform);
                         newRainAudio.transform.position = rainLocation.position;
 
@@ -88,7 +104,7 @@ namespace CCL.Importer
 
                 if (NeedsWheelsAudioModule(carType))
                 {
-                    var wheelsAudio = DM3AudioPrefab.transform.Find(CarPartNames.Audio.WHEELS_MODULE).gameObject;
+                    var wheelsAudio = AudioDM3.transform.Find(CarPartNames.Audio.WHEELS_MODULE).gameObject;
                     var newWheelsAudio = Object.Instantiate(wheelsAudio, newAudioFab.transform);
                     var wheelAudioModule = newWheelsAudio.GetComponent<WheelsAudioModule>();
                     modularAudio.audioModules.Add(wheelAudioModule);
@@ -153,13 +169,26 @@ namespace CCL.Importer
 
         private static LayeredAudio GetAudio(VanillaAudioSystem audioSystem)
         {
-            if (s_audios.TryGetValue(audioSystem, out LayeredAudio audio))
+            if (s_audioSystems.TryGetValue(audioSystem, out LayeredAudio audio))
             {
                 return audio;
             }
 
             audio = audioSystem switch
             {
+                #region Common
+
+                VanillaAudioSystem.SandFlow => AudioS282.transform.Find("[sim] Engine/Sand/SandFlowLayers")
+                    .GetComponent<LayeredAudio>(),
+
+                #endregion
+
+                #region Diesel
+
+
+
+                #endregion
+
                 #region Steam
 
                 VanillaAudioSystem.SteamerCoalDump => AudioS282.transform.Find("[sim] Engine/CoalDump/SandFlowLayers")
@@ -167,8 +196,6 @@ namespace CCL.Importer
                 VanillaAudioSystem.SteamerFire => AudioS282.transform.Find("[sim] Engine/Fire/Fire_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.SteamerFireboxWind => AudioS282.transform.Find("[sim] Engine/FireboxWind/WindFirebox_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerSand => AudioS282.transform.Find("[sim] Engine/Sand/SandFlowLayers")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.SteamerSafetyRelease => AudioS282.transform.Find("[sim] Engine/SteamSafetyRelease/SteamRelease_Layered")
                     .GetComponent<LayeredAudio>(),
@@ -197,10 +224,23 @@ namespace CCL.Importer
 
                 #endregion
 
+                #region Electric
+
+                VanillaAudioSystem.BE2ElectricMotor => AudioMicroshunter.transform.Find("[sim] Engine/ElectricMotor_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.BE2TMOverspeed => AudioMicroshunter.transform.Find("[sim] Engine/TMOverspeed_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.BE2TMController => AudioMicroshunter.transform.Find("[sim] Engine/TMController_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.BE2Horn => AudioMicroshunter.transform.Find("[sim] Engine/Horn_Layered")
+                    .GetComponent<LayeredAudio>(),
+
+                #endregion
+
                 _ => throw new System.NotImplementedException(nameof(audio)),
             };
 
-            s_audios.Add(audioSystem, audio);
+            s_audioSystems.Add(audioSystem, audio);
             return audio;
         }
 
