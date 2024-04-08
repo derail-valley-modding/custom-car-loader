@@ -43,6 +43,13 @@ namespace CCL.Creator.Inspector
         {
             switch (system)
             {
+                case VanillaAudioSystem.DE2EnginePiston:
+                    return "Fuel Consumption Port ID";
+                case VanillaAudioSystem.DE2ElectricMotor:
+                    return "Amps Per TM Port ID";
+                case VanillaAudioSystem.DE2TMOverspeed:
+                case VanillaAudioSystem.BE2TMOverspeed:
+                    return "TM Overspeed Port ID";
                 case VanillaAudioSystem.SteamerChestAdmission:
                     return "Exhaust Pressure Port ID";
                 case VanillaAudioSystem.SteamerValveGearDamaged:
@@ -51,8 +58,6 @@ namespace CCL.Creator.Inspector
                     return "Crown Sheet Temperature Port ID";
                 case VanillaAudioSystem.BE2ElectricMotor:
                     return "Total Amps Port ID";
-                case VanillaAudioSystem.BE2TMOverspeed:
-                    return "TM Overspeed Port ID";
                 default:
                     return "Port ID";
             }
@@ -62,15 +67,18 @@ namespace CCL.Creator.Inspector
         {
             switch (system)
             {
+                case VanillaAudioSystem.DE2ElectricMotor:
+                case VanillaAudioSystem.BE2ElectricMotor:
+                case VanillaAudioSystem.BE2TMOverspeed:
+                    return "TM Normalized RPM Port ID";
+                case VanillaAudioSystem.DE2EnginePiston:
+                    return "Engine RPM Port ID";
                 case VanillaAudioSystem.SteamerChestAdmission:
                     return "Steam Injection Port ID";
                 case VanillaAudioSystem.SteamerValveGearDamaged:
                     return "Lubrication Port ID";
                 case VanillaAudioSystem.SteamerCrownSheet:
                     return "Boiler Broken Port ID";
-                case VanillaAudioSystem.BE2ElectricMotor:
-                case VanillaAudioSystem.BE2TMOverspeed:
-                    return "Normalized RPM Port ID";
                 default:
                     return null;
             }

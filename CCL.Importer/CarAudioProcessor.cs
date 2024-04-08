@@ -185,7 +185,22 @@ namespace CCL.Importer
 
                 #region Diesel
 
+                #region DE2
 
+                VanillaAudioSystem.DE2Engine => AudioDE2.transform.Find("[sim] Engine/Engine_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE2EnginePiston => AudioDE2.transform.Find("[sim] Engine/EnginePiston_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE2ElectricMotor => AudioDE2.transform.Find("[sim] Engine/ElectricMotor_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE2TMOverspeed => AudioDE2.transform.Find("[sim] Engine/TMOverspeed_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE2EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE2Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
+                    .GetComponent<LayeredAudio>(),
+
+                #endregion
 
                 #endregion
 
