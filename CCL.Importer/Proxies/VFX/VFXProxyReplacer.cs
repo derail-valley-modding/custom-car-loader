@@ -2,6 +2,7 @@
 using CCL.Types.Proxies.VFX;
 using DV.Simulation.Controllers;
 using DV.VFX;
+using UnityEngine;
 
 namespace CCL.Importer.Proxies.VFX
 {
@@ -29,7 +30,7 @@ namespace CCL.Importer.Proxies.VFX
 
         private void ParticlesPortReadersControllerAfter(ParticlesPortReadersControllerProxy _, ParticlesPortReadersController comp)
         {
-            comp.OnValidate();
+            comp.RefreshChildren();
         }
     }
 }

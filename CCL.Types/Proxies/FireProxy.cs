@@ -2,7 +2,7 @@
 
 namespace CCL.Types.Proxies
 {
-    public class FireProxy : MonoBehaviour, ICanReplaceGO
+    public class FireProxy : MonoBehaviour, ICanReplaceInstanced
     {
         public GameObject fireObj;
         public GameObject sparksObj;
@@ -14,16 +14,16 @@ namespace CCL.Types.Proxies
         public float minFireIntensity;
         public float maxFireIntensity = 1f;
 
-        public void CheckGOFields()
+        public void DoFieldReplacing()
         {
-            if (fireObj.TryGetComponent(out IInstancedGO go) && go.CanReplace)
+            if (fireObj.TryGetComponent(out IInstancedObject<GameObject> go) && go.CanReplace)
             {
-                fireObj = go.InstancedGO!;
+                fireObj = go.InstancedObject!;
             }
 
             if (sparksObj.TryGetComponent(out go) && go.CanReplace)
             {
-                sparksObj = go.InstancedGO!;
+                sparksObj = go.InstancedObject!;
             }
         }
     }

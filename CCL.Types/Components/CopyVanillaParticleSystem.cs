@@ -2,14 +2,14 @@
 
 namespace CCL.Types.Components
 {
-    public class CopyVanillaParticleSystem : MonoBehaviour, IInstancedGO
+    public class CopyVanillaParticleSystem : MonoBehaviour, IInstancedObject<GameObject>
     {
         public VanillaParticleSystem SystemToCopy;
         public bool ForcePlay = false;
         public bool AllowReplacing = true;
 
-        public GameObject? InstancedGO { get; set; }
-        public bool CanReplace => AllowReplacing && InstancedGO != null;
+        public GameObject? InstancedObject { get; set; }
+        public bool CanReplace => AllowReplacing && InstancedObject != null;
     }
 
     public enum VanillaParticleSystem
