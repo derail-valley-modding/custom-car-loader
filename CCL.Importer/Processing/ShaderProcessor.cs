@@ -61,25 +61,19 @@ namespace CCL.Importer.Processing
 
         private static Shader GetShader(ShaderGrabber.GrabbableShader shader)
         {
-            Shader s;
-
-            if (s_shaderCache.TryGetValue(shader, out s))
+            if (s_shaderCache.TryGetValue(shader, out Shader s))
             {
                 return s;
             }
 
-            switch (shader)
+            s = shader switch
             {
-                case ShaderGrabber.GrabbableShader.TransparencyWithFog:
-                    s = Shader.Find("TransparencyWithFog");
-                    break;
-                case ShaderGrabber.GrabbableShader.DVModularBuildings:
-                    s = Shader.Find("Derail Valley/Modular Buildings");
-                    break;
-                default:
-                    CCLPlugin.Error($"Invalid shader requested '{shader}'.");
-                    return null!;
-            }
+                ShaderGrabber.GrabbableShader.TransparencyWithFog =>
+                        Shader.Find("TransparencyWithFog"),
+                ShaderGrabber.GrabbableShader.DVModularBuildings =>
+                        Shader.Find("Derail Valley/Modular Buildings"),
+                _ => throw new System.ArgumentOutOfRangeException(nameof(shader)),
+            };
 
             s_shaderCache.Add(shader, s);
             return s;

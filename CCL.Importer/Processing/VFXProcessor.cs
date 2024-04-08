@@ -42,7 +42,6 @@ namespace CCL.Importer.Processing
 
         private static ParticleSystem GetSystem(VanillaParticleSystem system)
         {
-
             if (s_particles.TryGetValue(system, out ParticleSystem ps))
             {
                 return ps;
