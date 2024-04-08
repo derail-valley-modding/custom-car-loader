@@ -180,6 +180,8 @@ namespace CCL.Importer
 
                 VanillaAudioSystem.SandFlow => AudioS282.transform.Find("[sim] Engine/Sand/SandFlowLayers")
                     .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.TMOverspeed => AudioMicroshunter.transform.Find("[sim] Engine/TMOverspeed_Layered")
+                    .GetComponent<LayeredAudio>(),
 
                 #endregion
 
@@ -193,11 +195,11 @@ namespace CCL.Importer
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.DE2ElectricMotor => AudioDE2.transform.Find("[sim] Engine/ElectricMotor_Layered")
                     .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE2TMOverspeed => AudioDE2.transform.Find("[sim] Engine/TMOverspeed_Layered")
-                    .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.DE2EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.DE2Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE2Compressor => AudioDE2.transform.Find("[sim] Engine/Compressor_Layered")
                     .GetComponent<LayeredAudio>(),
 
                 #endregion
@@ -243,9 +245,9 @@ namespace CCL.Importer
 
                 VanillaAudioSystem.BE2ElectricMotor => AudioMicroshunter.transform.Find("[sim] Engine/ElectricMotor_Layered")
                     .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.BE2TMOverspeed => AudioMicroshunter.transform.Find("[sim] Engine/TMOverspeed_Layered")
-                    .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.BE2TMController => AudioMicroshunter.transform.Find("[sim] Engine/TMController_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.BE2Compressor => AudioMicroshunter.transform.Find("[sim] Engine/Compressor_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.BE2Horn => AudioMicroshunter.transform.Find("[sim] Engine/Horn_Layered")
                     .GetComponent<LayeredAudio>(),
