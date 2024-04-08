@@ -1,22 +1,31 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Components;
 using DV.Damage;
 using DV.ModularAudioCar;
 using DV.Simulation.Controllers;
+using DV.Simulation.Ports;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using LocoSim.Implementations.Wheels;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static DV.Rain.RainParticles;
 
 namespace CCL.Importer
 {
     public static class CarAudioProcessor
     {
+        private static Dictionary<VanillaAudioSystem, LayeredAudio> s_audios = new Dictionary<VanillaAudioSystem, LayeredAudio>();
+
         private static GameObject? _dm3AudioPrefab = null;
+        private static GameObject? s_audioS282;
         private static GameObject DM3AudioPrefab =>
             Extensions.GetCached(ref _dm3AudioPrefab, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
+        private static GameObject AudioS282 => Extensions.GetCached(ref s_audioS282,
+            () => TrainCarType.LocoSteamHeavy.ToV2().parentType.audioPrefab);
 
         private static bool NeedsWheelsAudioModule(CCL_CarType carType)
         {
@@ -63,6 +72,8 @@ namespace CCL.Importer
 
                         Object.Destroy(rainLocation.gameObject);
                     }
+
+                    ProcessAudioCopies(simAudioFab);
 
                     // setup sim module
                     var simAudio = simAudioFab.AddComponent<SimAudioModule>();
@@ -117,6 +128,44 @@ namespace CCL.Importer
 
                 carType.audioPrefab = newAudioFab;
             }
+        }
+
+        private static void ProcessAudioCopies(GameObject simAudioFab)
+        {
+            foreach (var item in simAudioFab.GetComponentsInChildren<CopyVanillaAudioSystem>())
+            {
+                var audio = Object.Instantiate(GetAudio(item.AudioSystem), item.transform);
+                audio.transform.localPosition = Vector3.zero;
+                audio.transform.localRotation = Quaternion.identity;
+
+                item.InstancedObject = audio.gameObject;
+                var readers = audio.GetComponents<LayeredAudioPortReader>();
+
+                for (int i = 0; i < readers.Length; i++)
+                {
+                    readers[i].portId = item.Ports[i];
+                }
+
+                Object.Destroy(item);
+            }
+        }
+
+        private static LayeredAudio GetAudio(VanillaAudioSystem audioSystem)
+        {
+            if (s_audios.TryGetValue(audioSystem, out LayeredAudio audio))
+            {
+                return audio;
+            }
+
+            audio = audioSystem switch
+            {
+                VanillaAudioSystem.SteamerCoalDump => AudioS282.transform.Find("[sim] Engine/CoalDump/SandFlowLayers")
+                    .GetComponent<LayeredAudio>(),
+                _ => throw new System.NotImplementedException(nameof(audio)),
+            };
+
+            s_audios.Add(audioSystem, audio);
+            return audio;
         }
 
         private static Transform GetCorrespondingWheelslipLayers(Transform wheelLoc, Transform layersFront, Transform layersRear)

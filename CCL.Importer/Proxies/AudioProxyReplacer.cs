@@ -16,14 +16,11 @@ namespace CCL.Importer.Proxies
         private static Dictionary<DVAudioMixGroup, AudioMixerGroup> s_mixerGroups = new Dictionary<DVAudioMixGroup, AudioMixerGroup>();
         private static GameObject? s_audioS282;
         private static GameObject? s_audioDE6;
-        private static GameObject? s_audioDM3;
 
         private static GameObject AudioS282 => Extensions.GetCached(ref s_audioS282,
             () => TrainCarType.LocoSteamHeavy.ToV2().parentType.audioPrefab);
         private static GameObject AudioDE6 => Extensions.GetCached(ref s_audioDE6,
             () => TrainCarType.LocoDiesel.ToV2().parentType.audioPrefab);
-        private static GameObject AudioDM3 => Extensions.GetCached(ref s_audioDM3,
-            () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
 
         public AudioProxyReplacer()
         {
@@ -65,8 +62,8 @@ namespace CCL.Importer.Proxies
                     .GetComponent<LayeredAudio>().audioMixerGroup,
                 DVAudioMixGroup.Cab => AudioDE6.transform.Find("[sim] Engine/CabFan_Layered")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Collisions => AudioDM3.transform.Find("[sim] Engine/Clips")
-                    .GetComponents<AudioClipPortReader>().Where(x => x.portId == "transmissionA.GENERATED_DAMAGE").First().mixerGroup,
+                DVAudioMixGroup.Collisions => AudioS282.transform.Find("[sim] Engine/CylinderCrack/CylinderCrackAudioClip")
+                    .GetComponent<AudioClipPortReader>().mixerGroup,
                 DVAudioMixGroup.Chuffs => AudioS282.transform.Find("[sim] Engine/SteamChuff/2ChuffsPerSecond")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
                 DVAudioMixGroup.Derailment => AudioS282.transform.Find("CarBaseAudioModules/DerailLayers")
@@ -81,7 +78,7 @@ namespace CCL.Importer.Proxies
                     .GetComponent<LayeredAudio>().audioMixerGroup,
                 DVAudioMixGroup.Wheels => AudioS282.transform.Find("WheelsModule/WheelsLeft/WheelslipLayers")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                _ => throw new System.ArgumentOutOfRangeException(nameof(group))
+                _ => throw new System.NotImplementedException(nameof(group))
             };
 
             s_mixerGroups.Add(group, mixer);
