@@ -14,7 +14,7 @@ namespace CCL.Importer.Proxies
 {
     internal class AudioProxyReplacer : Profile
     {
-        private static Dictionary<DVAudioMixGroup, AudioMixerGroup> s_mixerGroups = new Dictionary<DVAudioMixGroup, AudioMixerGroup>();
+        private static Dictionary<DVAudioMixerGroup, AudioMixerGroup> s_mixerGroups = new Dictionary<DVAudioMixerGroup, AudioMixerGroup>();
         private static GameObject? s_audioS282;
         private static GameObject? s_audioDE6;
 
@@ -30,8 +30,7 @@ namespace CCL.Importer.Proxies
             CreateMap<AudioLayerProxy, LayeredAudio.Layer>()
                 .AfterMap(EliminateSourceWithPrejudice);
             CreateMap<LayeredAudioProxy, LayeredAudio>().AutoCacheAndMap()
-                .ForMember(d => d.audioMixerGroup, o => o.Ignore())
-                .AfterMap(LayeredAudioAfter);
+                .ForMember(d => d.audioMixerGroup, o => o.MapFrom(s => GetMixerGroup(s.audioMixGroup)));
 
             CreateMap<AudioClipPortReaderProxy, AudioClipPortReader>().AutoCacheAndMap();
             CreateMap<LayeredAudioPortReaderProxy, LayeredAudioPortReader>().AutoCacheAndMap();
@@ -39,6 +38,15 @@ namespace CCL.Importer.Proxies
             CreateMap<CylinderCockLayeredPortReaderProxy, CylinderCockLayeredPortReader>().AutoCacheAndMap()
                 .ReplaceInstancedObjects()
                 .ForMember(d => d.cylCockAudio, o => o.MapFrom(s => s.cylCockAudio.Select(x => x.GetComponent<LayeredAudio>())));
+            CreateMap<ChuffClipsSimReaderProxy, ChuffClipsSimReader>().AutoCacheAndMap()
+                .ReplaceInstancedObjects();
+            CreateMap<ChuffLoop, ChuffClipsSimReader.ChuffLoop>()
+                .ForMember(d => d.chuffLoop, o => o.MapFrom(s => s.chuffLoop.GetComponent<LayeredAudio>()))
+                .AfterMap(EliminateSourceWithPrejudice);
+            CreateMap<OrderedChuffClips, ChuffClipsSimReader.OrderedChuffClips>()
+                .AfterMap(EliminateSourceWithPrejudice);
+            CreateMap<IndividualChuffAudioSourceConfig, ChuffClipsSimReader.IndividualChuffAudioSourceConfig>()
+                .AfterMap(EliminateSourceWithPrejudice);
         }
 
         private static void EliminateSourceWithPrejudice<TSrc, TDest>(TSrc obj, TDest _)
@@ -47,12 +55,7 @@ namespace CCL.Importer.Proxies
             Object.DestroyImmediate(obj);
         }
 
-        private void LayeredAudioAfter(LayeredAudioProxy src, LayeredAudio dest)
-        {
-            dest.audioMixerGroup = GetMixerGroup(src.audioMixGroup);
-        }
-
-        private static AudioMixerGroup GetMixerGroup(DVAudioMixGroup group)
+        private static AudioMixerGroup GetMixerGroup(DVAudioMixerGroup group)
         {
             if (s_mixerGroups.TryGetValue(group, out AudioMixerGroup mixer))
             {
@@ -61,27 +64,27 @@ namespace CCL.Importer.Proxies
 
             mixer = group switch
             {
-                DVAudioMixGroup.Airflow => AudioS282.transform.Find("BrakeModule/Airflow/AirflowLayers")
+                DVAudioMixerGroup.Airflow => AudioS282.transform.Find("BrakeModule/Airflow/AirflowLayers")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Brake => AudioS282.transform.Find("BrakeModule/Brake/Brake_Layered")
+                DVAudioMixerGroup.Brake => AudioS282.transform.Find("BrakeModule/Brake/Brake_Layered")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Cab => AudioDE6.transform.Find("[sim] Engine/CabFan_Layered")
+                DVAudioMixerGroup.Cab => AudioDE6.transform.Find("[sim] Engine/CabFan_Layered")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Collisions => AudioS282.transform.Find("[sim] Engine/CylinderCrack/CylinderCrackAudioClip")
+                DVAudioMixerGroup.Collisions => AudioS282.transform.Find("[sim] Engine/CylinderCrack/CylinderCrackAudioClip")
                     .GetComponent<AudioClipPortReader>().mixerGroup,
-                DVAudioMixGroup.Chuffs => AudioS282.transform.Find("[sim] Engine/SteamChuff/2ChuffsPerSecond")
+                DVAudioMixerGroup.Chuffs => AudioS282.transform.Find("[sim] Engine/SteamChuff/2ChuffsPerSecond")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Derailment => AudioS282.transform.Find("CarBaseAudioModules/DerailLayers")
+                DVAudioMixerGroup.Derailment => AudioS282.transform.Find("CarBaseAudioModules/DerailLayers")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Engine => AudioDE6.transform.Find("[sim] Engine/ElectricMotor_Layered")
+                DVAudioMixerGroup.Engine => AudioDE6.transform.Find("[sim] Engine/ElectricMotor_Layered")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Horn => AudioS282.transform.Find("[sim] Engine/Whistle/Whistle_Layered")
+                DVAudioMixerGroup.Horn => AudioS282.transform.Find("[sim] Engine/Whistle/Whistle_Layered")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Master => AudioS282.transform.Find("[sim] Engine/CoalDump/SandFlowLayers")
+                DVAudioMixerGroup.Master => AudioS282.transform.Find("[sim] Engine/CoalDump/SandFlowLayers")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Outdoors => AudioS282.transform.Find("[sim] Engine/Fire/Fire_Layered")
+                DVAudioMixerGroup.Outdoors => AudioS282.transform.Find("[sim] Engine/Fire/Fire_Layered")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixGroup.Wheels => AudioS282.transform.Find("WheelsModule/WheelsLeft/WheelslipLayers")
+                DVAudioMixerGroup.Wheels => AudioS282.transform.Find("WheelsModule/WheelsLeft/WheelslipLayers")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
                 _ => throw new System.NotImplementedException(nameof(group))
             };

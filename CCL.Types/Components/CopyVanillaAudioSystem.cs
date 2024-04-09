@@ -14,7 +14,7 @@ namespace CCL.Types.Components
         public string PortId2;
 
         public GameObject? InstancedObject { get; set; }
-        public bool CanReplace => true;
+        public bool CanReplace => InstancedObject != null;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

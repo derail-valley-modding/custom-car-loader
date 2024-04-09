@@ -7,7 +7,6 @@ namespace CCL.Creator.Inspector
     [CustomEditor(typeof(CopyVanillaAudioSystem))]
     internal class CopyVanillaAudioSystemEditor : Editor
     {
-        private CopyVanillaAudioSystem _comp = null!;
         private SerializedProperty _audioSystem = null!;
         private SerializedProperty _port1 = null!;
         private SerializedProperty _port2 = null!;
@@ -22,8 +21,6 @@ namespace CCL.Creator.Inspector
 
         public override void OnInspectorGUI()
         {
-            _comp = (CopyVanillaAudioSystem)target;
-
             EditorGUILayout.PropertyField(_audioSystem);
 
             if (!string.IsNullOrEmpty(_portName = GetPort1Name((VanillaAudioSystem)_audioSystem.intValue)))

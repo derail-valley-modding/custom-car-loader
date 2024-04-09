@@ -1,4 +1,5 @@
 ﻿using CCL.Types.Components;
+using DV.ModularAudioCar;
 using DV.Simulation.Ports;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
@@ -196,9 +197,9 @@ namespace CCL.Importer.Processing
         //    }
         //}
 
-        private static void ProcessAudioCopies(GameObject simAudioFab)
+        private static void ProcessAudioCopies(GameObject prefab)
         {
-            foreach (var item in simAudioFab.GetComponentsInChildren<CopyVanillaAudioSystem>())
+            foreach (var item in prefab.GetComponentsInChildren<CopyVanillaAudioSystem>())
             {
                 var audio = Object.Instantiate(GetAudio(item.AudioSystem), item.transform);
                 audio.transform.localPosition = Vector3.zero;
@@ -213,6 +214,28 @@ namespace CCL.Importer.Processing
                     readers[i].portId = item.Ports[i];
                 }
 
+                Object.Destroy(item);
+            }
+
+            foreach (var item in prefab.GetComponentsInChildren<CopyChuffSystem>())
+            {
+                var audio = item.LocomotiveType switch
+                {
+                    CopyChuffSystem.Locomotive.S060 => AudioS060.transform.Find("[sim] Engine/SteamChuff").GetComponent<ChuffClipsSimReader>(),
+                    CopyChuffSystem.Locomotive.S282 => AudioS282.transform.Find("[sim] Engine/SteamChuff").GetComponent<ChuffClipsSimReader>(),
+                    _ => throw new System.NotImplementedException(nameof(item.LocomotiveType)),
+                };
+
+                audio.transform.localPosition = Vector3.zero;
+                audio.transform.localRotation = Quaternion.identity;
+
+                audio.chuffEventPortId = item.chuffEventPortId;
+                audio.exhaustPressurePortId = item.exhaustPressurePortId;
+                audio.chuffFrequencyPortId = item.chuffFrequencyPortId;
+                audio.cylinderWaterNormalizedPortId = item.cylinderWaterNormalizedPortId;
+                audio.cylinderCockControlPortId = item.cylinderCockControlPortId;
+
+                item.InstancedObject = audio.gameObject;
                 Object.Destroy(item);
             }
         }

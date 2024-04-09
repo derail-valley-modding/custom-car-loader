@@ -11,7 +11,7 @@ namespace CCL.Types.Proxies.Audio
         public float maxPitch = 1f;
 
         //public AudioMixerGroup audioMixerGroup;
-        public DVAudioMixGroup audioMixGroup = DVAudioMixGroup.Engine;
+        public DVAudioMixerGroup audioMixGroup = DVAudioMixerGroup.Engine;
 
         public bool randomizeStartTime = true;
         public List<AudioLayerProxy> layers = new List<AudioLayerProxy>();
@@ -77,7 +77,7 @@ namespace CCL.Types.Proxies.Audio
         //public Vector2 pitchRange = new Vector2(1f, 1f);
     }
 
-    public enum DVAudioMixGroup
+    public enum DVAudioMixerGroup
     {
         // Enable if I find a way to get them.
         Airflow = 0,
