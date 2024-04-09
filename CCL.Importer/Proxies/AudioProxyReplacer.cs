@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Audio;
 using DV.DopplerEffects;
+using DV.ModularAudioCar;
 using DV.Simulation.Ports;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
@@ -34,6 +35,10 @@ namespace CCL.Importer.Proxies
 
             CreateMap<AudioClipPortReaderProxy, AudioClipPortReader>().AutoCacheAndMap();
             CreateMap<LayeredAudioPortReaderProxy, LayeredAudioPortReader>().AutoCacheAndMap();
+
+            CreateMap<CylinderCockLayeredPortReaderProxy, CylinderCockLayeredPortReader>().AutoCacheAndMap()
+                .ReplaceInstancedObjects()
+                .ForMember(d => d.cylCockAudio, o => o.MapFrom(s => s.cylCockAudio.Select(x => x.GetComponent<LayeredAudio>())));
         }
 
         private static void EliminateSourceWithPrejudice<TSrc, TDest>(TSrc obj, TDest _)

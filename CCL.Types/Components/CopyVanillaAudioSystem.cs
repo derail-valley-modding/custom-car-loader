@@ -16,7 +16,8 @@ namespace CCL.Types.Components
         public GameObject? InstancedObject { get; set; }
         public bool CanReplace => true;
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] {
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
             new PortIdField(this, nameof(PortId1), PortId1),
             new PortIdField(this, nameof(PortId2), PortId2)
         };

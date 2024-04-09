@@ -1,15 +1,12 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
-using CCL.Types.Components;
 using DV.Damage;
 using DV.ModularAudioCar;
 using DV.Simulation.Controllers;
-using DV.Simulation.Ports;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using LocoSim.Implementations.Wheels;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -17,30 +14,9 @@ namespace CCL.Importer
 {
     public static class CarAudioProcessor
     {
-        private static Dictionary<VanillaAudioSystem, LayeredAudio> s_audioSystems = new Dictionary<VanillaAudioSystem, LayeredAudio>();
-
-        private static GameObject? s_audioDE2;
-        private static GameObject? s_audioDE6;
-        private static GameObject? s_audioDH4;
         private static GameObject? s_audioDM3;
-        private static GameObject? s_audioS060;
-        private static GameObject? s_audioS282;
-        private static GameObject? s_audioMicroshunter;
-
-        private static GameObject AudioDE2 =>
-            Extensions.GetCached(ref s_audioDE2, () => TrainCarType.LocoShunter.ToV2().parentType.audioPrefab);
-        private static GameObject AudioDE6 =>
-            Extensions.GetCached(ref s_audioDE6, () => TrainCarType.LocoDiesel.ToV2().parentType.audioPrefab);
-        private static GameObject AudioDH4 =>
-            Extensions.GetCached(ref s_audioDH4, () => TrainCarType.LocoDH4.ToV2().parentType.audioPrefab);
         private static GameObject AudioDM3 =>
             Extensions.GetCached(ref s_audioDM3, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
-        private static GameObject AudioS060 =>
-            Extensions.GetCached(ref s_audioS060, () => TrainCarType.LocoS060.ToV2().parentType.audioPrefab);
-        private static GameObject AudioS282 =>
-            Extensions.GetCached(ref s_audioS282, () => TrainCarType.LocoSteamHeavy.ToV2().parentType.audioPrefab);
-        private static GameObject AudioMicroshunter =>
-            Extensions.GetCached(ref s_audioMicroshunter, () => TrainCarType.LocoMicroshunter.ToV2().parentType.audioPrefab);
 
         private static bool NeedsWheelsAudioModule(CCL_CarType carType)
         {
@@ -69,7 +45,7 @@ namespace CCL.Importer
 
                 if (carType.SimAudioPrefab)
                 {
-                    var simAudioFab = ModelProcessor.CreateModifiablePrefab(carType.SimAudioPrefab);
+                    var simAudioFab = carType.SimAudioPrefab;
 
                     simAudioFab.transform.SetParent(newAudioFab.transform, false);
                     simAudioFab.SetActive(true);
@@ -87,8 +63,6 @@ namespace CCL.Importer
 
                         Object.Destroy(rainLocation.gameObject);
                     }
-
-                    ProcessAudioCopies(simAudioFab);
 
                     // setup sim module
                     var simAudio = simAudioFab.AddComponent<SimAudioModule>();
@@ -143,193 +117,6 @@ namespace CCL.Importer
 
                 carType.audioPrefab = newAudioFab;
             }
-        }
-
-        private static void ProcessAudioCopies(GameObject simAudioFab)
-        {
-            foreach (var item in simAudioFab.GetComponentsInChildren<CopyVanillaAudioSystem>())
-            {
-                var audio = Object.Instantiate(GetAudio(item.AudioSystem), item.transform);
-                audio.transform.localPosition = Vector3.zero;
-                audio.transform.localRotation = Quaternion.identity;
-
-                item.InstancedObject = audio.gameObject;
-                var readers = audio.GetComponents<LayeredAudioPortReader>().OrderBy(x => x.portId).ToArray();
-                int length = Mathf.Min(readers.Length, item.Ports.Length);
-
-                for (int i = 0; i < length; i++)
-                {
-                    readers[i].portId = item.Ports[i];
-                }
-
-                Object.Destroy(item);
-            }
-        }
-
-        private static LayeredAudio GetAudio(VanillaAudioSystem audioSystem)
-        {
-            if (s_audioSystems.TryGetValue(audioSystem, out LayeredAudio audio))
-            {
-                return audio;
-            }
-
-            audio = audioSystem switch
-            {
-                #region Common
-
-                VanillaAudioSystem.SandFlow => AudioS282.transform.Find("[sim] Engine/Sand/SandFlowLayers")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.TMOverspeed => AudioMicroshunter.transform.Find("[sim] Engine/TMOverspeed_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.CabFan => AudioDE2.transform.Find("[sim] Engine/CabFan_Layered")
-                    .GetComponent<LayeredAudio>(),
-
-                #endregion
-
-                #region Diesel
-
-                #region DE2
-
-                VanillaAudioSystem.DE2Engine => AudioDE2.transform.Find("[sim] Engine/Engine_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE2EnginePiston => AudioDE2.transform.Find("[sim] Engine/EnginePiston_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE2EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE2ElectricMotor => AudioDE2.transform.Find("[sim] Engine/ElectricMotor_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE2Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE2Compressor => AudioDE2.transform.Find("[sim] Engine/Compressor_Layered")
-                    .GetComponent<LayeredAudio>(),
-
-                #endregion
-
-                #region DE6
-
-                VanillaAudioSystem.DE6EngineIdle => AudioDE6.transform.Find("[sim] Engine/Engine_Idle")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE6EngineThrottling => AudioDE6.transform.Find("[sim] Engine/Engine_Throttling")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE6EngineIgnition => AudioDE6.transform.Find("[sim] Engine/EngineIgnition_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE6ElectricMotor => AudioDE6.transform.Find("[sim] Engine/ElectricMotor_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE6DynamicBrakeBlower => AudioDE6.transform.Find("[sim] Engine/DBBlower_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE6Horn => AudioDE6.transform.Find("[sim] Engine/LocoDiesel_Horn_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE6Bell => AudioDE6.transform.Find("[sim] Engine/Bell_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE6Compressor => AudioDE6.transform.Find("[sim] Engine/Compressor_Layered")
-                    .GetComponent<LayeredAudio>(),
-
-                #endregion
-
-                #region DH4
-
-                VanillaAudioSystem.DH4Engine => AudioDE2.transform.Find("[sim] Engine/Engine_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4EnginePiston => AudioDE2.transform.Find("[sim] Engine/EnginePiston_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4FluidCoupler => AudioDE2.transform.Find("[sim] Engine/FluidCoupler_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4HydroDynamicBrake => AudioDE2.transform.Find("[sim] Engine/HydroDynamicBrake_Layered(copy of FluidCoupler)")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4TransmissionEngaged => AudioDE2.transform.Find("[sim] Engine/TransmissionEngaged_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4ActiveCooler => AudioDE2.transform.Find("[sim] Engine/ActiveCooler_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4Bell => AudioDE2.transform.Find("[sim] Engine/Bell_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DH4Compressor => AudioDE2.transform.Find("[sim] Engine/Compressor_Layered")
-                    .GetComponent<LayeredAudio>(),
-
-                #endregion
-
-                #region DM3
-
-                VanillaAudioSystem.DM3Engine => AudioDE2.transform.Find("[sim] Engine/Engine_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DM3EnginePiston => AudioDE2.transform.Find("[sim] Engine/EnginePiston_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DM3EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DM3JakeBrake => AudioDE2.transform.Find("[sim] Engine/JakeBrake_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DM3TransmissionEngaged => AudioDE2.transform.Find("[sim] Engine/TransmissionEngaged_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DM3Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DM3Compressor => AudioDE2.transform.Find("[sim] Engine/Compressor_Layered")
-                    .GetComponent<LayeredAudio>(),
-
-                #endregion
-
-                #endregion
-
-                #region Steam
-
-                VanillaAudioSystem.SteamerCoalDump => AudioS282.transform.Find("[sim] Engine/CoalDump/SandFlowLayers")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerFire => AudioS282.transform.Find("[sim] Engine/Fire/Fire_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerFireboxWind => AudioS282.transform.Find("[sim] Engine/FireboxWind/WindFirebox_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerSafetyRelease => AudioS282.transform.Find("[sim] Engine/SteamSafetyRelease/SteamRelease_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerBlowdown => AudioS282.transform.Find("[sim] Engine/Blowdown/SteamRelease_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerChestAdmission => AudioS282.transform.Find("[sim] Engine/SteamChestAdmission/SteamChestAdmission_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerCylinderCrack => AudioS282.transform.Find("[sim] Engine/CylinderCrack/SteamRelease_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerInjector => AudioS282.transform.Find("[sim] Engine/Injector/WaterInFlow_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerValveGear => AudioS282.transform.Find("[sim] Engine/ValveGearMechanism/Mechanism_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerValveGearDamaged => AudioS282.transform.Find("[sim] Engine/ValveGearMechanism/DamagedMechanism_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerCrownSheet => AudioS282.transform.Find("[sim] Engine/CrownSheetBoiling/CrownSheetBoiling_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerAirPump => AudioS282.transform.Find("[sim] Engine/AirPump/AirPump_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerDynamo => AudioS282.transform.Find("[sim] Engine/Dynamo/Dynamo_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerBellRing => AudioS282.transform.Find("[sim] Engine/Bell_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.SteamerBellPump => AudioS282.transform.Find("[sim] Engine/Bell_Pump")
-                    .GetComponent<LayeredAudio>(),
-
-                VanillaAudioSystem.S060Whistle => AudioS060.transform.Find("[sim] Engine/Whistle/Whistle_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.S282Whistle => AudioS282.transform.Find("[sim] Engine/Whistle/Whistle_Layered")
-                    .GetComponent<LayeredAudio>(),
-
-                #endregion
-
-                #region Electric
-
-                VanillaAudioSystem.BE2ElectricMotor => AudioMicroshunter.transform.Find("[sim] Engine/ElectricMotor_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.BE2TMController => AudioMicroshunter.transform.Find("[sim] Engine/TMController_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.BE2Compressor => AudioMicroshunter.transform.Find("[sim] Engine/Compressor_Layered")
-                    .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.BE2Horn => AudioMicroshunter.transform.Find("[sim] Engine/Horn_Layered")
-                    .GetComponent<LayeredAudio>(),
-
-                #endregion
-
-                _ => throw new System.NotImplementedException(nameof(audio)),
-            };
-
-            s_audioSystems.Add(audioSystem, audio);
-            return audio;
         }
 
         private static Transform GetCorrespondingWheelslipLayers(Transform wheelLoc, Transform layersFront, Transform layersRear)

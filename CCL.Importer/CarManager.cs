@@ -167,6 +167,7 @@ namespace CCL.Importer
 
             if (carType.SimAudioPrefab)
             {
+                carType.SimAudioPrefab = ModelProcessor.CreateModifiablePrefab(carType.SimAudioPrefab);
                 ModelProcessor.DoBasicProcessing(carType.SimAudioPrefab);
             }
 

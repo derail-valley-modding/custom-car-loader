@@ -70,6 +70,8 @@ namespace CCL.Creator.Inspector
                     return "Lubrication Port ID";
                 case VanillaAudioSystem.SteamerCrownSheet:
                     return "Crown Sheet Temperature Port ID";
+                case VanillaAudioSystem.SteamerCylinderCock:
+                    return null;
 
                 case VanillaAudioSystem.BE2ElectricMotor:
                     return "TM RPM Port ID";
