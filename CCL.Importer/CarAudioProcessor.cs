@@ -181,6 +181,8 @@ namespace CCL.Importer
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.TMOverspeed => AudioMicroshunter.transform.Find("[sim] Engine/TMOverspeed_Layered")
                     .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.CabFan => AudioDE2.transform.Find("[sim] Engine/CabFan_Layered")
+                    .GetComponent<LayeredAudio>(),
 
                 #endregion
 
@@ -249,6 +251,25 @@ namespace CCL.Importer
 
                 #endregion
 
+                #region DM3
+
+                VanillaAudioSystem.DM3Engine => AudioDE2.transform.Find("[sim] Engine/Engine_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DM3EnginePiston => AudioDE2.transform.Find("[sim] Engine/EnginePiston_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DM3EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DM3JakeBrake => AudioDE2.transform.Find("[sim] Engine/JakeBrake_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DM3TransmissionEngaged => AudioDE2.transform.Find("[sim] Engine/TransmissionEngaged_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DM3Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DM3Compressor => AudioDE2.transform.Find("[sim] Engine/Compressor_Layered")
+                    .GetComponent<LayeredAudio>(),
+
+                #endregion
+
                 #endregion
 
                 #region Steam
@@ -282,6 +303,11 @@ namespace CCL.Importer
                 VanillaAudioSystem.SteamerBellRing => AudioS282.transform.Find("[sim] Engine/Bell_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.SteamerBellPump => AudioS282.transform.Find("[sim] Engine/Bell_Pump")
+                    .GetComponent<LayeredAudio>(),
+
+                VanillaAudioSystem.S060Whistle => AudioS060.transform.Find("[sim] Engine/Whistle/Whistle_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.S282Whistle => AudioS282.transform.Find("[sim] Engine/Whistle/Whistle_Layered")
                     .GetComponent<LayeredAudio>(),
 
                 #endregion
