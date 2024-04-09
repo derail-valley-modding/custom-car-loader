@@ -224,6 +224,31 @@ namespace CCL.Importer
 
                 #endregion
 
+                #region DH4
+
+                VanillaAudioSystem.DH4Engine => AudioDE2.transform.Find("[sim] Engine/Engine_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4EnginePiston => AudioDE2.transform.Find("[sim] Engine/EnginePiston_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4FluidCoupler => AudioDE2.transform.Find("[sim] Engine/FluidCoupler_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4HydroDynamicBrake => AudioDE2.transform.Find("[sim] Engine/HydroDynamicBrake_Layered(copy of FluidCoupler)")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4TransmissionEngaged => AudioDE2.transform.Find("[sim] Engine/TransmissionEngaged_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4ActiveCooler => AudioDE2.transform.Find("[sim] Engine/ActiveCooler_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4Bell => AudioDE2.transform.Find("[sim] Engine/Bell_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DH4Compressor => AudioDE2.transform.Find("[sim] Engine/Compressor_Layered")
+                    .GetComponent<LayeredAudio>(),
+
+                #endregion
+
                 #endregion
 
                 #region Steam
