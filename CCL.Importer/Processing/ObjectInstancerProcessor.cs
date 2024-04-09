@@ -219,13 +219,14 @@ namespace CCL.Importer.Processing
 
             foreach (var item in prefab.GetComponentsInChildren<CopyChuffSystem>())
             {
-                var audio = item.LocomotiveType switch
+                var system = item.LocomotiveType switch
                 {
                     CopyChuffSystem.Locomotive.S060 => AudioS060.transform.Find("[sim] Engine/SteamChuff").GetComponent<ChuffClipsSimReader>(),
                     CopyChuffSystem.Locomotive.S282 => AudioS282.transform.Find("[sim] Engine/SteamChuff").GetComponent<ChuffClipsSimReader>(),
                     _ => throw new System.NotImplementedException(nameof(item.LocomotiveType)),
                 };
 
+                var audio = Object.Instantiate(system, item.transform);
                 audio.transform.localPosition = Vector3.zero;
                 audio.transform.localRotation = Quaternion.identity;
 
