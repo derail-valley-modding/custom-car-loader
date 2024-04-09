@@ -96,8 +96,9 @@ namespace CCL.Types.Components
         SteamerDynamo,
         SteamerBellRing,
         SteamerBellPump,
-        S060Whistle,
-        S282Whistle,
+
+        S060Whistle = 2050,
+        S282Whistle = 2100,
 
         [InspectorName("")]
         SeparatorBE2 = 2999,

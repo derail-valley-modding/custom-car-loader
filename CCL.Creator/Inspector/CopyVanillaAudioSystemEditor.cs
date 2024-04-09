@@ -48,20 +48,31 @@ namespace CCL.Creator.Inspector
 
                 case VanillaAudioSystem.DE2EnginePiston:
                 case VanillaAudioSystem.DE6EngineThrottling:
+                case VanillaAudioSystem.DH4EnginePiston:
+                case VanillaAudioSystem.DM3EnginePiston:
                     return "Fuel Consumption Port ID";
                 case VanillaAudioSystem.DE2ElectricMotor:
                 case VanillaAudioSystem.DE6ElectricMotor:
                     return "Amps Per TM Port ID";
 
+                case VanillaAudioSystem.DH4FluidCoupler:
+                    return "Pump Torque Port ID";
+                case VanillaAudioSystem.DH4HydroDynamicBrake:
+                    return "Hydro Dynamic Brake Port ID";
+                case VanillaAudioSystem.DH4TransmissionEngaged:
+                case VanillaAudioSystem.DM3TransmissionEngaged:
+                case VanillaAudioSystem.DM3JakeBrake:
+                    return "Transmission Engaged Port ID";
+
                 case VanillaAudioSystem.SteamerChestAdmission:
-                    return "Exhaust Pressure Port ID";
+                    return "Steam Injection Port ID";
                 case VanillaAudioSystem.SteamerValveGearDamaged:
-                    return "Wheel RPM Port ID";
+                    return "Lubrication Port ID";
                 case VanillaAudioSystem.SteamerCrownSheet:
                     return "Crown Sheet Temperature Port ID";
 
                 case VanillaAudioSystem.BE2ElectricMotor:
-                    return "Total Amps Port ID";
+                    return "TM RPM Port ID";
 
                 default:
                     return "Port ID";
@@ -75,18 +86,31 @@ namespace CCL.Creator.Inspector
                 case VanillaAudioSystem.TMOverspeed:
                 case VanillaAudioSystem.DE2ElectricMotor:
                 case VanillaAudioSystem.DE6ElectricMotor:
-                case VanillaAudioSystem.BE2ElectricMotor:
-                    return "TM Normalized RPM Port ID";
+                    return "TM RPM Port ID";
+
                 case VanillaAudioSystem.DE2EnginePiston:
                 case VanillaAudioSystem.DE6EngineThrottling:
+                case VanillaAudioSystem.DH4EnginePiston:
+                case VanillaAudioSystem.DM3EnginePiston:
                     return "Engine RPM Port ID";
 
+                case VanillaAudioSystem.DH4FluidCoupler:
+                case VanillaAudioSystem.DH4HydroDynamicBrake:
+                    return "Turbine RPM Port ID";
+                case VanillaAudioSystem.DH4TransmissionEngaged:
+                case VanillaAudioSystem.DM3TransmissionEngaged:
+                case VanillaAudioSystem.DM3JakeBrake:
+                    return "Wheel Speed Port ID";
+
                 case VanillaAudioSystem.SteamerChestAdmission:
-                    return "Steam Injection Port ID";
+                    return "Exhaust Pressure Port ID";
                 case VanillaAudioSystem.SteamerValveGearDamaged:
-                    return "Lubrication Port ID";
+                    return "Wheel RPM Port ID";
                 case VanillaAudioSystem.SteamerCrownSheet:
                     return "Boiler Broken Port ID";
+
+                case VanillaAudioSystem.BE2ElectricMotor:
+                    return "Total Amps Port ID";
 
                 default:
                     return null;

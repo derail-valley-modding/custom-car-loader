@@ -154,7 +154,7 @@ namespace CCL.Importer
                 audio.transform.localRotation = Quaternion.identity;
 
                 item.InstancedObject = audio.gameObject;
-                var readers = audio.GetComponents<LayeredAudioPortReader>();
+                var readers = audio.GetComponents<LayeredAudioPortReader>().OrderBy(x => x.portId).ToArray();
                 int length = Mathf.Min(readers.Length, item.Ports.Length);
 
                 for (int i = 0; i < length; i++)
