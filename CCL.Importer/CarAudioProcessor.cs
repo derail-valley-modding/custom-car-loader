@@ -12,7 +12,6 @@ using LocoSim.Implementations.Wheels;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static DV.Rain.RainParticles;
 
 namespace CCL.Importer
 {
@@ -30,7 +29,7 @@ namespace CCL.Importer
 
         private static GameObject AudioDE2 =>
             Extensions.GetCached(ref s_audioDE2, () => TrainCarType.LocoShunter.ToV2().parentType.audioPrefab);
-        private static GameObject AudioDH6 =>
+        private static GameObject AudioDE6 =>
             Extensions.GetCached(ref s_audioDE6, () => TrainCarType.LocoDiesel.ToV2().parentType.audioPrefab);
         private static GameObject AudioDH4 =>
             Extensions.GetCached(ref s_audioDH4, () => TrainCarType.LocoDH4.ToV2().parentType.audioPrefab);
@@ -193,13 +192,34 @@ namespace CCL.Importer
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.DE2EnginePiston => AudioDE2.transform.Find("[sim] Engine/EnginePiston_Layered")
                     .GetComponent<LayeredAudio>(),
-                VanillaAudioSystem.DE2ElectricMotor => AudioDE2.transform.Find("[sim] Engine/ElectricMotor_Layered")
-                    .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.DE2EngineIgnition => AudioDE2.transform.Find("[sim] Engine/EngineIgnition_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE2ElectricMotor => AudioDE2.transform.Find("[sim] Engine/ElectricMotor_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.DE2Horn => AudioDE2.transform.Find("[sim] Engine/Horn_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.DE2Compressor => AudioDE2.transform.Find("[sim] Engine/Compressor_Layered")
+                    .GetComponent<LayeredAudio>(),
+
+                #endregion
+
+                #region DE6
+
+                VanillaAudioSystem.DE6EngineIdle => AudioDE6.transform.Find("[sim] Engine/Engine_Idle")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE6EngineThrottling => AudioDE6.transform.Find("[sim] Engine/Engine_Throttling")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE6EngineIgnition => AudioDE6.transform.Find("[sim] Engine/EngineIgnition_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE6ElectricMotor => AudioDE6.transform.Find("[sim] Engine/ElectricMotor_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE6DynamicBrakeBlower => AudioDE6.transform.Find("[sim] Engine/DBBlower_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE6Horn => AudioDE6.transform.Find("[sim] Engine/LocoDiesel_Horn_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE6Bell => AudioDE6.transform.Find("[sim] Engine/Bell_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.DE6Compressor => AudioDE6.transform.Find("[sim] Engine/Compressor_Layered")
                     .GetComponent<LayeredAudio>(),
 
                 #endregion

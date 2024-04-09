@@ -47,8 +47,10 @@ namespace CCL.Creator.Inspector
                     return "TM Overspeed Port ID";
 
                 case VanillaAudioSystem.DE2EnginePiston:
+                case VanillaAudioSystem.DE6EngineThrottling:
                     return "Fuel Consumption Port ID";
                 case VanillaAudioSystem.DE2ElectricMotor:
+                case VanillaAudioSystem.DE6ElectricMotor:
                     return "Amps Per TM Port ID";
 
                 case VanillaAudioSystem.SteamerChestAdmission:
@@ -72,9 +74,11 @@ namespace CCL.Creator.Inspector
             {
                 case VanillaAudioSystem.TMOverspeed:
                 case VanillaAudioSystem.DE2ElectricMotor:
+                case VanillaAudioSystem.DE6ElectricMotor:
                 case VanillaAudioSystem.BE2ElectricMotor:
                     return "TM Normalized RPM Port ID";
                 case VanillaAudioSystem.DE2EnginePiston:
+                case VanillaAudioSystem.DE6EngineThrottling:
                     return "Engine RPM Port ID";
 
                 case VanillaAudioSystem.SteamerChestAdmission:

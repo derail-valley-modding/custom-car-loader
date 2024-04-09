@@ -34,13 +34,28 @@ namespace CCL.Types.Components
         [InspectorName("TM Overspeed")]
         TMOverspeed,
 
+        [InspectorName("")]
+        SeparatorDE2,
         DE2Engine = 1000,
         DE2EnginePiston,
-        DE2ElectricMotor,
         DE2EngineIgnition,
+        DE2ElectricMotor,
         DE2Horn,
         DE2Compressor,
 
+        [InspectorName("")]
+        SeparatorDE6,
+        DE6EngineIdle,
+        DE6EngineThrottling,
+        DE6EngineIgnition,
+        DE6ElectricMotor,
+        DE6DynamicBrakeBlower,
+        DE6Horn,
+        DE6Bell,
+        DE6Compressor,
+
+        [InspectorName("")]
+        SeparatorSteam,
         SteamerCoalDump = 2000,
         SteamerFire,
         SteamerFireboxWind,
@@ -58,12 +73,16 @@ namespace CCL.Types.Components
         SteamerBellRing,
         SteamerBellPump,
 
+        [InspectorName("")]
+        SeparatorBE2,
         BE2ElectricMotor = 3000,
         [InspectorName("BE2 TM Controller")]
         BE2TMController,
         BE2Compressor,
         BE2Horn,
 
+        [InspectorName("")]
+        SeparatorMisc,
         CabFan = 5000,
     }
 }
