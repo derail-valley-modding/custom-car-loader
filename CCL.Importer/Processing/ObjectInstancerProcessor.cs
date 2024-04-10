@@ -69,6 +69,12 @@ namespace CCL.Importer.Processing
                     system.Play();
                 }
 
+                if (item.UseCustomSortingFudge)
+                {
+                    var renderer = system.gameObject.GetComponent<ParticleSystemRenderer>();
+                    renderer.sortingFudge = item.SortingFudge;
+                }
+
                 Object.Destroy(item);
             }
         }
