@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Electric;
+using DV.HUD;
 using DV.Simulation.Cars;
 using DV.Simulation.Ports;
 using LocoSim.Definitions;
@@ -32,6 +33,7 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<SlugsPowerProviderModuleProxy, SlugsPowerProviderModule>().AutoCacheAndMap();
 
             CreateMap<FuseControllerDefinitionProxy, FuseControllerDefinition>().AutoCacheAndMap();
+            CreateMap<LocoFuseBoxReferenceProxy, LocoFuseBoxReference>().AutoCacheAndMap();
         }
 
         private static void AddDrivingForce(TractionDefinition traction)

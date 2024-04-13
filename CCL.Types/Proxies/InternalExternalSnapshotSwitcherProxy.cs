@@ -6,4 +6,6 @@ namespace CCL.Types.Proxies
     {
         public BoxCollider box = null!;
     }
+
+    public class InternalExternalSnapshotSwitcherDoorsAndWindowsProxy : InternalExternalSnapshotSwitcherProxy { }
 }

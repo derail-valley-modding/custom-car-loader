@@ -22,6 +22,8 @@ namespace CCL.Importer.Proxies
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap();
+            CreateMap<InternalExternalSnapshotSwitcherDoorsAndWindowsProxy, InternalExternalSnapshotSwitcherDoorsAndWindows>()
+                .AutoCacheAndMap();
 
             CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
@@ -42,6 +44,7 @@ namespace CCL.Importer.Proxies
             CreateMap<TeleportHoverGlowProxy, TeleportHoverGlow>().AutoCacheAndMap()
                 .AfterMap(TeleportHoverGlowAfter);
             CreateMap<GrabberRaycastPassThroughProxy, GrabberRaycastPassThrough>().AutoCacheAndMap();
+            CreateMap<HighlightTagProxy, HighlightTagProxy>().AutoCacheAndMap();
 
             CreateMap<MultipleUnitStateObserverProxy, MultipleUnitStateObserver>().AutoCacheAndMap();
 

@@ -35,6 +35,7 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<InteractablePortFeederProxy, InteractablePortFeeder>().AutoCacheAndMap();
             CreateMap<InteractableFuseFeederProxy, InteractableFuseFeeder>().AutoCacheAndMap();
             CreateMap<HandbrakeFeederProxy, HandbrakeFeeder>().AutoCacheAndMap();
+            CreateMap<BrakeCylinderReleaseButtonFeederProxy, BrakeCylinderReleaseButtonFeeder>().AutoCacheAndMap();
             CreateMap<ManualTransmissionInputDefinitionProxy, ManualTransmissionInputDefinition>().AutoCacheAndMap();
             CreateMap<ThrottleGammaPowerConversionDefinitionProxy, ThrottleGammaPowerConversionDefinition>().AutoCacheAndMap();
 
