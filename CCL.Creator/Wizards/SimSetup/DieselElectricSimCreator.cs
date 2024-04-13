@@ -26,17 +26,14 @@ namespace CCL.Creator.Wizards.SimSetup
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
+            var hasDynamic = HasDynamicBrake(basisIndex);
+
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
             var thrtPowr = CreateSimComponent<ThrottleGammaPowerConversionDefinitionProxy>("throttlePower");
             var reverser = CreateReverserControl();
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
-            ExternalControlDefinitionProxy dynBrake = null!;
-
-            if (basisIndex == 1)
-            {
-                dynBrake = CreateOverridableControl(OverridableControlType.DynamicBrake);
-            }
+            var dynBrake = hasDynamic ? CreateOverridableControl(OverridableControlType.DynamicBrake) : null!;
 
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
@@ -146,7 +143,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(thrtPowr, "GOAL_POWER", tractionGen, "GOAL_POWER");
             ConnectPortRef(thrtPowr, "GOAL_RPM_NORMALIZED", tractionGen, "GOAL_RPM_NORMALIZED");
 
-            if (basisIndex == 1)
+            if (hasDynamic)
             {
                 ConnectPortRef(dynBrake, "EXT_IN", tractionGen, "DYNAMIC_BRAKE");
             }
@@ -198,6 +195,31 @@ namespace CCL.Creator.Wizards.SimSetup
 
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
+
+            AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(),
+                throttle, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+
+            if (hasDynamic)
+            {
+                AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(),
+                    dynBrake, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+
+                AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+
+                AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+                AddControlBlocker(dynBrake, reverser, "REVERSER", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD);
+            }
+        }
+
+        private static bool HasDynamicBrake(int index)
+        {
+            switch (index)
+            {
+                case 1:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

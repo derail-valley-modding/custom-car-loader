@@ -17,7 +17,7 @@ namespace CCL.Types.Proxies.Controls
             new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)
         };
 
-        private void OnValidate()
+        public void OnValidate()
         {
             if (controlBlocker == null)
             {
@@ -39,7 +39,7 @@ namespace CCL.Types.Proxies.Controls
             new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)
         };
 
-        private void OnValidate()
+        public void OnValidate()
         {
             if (controlBlocker == null)
             {
