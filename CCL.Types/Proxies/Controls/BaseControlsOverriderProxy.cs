@@ -14,8 +14,14 @@ namespace CCL.Types.Proxies.Controls
         {
             [PortId(null, null)]
             public string portId;
-
             public float value;
+
+            // Default constructor for deserialization.
+            public PortSetter()
+            {
+                portId = "";
+                value = 0f;
+            }
 
             public PortSetter(string portId, float value)
             {
@@ -41,7 +47,7 @@ namespace CCL.Types.Proxies.Controls
                     return Enumerable.Empty<PortIdField>();
                 }
                 return neutralStateSetters.Select((nss, i) =>
-                    new PortIdField(this, $"{nameof(PortSetter.portId)}_{i}", nss.portId));
+                    new PortIdField(this, nameof(neutralStateSetters), nss.portId));
             }
         }
 
