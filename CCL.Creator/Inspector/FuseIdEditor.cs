@@ -30,7 +30,6 @@ namespace CCL.Creator.Inspector
             }
 
             EditorGUI.BeginProperty(position, label, property);
-            position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
             IEnumerable<GameObject> sources = PortOptionHelper.GetAllAvailableSources(location);
 
@@ -55,9 +54,9 @@ namespace CCL.Creator.Inspector
                     GUI.backgroundColor = EditorHelpers.Colors.DELETE_ACTION;
                 }
 
-                string[] optionNames = options.Select(p => p.Description).ToArray();
+                GUIContent[] optionNames = options.Select(p => new GUIContent(p.Description)).ToArray();
 
-                int newIndex = EditorGUI.Popup(position, Math.Max(selected, 0), optionNames);
+                int newIndex = EditorGUI.Popup(position, label, Math.Max(selected, 0), optionNames);
 
                 if (newIndex != selected)
                 {
