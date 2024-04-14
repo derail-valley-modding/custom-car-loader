@@ -33,18 +33,12 @@ namespace CCL.Creator.Inspector
                 EditorHelpers.DrawHeader("Ports",
                     "The port connections that control the Layered Audio");
 
-                using (new EditorGUI.IndentLevelScope())
-                {
-                    if (ports.Length > 0)
-                    {
-                        EditorGUILayout.PropertyField(_port1, new GUIContent(ports[0]));
-                    }
+                EditorGUILayout.PropertyField(_port1, new GUIContent(ports[0]));
+            }
 
-                    if (ports.Length > 1)
-                    {
-                        EditorGUILayout.PropertyField(_port2, new GUIContent(ports[1]));
-                    }
-                }
+            if (ports.Length > 1)
+            {
+                EditorGUILayout.PropertyField(_port2, new GUIContent(ports[1]));
             }
 
             var layers = GetSourcePositionNames(system);
@@ -57,13 +51,10 @@ namespace CCL.Creator.Inspector
                     "Optional transforms to move the audio source of each layer\n" +
                     "Leave empty to use the position of this object");
 
-                using (new EditorGUI.IndentLevelScope())
+                for (int i = 0; i < length; i++)
                 {
-                    for (int i = 0; i < length; i++)
-                    {
-                        var label = new GUIContent(layers[i]);
-                        EditorGUILayout.PropertyField(_positions.GetArrayElementAtIndex(i), label);
-                    }
+                    var label = new GUIContent(layers[i]);
+                    EditorGUILayout.PropertyField(_positions.GetArrayElementAtIndex(i), label);
                 }
             }
 
