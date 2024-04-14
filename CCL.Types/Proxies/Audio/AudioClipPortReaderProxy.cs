@@ -17,6 +17,7 @@ namespace CCL.Types.Proxies.Audio
         public float maxDistance = 500f;
 
         //public AudioMixerGroup mixerGroup;
+        public DVAudioMixerGroup audioMixGroup = DVAudioMixerGroup.Engine;
 
         public bool isParented = true;
 
