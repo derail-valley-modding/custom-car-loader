@@ -23,9 +23,9 @@ namespace CCL.Types.Catalog
         public VehicleDiagram Diagram = null!;
 
         [Header("Scores")]
-        public EaseOfOperationScore EaseOfOperationScore = new EaseOfOperationScore();
-        public MaintenanceScore MaintenanceScore = new MaintenanceScore();
-        public HaulingScore HaulingScore = new HaulingScore();
-        public ShuntingScore ShuntingScore = new ShuntingScore();
+        public EaseOfOperationScore EaseOfOperation = new EaseOfOperationScore();
+        public MaintenanceScore Maintenance = new MaintenanceScore();
+        public HaulingScore Hauling = new HaulingScore();
+        public ShuntingScore Shunting = new ShuntingScore();
     }
 }
