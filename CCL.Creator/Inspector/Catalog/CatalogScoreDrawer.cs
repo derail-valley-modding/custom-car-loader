@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Inspector.Catalog
 {
     [CustomPropertyDrawer(typeof(CatalogScore))]
     internal class CatalogScoreDrawer : PropertyDrawer

@@ -4,22 +4,46 @@ namespace CCL.Types.Catalog
 {
     public enum VehicleType
     {
-        Locomotive
+        Locomotive,
+        Tender,
+        Slug,
+        Draisine,
+        Car
     }
 
     public enum VehicleRole
     {
         None = 0,
-        ShuntingLight = 100,
-        ShuntingHeavy,
-        HaulingLight = 200,
-        HaulingHeavy
+        LightShunting = 10,
+        HeavyShunting,
+        LightHauling = 20,
+        HeavyHauling,
+        FuelSupply = 30,
+        CrewTransport = 40,
+        CrewSupport
+    }
+
+    public enum TechIcon
+    {
+        None
+    }
+
+    public enum TotalScoreDisplay
+    {
+        [Tooltip("No score display")]
+        None,
+        [Tooltip("A score calculated from the values below")]
+        Average,
+        [Tooltip("A dash in case the vehicle cannot do a role (Handcar cannot Haul or Shunt)")]
+        NotApplicable
     }
 
     public enum ScoreType
     {
-        [Tooltip("No bar is displayed")]
+        [Tooltip("An empty bar")]
         None,
+        [Tooltip("An empty bar with the value '0'")]
+        Zero,
         [Tooltip("Normal coloured bar")]
         Score,
         [Tooltip("A coloured effect bar with a positive value")]
@@ -30,5 +54,13 @@ namespace CCL.Types.Catalog
         PositiveSharedEffect,
         [Tooltip("A shared effect bar with a negative value")]
         NegativeSharedEffect,
+    }
+
+    public enum CatalogColor
+    {
+        Green,
+        Yellow,
+        Orange,
+        Red
     }
 }
