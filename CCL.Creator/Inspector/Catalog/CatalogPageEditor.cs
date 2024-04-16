@@ -29,6 +29,24 @@ namespace CCL.Creator.Inspector.Catalog
                     case nameof(CatalogPage.LoadInclineRain):
                         GUI.enabled = true;
                         break;
+                    case nameof(CatalogPage.TechList):
+                        if (_prop.isExpanded)
+                        {
+                            EditorGUILayout.Space();
+
+                            if (GUILayout.Button(new GUIContent("Try to set appropriate types",
+                                "This will try to set the 'Type' fields to an appropriate default value")))
+                            {
+                                foreach (var tech in _page.TechList.AllTechs)
+                                {
+                                    TechEntry.TryToSetAppropriateType(tech);
+                                }
+
+                                AssetHelper.SaveAsset(_page);
+                                serializedObject.UpdateIfRequiredOrScript();
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -44,6 +62,7 @@ namespace CCL.Creator.Inspector.Catalog
             }
 
             serializedObject.ApplyModifiedProperties();
+            EditorGUILayout.Space();
 
             using (new EditorGUILayout.HorizontalScope())
             {

@@ -1,7 +1,5 @@
 ﻿using UnityModManagerNet;
 using HarmonyLib;
-using System.Collections;
-using System.IO;
 using System.Reflection;
 using DVLangHelper.Runtime;
 

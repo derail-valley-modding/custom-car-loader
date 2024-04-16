@@ -23,7 +23,7 @@ namespace CCL.Types.Catalog
         public VehicleRole Role2 = VehicleRole.None;
 
         [Header("Properties And Tonnage")]
-        public bool CanBeSummonedByRemote = false;
+        public bool SummonableByRemote = false;
         public bool ShowLoadRatings = true;
         public LoadColor LoadFlat = new LoadColor { Tonnage = 1200, Color = CatalogColor.Yellow };
         public LoadColor LoadIncline = new LoadColor { Tonnage = 300, Color = CatalogColor.Red };

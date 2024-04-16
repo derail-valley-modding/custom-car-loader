@@ -25,7 +25,24 @@ namespace CCL.Types.Catalog
 
     public enum TechIcon
     {
-        None
+        None,
+        ClosedCab,
+        OpenCab,
+        CrewCompartment,
+        CompressedAirBrakeSystem,
+        DirectBrakeSystem,
+        DynamicBrakeSystem,
+        ElectricPowerSupplyAndTransmission,
+        ExternalControlInterface,
+        HeatManagement,
+        HydraulicTransmission,
+        InternalCombustionEngine,
+        MechanicalTransmission,
+        PassengerCompartment,
+        SpecializedEquipment,
+        SteamEngine,
+        UnitEffect,
+        CrewDelivery
     }
 
     public enum TotalScoreDisplay
