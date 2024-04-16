@@ -96,6 +96,8 @@ namespace CCL.Importer.Processing
 
             newFab.SetActive(false);
             Object.DontDestroyOnLoad(newFab);
+            // No (Clone), makes it look bad.
+            newFab.name = gameObject.name;
 
             // Restore state.
             foreach (var state in states)
