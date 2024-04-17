@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using CCL.Types.Json;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Catalog
 {
     [CreateAssetMenu(menuName = "CCL/Vehicle Catalog Page")]
-    public class CatalogPage : ScriptableObject
+    public class CatalogPage : ScriptableObject, ICustomSerialized
     {
         public CustomCarType CorrespondingVehicle = null!;
 
@@ -12,6 +13,8 @@ namespace CCL.Types.Catalog
         public Color HeaderColour = Color.yellow;
         public string PageName = "";
         public string ConsistUnits = "1/1";
+        [Tooltip("Optional")]
+        public string Nickname = "";
         public Sprite Icon = null!;
         public string ProductionYears = "1900-1999";
         public bool UnlockedByGarage = false;
@@ -39,6 +42,9 @@ namespace CCL.Types.Catalog
         public HaulingScore Hauling = new HaulingScore();
         public ShuntingScore Shunting = new ShuntingScore();
 
+        [SerializeField, HideInInspector]
+        private string? _techJson;
+
         public ScoreList GetScoreList(int i) => i switch
         {
             0 => EaseOfOperation,
@@ -57,6 +63,16 @@ namespace CCL.Types.Catalog
                 yield return Hauling;
                 yield return Shunting;
             }
+        }
+
+        public void OnValidate()
+        {
+            _techJson = JSONObject.ToJson(TechList);
+        }
+
+        public void AfterImport()
+        {
+            TechList = JSONObject.FromJson(_techJson, () => new TechList());
         }
     }
 }

@@ -58,6 +58,11 @@ namespace CCL.Importer
                 {
                     CustomCarTypes.Add(carType);
                     loadedCount += 1;
+
+                    if (carType.CatalogPage != null)
+                    {
+                        CatalogGenerator.PageInfos.Add(carType.CatalogPage);
+                    }
                 }
 
                 Mapper.ClearComponentCache();

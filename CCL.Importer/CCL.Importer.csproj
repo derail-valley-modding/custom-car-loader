@@ -26,6 +26,7 @@
 		<Reference Include="0Harmony" />
 		<Reference Include="I2.Localization" />
 		<Reference Include="Newtonsoft.Json" />
+    <Reference Include="Unity.TextMeshPro" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AnimationModule" />

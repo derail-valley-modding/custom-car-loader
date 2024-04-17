@@ -4,6 +4,7 @@ using UnityEngine;
 using DVLangHelper.Data;
 using CCL.Types.Json;
 using CCL.Types.HUD;
+using CCL.Types.Catalog;
 
 namespace CCL.Types
 {
@@ -67,6 +68,9 @@ namespace CCL.Types
         [Space]
         [Tooltip("Any extra prefab that has scripts on it should be added here")]
         public GameObject[] ExtraModels = new GameObject[0];
+
+        [Space]
+        public CatalogPage CatalogPage = null!;
 
         [SerializeField, HideInInspector]
         private string? brakesJson;
