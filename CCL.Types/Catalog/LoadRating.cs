@@ -3,9 +3,9 @@
 namespace CCL.Types.Catalog
 {
     [Serializable]
-    public class LoadColor
+    public class LoadRating
     {
         public int Tonnage;
-        public CatalogColor Color;
+        public TonnageRating Rating;
     }
 }

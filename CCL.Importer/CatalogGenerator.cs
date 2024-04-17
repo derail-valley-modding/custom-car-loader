@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Types.Catalog;
+using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
 using System.Collections.Generic;
@@ -75,18 +76,151 @@ namespace CCL.Importer
             }
 
             page.Find(Paths.Icon).GetComponent<Image>().sprite = layout.Icon;
+
+            ProcessSpawnLocations(page.GetComponentInChildren<LocoSpawnRateRenderer>(), layout);
+
+            #region Licenses
+
+            if (layout.UnlockedByGarage)
+            {
+                page.Find(Paths.GarageIcon).gameObject.SetActive(true);
+                page.Find(Paths.LicenseOther + "1" + Paths.LicenseLock).gameObject.SetActive(true);
+
+                var text = Paths.GetText(page, Paths.LicenseOther + "1" + Paths.LicenseValue);
+                text.gameObject.SetActive(true);
+                text.text = layout.GaragePrice.ToString();
+
+                page.Find(Paths.License1).gameObject.SetActive(false);
+                page.Find(Paths.License2).gameObject.SetActive(false);
+                page.Find(Paths.License3).gameObject.SetActive(false);
+
+                page.Find(Paths.LicenseOther + "2" + Paths.LicenseLock).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "2" + Paths.LicenseValue).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "3" + Paths.LicenseLock).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "3" + Paths.LicenseValue).gameObject.SetActive(false);
+            }
+            else
+            {
+                // Licenses disabled for now.
+                page.Find(Paths.License1).gameObject.SetActive(false);
+                page.Find(Paths.License2).gameObject.SetActive(false);
+                page.Find(Paths.License3).gameObject.SetActive(false);
+
+                page.Find(Paths.LicenseOther + "1" + Paths.LicenseLock).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "1" + Paths.LicenseValue).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "2" + Paths.LicenseLock).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "2" + Paths.LicenseValue).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "3" + Paths.LicenseLock).gameObject.SetActive(false);
+                page.Find(Paths.LicenseOther + "3" + Paths.LicenseValue).gameObject.SetActive(false);
+            }
+
+            if (!string.IsNullOrEmpty(layout.ProductionYears))
+            {
+                var text = Paths.GetText(page, Paths.ProductionYears);
+                text.gameObject.SetActive(true);
+                text.text = layout.ProductionYears;
+            }
+            else
+            {
+                page.Find(Paths.ProductionYears).gameObject.SetActive(false);
+            }
+
+            #endregion
+
+            if (layout.SummonableByRemote)
+            {
+                page.Find(Paths.Summonable).gameObject.SetActive(true);
+                page.Find(Paths.SummonIcon).gameObject.SetActive(true);
+                var text = Paths.GetText(page, Paths.SummonPrice);
+                text.gameObject.SetActive(true);
+                text.text = layout.SummonPrice.ToString();
+            }
+            else
+            {
+                page.Find(Paths.Summonable).gameObject.SetActive(false);
+            }
+
+            #region Load Ratings
+
+            if (layout.ShowLoadRatings)
+            {
+                page.Find(Paths.LoadRatingText).gameObject.SetActive(true);
+
+                ProcessLoadRating(page.Find(Paths.Combine(Paths.LoadRating, Paths.LoadRatings.IconFlat)), layout.LoadFlat);
+                ProcessLoadRating(page.Find(Paths.Combine(Paths.LoadRating, Paths.LoadRatings.IconIncline)), layout.LoadIncline);
+                ProcessLoadRating(page.Find(Paths.Combine(Paths.LoadRating, Paths.LoadRatings.IconInclineWet)), layout.LoadInclineWet);
+            }
+            else
+            {
+                page.Find(Paths.LoadRatingText).gameObject.SetActive(false);
+                page.Find(Paths.Combine(Paths.LoadRating, Paths.LoadRatings.IconFlat)).gameObject.SetActive(false);
+                page.Find(Paths.Combine(Paths.LoadRating, Paths.LoadRatings.IconIncline)).gameObject.SetActive(false);
+                page.Find(Paths.Combine(Paths.LoadRating, Paths.LoadRatings.IconInclineWet)).gameObject.SetActive(false);
+            }
+
+            #endregion
+        }
+
+        private static void ProcessSpawnLocations(LocoSpawnRateRenderer spawner, CatalogPage layout)
+        {
+            // Always disable spawn locations while we figure what to do.
+            spawner.enabled = false;
+            spawner.transform.GetChild(0).GetComponent<Image>().enabled = false;
+        }
+
+        private static bool SetLicenseIcon(Image image, string license)
+        {
+            if (!DV.Globals.G.Types.TryGetGeneralLicense(license, out var v2))
+            {
+                CCLPlugin.Warning($"No license with ID '{license}' found.");
+                return false;
+            }
+
+            image.sprite = v2.icon;
+            return true;
+        }
+
+        private static void ProcessLoadRating(Transform root, LoadRating rating)
+        {
+            var bad = root.Find(Paths.LoadRatings.Bad).gameObject;
+            var medium = root.Find(Paths.LoadRatings.Medium).gameObject;
+            var good = root.Find(Paths.LoadRatings.Good).gameObject;
+
+            switch (rating.Rating)
+            {
+                case TonnageRating.Good:
+                    bad.SetActive(false);
+                    medium.SetActive(false);
+                    good.SetActive(true);
+                    break;
+                case TonnageRating.Medium:
+                    bad.SetActive(false);
+                    medium.SetActive(true);
+                    good.SetActive(false);
+                    break;
+                case TonnageRating.Bad:
+                    bad.SetActive(true);
+                    medium.SetActive(false);
+                    good.SetActive(false);
+                    break;
+                default:
+                    throw new System.ArgumentOutOfRangeException(nameof(rating.Rating));
+            }
+
+            Paths.GetText(root, Paths.LoadRatings.Tonnage).text = rating.Tonnage.ToString();
         }
 
         private static void ProcessDiagram(Transform page, CatalogPage layout)
         {
-            Paths.GetLocalize(page, Paths.VehicleType).key = GetVehicleTypeKey(layout.Type);
+            Paths.GetLocalize(page, Paths.VehicleType).SetKeyAndUpdate(GetVehicleTypeKey(layout.Type));
+
             var role1 = Paths.GetLocalize(page, Paths.VehicleRole1);
             var role2 = Paths.GetLocalize(page, Paths.VehicleRole2);
 
             if (layout.Role1 != VehicleRole.None)
             {
-                role1.key = GetVehicleRoleKey(layout.Role1);
                 role1.gameObject.SetActive(true);
+                role1.SetKeyAndUpdate(GetVehicleRoleKey(layout.Role1));
             }
             else
             {
@@ -95,8 +229,8 @@ namespace CCL.Importer
 
             if (layout.Role2 != VehicleRole.None)
             {
-                role2.key = GetVehicleRoleKey(layout.Role2);
                 role2.gameObject.SetActive(true);
+                role2.SetKeyAndUpdate(GetVehicleRoleKey(layout.Role2));
             }
             else
             {
@@ -130,68 +264,68 @@ namespace CCL.Importer
             switch (tech.Icon)
             {
                 case TechIcon.Generic:
-                    slot.Find(Paths.TechItem.Generic).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.Generic).gameObject.SetActive(true);
                     break;
                 case TechIcon.ClosedCab:
-                    slot.Find(Paths.TechItem.ClosedCab).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.ClosedCab).gameObject.SetActive(true);
                     break;
                 case TechIcon.OpenCab:
-                    slot.Find(Paths.TechItem.OpenCab).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.OpenCab).gameObject.SetActive(true);
                     break;
                 case TechIcon.CrewCompartment:
-                    slot.Find(Paths.TechItem.CrewCompartment).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.CrewCompartment).gameObject.SetActive(true);
                     break;
                 case TechIcon.CompressedAirBrakeSystem:
-                    slot.Find(Paths.TechItem.CompressedAirBrakeSystem).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.CompressedAirBrakeSystem).gameObject.SetActive(true);
                     break;
                 case TechIcon.DirectBrakeSystem:
-                    slot.Find(Paths.TechItem.DirectBrakeSystem).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.DirectBrakeSystem).gameObject.SetActive(true);
                     break;
                 case TechIcon.DynamicBrakeSystem:
-                    slot.Find(Paths.TechItem.DynamicBrakeSystem).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.DynamicBrakeSystem).gameObject.SetActive(true);
                     break;
                 case TechIcon.ElectricPowerSupplyAndTransmission:
-                    slot.Find(Paths.TechItem.ElectricPowerSupplyAndTransmission).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.ElectricPowerSupplyAndTransmission).gameObject.SetActive(true);
                     break;
                 case TechIcon.ExternalControlInterface:
-                    slot.Find(Paths.TechItem.ExternalControlInterface).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.ExternalControlInterface).gameObject.SetActive(true);
                     break;
                 case TechIcon.HeatManagement:
-                    slot.Find(Paths.TechItem.HeatManagement).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.HeatManagement).gameObject.SetActive(true);
                     break;
                 case TechIcon.HydraulicTransmission:
-                    slot.Find(Paths.TechItem.HydraulicTransmission).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.HydraulicTransmission).gameObject.SetActive(true);
                     break;
                 case TechIcon.InternalCombustionEngine:
-                    slot.Find(Paths.TechItem.InternalCombustionEngine).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.InternalCombustionEngine).gameObject.SetActive(true);
                     break;
                 case TechIcon.MechanicalTransmission:
-                    slot.Find(Paths.TechItem.MechanicalTransmission).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.MechanicalTransmission).gameObject.SetActive(true);
                     break;
                 case TechIcon.PassengerCompartment:
-                    slot.Find(Paths.TechItem.PassengerCompartment).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.PassengerCompartment).gameObject.SetActive(true);
                     break;
                 case TechIcon.SpecializedEquipment:
-                    slot.Find(Paths.TechItem.SpecializedEquipment).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.SpecializedEquipment).gameObject.SetActive(true);
                     break;
                 case TechIcon.SteamEngine:
-                    slot.Find(Paths.TechItem.SteamEngine).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.SteamEngine).gameObject.SetActive(true);
                     break;
                 case TechIcon.UnitEffect:
-                    slot.Find(Paths.TechItem.UnitEffect).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.UnitEffect).gameObject.SetActive(true);
                     break;
                 case TechIcon.CrewDelivery:
-                    slot.Find(Paths.TechItem.CrewDelivery).gameObject.SetActive(true);
+                    slot.Find(Paths.TechItems.CrewDelivery).gameObject.SetActive(true);
                     break;
                 default:
                     slot.gameObject.SetActive(false);
                     return;
             }
 
-            var desc = Paths.GetText(slot, Paths.TechItem.TechnologyDesc);
+            var desc = Paths.GetText(slot, Paths.TechItems.TechnologyDesc);
             desc.gameObject.SetActive(true);
             desc.text = tech.Description;
-            var type = Paths.GetText(slot, Paths.TechItem.TechnologyType);
+            var type = Paths.GetText(slot, Paths.TechItems.TechnologyType);
             type.gameObject.SetActive(true);
             type.text = tech.Type;
         }
@@ -217,11 +351,11 @@ namespace CCL.Importer
             {
                 if (i == 0)
                 {
-                    item = root.Find(Paths.ScoreList.ScoreItem);
+                    item = root.Find(Paths.ScoreLists.ScoreItem);
                 }
                 else
                 {
-                    item = root.Find($"{Paths.ScoreList.ScoreItem} ({i})");
+                    item = root.Find($"{Paths.ScoreLists.ScoreItem} ({i})");
                 }
 
                 ProcessScoreItem(item, score);
@@ -231,12 +365,12 @@ namespace CCL.Importer
 
         private static void ProcessTotalScore(Transform root, ScoreList list)
         {
-            foreach (Transform child in root.Find(Paths.ScoreList.Total))
+            foreach (Transform child in root.Find(Paths.ScoreLists.Total))
             {
                 child.gameObject.SetActive(false);
             }
 
-            TMP_Text text = Paths.GetText(root, Paths.ScoreList.TotalScore);
+            TMP_Text text = Paths.GetText(root, Paths.ScoreLists.TotalScore);
 
             switch (list.TotalScoreDisplay)
             {
@@ -244,23 +378,23 @@ namespace CCL.Importer
                     switch (list.Total)
                     {
                         case >= 4.0f:
-                            root.Find(Paths.ScoreList.Bg40).gameObject.SetActive(true);
+                            root.Find(Paths.ScoreLists.Bg40).gameObject.SetActive(true);
                             break;
                         case >= 3.5f:
-                            root.Find(Paths.ScoreList.Bg35).gameObject.SetActive(true);
+                            root.Find(Paths.ScoreLists.Bg35).gameObject.SetActive(true);
                             break;
                         case >= 3.0f:
-                            root.Find(Paths.ScoreList.Bg30).gameObject.SetActive(true);
+                            root.Find(Paths.ScoreLists.Bg30).gameObject.SetActive(true);
                             break;
                         default:
-                            root.Find(Paths.ScoreList.Bg10).gameObject.SetActive(true);
+                            root.Find(Paths.ScoreLists.Bg10).gameObject.SetActive(true);
                             break;
                     }
 
                     text.text = list.FormattedTotal;
                     break;
                 case TotalScoreDisplay.NotApplicable:
-                    root.Find(Paths.ScoreList.BgDisqualified).gameObject.SetActive(true);
+                    root.Find(Paths.ScoreLists.BgDisqualified).gameObject.SetActive(true);
                     text.text = "-";
                     break;
                 default:
@@ -276,34 +410,34 @@ namespace CCL.Importer
                 child.gameObject.SetActive(false);
             }
 
-            item.Find(Paths.ScoreList.BarBg).gameObject.SetActive(true);
-            item.Find(Paths.ScoreList.ScoreName).gameObject.SetActive(true);
+            item.Find(Paths.ScoreLists.BarBg).gameObject.SetActive(true);
+            item.Find(Paths.ScoreLists.ScoreName).gameObject.SetActive(true);
 
             switch (score.ScoreType)
             {
                 case ScoreType.NotApplicable:
-                    item.Find(Paths.ScoreList.BarScore0).gameObject.SetActive(true);
+                    item.Find(Paths.ScoreLists.BarScore0).gameObject.SetActive(true);
                     break;
                 case ScoreType.Score:
-                    item.Find(Paths.WithNumber(Paths.ScoreList.BarScore, score.Value)).gameObject.SetActive(true);
+                    item.Find(Paths.WithNumber(Paths.ScoreLists.BarScore, score.Value)).gameObject.SetActive(true);
                     break;
                 case ScoreType.PositiveEffect:
-                    item.Find(Paths.WithNumber(Paths.ScoreList.BarEffectPositive, score.Value)).gameObject.SetActive(true);
+                    item.Find(Paths.WithNumber(Paths.ScoreLists.BarEffectPositive, score.Value)).gameObject.SetActive(true);
                     break;
                 case ScoreType.NegativeEffect:
-                    item.Find(Paths.WithNumber(Paths.ScoreList.BarEffectNegative, score.Value)).gameObject.SetActive(true);
+                    item.Find(Paths.WithNumber(Paths.ScoreLists.BarEffectNegative, score.Value)).gameObject.SetActive(true);
                     break;
                 case ScoreType.PositiveSharedEffect:
-                    item.Find(Paths.WithNumber(Paths.ScoreList.BarSharedEffectPositive, score.Value)).gameObject.SetActive(true);
+                    item.Find(Paths.WithNumber(Paths.ScoreLists.BarSharedEffectPositive, score.Value)).gameObject.SetActive(true);
                     break;
                 case ScoreType.NegativeSharedEffect:
-                    item.Find(Paths.WithNumber(Paths.ScoreList.BarSharedEffectNegative, score.Value)).gameObject.SetActive(true);
+                    item.Find(Paths.WithNumber(Paths.ScoreLists.BarSharedEffectNegative, score.Value)).gameObject.SetActive(true);
                     break;
                 case ScoreType.EffectOn:
-                    item.Find(Paths.ScoreList.BarEffectOn).gameObject.SetActive(true);
+                    item.Find(Paths.ScoreLists.BarEffectOn).gameObject.SetActive(true);
                     break;
                 case ScoreType.EffectOff:
-                    item.Find(Paths.ScoreList.BarEffectOff).gameObject.SetActive(true);
+                    item.Find(Paths.ScoreLists.BarEffectOff).gameObject.SetActive(true);
                     break;
                 default:
                     return;
@@ -345,11 +479,27 @@ namespace CCL.Importer
             public const string Nickname = Header + "/LocoNickname";
             public const string Icon = Header + "/LocoIcon";
 
+            public const string GarageIcon = Header + "/InfoGroup/Licenses/VCGarageLock";
+            public const string License1 = Header + "/InfoGroup/Licenses/License";
+            public const string License2 = Header + "/InfoGroup/Licenses/License (1)";
+            public const string License3 = Header + "/InfoGroup/Licenses/License (2)";
+            public const string Locations = Header + "/InfoGroup/Locations";
+            public const string ProductionYears = Locations + "/YearPriceContainer/LocoYears";
+            public const string LicenseOther = Locations + "/YearPriceContainer/License";
+            public const string LicenseLock = "-LockIcon";
+            public const string LicenseValue = "-PriceValue";
+            public const string SummonIcon = Locations + "/YearPriceContainer/SummonIcon";
+            public const string SummonPrice = Locations + "/YearPriceContainer/SummonPrice";
+
             public const string VehicleType = Content + "/ColumnLeft/VCVehicleType/VehicleType";
             public const string VehicleRole1 = VehicleType + "/VehicleRoles/VehicleRole1";
             public const string VehicleRole2 = VehicleType + "/VehicleRoles/VehicleRole2";
 
             public const string Diagram = Content + "/ColumnLeft/VCDiagram/Bg/VehicleDiagrams";
+
+            public const string LoadRating = Content + "/ColumnRight/VCLoadRating";
+            public const string LoadRatingText = LoadRating + "/LoadRatingText";
+            public const string Summonable = LoadRating + "/HorLayout/VCSummon";
 
             public const string TechList = Content + "/ColumnRight/VCTechList";
             public const string TechnologyItem = TechList + "/VCTechItem";
@@ -359,7 +509,19 @@ namespace CCL.Importer
             public const string HaulingScore = Content + "/ColumnRight/VCScoreList";
             public const string ShuntingScore = Content + "/ColumnRight/VCScoreList (1)";
 
-            public static class TechItem
+            public static class LoadRatings
+            {
+                public const string IconFlat = "HorLayout/VCLoadRating";
+                public const string IconIncline = "HorLayout/VCLoadRating (1)";
+                public const string IconInclineWet = "HorLayout/VCLoadRating (2)";
+
+                public const string Bad = "RatingBad";
+                public const string Medium = "RatingMedium";
+                public const string Good = "RatingGood";
+                public const string Tonnage = "TonnageText";
+            }
+
+            public static class TechItems
             {
                 public const string Generic = "VCTechIcon";
                 public const string ClosedCab = "VCTechIcon_ClosedCab";
@@ -384,7 +546,7 @@ namespace CCL.Importer
                 public const string TechnologyType = "TechnologyType";
             }
 
-            public static class ScoreList
+            public static class ScoreLists
             {
                 public const string Total = "ScoreListTotalScore";
                 public const string BgDisqualified = Total + "/ScoreListTotalScoreBgDisqualified";

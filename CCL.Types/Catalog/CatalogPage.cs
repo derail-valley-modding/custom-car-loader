@@ -17,7 +17,10 @@ namespace CCL.Types.Catalog
         public string Nickname = "";
         public Sprite Icon = null!;
         public string ProductionYears = "1900-1999";
+
+        [Header("Licenses")]
         public bool UnlockedByGarage = false;
+        public int GaragePrice = 20000;
         // Licenses here
 
         [Header("Vehicle Type")]
@@ -27,10 +30,11 @@ namespace CCL.Types.Catalog
 
         [Header("Properties And Tonnage")]
         public bool SummonableByRemote = false;
+        public int SummonPrice = 5000;
         public bool ShowLoadRatings = true;
-        public LoadColor LoadFlat = new LoadColor { Tonnage = 1200, Color = CatalogColor.Yellow };
-        public LoadColor LoadIncline = new LoadColor { Tonnage = 300, Color = CatalogColor.Red };
-        public LoadColor LoadInclineRain = new LoadColor { Tonnage = 250, Color = CatalogColor.Red };
+        public LoadRating LoadFlat = new LoadRating { Tonnage = 1200, Rating = TonnageRating.Medium };
+        public LoadRating LoadIncline = new LoadRating { Tonnage = 300, Rating = TonnageRating.Bad };
+        public LoadRating LoadInclineWet = new LoadRating { Tonnage = 250, Rating = TonnageRating.Bad };
 
         [Header("Vehicle Diagram")]
         public VehicleDiagram Diagram = new VehicleDiagram();
@@ -47,7 +51,7 @@ namespace CCL.Types.Catalog
         [SerializeField, HideInInspector]
         private string? _loadInclineJson;
         [SerializeField, HideInInspector]
-        private string? _loadInclineRainJson;
+        private string? _loadInclineWetJson;
         [SerializeField, HideInInspector]
         private string? _techJson;
         [SerializeField, HideInInspector]
@@ -83,7 +87,7 @@ namespace CCL.Types.Catalog
         {
             _loadJson = JSONObject.ToJson(LoadFlat);
             _loadInclineJson = JSONObject.ToJson(LoadIncline);
-            _loadInclineRainJson = JSONObject.ToJson(LoadInclineRain);
+            _loadInclineWetJson = JSONObject.ToJson(LoadInclineWet);
 
             _techJson = JSONObject.ToJson(TechList);
 
@@ -95,9 +99,9 @@ namespace CCL.Types.Catalog
 
         public void AfterImport()
         {
-            LoadFlat = JSONObject.FromJson(_loadJson, () => new LoadColor());
-            LoadIncline = JSONObject.FromJson(_loadInclineJson, () => new LoadColor());
-            LoadInclineRain = JSONObject.FromJson(_loadInclineRainJson, () => new LoadColor());
+            LoadFlat = JSONObject.FromJson(_loadJson, () => new LoadRating());
+            LoadIncline = JSONObject.FromJson(_loadInclineJson, () => new LoadRating());
+            LoadInclineWet = JSONObject.FromJson(_loadInclineWetJson, () => new LoadRating());
 
             TechList = JSONObject.FromJson(_techJson, () => new TechList());
 

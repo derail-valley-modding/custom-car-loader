@@ -23,10 +23,23 @@ namespace CCL.Creator.Inspector.Catalog
 
                 switch (_prop.name)
                 {
+                    case nameof(CatalogPage.UnlockedByGarage):
+                        GUI.enabled = _prop.boolValue;
+                        break;
+                    case nameof(CatalogPage.GaragePrice):
+                        //GUI.enabled = !GUI.enabled;
+                        GUI.enabled = true;
+                        break;
+                    case nameof(CatalogPage.SummonableByRemote):
+                        GUI.enabled = _prop.boolValue;
+                        break;
+                    case nameof(CatalogPage.SummonPrice):
+                        GUI.enabled = true;
+                        break;
                     case nameof(CatalogPage.ShowLoadRatings):
                         GUI.enabled = _prop.boolValue;
                         break;
-                    case nameof(CatalogPage.LoadInclineRain):
+                    case nameof(CatalogPage.LoadInclineWet):
                         GUI.enabled = true;
                         break;
                     case nameof(CatalogPage.TechList):

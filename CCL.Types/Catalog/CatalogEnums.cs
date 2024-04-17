@@ -83,6 +83,13 @@ namespace CCL.Types.Catalog
         EffectOff,
     }
 
+    public enum TonnageRating
+    {
+        Good,
+        Medium,
+        Bad
+    }
+
     public enum CatalogColor
     {
         Green,

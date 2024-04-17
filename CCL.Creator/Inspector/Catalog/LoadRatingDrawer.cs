@@ -4,15 +4,15 @@ using UnityEngine;
 
 namespace CCL.Creator.Inspector.Catalog
 {
-    [CustomPropertyDrawer(typeof(LoadColor))]
-    internal class LoadColorDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(LoadRating))]
+    internal class LoadRatingDrawer : PropertyDrawer
     {
         private const int ExtraSpace = 3;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var tonnage = property.FindPropertyRelative(nameof(LoadColor.Tonnage));
-            var color = property.FindPropertyRelative(nameof(LoadColor.Color));
+            var tonnage = property.FindPropertyRelative(nameof(LoadRating.Tonnage));
+            var color = property.FindPropertyRelative(nameof(LoadRating.Rating));
             var width = position.width;
 
             EditorGUI.BeginProperty(position, GUIContent.none, property);

@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using DV.Localization;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
@@ -120,6 +121,12 @@ namespace CCL.Importer
                 cacheValue = getter();
             }
             return cacheValue.Value;
+        }
+
+        public static void SetKeyAndUpdate(this Localize localize, string key)
+        {
+            localize.key = key;
+            localize.UpdateLocalization();
         }
 
         //public static bool IsCustomCargoClass(this CargoContainerType containerType)
