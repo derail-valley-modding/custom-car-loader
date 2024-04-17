@@ -61,6 +61,7 @@ namespace CCL.Importer
 
                     if (carType.CatalogPage != null)
                     {
+                        carType.CatalogPage.AfterImport();
                         CatalogGenerator.PageInfos.Add(carType.CatalogPage);
                     }
                 }

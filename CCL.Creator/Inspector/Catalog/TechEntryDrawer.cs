@@ -16,24 +16,28 @@ namespace CCL.Creator.Inspector.Catalog
             EditorGUI.BeginProperty(position, GUIContent.none, property);
 
             Rect controlPos = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-            var offset = new Vector2(0, EditorGUIUtility.singleLineHeight);
+            var offset = new Vector2(0, EditorGUIUtility.singleLineHeight + 2);
 
             EditorGUI.LabelField(controlPos, label);
             controlPos = EditorGUI.IndentedRect(controlPos);
             
             controlPos.position += offset;
             EditorGUI.PropertyField(controlPos, icon);
+
+            GUI.enabled = (TechIcon)icon.intValue != TechIcon.None;
+
             controlPos.position += offset;
             EditorGUI.PropertyField(controlPos, desc);
             controlPos.position += offset;
             EditorGUI.PropertyField(controlPos, type);
 
+            GUI.enabled = true;
             EditorGUI.EndProperty();
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return EditorGUIUtility.singleLineHeight * 4;
+            return EditorGUIUtility.singleLineHeight * 4 + 6;
         }
     }
 }

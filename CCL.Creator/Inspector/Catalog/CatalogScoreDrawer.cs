@@ -16,19 +16,26 @@ namespace CCL.Creator.Inspector.Catalog
 
             Rect controlPos = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
 
-            GUI.enabled = (ScoreType)type.intValue != ScoreType.None;
-            EditorGUI.PropertyField(controlPos, value, label);
-            GUI.enabled = true;
+            EditorGUI.PropertyField(controlPos, type, label);
 
-            controlPos.position += new Vector2(0, EditorGUIUtility.singleLineHeight);
-            EditorGUI.PropertyField(controlPos, type);
+            controlPos.position += new Vector2(0, EditorGUIUtility.singleLineHeight + 2);
+            GUI.enabled = EnableValue(type.intValue);
+            EditorGUI.PropertyField(controlPos, value);
+            GUI.enabled = true;
 
             EditorGUI.EndProperty();
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return EditorGUIUtility.singleLineHeight * 2;
+            return EditorGUIUtility.singleLineHeight * 2 + 2;
         }
+
+        private static bool EnableValue(int value) => (ScoreType)value switch
+        {
+            ScoreType.None => false,
+            ScoreType.NotApplicable => false,
+            _ => true,
+        };
     }
 }

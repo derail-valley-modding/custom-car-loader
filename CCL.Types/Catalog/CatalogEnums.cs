@@ -25,13 +25,17 @@ namespace CCL.Types.Catalog
 
     public enum TechIcon
     {
-        None,
+        [Tooltip("Don't display technology")]
+        None = 0,
+        [Tooltip("Generic wrench icon for any technology that does not fit the other categories")]
+        Generic,
         ClosedCab,
         OpenCab,
         CrewCompartment,
         CompressedAirBrakeSystem,
         DirectBrakeSystem,
         DynamicBrakeSystem,
+        [Tooltip("Used for both Electric Power Supply and Electric Transmission")]
         ElectricPowerSupplyAndTransmission,
         ExternalControlInterface,
         HeatManagement,
@@ -41,6 +45,8 @@ namespace CCL.Types.Catalog
         PassengerCompartment,
         SpecializedEquipment,
         SteamEngine,
+        [Tooltip("Depends on the type of this vehicle\n" +
+            "Leave type empty to autofill based on vehicle type")]
         UnitEffect,
         CrewDelivery
     }
@@ -59,8 +65,8 @@ namespace CCL.Types.Catalog
     {
         [Tooltip("An empty bar")]
         None,
-        [Tooltip("An empty bar with the value '0'")]
-        Zero,
+        [Tooltip("An empty bar with the value '-'")]
+        NotApplicable,
         [Tooltip("Normal coloured bar")]
         Score,
         [Tooltip("A coloured effect bar with a positive value")]
@@ -71,6 +77,10 @@ namespace CCL.Types.Catalog
         PositiveSharedEffect,
         [Tooltip("A shared effect bar with a negative value")]
         NegativeSharedEffect,
+        [Tooltip("A bar with an effect that is turned on")]
+        EffectOn,
+        [Tooltip("A bar with an effect that is turned off")]
+        EffectOff,
     }
 
     public enum CatalogColor

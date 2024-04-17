@@ -39,7 +39,7 @@ namespace CCL.Creator.Inspector.Catalog
                             {
                                 foreach (var tech in _page.TechList.AllTechs)
                                 {
-                                    TechEntry.TryToSetAppropriateType(tech);
+                                    TechEntry.TryToSetAppropriateType(tech, _page.Type);
                                 }
 
                                 AssetHelper.SaveAsset(_page);

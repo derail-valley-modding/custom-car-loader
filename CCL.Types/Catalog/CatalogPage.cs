@@ -43,7 +43,21 @@ namespace CCL.Types.Catalog
         public ShuntingScore Shunting = new ShuntingScore();
 
         [SerializeField, HideInInspector]
+        private string? _loadJson;
+        [SerializeField, HideInInspector]
+        private string? _loadInclineJson;
+        [SerializeField, HideInInspector]
+        private string? _loadInclineRainJson;
+        [SerializeField, HideInInspector]
         private string? _techJson;
+        [SerializeField, HideInInspector]
+        private string? _easeScore;
+        [SerializeField, HideInInspector]
+        private string? _maintScore;
+        [SerializeField, HideInInspector]
+        private string? _haulScore;
+        [SerializeField, HideInInspector]
+        private string? _shuntScore;
 
         public ScoreList GetScoreList(int i) => i switch
         {
@@ -67,12 +81,30 @@ namespace CCL.Types.Catalog
 
         public void OnValidate()
         {
+            _loadJson = JSONObject.ToJson(LoadFlat);
+            _loadInclineJson = JSONObject.ToJson(LoadIncline);
+            _loadInclineRainJson = JSONObject.ToJson(LoadInclineRain);
+
             _techJson = JSONObject.ToJson(TechList);
+
+            _easeScore = JSONObject.ToJson(EaseOfOperation);
+            _maintScore = JSONObject.ToJson(Maintenance);
+            _haulScore = JSONObject.ToJson(Hauling);
+            _shuntScore = JSONObject.ToJson(Shunting);
         }
 
         public void AfterImport()
         {
+            LoadFlat = JSONObject.FromJson(_loadJson, () => new LoadColor());
+            LoadIncline = JSONObject.FromJson(_loadInclineJson, () => new LoadColor());
+            LoadInclineRain = JSONObject.FromJson(_loadInclineRainJson, () => new LoadColor());
+
             TechList = JSONObject.FromJson(_techJson, () => new TechList());
+
+            EaseOfOperation = JSONObject.FromJson(_easeScore, () => new EaseOfOperationScore());
+            Maintenance = JSONObject.FromJson(_maintScore, () => new MaintenanceScore());
+            Hauling = JSONObject.FromJson(_haulScore, () => new HaulingScore());
+            Shunting = JSONObject.FromJson(_shuntScore, () => new ShuntingScore());
         }
     }
 }
