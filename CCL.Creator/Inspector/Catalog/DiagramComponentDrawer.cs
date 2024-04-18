@@ -7,6 +7,8 @@ namespace CCL.Creator.Inspector.Catalog
     internal class DiagramComponentDrawer
     {
         private static Color s_empty = new Color(0, 0, 0, 0);
+        private static bool s_drawBase = false;
+
         public static void DrawCircle(Vector3 position, float radius)
         {
             Handles.DrawWireArc(position, Vector3.forward, Vector3.up, 360.0f, radius);
@@ -17,14 +19,33 @@ namespace CCL.Creator.Inspector.Catalog
             Handles.DrawSolidArc(position, Vector3.forward, Vector3.up, 360.0f, radius);
         }
 
-        [DrawGizmo(GizmoType.Active)]
+        [DrawGizmo(GizmoType.InSelectionHierarchy | GizmoType.NotInSelectionHierarchy | GizmoType.Active)]
         private static void DrawGizmoDiagram(DiagramComponent diagram, GizmoType gizmoType)
         {
+            if (diagram.AutoAlign && gizmoType.HasFlag(GizmoType.Active))
+            {
+                diagram.AlignToGrid();
+            }
+
+            SceneView.beforeSceneGui += BeforeSceneDiagramCallback;
+
+            if (!s_drawBase)
+            {
+                return;
+            }
+
             Handles.DrawSolidRectangleWithOutline(DiagramComponent.FocusPoints, s_empty, Color.white);
+            s_drawBase = false;
+        }
+
+        private static void BeforeSceneDiagramCallback(SceneView sceneView)
+        {
+            s_drawBase = true;
+            SceneView.beforeSceneGui -= BeforeSceneDiagramCallback;
         }
 
         [DrawGizmo(GizmoType.InSelectionHierarchy | GizmoType.NotInSelectionHierarchy)]
-        private static void DrawGizmoBogie(Bogie bogie, GizmoType gizmoType)
+        private static void DrawGizmoBogieLayout(BogieLayout bogie, GizmoType gizmoType)
         {
             if (bogie.Wheels.Length == 0)
             {
@@ -36,31 +57,31 @@ namespace CCL.Creator.Inspector.Catalog
             int length = bogie.Wheels.Length;
             var middleSpace = length % 2 == 0;
             var position = bogie.transform.position + new Vector3(
-                -Bogie.RADIUS * (length - 1) - (middleSpace ? 5 : 0),
+                -BogieLayout.RADIUS * (length - 1) - (middleSpace ? BogieLayout.MIDDLE_SPACE / 2 : 0),
                 0, 0);
 
             for (int i = 0; i < length; i++)
             {
                 if (bogie.Wheels[i])
                 {
-                    DrawFilledCircle(position, Bogie.RADIUS);
+                    DrawFilledCircle(position, BogieLayout.RADIUS);
                 }
                 else
                 {
-                    DrawCircle(position, Bogie.RADIUS);
+                    DrawCircle(position, BogieLayout.RADIUS);
                 }
 
-                position += Vector3.right * 2 * Bogie.RADIUS;
+                position += Vector3.right * 2 * BogieLayout.RADIUS;
 
                 if (middleSpace && i + 1 == length / 2)
                 {
-                    position += Vector3.right * 10;
+                    position += Vector3.right * BogieLayout.MIDDLE_SPACE;
                 }
             }
 
             if (bogie.Pivots)
             {
-                Handles.DrawLine(bogie.transform.position, bogie.transform.position + Vector3.up * Bogie.RADIUS * 1.5f);
+                Handles.DrawLine(bogie.transform.position, bogie.transform.position + Vector3.up * BogieLayout.RADIUS * 1.5f);
             }
         }
 

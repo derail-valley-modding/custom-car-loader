@@ -4,7 +4,6 @@ using CCL.Types.Catalog.Diagram;
 using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
-using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -16,25 +15,16 @@ namespace CCL.Importer
     {
         public static List<CatalogPage> PageInfos = new();
         public static List<StaticPageTemplatePaper> NewCatalogPages = new();
-
-        private static StaticPageTemplatePaper[] s_original = Array.Empty<StaticPageTemplatePaper>();
-        private static Transform PageDE2 => s_original[1].transform;
-        private static Transform PageS060 => s_original[2].transform;
-        private static Transform PageDM3 => s_original[3].transform;
-        private static Transform PageDH4 => s_original[4].transform;
-        private static Transform PageS282A => s_original[5].transform;
-        private static Transform PageS282B => s_original[6].transform;
-        private static Transform PageDE6 => s_original[7].transform;
-        private static Transform PageBE2 => s_original[8].transform;
-        private static Transform PageDE6Slug => s_original[9].transform;
-        private static Transform PageH1 => s_original[10].transform;
-        private static Transform PageCaboose => s_original[11].transform;
+        private static Transform PageDE2 { get; set; } = null!;
+        private static Transform PageH1 { get; set; } = null!;
 
         private static System.Globalization.NumberFormatInfo CurrencyFormat = new() { CurrencySymbol = "$" };
 
         public static void GeneratePages(StaticPagesRender original)
         {
-            s_original = original.staticPages.ToArray();
+            PageDE2 = original.staticPages[1].transform;
+            PageH1 = original.staticPages[10].transform;
+
             NewCatalogPages.Clear();
 
             foreach (var item in PageInfos)
@@ -45,6 +35,8 @@ namespace CCL.Importer
                 result.transform.localRotation = Quaternion.identity;
                 NewCatalogPages.Add(result);
             }
+
+            ClearCache();
         }
 
         private static StaticPageTemplatePaper ProcessPage(CatalogPage layout)
@@ -291,14 +283,86 @@ namespace CCL.Importer
 
         private static void ProcessDiagramIcons(Transform root, Transform layout)
         {
-            layout = UnityEngine.Object.Instantiate(layout, root);
+            layout = Object.Instantiate(layout, root);
             layout.localPosition = new Vector3(DiagramComponent.WIDTH, DiagramComponent.HEIGHT, 0);
+
+            foreach (var bogie in layout.GetComponentsInChildren<BogieLayout>())
+            {
+                if (bogie.Wheels.Length == 0)
+                {
+                    continue;
+                }
+
+                int length = bogie.Wheels.Length;
+                var middleSpace = length % 2 == 0;
+                var position = new Vector3(-BogieLayout.RADIUS * (length - 1) - (middleSpace ? BogieLayout.MIDDLE_SPACE / 2 : 0), 0, 0);
+                List<Vector3> connectors = new();
+
+                for (int i = 0; i < length; i++)
+                {
+                    Transform wheel;
+                    if (bogie.Wheels[i])
+                    {
+                        wheel = Object.Instantiate(Icons.PoweredWheel, bogie.transform);
+                    }
+                    else
+                    {
+                        wheel = Object.Instantiate(Icons.Wheel, bogie.transform);
+                    }
+
+                    wheel.localPosition = position;
+                    wheel.localRotation = Quaternion.identity;
+
+                    position += Vector3.right * BogieLayout.RADIUS;
+                    connectors.Add(position);
+                    position += Vector3.right * BogieLayout.RADIUS;
+
+                    if (middleSpace && i + 1 == length / 2)
+                    {
+                        position += Vector3.right * BogieLayout.MIDDLE_SPACE;
+                    }
+                }
+
+                if (bogie.Pivots)
+                {
+                    Transform pivot;
+
+                    if (middleSpace)
+                    {
+                        pivot = Object.Instantiate(Icons.PivotLong, bogie.transform);
+                        pivot.localPosition = new Vector3(0, 15, 0);
+                    }
+                    else
+                    {
+                        pivot = Object.Instantiate(Icons.PivotShort, bogie.transform);
+                        pivot.localPosition = new Vector3(0, 22, 0);
+                    }
+
+                    pivot.localRotation = Quaternion.identity;
+                }
+
+                connectors.RemoveAt(length - 1);
+
+                foreach (var connector in connectors)
+                {
+                    var frame = Object.Instantiate(Icons.Bogie, bogie.transform);
+                    frame.localPosition = connector;
+                    frame.localRotation = Quaternion.identity;
+                    frame.sizeDelta = new Vector2(Mathf.Abs(position.x) < 1 ? BogieLayout.MIDDLE_SPACE + 10 : 10, 10);
+                }
+            }
 
             foreach (var tech in layout.GetComponentsInChildren<TechnologyIcon>())
             {
-                var icon = UnityEngine.Object.Instantiate(Icons.GetIcon(tech.Icon), tech.transform);
-                //icon.localPosition = Vector3.zero;
-                //icon.localRotation = Quaternion.identity;
+                var icon = Object.Instantiate(Icons.GetIcon(tech.Icon), tech.transform);
+                icon.localPosition = Vector3.zero;
+                icon.localRotation = Quaternion.identity;
+                icon.gameObject.SetActive(true);
+
+                if (tech.Flip)
+                {
+                    icon.localScale = new Vector3(-1, 1, 1);
+                }
             }
         }
 
@@ -531,6 +595,14 @@ namespace CCL.Importer
             _ => throw new System.ArgumentOutOfRangeException(nameof(role)),
         };
 
+        private static void ClearCache()
+        {
+            CCLPlugin.Log("Cleaning up...");
+            PageDE2 = null!;
+            PageH1 = null!;
+            Icons.ClearCache();
+        }
+
         private static class Paths
         {
             public const string Header = "Template Canvas/BackgroundImage/OuterWrapper/VCHeader";
@@ -690,6 +762,12 @@ namespace CCL.Importer
             private static Transform? s_unitEffect;
             private static Transform? s_crewDelivery;
 
+            private static Transform? s_wheel;
+            private static Transform? s_poweredWheel;
+            private static Transform? s_pivotShort;
+            private static Transform? s_pivotLong;
+            private static RectTransform? s_bogie;
+
             public static Transform Generic => Extensions.GetCached(ref s_generic,
                 () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.Generic)));
             public static Transform ClosedCab => Extensions.GetCached(ref s_closedCab,
@@ -727,6 +805,17 @@ namespace CCL.Importer
             public static Transform CrewDelivery => Extensions.GetCached(ref s_crewDelivery,
                 () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewDelivery)));
 
+            public static Transform Wheel => Extensions.GetCached(ref s_wheel,
+                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Wheel")));
+            public static Transform PoweredWheel => Extensions.GetCached(ref s_poweredWheel,
+                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x1/Wheel")));
+            public static Transform PivotShort => Extensions.GetCached(ref s_pivotShort,
+                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Bogie (1)")));
+            public static Transform PivotLong => Extensions.GetCached(ref s_pivotLong,
+                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie (1)")));
+            public static RectTransform Bogie => Extensions.GetCached(ref s_bogie,
+                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie")).GetComponent<RectTransform>());
+
             public static Transform GetIcon(TechIcon icon) => icon switch
             {
                 TechIcon.Generic => Generic,
@@ -749,6 +838,34 @@ namespace CCL.Importer
                 TechIcon.CrewDelivery => CrewDelivery,
                 _ => null!,
             };
+
+            public static void ClearCache()
+            {
+                s_generic = null!;
+                s_closedCab = null!;
+                s_openCab = null!;
+                s_crewCompartment = null!;
+                s_compressedAirBrakeSystem = null!;
+                s_directBrakeSystem = null!;
+                s_dynamicBrakeSystem = null!;
+                s_electricPowerSupplyAndTransmission = null!;
+                s_externalControlInterface = null!;
+                s_heatManagement = null!;
+                s_hydraulicTransmission = null!;
+                s_internalCombustionEngine = null!;
+                s_mechanicalTransmission = null!;
+                s_passengerCompartment = null!;
+                s_specializedEquipment = null!;
+                s_steamEngine = null!;
+                s_unitEffect = null!;
+                s_crewDelivery = null!;
+
+                s_wheel = null!;
+                s_poweredWheel = null!;
+                s_pivotShort = null!;
+                s_pivotLong = null!;
+                s_bogie = null!;
+            }
         }
     }
 }

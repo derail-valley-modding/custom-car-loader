@@ -128,7 +128,7 @@ namespace CCL.Creator.Inspector.Catalog
             CreateBogie(diagram.transform, "Bogie F");
             CreateBogie(diagram.transform, "Bogie R");
 
-            Bogie.TryToAlignBogies(diagram.transform);
+            BogieLayout.TryToAlignBogies(diagram.transform);
 
             int i = 0;
 
@@ -168,10 +168,10 @@ namespace CCL.Creator.Inspector.Catalog
             }
         }
 
-        private static Bogie CreateBogie(Transform parent, string name)
+        private static BogieLayout CreateBogie(Transform parent, string name)
         {
             var bogie = new GameObject(name)
-                .AddComponent<Bogie>();
+                .AddComponent<BogieLayout>();
 
             bogie.transform.SetParent(parent);
             bogie.transform.localPosition = Vector3.zero;

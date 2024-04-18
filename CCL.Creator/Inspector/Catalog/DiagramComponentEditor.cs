@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CCL.Creator.Inspector.Catalog
 {
-    [CustomEditor(typeof(DiagramComponent), true)]
+    [CustomEditor(typeof(DiagramComponent), true), CanEditMultipleObjects]
     internal class DiagramComponentEditor : Editor
     {
         public override void OnInspectorGUI()
@@ -24,20 +24,23 @@ namespace CCL.Creator.Inspector.Catalog
         }
     }
 
-    [CustomEditor(typeof(Bogie), true)]
-    internal class BogieEditor : Editor
+    [CustomEditor(typeof(BogieLayout), true)]
+    internal class BogieLayoutEditor : Editor
     {
+        private SerializedProperty _autoAlign;
         private SerializedProperty _pivots;
         private SerializedProperty _wheels;
 
         private void OnEnable()
         {
-            _pivots = serializedObject.FindProperty(nameof(Bogie.Pivots));
-            _wheels = serializedObject.FindProperty(nameof(Bogie.Wheels));
+            _autoAlign = serializedObject.FindProperty(nameof(BogieLayout.AutoAlign));
+            _pivots = serializedObject.FindProperty(nameof(BogieLayout.Pivots));
+            _wheels = serializedObject.FindProperty(nameof(BogieLayout.Wheels));
         }
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.PropertyField(_autoAlign);
             EditorGUILayout.PropertyField(_pivots);
 
             int length = EditorGUILayout.DelayedIntField(new GUIContent("Number Of Wheels"), _wheels.arraySize);
@@ -57,7 +60,7 @@ namespace CCL.Creator.Inspector.Catalog
 
             if (GUILayout.Button("Try To Align Bogies"))
             {
-                Bogie.TryToAlignBogies(((Bogie)target).transform.root);
+                BogieLayout.TryToAlignBogies(((BogieLayout)target).transform.root);
             }
         }
     }

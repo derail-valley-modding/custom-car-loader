@@ -17,5 +17,9 @@ namespace CCL.Types.Catalog.Diagram
         };
 
         public RectTransform RectTransform => GetComponent<RectTransform>();
+
+        public bool AutoAlign = true;
+
+        public abstract void AlignToGrid();
     }
 }

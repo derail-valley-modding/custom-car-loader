@@ -3,10 +3,24 @@ using UnityEngine;
 
 namespace CCL.Types.Catalog.Diagram
 {
-    public class Bogie : DiagramComponent
+    public class BogieLayout : DiagramComponent
     {
         public const float BOGIE_HEIGHT = -75;
         public const float RADIUS = 20;
+        public const float MIDDLE_SPACE = 5;
+
+        private static float[] s_gridLines = new float[]
+        {
+            -125,
+            -114,
+            -100,
+            -42,
+            0,
+            42,
+            100,
+            114,
+            125,
+        };
 
         [Tooltip("True if this bogie rotates, false if it is mounted directly on the frame")]
         public bool Pivots = true;
@@ -15,13 +29,12 @@ namespace CCL.Types.Catalog.Diagram
 
         public void OnValidate()
         {
-            var t = RectTransform;
-            t.localPosition = new Vector3(t.localPosition.x, BOGIE_HEIGHT, t.localPosition.z);
+            transform.localPosition = new Vector3(transform.localPosition.x, BOGIE_HEIGHT, transform.localPosition.z);
         }
 
         public static void TryToAlignBogies(Transform commonParent)
         {
-            var bogies = commonParent.GetComponentsInChildren<Bogie>().OrderBy(x => x.transform.localPosition.x).ToArray();
+            var bogies = commonParent.GetComponentsInChildren<BogieLayout>().OrderBy(x => x.transform.localPosition.x).ToArray();
             int count = bogies.Length;
             Transform t;
 
@@ -41,6 +54,13 @@ namespace CCL.Types.Catalog.Diagram
                     t.localPosition = new Vector3(Mathf.Lerp(-range, range, i * step), BOGIE_HEIGHT, t.localPosition.z);
                 }
             }
+        }
+
+        public override void AlignToGrid()
+        {
+            transform.localPosition = new Vector3(
+                s_gridLines.ClosestTo(transform.localPosition.x),
+                BOGIE_HEIGHT, transform.localPosition.z);
         }
     }
 }
