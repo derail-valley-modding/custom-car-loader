@@ -1,5 +1,6 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types.Catalog;
+using CCL.Types.Catalog.Diagram;
 using UnityEditor;
 using UnityEngine;
 
@@ -59,6 +60,17 @@ namespace CCL.Creator.Inspector.Catalog
                                 serializedObject.UpdateIfRequiredOrScript();
                             }
                         }
+
+                        EditorGUILayout.Space();
+
+                        if (GUILayout.Button(new GUIContent("Create diagram",
+                            "Creates a diagram layout from the information above\n" +
+                            "Please fill out the tech list first for better results")))
+                        {
+                            _page.DiagramLayout = CreateDiagram(_page);
+                            AssetHelper.SaveAsset(_page);
+                            serializedObject.UpdateIfRequiredOrScript();
+                        }
                         break;
                     default:
                         break;
@@ -108,5 +120,63 @@ namespace CCL.Creator.Inspector.Catalog
             TotalScoreDisplay.NotApplicable => $"{prop.displayName} [ - ]",
             _ => throw new System.ArgumentOutOfRangeException(nameof(scoreDisplay)),
         };
+
+        private static GameObject CreateDiagram(CatalogPage page)
+        {
+            var diagram = new GameObject($"{page.name}_Diagram");
+
+            CreateBogie(diagram.transform, "Bogie F");
+            CreateBogie(diagram.transform, "Bogie R");
+
+            Bogie.TryToAlignBogies(diagram.transform);
+
+            int i = 0;
+
+            foreach (var item in page.TechList.AllTechs)
+            {
+                i++;
+
+                if (SkipTech(item.Icon))
+                {
+                    continue;
+                }
+
+                var tech = new GameObject($"Tech {i}")
+                    .AddComponent<TechnologyIcon>();
+
+                tech.transform.SetParent(diagram.transform);
+                tech.transform.localPosition = Vector3.zero;
+                tech.Icon = item.Icon;
+            }
+
+            string path = $"{System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(page))}/{diagram.name}.prefab";
+            PrefabUtility.SaveAsPrefabAssetAndConnect(diagram, path, InteractionMode.AutomatedAction);
+
+            return AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        }
+
+        private static bool SkipTech(TechIcon icon)
+        {
+            switch (icon)
+            {
+                case TechIcon.None:
+                case TechIcon.UnitEffect:
+                case TechIcon.CrewDelivery:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static Bogie CreateBogie(Transform parent, string name)
+        {
+            var bogie = new GameObject(name)
+                .AddComponent<Bogie>();
+
+            bogie.transform.SetParent(parent);
+            bogie.transform.localPosition = Vector3.zero;
+
+            return bogie;
+        }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Types.Catalog;
+using CCL.Types.Catalog.Diagram;
 using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,7 +17,7 @@ namespace CCL.Importer
         public static List<CatalogPage> PageInfos = new();
         public static List<StaticPageTemplatePaper> NewCatalogPages = new();
 
-        private static StaticPageTemplatePaper[] s_original = System.Array.Empty<StaticPageTemplatePaper>();
+        private static StaticPageTemplatePaper[] s_original = Array.Empty<StaticPageTemplatePaper>();
         private static Transform PageDE2 => s_original[1].transform;
         private static Transform PageS060 => s_original[2].transform;
         private static Transform PageDM3 => s_original[3].transform;
@@ -27,6 +29,8 @@ namespace CCL.Importer
         private static Transform PageDE6Slug => s_original[9].transform;
         private static Transform PageH1 => s_original[10].transform;
         private static Transform PageCaboose => s_original[11].transform;
+
+        private static System.Globalization.NumberFormatInfo CurrencyFormat = new() { CurrencySymbol = "$" };
 
         public static void GeneratePages(StaticPagesRender original)
         {
@@ -51,6 +55,7 @@ namespace CCL.Importer
             page.gameObject.SetActive(true);
 
             ProcessHeader(page, layout);
+            ProcessRoles(page, layout);
             ProcessDiagram(page, layout);
             ProcessTechList(page, layout);
             ProcessAllScoreLists(page, layout);
@@ -210,7 +215,7 @@ namespace CCL.Importer
             Paths.GetText(root, Paths.LoadRatings.Tonnage).text = rating.Tonnage.ToString();
         }
 
-        private static void ProcessDiagram(Transform page, CatalogPage layout)
+        private static void ProcessRoles(Transform page, CatalogPage layout)
         {
             Paths.GetLocalize(page, Paths.VehicleType).SetKeyAndUpdate(GetVehicleTypeKey(layout.Type));
 
@@ -236,10 +241,68 @@ namespace CCL.Importer
             {
                 role2.gameObject.SetActive(false);
             }
-
-            // Disable diagram for now.
-            page.Find(Paths.Diagram).gameObject.SetActive(false);
         }
+
+        #region Diagram
+
+        private static void ProcessDiagram(Transform page, CatalogPage layout)
+        {
+            var parent = page.Find(Paths.DiagramParent);
+
+            foreach (Transform child in parent)
+            {
+                child.gameObject.SetActive(false);
+            }
+
+            var diagram = parent.Find(Paths.Diagrams.Generic);
+            diagram.gameObject.SetActive(true);
+
+            ProcessDiagramExtras(diagram, layout.DiagramExtras);
+            ProcessDiagramIcons(diagram, layout.DiagramLayout.transform);
+        }
+
+        private static void ProcessDiagramExtras(Transform root, VehicleDiagramExtras extras)
+        {
+            if (extras.IsThinVehicle)
+            {
+                root.Find(Paths.Diagrams.TallVehicle).gameObject.SetActive(false);
+                root.Find(Paths.Diagrams.ThinVehicle).gameObject.SetActive(true);
+            }
+
+            root.Find(Paths.Diagrams.BufferL).gameObject.SetActive(extras.HasFrontBumper);
+            root.Find(Paths.Diagrams.BufferR).gameObject.SetActive(extras.HasRearBumper);
+
+            Paths.GetText(root, Paths.Diagrams.XText).text = $"{extras.Length} mm";
+            Paths.GetText(root, Paths.Diagrams.YText).text = $"{extras.Height} mm";
+            Paths.GetText(root, Paths.Diagrams.ZText).text = $"{extras.Width} mm";
+
+            var cost = Paths.GetText(root, Paths.Diagrams.Price);
+            cost.text = extras.TotalCost.ToString("C0", CurrencyFormat);
+            cost.gameObject.SetActive(extras.TotalCost > 0);
+
+            var mass = Paths.GetText(root, Paths.Diagrams.MassFull);
+            mass.text = $"{extras.MassFull}t";
+            mass.transform.parent.gameObject.SetActive(extras.MassFull > 0);
+
+            mass = Paths.GetText(root, Paths.Diagrams.MassEmpty);
+            mass.text = $"{extras.MassEmpty}t";
+            mass.transform.parent.gameObject.SetActive(extras.MassEmpty > 0);
+        }
+
+        private static void ProcessDiagramIcons(Transform root, Transform layout)
+        {
+            layout = UnityEngine.Object.Instantiate(layout, root);
+            layout.localPosition = new Vector3(DiagramComponent.WIDTH, DiagramComponent.HEIGHT, 0);
+
+            foreach (var tech in layout.GetComponentsInChildren<TechnologyIcon>())
+            {
+                var icon = UnityEngine.Object.Instantiate(Icons.GetIcon(tech.Icon), tech.transform);
+                //icon.localPosition = Vector3.zero;
+                //icon.localRotation = Quaternion.identity;
+            }
+        }
+
+        #endregion
 
         private static void ProcessTechList(Transform page, CatalogPage layout)
         {
@@ -495,7 +558,7 @@ namespace CCL.Importer
             public const string VehicleRole1 = VehicleType + "/VehicleRoles/VehicleRole1";
             public const string VehicleRole2 = VehicleType + "/VehicleRoles/VehicleRole2";
 
-            public const string Diagram = Content + "/ColumnLeft/VCDiagram/Bg/VehicleDiagrams";
+            public const string DiagramParent = Content + "/ColumnLeft/VCDiagram/Bg/VehicleDiagrams";
 
             public const string LoadRating = Content + "/ColumnRight/VCLoadRating";
             public const string LoadRatingText = LoadRating + "/LoadRatingText";
@@ -519,6 +582,34 @@ namespace CCL.Importer
                 public const string Medium = "RatingMedium";
                 public const string Good = "RatingGood";
                 public const string Tonnage = "TonnageText";
+            }
+
+            public static class Diagrams
+            {
+                public const string Generic = "DiagramVehicle";
+                public const string BE2 = "DiagramVehicle_BE2-260";
+                public const string DE2 = "DiagramVehicle_DE2-480";
+                public const string DE6 = "DiagramVehicle_DE6-960";
+                public const string DE6Slug = "VCDiag_DE6-860S";
+                public const string DH4 = "DiagramVehicle_DH4-670";
+                public const string DM1P = "DiagramVehicle_DM1P-150";
+                public const string DM3 = "DiagramVehicle_DM3-540";
+                public const string H1 = "DiagramVehicle_H1-020";
+                public const string S060 = "DiagramVehicle_S060-440";
+                public const string S282A = "DiagramVehicle_S282-730";
+                public const string S282B = "VCDiag_S282-730B";
+                public const string Caboose = "VCDiag_Caboose";
+
+                public const string TallVehicle = "TallVehicle";
+                public const string ThinVehicle = "ThinVehicle";
+                public const string BufferL = "BufferL";
+                public const string BufferR = "BufferR";
+                public const string XText = "XText";
+                public const string YText = "YText";
+                public const string ZText = "ZText";
+                public const string MassFull = "Mass/MassFull/Text (TMP)";
+                public const string MassEmpty = "Mass/MassEmpty/Text (TMP)";
+                public const string Price = "VehiclePrice";
             }
 
             public static class TechItems
@@ -576,6 +667,88 @@ namespace CCL.Importer
             public static TMP_Text GetText(Transform root, string path) => TMPHelper.GetTMP(root.Find(path));
 
             public static Localize GetLocalize(Transform root, string path) => root.Find(path).GetComponent<Localize>();
+        }
+
+        private static class Icons
+        {
+            private static Transform? s_generic;
+            private static Transform? s_closedCab;
+            private static Transform? s_openCab;
+            private static Transform? s_crewCompartment;
+            private static Transform? s_compressedAirBrakeSystem;
+            private static Transform? s_directBrakeSystem;
+            private static Transform? s_dynamicBrakeSystem;
+            private static Transform? s_electricPowerSupplyAndTransmission;
+            private static Transform? s_externalControlInterface;
+            private static Transform? s_heatManagement;
+            private static Transform? s_hydraulicTransmission;
+            private static Transform? s_internalCombustionEngine;
+            private static Transform? s_mechanicalTransmission;
+            private static Transform? s_passengerCompartment;
+            private static Transform? s_specializedEquipment;
+            private static Transform? s_steamEngine;
+            private static Transform? s_unitEffect;
+            private static Transform? s_crewDelivery;
+
+            public static Transform Generic => Extensions.GetCached(ref s_generic,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.Generic)));
+            public static Transform ClosedCab => Extensions.GetCached(ref s_closedCab,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ClosedCab)));
+            public static Transform OpenCab => Extensions.GetCached(ref s_openCab,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.OpenCab)));
+            public static Transform CrewCompartment => Extensions.GetCached(ref s_crewCompartment,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewCompartment)));
+            public static Transform CompressedAirBrakeSystem => Extensions.GetCached(ref s_compressedAirBrakeSystem,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CompressedAirBrakeSystem)));
+            public static Transform DirectBrakeSystem => Extensions.GetCached(ref s_directBrakeSystem,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DirectBrakeSystem)));
+            public static Transform DynamicBrakeSystem => Extensions.GetCached(ref s_dynamicBrakeSystem,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DynamicBrakeSystem)));
+            public static Transform ElectricPowerSupplyAndTransmission => Extensions.GetCached(ref s_electricPowerSupplyAndTransmission,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ElectricPowerSupplyAndTransmission)));
+            public static Transform ExternalControlInterface => Extensions.GetCached(ref s_externalControlInterface,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ExternalControlInterface)));
+            public static Transform HeatManagement => Extensions.GetCached(ref s_heatManagement,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HeatManagement)));
+            public static Transform HydraulicTransmission => Extensions.GetCached(ref s_hydraulicTransmission,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HydraulicTransmission)));
+            public static Transform InternalCombustionEngine => Extensions.GetCached(ref s_internalCombustionEngine,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.InternalCombustionEngine)));
+            public static Transform MechanicalTransmission => Extensions.GetCached(ref s_mechanicalTransmission,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.MechanicalTransmission)));
+            public static Transform PassengerCompartment => Extensions.GetCached(ref s_passengerCompartment,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.PassengerCompartment)));
+            public static Transform SpecializedEquipment => Extensions.GetCached(ref s_specializedEquipment,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SpecializedEquipment)));
+            public static Transform SteamEngine => Extensions.GetCached(ref s_steamEngine,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SteamEngine)));
+            public static Transform UnitEffect => Extensions.GetCached(ref s_unitEffect,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.UnitEffect)));
+            public static Transform CrewDelivery => Extensions.GetCached(ref s_crewDelivery,
+                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewDelivery)));
+
+            public static Transform GetIcon(TechIcon icon) => icon switch
+            {
+                TechIcon.Generic => Generic,
+                TechIcon.ClosedCab => ClosedCab,
+                TechIcon.OpenCab => OpenCab,
+                TechIcon.CrewCompartment => CrewCompartment,
+                TechIcon.CompressedAirBrakeSystem => CompressedAirBrakeSystem,
+                TechIcon.DirectBrakeSystem => DirectBrakeSystem,
+                TechIcon.DynamicBrakeSystem => DynamicBrakeSystem,
+                TechIcon.ElectricPowerSupplyAndTransmission => ElectricPowerSupplyAndTransmission,
+                TechIcon.ExternalControlInterface => ExternalControlInterface,
+                TechIcon.HeatManagement => HeatManagement,
+                TechIcon.HydraulicTransmission => HydraulicTransmission,
+                TechIcon.InternalCombustionEngine => InternalCombustionEngine,
+                TechIcon.MechanicalTransmission => MechanicalTransmission,
+                TechIcon.PassengerCompartment => PassengerCompartment,
+                TechIcon.SpecializedEquipment => SpecializedEquipment,
+                TechIcon.SteamEngine => SteamEngine,
+                TechIcon.UnitEffect => UnitEffect,
+                TechIcon.CrewDelivery => CrewDelivery,
+                _ => null!,
+            };
         }
     }
 }

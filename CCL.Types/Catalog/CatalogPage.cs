@@ -7,8 +7,6 @@ namespace CCL.Types.Catalog
     [CreateAssetMenu(menuName = "CCL/Vehicle Catalog Page")]
     public class CatalogPage : ScriptableObject, ICustomSerialized
     {
-        public CustomCarType CorrespondingVehicle = null!;
-
         [Header("Header")]
         public Color HeaderColour = Color.yellow;
         public string PageName = "";
@@ -37,7 +35,8 @@ namespace CCL.Types.Catalog
         public LoadRating LoadInclineWet = new LoadRating { Tonnage = 250, Rating = TonnageRating.Bad };
 
         [Header("Vehicle Diagram")]
-        public VehicleDiagram Diagram = new VehicleDiagram();
+        public GameObject DiagramLayout = null!;
+        public VehicleDiagramExtras DiagramExtras = new VehicleDiagramExtras();
         public TechList TechList = new TechList();
 
         [Header("Scores")]
@@ -52,6 +51,8 @@ namespace CCL.Types.Catalog
         private string? _loadInclineJson;
         [SerializeField, HideInInspector]
         private string? _loadInclineWetJson;
+        [SerializeField, HideInInspector]
+        private string? _diagramJson;
         [SerializeField, HideInInspector]
         private string? _techJson;
         [SerializeField, HideInInspector]
@@ -89,6 +90,8 @@ namespace CCL.Types.Catalog
             _loadInclineJson = JSONObject.ToJson(LoadIncline);
             _loadInclineWetJson = JSONObject.ToJson(LoadInclineWet);
 
+            _diagramJson = JSONObject.ToJson(DiagramExtras);
+
             _techJson = JSONObject.ToJson(TechList);
 
             _easeScore = JSONObject.ToJson(EaseOfOperation);
@@ -102,6 +105,8 @@ namespace CCL.Types.Catalog
             LoadFlat = JSONObject.FromJson(_loadJson, () => new LoadRating());
             LoadIncline = JSONObject.FromJson(_loadInclineJson, () => new LoadRating());
             LoadInclineWet = JSONObject.FromJson(_loadInclineWetJson, () => new LoadRating());
+
+            DiagramExtras = JSONObject.FromJson(_diagramJson, () => new VehicleDiagramExtras());
 
             TechList = JSONObject.FromJson(_techJson, () => new TechList());
 
