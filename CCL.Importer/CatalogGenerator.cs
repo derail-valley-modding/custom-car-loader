@@ -5,6 +5,7 @@ using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +16,8 @@ namespace CCL.Importer
     {
         public static List<CatalogPage> PageInfos = new();
         public static List<StaticPageTemplatePaper> NewCatalogPages = new();
+        public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
+
         private static Transform PageDE2 { get; set; } = null!;
         private static Transform PageH1 { get; set; } = null!;
 
@@ -160,9 +163,35 @@ namespace CCL.Importer
 
         private static void ProcessSpawnLocations(LocoSpawnRateRenderer spawner, CatalogPage layout)
         {
-            // Always disable spawn locations while we figure what to do.
-            spawner.enabled = false;
-            spawner.transform.GetChild(0).GetComponent<Image>().enabled = false;
+            // Disable spawn bar in case there's no ID defined,
+            // or car ID doesn't actually match anything.
+            if (string.IsNullOrEmpty(layout.CarTypeId) || !DV.Globals.G.Types.TryGetCarType(layout.CarTypeId, out var cartype))
+            {
+                var temp = Object.Instantiate(PageH1.GetComponentInChildren<LocoSpawnRateRenderer>(), spawner.transform.parent);
+                temp.name = spawner.name;
+                Object.DestroyImmediate(spawner.gameObject);
+
+                if (!string.IsNullOrEmpty(layout.CarTypeId))
+                {
+                    CCLPlugin.Error($"Missing car type '{layout.CarTypeId}'!");
+                }
+
+                return;
+            }
+
+            spawner.loco = cartype;
+
+            foreach (var item in spawner.stationData.stationsData)
+            {
+                if (SpawnChances.TryGetValue(item.id, out var chances))
+                {
+                    // Get the chance for this ID.
+                    if (chances.TryGetValue(layout.CarTypeId, out var chance))
+                    {
+                        item.locoSpawnChances.Add(new(cartype, chance));
+                    }
+                }
+            }
         }
 
         private static bool SetLicenseIcon(Image image, string license)

@@ -28,7 +28,9 @@ namespace CCL.Creator.Inspector.Catalog
                         GUI.enabled = _prop.boolValue;
                         break;
                     case nameof(CatalogPage.GaragePrice):
-                        //GUI.enabled = !GUI.enabled;
+                        GUI.enabled = !GUI.enabled;
+                        break;
+                    case nameof(CatalogPage.CarTypeId):
                         GUI.enabled = true;
                         break;
                     case nameof(CatalogPage.SummonableByRemote):

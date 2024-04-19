@@ -2,6 +2,7 @@
 using DV.ThingTypes;
 using HarmonyLib;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Importer.Patches
 {
@@ -31,7 +32,55 @@ namespace CCL.Importer.Patches
             }
 
             // Randomise spawn index again so it doesn't always spawn vanilla the first time.
-            __instance.nextLocoGroupSpawnIndex = UnityEngine.Random.Range(0, __instance.locoTypeGroupsToSpawn.Count);
+            __instance.nextLocoGroupSpawnIndex = Random.Range(0, __instance.locoTypeGroupsToSpawn.Count);
+
+            // Calculate spawn chances for this spawner to use in the catalog (for vanilla).
+            if (TryToVanillaStationId(__instance.name, out string id))
+            {
+                // Get the station chances instead of spawner chances.
+                if (!CatalogGenerator.SpawnChances.TryGetValue(id, out var chances))
+                {
+                    chances = new();
+                    CatalogGenerator.SpawnChances.Add(id, chances);
+                }
+
+                // Get how many groups each car type is in.
+                Dictionary<string, int> groupCounts = new();
+
+                foreach (var group in __instance.locoTypeGroupsToSpawn)
+                {
+                    foreach (var livery in group.liveries)
+                    {
+                        string parentId = livery.parentType.id;
+
+                        if (!groupCounts.ContainsKey(parentId))
+                        {
+                            groupCounts.Add(parentId, 1);
+                        }
+                        else
+                        {
+                            groupCounts[parentId]++;
+                        }
+                    }
+                }
+
+                foreach (var count in groupCounts)
+                {
+                    // Add the chance for this type if it doesn't yet exist.
+                    if (!chances.ContainsKey(count.Key))
+                    {
+                        chances.Add(count.Key, 0);
+                    }
+
+                    // Actual chance is the maximum of all chances at each spawner of the station.
+                    chances[count.Key] = Mathf.Max(chances[count.Key], (float)count.Value / __instance.locoTypeGroupsToSpawn.Count);
+                }
+            }
+        }
+
+        private static bool TryToVanillaStationId(string name, out string id)
+        {
+            return LocoSpawnGroup.SpawnerNameToId.TryGetValue(name, out id);
         }
 
         private static ListTrainCarTypeWrapper FromGroup(TrainCarLivery variant, LocoSpawnGroup group)

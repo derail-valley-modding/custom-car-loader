@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types
 {
-    // A copy of the above class, but with only the livery IDs.
     [Serializable]
     public class LocoSpawnGroup
     {
@@ -32,9 +30,41 @@ namespace CCL.Types
             { SpawnTrack.MachineFactoryRoundhouse3, "LocoSpawnerMF-T1-3" },
             { SpawnTrack.MachineFactoryRoundhouse4, "LocoSpawnerMF-T1-4" },
             { SpawnTrack.MachineFactoryRoundhouse7, "LocoSpawnerMF-T1-7" },
+            { SpawnTrack.OilWellCentral, "LocoSpawnerOWC-A-3" },
+            { SpawnTrack.OilWellNorth, "LocoSpawnerOWN" },
             { SpawnTrack.SteelMillTurntable1, "LocoSpawnerSM_T1-1" },
             { SpawnTrack.SteelMillTurntable2, "LocoSpawnerSM_T1-2" },
             { SpawnTrack.Sawmill, "LocoSpawnerSW" }
+        };
+
+        public static Dictionary<string, string> SpawnerNameToId = new Dictionary<string, string>
+        {
+            { "LocoSpawnerCM", "CM" },
+            { "LocoSpawnerCSW1" , "CSW" },
+            { "LocoSpawnerFF1" , "FF" },
+            { "LocoSpawnerFF2" , "FF" },
+            { "LocoSpawnerFM" , "FM" },
+            { "LocoSpawnerFRC" , "FRC" },
+            { "LocoSpawnerFRS" , "FRS" },
+            { "LocoSpawnerGF1" , "GF" },
+            { "LocoSpawnerGF2" , "GF" },
+            { "LocoSpawnerHB-A-1" , "HB" },
+            { "LocoSpawnerHB-T1-1" , "HB" },
+            { "LocoSpawnerHB-T1-2" , "HB" },
+            { "LocoSpawnerHB-T1-5" , "HB" },
+            { "LocoSpawnerHB-T1-7" , "HB" },
+            { "LocoSpawnerIME" , "IME" },
+            { "LocoSpawnerIMW" , "IMW" },
+            { "LocoSpawnerMF-A-1" , "MF" },
+            { "LocoSpawnerMF-T1-2" , "MF" },
+            { "LocoSpawnerMF-T1-3" , "MF" },
+            { "LocoSpawnerMF-T1-4" , "MF" },
+            { "LocoSpawnerMF-T1-7" , "MF" },
+            { "LocoSpawnerOWC-A-3" , "OWC" },
+            { "LocoSpawnerOWN" , "OWN" },
+            { "LocoSpawnerSM_T1-1" , "SM" },
+            { "LocoSpawnerSM_T1-2" , "SM" },
+            { "LocoSpawnerSW" , "SW" }
         };
 
         [Tooltip("The track where the loco(s) will spawn")]
@@ -74,6 +104,8 @@ namespace CCL.Types
         MachineFactoryRoundhouse3,
         MachineFactoryRoundhouse4,
         MachineFactoryRoundhouse7,
+        OilWellCentral,
+        OilWellNorth,
         Sawmill,
         SteelMillTurntable1,
         SteelMillTurntable2
