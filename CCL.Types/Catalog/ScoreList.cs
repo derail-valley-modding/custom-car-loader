@@ -23,5 +23,40 @@ namespace CCL.Types.Catalog
 
             return result;
         }
+
+        public bool ValidateDisplay()
+        {
+            // No need to validate the display.
+            if (TotalScoreDisplay == TotalScoreDisplay.None)
+            {
+                return false;
+            }
+
+            bool flag = false;
+
+            foreach (var score in AllScores)
+            {
+                switch (score.ScoreType)
+                {
+                    case ScoreType.Score:
+                        // No change needed.
+                        continue;
+                    case ScoreType.NotApplicable:
+                        // Reduce to Not Applicable.
+                        if (TotalScoreDisplay == TotalScoreDisplay.Average)
+                        {
+                            TotalScoreDisplay = TotalScoreDisplay.NotApplicable;
+                            flag = true;
+                        }
+                        continue;
+                    default:
+                        // Short circuit loop and exit.
+                        TotalScoreDisplay = TotalScoreDisplay.None;
+                        return true;
+                }
+            }
+
+            return flag;
+        }
     }
 }

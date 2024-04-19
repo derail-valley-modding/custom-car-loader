@@ -113,6 +113,19 @@ namespace CCL.Creator.Inspector.Catalog
 
                 _scoreType = (ScoreType)EditorGUILayout.EnumPopup(_scoreType);
             }
+
+            bool flag = false;
+
+            foreach (var item in _page.AllScoreLists)
+            {
+                flag |= item.ValidateDisplay();
+            }
+
+            if (flag)
+            {
+                serializedObject.UpdateIfRequiredOrScript();
+                Repaint();
+            }
         }
 
         private static string GetScoreListLabelText(SerializedProperty prop, TotalScoreDisplay scoreDisplay, string total) => scoreDisplay switch
