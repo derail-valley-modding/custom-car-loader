@@ -6,7 +6,9 @@ namespace CCL.Creator.Inspector.Catalog
 {
     internal class DiagramComponentDrawer
     {
-        private static Color s_empty = new Color(0, 0, 0, 0);
+        private static Color s_void = new Color(0, 0, 0, 0);
+        private static Color s_empty = new Color(1, 1, 1, 0.05f);
+        private static Color s_thin = new Color(1, 1, 1, 0.3f);
         private static bool s_drawBase = false;
 
         public static void DrawCircle(Vector3 position, float radius)
@@ -34,6 +36,7 @@ namespace CCL.Creator.Inspector.Catalog
                 return;
             }
 
+            Handles.DrawSolidRectangleWithOutline(DiagramComponent.ThinPoints, s_void, s_thin);
             Handles.DrawSolidRectangleWithOutline(DiagramComponent.FocusPoints, s_empty, Color.white);
             s_drawBase = false;
         }

@@ -5,7 +5,6 @@ using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -233,7 +232,7 @@ namespace CCL.Importer
                     throw new System.ArgumentOutOfRangeException(nameof(rating.Rating));
             }
 
-            Paths.GetText(root, Paths.LoadRatings.Tonnage).text = rating.Tonnage.ToString();
+            Paths.GetText(root, Paths.LoadRatings.Tonnage).text = $"{rating.Tonnage}t";
         }
 
         private static void ProcessRoles(Transform page, CatalogPage layout)
@@ -273,6 +272,12 @@ namespace CCL.Importer
             foreach (Transform child in parent)
             {
                 child.gameObject.SetActive(false);
+            }
+
+            // If there's no layout, don't draw a diagram at all.
+            if (layout.DiagramLayout == null)
+            {
+                return;
             }
 
             var diagram = parent.Find(Paths.Diagrams.Generic);
@@ -716,8 +721,8 @@ namespace CCL.Importer
             public static class TechItems
             {
                 public const string Generic = "VCTechIcon";
-                public const string ClosedCab = "VCTechIcon_ClosedCab";
-                public const string OpenCab = "VCTechIcon_OpenCab";
+                public const string ClosedCab = "VCTechIcon_CabClosed";
+                public const string OpenCab = "VCTechIcon_CabOpen";
                 public const string CrewCompartment = "VCTechIcon_CrewCompartment";
                 public const string CompressedAirBrakeSystem = "VCTechIcon_CompressedAirBrakeSystem";
                 public const string DirectBrakeSystem = "VCTechIcon_DirectBrakeSystem";
