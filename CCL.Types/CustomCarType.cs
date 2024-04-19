@@ -69,7 +69,7 @@ namespace CCL.Types
         [Tooltip("Any extra prefab that has scripts on it should be added here")]
         public GameObject[] ExtraModels = new GameObject[0];
 
-        [Space]
+        [Header("Catalog - optional")]
         public CatalogPage CatalogPage = null!;
 
         [SerializeField, HideInInspector]

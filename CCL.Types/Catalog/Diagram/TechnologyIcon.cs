@@ -35,6 +35,7 @@ namespace CCL.Types.Catalog.Diagram
         };
 
         public TechIcon Icon;
+        [Tooltip("Flip this icon horizontally (for example, rear facing cabs)")]
         public bool Flip = false;
 
         public override void AlignToGrid()

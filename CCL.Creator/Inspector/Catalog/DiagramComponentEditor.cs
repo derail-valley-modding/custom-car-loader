@@ -1,5 +1,4 @@
 ﻿using CCL.Types.Catalog.Diagram;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -27,9 +26,9 @@ namespace CCL.Creator.Inspector.Catalog
     [CustomEditor(typeof(BogieLayout), true)]
     internal class BogieLayoutEditor : Editor
     {
-        private SerializedProperty _autoAlign;
-        private SerializedProperty _pivots;
-        private SerializedProperty _wheels;
+        private SerializedProperty _autoAlign = null!;
+        private SerializedProperty _pivots = null!;
+        private SerializedProperty _wheels = null!;
 
         private void OnEnable()
         {
