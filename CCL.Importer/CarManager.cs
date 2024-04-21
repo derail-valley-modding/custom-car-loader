@@ -141,6 +141,21 @@ namespace CCL.Importer
                     return null;
                 }
 
+                if (string.IsNullOrEmpty(serializedCar.LicenseID))
+                {
+                    if (DV.Globals.G.Types.TryGetGeneralLicense(serializedCar.LicenseID, out var license))
+                    {
+                        foreach (var item in carType.liveries)
+                        {
+                            item.requiredLicense = license;
+                        }
+                    }
+                    else
+                    {
+                        CCLPlugin.Warning($"Failed to find license for {carId} ({serializedCar.LicenseID}), car will not require license to use");
+                    }
+                }
+
                 // Create the HUD if it exists.
                 if (serializedCar.HUDLayout != null)
                 {
