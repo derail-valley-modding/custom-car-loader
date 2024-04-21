@@ -30,7 +30,7 @@ namespace CCL.Creator.Inspector.Catalog
                     case nameof(CatalogPage.GaragePrice):
                         GUI.enabled = !GUI.enabled;
                         break;
-                    case nameof(CatalogPage.CarTypeId):
+                    case nameof(CatalogPage.License3):
                         GUI.enabled = true;
                         break;
                     case nameof(CatalogPage.SummonableByRemote):

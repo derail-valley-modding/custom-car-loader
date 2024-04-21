@@ -59,7 +59,7 @@ namespace CCL.Importer
 
         private static void ProcessHeader(Transform page, CatalogPage layout)
         {
-            page.Find(Paths.PageColor).GetComponent<Image>().color = layout.HeaderColour;
+            Paths.GetImage(page, Paths.PageColor).color = layout.HeaderColour;
             Paths.GetText(page, Paths.PageName).text = layout.PageName;
             Paths.GetText(page, Paths.Units).text = layout.ConsistUnits;
 
@@ -74,7 +74,7 @@ namespace CCL.Importer
                 nick.text = layout.Nickname;
             }
 
-            page.Find(Paths.Icon).GetComponent<Image>().sprite = layout.Icon;
+            Paths.GetImage(page, Paths.Icon).sprite = layout.Icon;
 
             ProcessSpawnLocations(page.GetComponentInChildren<LocoSpawnRateRenderer>(), layout);
 
@@ -83,34 +83,26 @@ namespace CCL.Importer
             if (layout.UnlockedByGarage)
             {
                 page.Find(Paths.GarageIcon).gameObject.SetActive(true);
-                page.Find(Paths.LicenseOther + "1" + Paths.LicenseLock).gameObject.SetActive(true);
+                page.Find(Paths.LicenseContainer + "1" + Paths.LicenseLock).gameObject.SetActive(true);
 
-                var text = Paths.GetText(page, Paths.LicenseOther + "1" + Paths.LicenseValue);
+                var text = Paths.GetText(page, Paths.LicenseContainer + "1" + Paths.LicenseValue);
                 text.gameObject.SetActive(true);
-                text.text = layout.GaragePrice.ToString();
+                text.text = layout.GaragePrice.ToString("C0", CurrencyFormat);
 
                 page.Find(Paths.License1).gameObject.SetActive(false);
                 page.Find(Paths.License2).gameObject.SetActive(false);
                 page.Find(Paths.License3).gameObject.SetActive(false);
 
-                page.Find(Paths.LicenseOther + "2" + Paths.LicenseLock).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "2" + Paths.LicenseValue).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "3" + Paths.LicenseLock).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "3" + Paths.LicenseValue).gameObject.SetActive(false);
+                page.Find(Paths.LicenseContainer + "2" + Paths.LicenseLock).gameObject.SetActive(false);
+                page.Find(Paths.LicenseContainer + "2" + Paths.LicenseValue).gameObject.SetActive(false);
+                page.Find(Paths.LicenseContainer + "3" + Paths.LicenseLock).gameObject.SetActive(false);
+                page.Find(Paths.LicenseContainer + "3" + Paths.LicenseValue).gameObject.SetActive(false);
             }
             else
             {
-                // Licenses disabled for now.
-                page.Find(Paths.License1).gameObject.SetActive(false);
-                page.Find(Paths.License2).gameObject.SetActive(false);
-                page.Find(Paths.License3).gameObject.SetActive(false);
-
-                page.Find(Paths.LicenseOther + "1" + Paths.LicenseLock).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "1" + Paths.LicenseValue).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "2" + Paths.LicenseLock).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "2" + Paths.LicenseValue).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "3" + Paths.LicenseLock).gameObject.SetActive(false);
-                page.Find(Paths.LicenseOther + "3" + Paths.LicenseValue).gameObject.SetActive(false);
+                ProcessLicense(page, 1, layout.License1);
+                ProcessLicense(page, 2, layout.License2);
+                ProcessLicense(page, 3, layout.License3);
             }
 
             if (!string.IsNullOrEmpty(layout.ProductionYears))
@@ -132,7 +124,7 @@ namespace CCL.Importer
                 page.Find(Paths.SummonIcon).gameObject.SetActive(true);
                 var text = Paths.GetText(page, Paths.SummonPrice);
                 text.gameObject.SetActive(true);
-                text.text = layout.SummonPrice.ToString();
+                text.text = layout.SummonPrice.ToString("C0", CurrencyFormat);
             }
             else
             {
@@ -193,16 +185,47 @@ namespace CCL.Importer
             }
         }
 
-        private static bool SetLicenseIcon(Image image, string license)
+        private static void ProcessLicense(Transform page, int number, string id)
         {
-            if (!DV.Globals.G.Types.TryGetGeneralLicense(license, out var v2))
+            var lockIcon = page.Find($"{Paths.LicenseContainer}{number}{Paths.LicenseLock}");
+            var text = Paths.GetText(page, $"{Paths.LicenseContainer}{number}{Paths.LicenseValue}");
+            var icon = number switch
             {
-                CCLPlugin.Warning($"No license with ID '{license}' found.");
-                return false;
+                1 => Paths.GetImage(page, Paths.License1),
+                2 => Paths.GetImage(page, Paths.License2),
+                3 => Paths.GetImage(page, Paths.License3),
+                _ => throw new System.ArgumentOutOfRangeException(nameof(number)),
+            };
+
+            string licensePrice;
+            Sprite licenseIcon;
+
+            if (!DV.Globals.G.Types.TryGetGeneralLicense(id, out var generalLicense))
+            {
+                if (!DV.Globals.G.Types.TryGetJobLicense(id, out var jobLicense))
+                {
+                    CCLPlugin.Error($"Missing license with ID '{id}' (number {number})");
+                    lockIcon.gameObject.SetActive(false);
+                    text.gameObject.SetActive(false);
+                    icon.gameObject.SetActive(false);
+                    return;
+                }
+
+                licensePrice = jobLicense.price.ToString("C0", CurrencyFormat);
+                licenseIcon = jobLicense.icon;
+            }
+            else
+            {
+                licensePrice = generalLicense.price.ToString("C0", CurrencyFormat);
+                licenseIcon = generalLicense.icon;
             }
 
-            image.sprite = v2.icon;
-            return true;
+            lockIcon.gameObject.SetActive(true);
+            text.gameObject.SetActive(true);
+            icon.gameObject.SetActive(true);
+
+            text.text = licensePrice;
+            icon.sprite = licenseIcon;
         }
 
         private static void ProcessLoadRating(Transform root, LoadRating rating)
@@ -654,7 +677,7 @@ namespace CCL.Importer
             public const string License3 = Header + "/InfoGroup/Licenses/License (2)";
             public const string Locations = Header + "/InfoGroup/Locations";
             public const string ProductionYears = Locations + "/YearPriceContainer/LocoYears";
-            public const string LicenseOther = Locations + "/YearPriceContainer/License";
+            public const string LicenseContainer = Locations + "/YearPriceContainer/License";
             public const string LicenseLock = "-LockIcon";
             public const string LicenseValue = "-PriceValue";
             public const string SummonIcon = Locations + "/YearPriceContainer/SummonIcon";
@@ -773,6 +796,8 @@ namespace CCL.Importer
             public static TMP_Text GetText(Transform root, string path) => TMPHelper.GetTMP(root.Find(path));
 
             public static Localize GetLocalize(Transform root, string path) => root.Find(path).GetComponent<Localize>();
+
+            public static Image GetImage(Transform root, string path) => root.Find(path).GetComponent<Image>();
         }
 
         private static class Icons

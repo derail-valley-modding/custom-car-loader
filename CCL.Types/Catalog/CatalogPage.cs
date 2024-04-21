@@ -19,9 +19,11 @@ namespace CCL.Types.Catalog
         [Header("Licenses")]
         public bool UnlockedByGarage = false;
         public int GaragePrice = 20000;
-        // Licenses here
+        public string License1 = "";
+        public string License2 = "";
+        public string License3 = "";
         [Tooltip("The car ID, if this catalog page belongs to a vehicle that can spawn at stations\n" +
-            "Leave empty otherwise")]
+            "Leave empty if it cannot spawn naturally")]
         public string CarTypeId = "";
 
         [Header("Vehicle Type")]
