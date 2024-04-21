@@ -44,5 +44,35 @@ namespace CCL.Creator.Wizards
         {
             return Selection.activeGameObject;
         }
+
+        [MenuItem("GameObject/CCL/Add License Blocker", false, 10)]
+        public static void CreateLicenseBlocker(MenuCommand command)
+        {
+            var target = (GameObject)command.context;
+
+            var blocker = new GameObject(CarPartNames.LICENSE_BLOCKER);
+            blocker.transform.parent = target.transform;
+
+            var comp = blocker.AddComponent<LocoZoneBlockerProxy>();
+            comp.cab = target.transform.root.GetComponentInChildren<CabTeleportDestinationProxy>();
+            comp.blockerObjectsParent = blocker;
+
+            var tp = new GameObject("TP_blocker");
+            tp.transform.parent = blocker.transform;
+
+            var box = tp.AddComponent<BoxCollider>();
+            var reaction = tp.AddComponent<InvalidTeleportLocationReactionProxy>();
+            reaction.waitBeforeSpawn = 0.5f;
+            reaction.drawAttentionPointLine = true;
+            reaction.blocker = comp;
+
+            Undo.RegisterCreatedObjectUndo(blocker, "Created License Blocker");
+        }
+
+        [MenuItem("GameObject/CCL/Add License Blocker", true, 10)]
+        public static bool CreateLicenseBlockerValidate()
+        {
+            return Selection.activeGameObject;
+        }
     }
 }

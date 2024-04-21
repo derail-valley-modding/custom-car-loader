@@ -141,7 +141,7 @@ namespace CCL.Importer
                     return null;
                 }
 
-                if (string.IsNullOrEmpty(serializedCar.LicenseID))
+                if (!string.IsNullOrEmpty(serializedCar.LicenseID))
                 {
                     if (DV.Globals.G.Types.TryGetGeneralLicense(serializedCar.LicenseID, out var license))
                     {
