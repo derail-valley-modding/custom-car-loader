@@ -37,6 +37,8 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<HandbrakeFeederProxy, HandbrakeFeeder>().AutoCacheAndMap();
             CreateMap<ManualTransmissionInputDefinitionProxy, ManualTransmissionInputDefinition>().AutoCacheAndMap();
             CreateMap<ThrottleGammaPowerConversionDefinitionProxy, ThrottleGammaPowerConversionDefinition>().AutoCacheAndMap();
+
+            CreateMap<ShovelCoalPileProxy, ShovelCoalPile>().AutoCacheAndMap();
         }
     }
 }

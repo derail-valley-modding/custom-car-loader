@@ -24,4 +24,14 @@
     {
         void ApplyBE2Defaults();
     }
+
+    public interface IS060Defaults
+    {
+        void ApplyS060Defaults();
+    }
+
+    public interface IS282Defaults
+    {
+        void ApplyS282Defaults();
+    }
 }
