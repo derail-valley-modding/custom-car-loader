@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDE2Defaults, IDE6Defaults
+    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults
     {
         [Header("RPM Range")]
         public float rotationalInertia;
@@ -140,6 +140,25 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                     }
                 }
             };
+        }
+
+        public void ApplyDH4Defaults()
+        {
+            rotationalInertia = 10.0f;
+            viscousDampingFactor = 40.0f;
+            engineRpmMax = 1600.0f;
+            engineRpmIdle = 600.0f;
+
+            retarderBrakingTorque = 100000.0f;
+
+            fuelInjection = 2.0f;
+            oilConsumptionRate = 0.025f;
+
+            noOilDamagePerSecond = 30.0f;
+            rpmDamagePerSecond = 0.01f;
+            rpmDamageImmunityTime = 2.0f;
+            overheatingThreshold = 110.0f;
+            overheatingDamagePerDegreePerSecond = 0.1f;
         }
 
         public void ApplyDE2Defaults()

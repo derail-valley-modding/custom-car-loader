@@ -18,6 +18,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             DieselMechanical,
             DieselElectric,
+            DieselHydraulic,
             BatteryElectric,
             Slug,
             Steam,
@@ -59,6 +60,7 @@ namespace CCL.Creator.Wizards.SimSetup
                     {
                         SimulationType.DieselMechanical => new DieselMechSimCreator(_targetRoot),
                         SimulationType.DieselElectric => new DieselElectricSimCreator(_targetRoot),
+                        SimulationType.DieselHydraulic => new DieselHydraulicSimCreator(_targetRoot),
                         SimulationType.BatteryElectric => new BatteryElectricSimCreator(_targetRoot),
                         SimulationType.Slug => new SlugSimCreator(_targetRoot),
                         SimulationType.Steam => new SteamerSimCreator(_targetRoot),

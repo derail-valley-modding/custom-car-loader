@@ -9,7 +9,6 @@ using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
 using UnityEngine;
-using static CCL.Types.CarPartNames;
 
 namespace CCL.Creator.Wizards.SimSetup
 {
@@ -35,12 +34,16 @@ namespace CCL.Creator.Wizards.SimSetup
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
             var dynBrake = hasDynamic ? CreateOverridableControl(OverridableControlType.DynamicBrake) : null!;
 
+            // Headlights.
+
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
             var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
+            var engineOff = CreateSibling<OverridableControlProxy>(engine);
+            engineOff.portId = FullPortId(engine, "EMERGENCY_ENGINE_OFF_EXT_IN");
             var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
             engineOn.portId = FullPortId(engine, "ENGINE_ON");
             var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(engine);
