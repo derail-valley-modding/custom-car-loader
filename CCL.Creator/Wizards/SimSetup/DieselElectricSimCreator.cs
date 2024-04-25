@@ -10,6 +10,8 @@ using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 
+using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
+
 namespace CCL.Creator.Wizards.SimSetup
 {
     internal class DieselElectricSimCreator : SimCreator
@@ -199,18 +201,19 @@ namespace CCL.Creator.Wizards.SimSetup
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
 
-            AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(),
-                throttle, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
 
             if (hasDynamic)
             {
-                AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(),
-                    dynBrake, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+                AddControlBlocker(reverser, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
 
-                AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+                AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                    .blockedControlPortId = FullPortId(throttle, "EXT_IN");
 
-                AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-                AddControlBlocker(dynBrake, reverser, "REVERSER", 0, ControlBlockerProxy.BlockerDefinition.BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD);
+                AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+                AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD)
+                    .blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
             }
         }
 

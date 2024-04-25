@@ -10,6 +10,8 @@ using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 
+using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
+
 namespace CCL.Creator.Wizards.SimSetup
 {
     internal class DieselHydraulicSimCreator : SimCreator
@@ -25,7 +27,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var reverser = CreateReverserControl();
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
-            var dynBrake = CreateOverridableControl(OverridableControlType.DynamicBrake);
+            var dynBrake = CreateOverridableControl(OverridableControlType.DynamicBrake, "hydroDynamicBrake");
 
             var genericHornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");
             genericHornControl.defaultValue = 0;
@@ -96,6 +98,9 @@ namespace CCL.Creator.Wizards.SimSetup
             wheelslip.numberOfPoweredAxlesPortId = FullPortId(poweredAxles, "NUM");
             wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
             wheelslip.engineBrakingActivePortId = FullPortId(fluidCoupler, "HYDRO_DYNAMIC_BRAKE_EFFECT");
+            var directWheelslip = CreateSibling<DirectDriveMaxWheelslipRpmCalculatorProxy>(traction);
+            directWheelslip.engineRpmMaxPortId = FullPortId(engine, "RPM");
+            directWheelslip.gearRatioPortId = FullPortId(fluidCoupler, "GEAR_RATIO");
 
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
@@ -104,7 +109,40 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ENGINE_STARTER", false)
             };
 
+            horn.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            bell.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
+            autoCooler.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+
+            _damageController.mechanicalPTDamagerPortIds = new[]
+            {
+                FullPortId(engine, "GENERATED_ENGINE_DAMAGE"),
+                FullPortId(fluidCoupler, "GENERATED_DAMAGE")
+            };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[]
+            {
+                FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN"),
+                FullPortId(fluidCoupler, "MECHANICAL_PT_HEALTH_EXT_IN")
+            };
+            _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
+
+            ConnectPorts(fluidCoupler, "OUTPUT_SHAFT_TORQUE", traction, "TORQUE_IN");
+
             ApplyMethodToAll<IDH4Defaults>(s => s.ApplyDH4Defaults());
+
+            AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                .blockedControlPortId = FullPortId(throttle, "EXT_IN");
+
+            AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(reverser, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", 40, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", -40, BlockType.BLOCK_ON_BELOW_THRESHOLD)
+                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
+
+            AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD)
+                .blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
         }
     }
 }

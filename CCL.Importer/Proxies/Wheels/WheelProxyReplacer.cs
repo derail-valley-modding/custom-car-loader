@@ -28,6 +28,8 @@ namespace CCL.Importer.Proxies.Wheels
             CreateMap<WheelslipSparksControllerProxy, WheelslipSparksController>().AutoCacheAndMap();
             CreateMap<WheelslipSparksControllerProxy.WheelSparksDefinition, WheelslipSparksController.WheelSparksDefinition>()
                 .ForMember(d => d.poweredWheel, o => o.MapFrom(s => Mapper.GetFromCache(s.poweredWheel)));
+
+            CreateMap<DirectDriveMaxWheelslipRpmCalculatorProxy, DirectDriveMaxWheelslipRpmCalculator>().AutoCacheAndMap();
         }
 
         private void PoweredWheelsManagerProxyAfter(PoweredWheelsManagerProxy proxy, PoweredWheelsManager real)
