@@ -22,6 +22,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
+            // Simulation components.
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
             var thrtPowr = CreateSimComponent<ThrottleGammaPowerConversionDefinitionProxy>("throttlePower");
             var reverser = CreateReverserControl();
@@ -50,7 +51,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var sander = CreateSanderControl();
 
             var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
-            var engineOff = CreateSibling<OverridableControlProxy>(engine);
+            var engineOff = CreateSibling<PowerOffControlProxy>(engine);
             engineOff.portId = FullPortId(engine, "EMERGENCY_ENGINE_OFF_EXT_IN");
             var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
             engineOn.portId = FullPortId(engine, "ENGINE_ON");
@@ -102,6 +103,7 @@ namespace CCL.Creator.Wizards.SimSetup
             directWheelslip.engineRpmMaxPortId = FullPortId(engine, "RPM");
             directWheelslip.gearRatioPortId = FullPortId(fluidCoupler, "GEAR_RATIO");
 
+            // Fusebox and fuse connections.
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
@@ -115,6 +117,7 @@ namespace CCL.Creator.Wizards.SimSetup
             engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
             autoCooler.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
 
+            // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[]
             {
                 FullPortId(engine, "GENERATED_ENGINE_DAMAGE"),
@@ -127,8 +130,10 @@ namespace CCL.Creator.Wizards.SimSetup
             };
             _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
 
+            // Port connections.
             ConnectPorts(fluidCoupler, "OUTPUT_SHAFT_TORQUE", traction, "TORQUE_IN");
 
+            // Port reference connections.
             ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
             ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
 
@@ -165,8 +170,10 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(cooler, "HEAT_OUT", cooler, "HEAT_IN_2");
             ConnectPortRef(autoCooler, "HEAT_OUT", cooler, "HEAT_IN_3");
 
+            // Apply defaults.
             ApplyMethodToAll<IDH4Defaults>(s => s.ApplyDH4Defaults());
 
+            // Control blockers.
             AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
                 .blockedControlPortId = FullPortId(throttle, "EXT_IN");
 

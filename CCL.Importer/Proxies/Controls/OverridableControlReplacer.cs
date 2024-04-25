@@ -25,7 +25,8 @@ namespace CCL.Importer.Proxies.Controls
             CachedBlocker(CreateMap<OverridableControlProxy, HeadlightsControlFront>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsFront));
             CachedBlocker(CreateMap<OverridableControlProxy, HeadlightsControlRear>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsRear));
             CachedBlocker(CreateMap<OverridableControlProxy, DynamicBrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.DynamicBrake));
-            CachedBlocker(CreateMap<OverridableControlProxy, PowerOffControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.FuelCutoff));
+            //CreateMap<OverridableControlProxy, PowerOffControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.FuelCutoff);
+            CreateMap<PowerOffControlProxy, PowerOffControl>().AutoCacheAndMap().ForMember(d => d.controlBlocker, o => o.MapFrom(s => s.controlBlocker));
 
             CreateMap<InteriorControlsManagerProxy, InteriorControlsManager>().AutoCacheAndMap();
             CreateMap<BaseControlsOverriderProxy, BaseControlsOverrider>().AutoCacheAndMap();

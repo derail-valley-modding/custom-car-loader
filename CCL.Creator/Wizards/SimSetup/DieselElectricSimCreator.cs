@@ -17,9 +17,7 @@ namespace CCL.Creator.Wizards.SimSetup
     internal class DieselElectricSimCreator : SimCreator
     {
         // TODO:
-        // Horn
         // Headlights
-        // Power off
 
         public DieselElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
@@ -29,6 +27,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             var hasDynamic = HasDynamicBrake(basisIndex);
 
+            // Simulation components.
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
             var thrtPowr = CreateSimComponent<ThrottleGammaPowerConversionDefinitionProxy>("throttlePower");
             var reverser = CreateReverserControl();
@@ -38,13 +37,22 @@ namespace CCL.Creator.Wizards.SimSetup
 
             // Headlights.
 
+            var genericHornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");
+            genericHornControl.defaultValue = 0;
+            genericHornControl.smoothTime = 0.2f;
+            var hornControl = CreateSibling<HornControlProxy>(genericHornControl);
+            hornControl.portId = FullPortId(genericHornControl, "EXT_IN");
+            hornControl.neutralAt0 = true;
+            var horn = CreateSimComponent<HornDefinitionProxy>("horn");
+            horn.controlNeutralAt0 = true;
+
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
             var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
-            var engineOff = CreateSibling<OverridableControlProxy>(engine);
+            var engineOff = CreateSibling<PowerOffControlProxy>(engine);
             engineOff.portId = FullPortId(engine, "EMERGENCY_ENGINE_OFF_EXT_IN");
             var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
             engineOn.portId = FullPortId(engine, "ENGINE_ON");
@@ -97,6 +105,7 @@ namespace CCL.Creator.Wizards.SimSetup
             wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
             wheelslip.engineBrakingActivePortId = FullPortId(tm, "DYNAMIC_BRAKE_ACTIVE");
 
+            // Fusebox and fuse connections.
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
@@ -111,6 +120,7 @@ namespace CCL.Creator.Wizards.SimSetup
             tm.powerFuseId = FullPortId(fusebox, "TM_POWER");
             deadTMs.tmFuseId = FullPortId(fusebox, "TM_POWER");
 
+            // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_DAMAGE") };
             _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN") };
             _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
@@ -118,13 +128,17 @@ namespace CCL.Creator.Wizards.SimSetup
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
 
+            // Port connections.
             ConnectPorts(tm, "TORQUE_OUT", transmission, "TORQUE_IN");
             ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
 
+            // Port reference connections.
             ConnectPortRef(throttle, "EXT_IN", thrtPowr, "THROTTLE");
             ConnectPortRef(engine, "IDLE_RPM_NORMALIZED", thrtPowr, "IDLE_RPM_NORMALIZED");
             ConnectPortRef(engine, "MAX_POWER_RPM_NORMALIZED", thrtPowr, "MAX_POWER_RPM_NORMALIZED");
             ConnectPortRef(engine, "MAX_POWER", thrtPowr, "MAX_POWER");
+
+            ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
 
             ConnectPortRef(sand, "AMOUNT", sander, "SAND");
             ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
@@ -182,6 +196,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", tmRpm, "WHEEL_RPM");
             ConnectPortRef(transmission, "GEAR_RATIO", tmRpm, "GEAR_RATIO");
 
+            // Apply defaults.
             switch (basisIndex)
             {
                 case 0:
@@ -194,13 +209,7 @@ namespace CCL.Creator.Wizards.SimSetup
                     break;
             }
 
-            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_DAMAGE") };
-            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN") };
-            _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
-
-            _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
-            _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
-
+            // Control blockers.
             AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
                 .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
 
