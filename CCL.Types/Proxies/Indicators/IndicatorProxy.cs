@@ -6,5 +6,8 @@ namespace CCL.Types.Proxies.Indicators
     {
         public float minValue;
         public float maxValue = 1f;
+
+        // To show the enable/disable checkbox.
+        public void Start() { }
     }
 }

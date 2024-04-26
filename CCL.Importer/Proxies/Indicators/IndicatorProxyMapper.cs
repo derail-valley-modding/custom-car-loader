@@ -19,7 +19,8 @@ namespace CCL.Importer.Proxies.Indicators
 
             CreateMap<IndicatorEmissionProxy, IndicatorEmission>().AutoCacheAndMap();
             CreateMap<IndicatorGaugeProxy, IndicatorGauge>().AutoCacheAndMap();
-            CreateMap<IndicatorGaugeLaggingProxy, IndicatorGaugeLagging>().AutoCacheAndMap();
+            CreateMap<IndicatorGaugeLaggingProxy, IndicatorGaugeLagging>().AutoCacheAndMap()
+                .AfterMap(IndicatorGaugeLaggingAfter);
             CreateMap<IndicatorModelChangerProxy, IndicatorModelChanger>().AutoCacheAndMap();
             CreateMap<IndicatorScalerProxy, IndicatorScaler>().AutoCacheAndMap();
             CreateMap<IndicatorSliderProxy, IndicatorSlider>().AutoCacheAndMap();
@@ -31,6 +32,20 @@ namespace CCL.Importer.Proxies.Indicators
                 .WithCachedMember(d => d.lampInd);
 
             CreateMap<LabelLocalizer, Localize>();
+        }
+
+        private void IndicatorGaugeLaggingAfter(IndicatorGaugeLaggingProxy src, IndicatorGaugeLagging dest)
+        {
+            // Prevent disabling the component, as it is getting mapped twice for some reason.
+            // At least until a better solution is found.
+            if (src.EnabledState != null)
+            {
+                dest.enabled = src.EnabledState.Value;
+            }
+            else
+            {
+                src.EnabledState = src.enabled;
+            }
         }
     }
 }
