@@ -40,7 +40,7 @@ namespace CCL.Types.Components
 
         [InspectorName("")]
         SeparatorDE2 = 999,
-        DE2Engine,
+        DE2Engine = 1000,
         DE2EnginePiston,
         DE2EngineIgnition,
         DE2ElectricMotor,
@@ -49,7 +49,7 @@ namespace CCL.Types.Components
 
         [InspectorName("")]
         SeparatorDE6 = 1049,
-        DE6EngineIdle,
+        DE6EngineIdle = 1050,
         DE6EngineThrottling,
         DE6EngineIgnition,
         DE6ElectricMotor,
@@ -60,7 +60,7 @@ namespace CCL.Types.Components
 
         [InspectorName("")]
         SeparatorDH4 = 1099,
-        DH4Engine,
+        DH4Engine = 1100,
         DH4EnginePiston,
         DH4EngineIgnition,
         DH4FluidCoupler,
@@ -73,7 +73,7 @@ namespace CCL.Types.Components
 
         [InspectorName("")]
         SeparatorDM3 = 1149,
-        DM3Engine,
+        DM3Engine = 1150,
         DM3EnginePiston,
         DM3EngineIgnition,
         DM3JakeBrake,
@@ -82,8 +82,8 @@ namespace CCL.Types.Components
         DM3Compressor,
 
         [InspectorName("")]
-        SeparatorSteam = 1999,
-        SteamerCoalDump,
+        SeparatorSteam = 2999,
+        SteamerCoalDump = 3000,
         SteamerFire,
         SteamerFireboxWind,
         SteamerSafetyRelease,
@@ -100,12 +100,12 @@ namespace CCL.Types.Components
         SteamerBellRing,
         SteamerBellPump,
 
-        S060Whistle = 2050,
-        S282Whistle = 2100,
+        S060Whistle = 3050,
+        S282Whistle = 3100,
 
         [InspectorName("")]
-        SeparatorBE2 = 2999,
-        BE2ElectricMotor,
+        SeparatorBE2 = 4999,
+        BE2ElectricMotor = 5000,
         [InspectorName("BE2 TM Controller")]
         BE2TMController,
         BE2Compressor,
