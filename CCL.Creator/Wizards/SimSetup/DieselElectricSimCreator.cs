@@ -26,6 +26,7 @@ namespace CCL.Creator.Wizards.SimSetup
         public override void CreateSimForBasisImpl(int basisIndex)
         {
             var hasDynamic = HasDynamicBrake(basisIndex);
+            var hasBell = HasBell(basisIndex);
 
             // Simulation components.
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
@@ -45,6 +46,16 @@ namespace CCL.Creator.Wizards.SimSetup
             hornControl.neutralAt0 = true;
             var horn = CreateSimComponent<HornDefinitionProxy>("horn");
             horn.controlNeutralAt0 = true;
+
+            ExternalControlDefinitionProxy bellControl = null!;
+            ElectricBellDefinitionProxy bell = null!;
+
+            if (hasBell)
+            {
+                bellControl = CreateExternalControl("bellControl", true);
+                bell = CreateSimComponent<ElectricBellDefinitionProxy>("bell");
+                bell.smoothDownTime = 0.05f;
+            }
 
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
@@ -114,6 +125,13 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("TM_POWER", false),
             };
 
+            horn.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+
+            if (hasBell)
+            {
+                bell.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            }
+
             sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
             engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
             tractionGen.powerFuseId = FullPortId(fusebox, "TM_POWER");
@@ -139,6 +157,11 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(engine, "MAX_POWER", thrtPowr, "MAX_POWER");
 
             ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
+
+            if (hasBell)
+            {
+                ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
+            }
 
             ConnectPortRef(sand, "AMOUNT", sander, "SAND");
             ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
@@ -227,6 +250,17 @@ namespace CCL.Creator.Wizards.SimSetup
         }
 
         private static bool HasDynamicBrake(int index)
+        {
+            switch (index)
+            {
+                case 1:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool HasBell(int index)
         {
             switch (index)
             {
