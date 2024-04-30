@@ -54,7 +54,7 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 bellControl = CreateExternalControl("bellControl", true);
                 bell = CreateSimComponent<ElectricBellDefinitionProxy>("bell");
-                bell.smoothDownTime = 0.05f;
+                bell.smoothDownTime = 0.5f;
             }
 
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
