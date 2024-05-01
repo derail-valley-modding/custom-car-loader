@@ -159,6 +159,42 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             rpmDamageImmunityTime = 2.0f;
             overheatingThreshold = 110.0f;
             overheatingDamagePerDegreePerSecond = 0.1f;
+
+            rpmToPowerCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.Loop,
+                postWrapMode = WrapMode.Loop,
+                keys = new[]
+{
+                    new Keyframe
+                    {
+                        time = 0.0f,
+                        value = 0.0f,
+                        inTangent = 842.26666f,
+                        outTangent = 842.26666f,
+                        inWeight = 1 / 3f,
+                        outWeight = 0.031815805f,
+                    },
+                    new Keyframe
+                    {
+                        time = 1500.0f,
+                        value = 1000000.0f,
+                        inTangent = 0.000969854f,
+                        outTangent = 0.000969854f,
+                        inWeight = 1 / 3f,
+                        outWeight = 1.0f,
+                    },
+                    new Keyframe
+                    {
+                        time = 1600.0f,
+                        value = 0.0f,
+                        inTangent = -27790.76f,
+                        outTangent = -27790.76f,
+                        inWeight = 0.062794186f,
+                        outWeight = 1 / 3f,
+                    }
+                }
+            };
         }
 
         public void ApplyDE2Defaults()
@@ -178,6 +214,51 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             rpmDamageImmunityTime = 2.0f;
             overheatingThreshold = 110.0f;
             overheatingDamagePerDegreePerSecond = 0.1f;
+
+            rpmToPowerCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.Loop,
+                postWrapMode = WrapMode.Loop,
+                keys = new[]
+    {
+                    new Keyframe
+                    {
+                        time = 0.0f,
+                        value = 0.0f,
+                        inTangent = 0.0f,
+                        outTangent = 0.0f,
+                        inWeight = 1 / 3f,
+                        outWeight = 1 / 3f,
+                    },
+                    new Keyframe
+                    {
+                        time = 600.0f,
+                        value = 100000.0f,
+                        inTangent = 2000 / 9f,
+                        outTangent = 2000 / 9f,
+                        inWeight = 1 / 3f,
+                        outWeight = 1 / 3f,
+                    },
+                    new Keyframe
+                    {
+                        time = 1800.0f,
+                        value = 400000.0f,
+                        inTangent = 0.0f,
+                        outTangent = 0.0f,
+                        inWeight = 1 / 3f,
+                        outWeight = 1 / 3f,
+                    },
+                    new Keyframe
+                    {
+                        time = 2000.0f,
+                        value = 0.0f,
+                        inTangent = -4306.064f,
+                        outTangent = -4306.064f,
+                        inWeight = 1 / 3f,
+                        outWeight = 1 / 3f,
+                    }
+                }
+            };
         }
 
         public void ApplyDE6Defaults()
@@ -197,6 +278,51 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             rpmDamageImmunityTime = 2.0f;
             overheatingThreshold = 110.0f;
             overheatingDamagePerDegreePerSecond = 0.1f;
+
+            rpmToPowerCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.Loop,
+                postWrapMode = WrapMode.Loop,
+                keys = new[]
+{
+                    new Keyframe
+                    {
+                        time = 0.0f,
+                        value = 0.0f,
+                        inTangent = 1440.5848f,
+                        outTangent = 1440.5848f,
+                        inWeight = 1 / 3f,
+                        outWeight = 0.10329206f,
+                    },
+                    new Keyframe
+                    {
+                        time = 275.0f,
+                        value = 300000.0f,
+                        inTangent = 1494.04f,
+                        outTangent = 1494.04f,
+                        inWeight = 1 / 3f,
+                        outWeight = 0.04434629f,
+                    },
+                    new Keyframe
+                    {
+                        time = 900.0f,
+                        value = 1700000.0f,
+                        inTangent = 0.0f,
+                        outTangent = 0.0f,
+                        inWeight = 1 / 3f,
+                        outWeight = 1 / 3f,
+                    },
+                    new Keyframe
+                    {
+                        time = 950.0f,
+                        value = 0.0f,
+                        inTangent = -68105.2f,
+                        outTangent = -68105.2f,
+                        inWeight = 0.035001222f,
+                        outWeight = 1 / 3f,
+                    }
+                }
+            };
         }
 
         #endregion
