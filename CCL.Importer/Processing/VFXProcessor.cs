@@ -29,7 +29,7 @@ namespace CCL.Importer.Processing
                 system.transform.localPosition = Vector3.zero;
                 system.transform.localRotation = Quaternion.identity;
 
-                item.InstancedGO = system.gameObject;
+                item.InstancedObject = system.gameObject;
 
                 if (item.ForcePlay)
                 {

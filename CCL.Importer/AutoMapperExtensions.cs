@@ -52,10 +52,9 @@ namespace CCL.Importer
         }
 
         public static IMappingExpression<TSource, TDestination> ReplaceGOs<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
-            where TSource : MonoBehaviour, ICanReplaceGO
-            where TDestination : MonoBehaviour
+            where TSource : ICanReplaceInstanced
         {
-            return cfg.BeforeMap((proxy, real) => proxy.CheckGOFields());
+            return cfg.BeforeMap((proxy, real) => proxy.DoFieldReplacing());
         }
     }
 }
