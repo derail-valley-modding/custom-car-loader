@@ -45,7 +45,8 @@ namespace CCL.Importer.Proxies
 
             CreateMap<MultipleUnitStateObserverProxy, MultipleUnitStateObserver>().AutoCacheAndMap();
 
-            CreateMap<FireProxy, Fire>().AutoCacheAndMap();
+            CreateMap<FireProxy, Fire>().AutoCacheAndMap()
+                .ReplaceGOs();
         }
 
         private void InteriorNonStandardLayerAfter(InteriorNonStandardLayerProxy src, InteriorNonStandardLayer dest)

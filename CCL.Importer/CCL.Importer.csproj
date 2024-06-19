@@ -33,6 +33,7 @@
 		<Reference Include="UnityEngine.AudioModule" />
 		<Reference Include="UnityEngine.CoreModule" />
 		<Reference Include="UnityEngine.IMGUIModule" />
+    <Reference Include="UnityEngine.ParticleSystemModule" />
 		<Reference Include="UnityEngine.PhysicsModule" />
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="DVLangHelper.Data" />
