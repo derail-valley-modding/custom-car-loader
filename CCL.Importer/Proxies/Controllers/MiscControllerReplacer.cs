@@ -2,11 +2,11 @@
 using CCL.Types.Proxies.Controllers;
 using DV.Damage;
 using DV.Simulation.Brake;
+using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using LocoSim.Definitions;
-using System;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies.Controllers
@@ -44,9 +44,13 @@ namespace CCL.Importer.Proxies.Controllers
                 .AfterMap(DeadTractionMotorsControllerAfter);
             CreateMap<ExplosionActivationOnSignalProxy, ExplosionActivationOnSignal>().AutoCacheAndMap()
                 .AfterMap(ExplosionActivationOnSignalAfter);
+            CreateMap<EngineOnReaderProxy, EngineOnReader>().AutoCacheAndMap();
+            CreateMap<EnvironmentDamagerProxy, EnvironmentDamager>().AutoCacheAndMap();
 
             CreateMap<MagicShovellingProxy, MagicShoveling>().AutoCacheAndMap();
             CreateMap<CoalPileSimControllerProxy, CoalPileSimController>().AutoCacheAndMap();
+            CreateMap<FireboxSimControllerProxy, FireboxSimController>().AutoCacheAndMap();
+            CreateMap<BoilerSimControllerProxy, BoilerSimController>().AutoCacheAndMap();
         }
 
         private void DeadTractionMotorsControllerAfter(DeadTractionMotorsControllerProxy _, DeadTractionMotorsController controller)

@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies;
+﻿using CCL.Types;
+using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -6,12 +7,19 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Electric;
+using CCL.Types.Proxies.Wheels;
 using UnityEngine;
+using static CCL.Types.CarPartNames;
 
 namespace CCL.Creator.Wizards.SimSetup
 {
     internal class DieselElectricSimCreator : SimCreator
     {
+        // TODO:
+        // Horn
+        // Headlights
+        // Power off
+
         public DieselElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "DE2", "DE6" };
@@ -36,6 +44,12 @@ namespace CCL.Creator.Wizards.SimSetup
             var sander = CreateSanderControl();
 
             var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
+            var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
+            engineOn.portId = FullPortId(engine, "ENGINE_ON");
+            var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(engine);
+            environmentDamage.damagerPortId = FullPortId(engine, "FUEL_ENV_DAMAGE_METER");
+            environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageFuel;
+
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
             loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
@@ -75,10 +89,11 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var transmission = CreateSimComponent<TransmissionFixedGearDefinitionProxy>("transmission");
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
-            var tractionFeeders = CreateSibling<TractionPortFeedersProxy>(traction);
-            tractionFeeders.forwardSpeedPortId = FullPortId(traction, "FORWARD_SPEED_EXT_IN");
-            tractionFeeders.wheelRpmPortId = FullPortId(traction, "WHEEL_RPM_EXT_IN");
-            tractionFeeders.wheelSpeedKmhPortId = FullPortId(traction, "WHEEL_SPEED_KMH_EXT_IN");
+            var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(tm, "WORKING_TRACTION_MOTORS");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
+            wheelslip.engineBrakingActivePortId = FullPortId(tm, "DYNAMIC_BRAKE_ACTIVE");
 
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
@@ -176,6 +191,13 @@ namespace CCL.Creator.Wizards.SimSetup
                 default:
                     break;
             }
+
+            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_DAMAGE") };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN") };
+            _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
+
+            _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
+            _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
         }
     }
 }

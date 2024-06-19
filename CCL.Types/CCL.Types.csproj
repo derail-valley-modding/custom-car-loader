@@ -18,10 +18,6 @@
 		<Reference Include="DVLangHelper.Data" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Proxies\Simulation\Steam\" />
-	</ItemGroup>
-
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)Mod\&quot; md &quot;$(SolutionDir)$(OutDir)Mod\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)Mod\&quot;" />
 	</Target>

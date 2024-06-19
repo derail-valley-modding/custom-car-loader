@@ -41,8 +41,12 @@ namespace CCL.Importer.Processing
                 collision = collisionObj.transform;
                 collision.parent = colliderRoot.transform;
             }
+
             // Ensure PitStop detects this as a serviceable car
-            collision.tag = "MainTriggerCollider";
+            foreach (Transform item in collision.GetComponentsInChildren<Transform>())
+            {
+                item.tag = "MainTriggerCollider";
+            }
 
             // find [walkable]
             // copy walkable to items if items doesn't exist
@@ -53,7 +57,7 @@ namespace CCL.Importer.Processing
                 if (!items)
                 {
                     CCLPlugin.LogVerbose("Reusing walkable colliders as item colliders");
-                    GameObject newItemsObj = UnityEngine.Object.Instantiate(walkable.gameObject, colliderRoot);
+                    GameObject newItemsObj = Object.Instantiate(walkable.gameObject, colliderRoot);
                     newItemsObj.name = CarPartNames.Colliders.ITEMS;
                     newItemsObj.SetLayersRecursive(DVLayer.Interactable);
                 }

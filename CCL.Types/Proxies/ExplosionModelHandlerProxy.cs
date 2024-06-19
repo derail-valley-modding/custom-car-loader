@@ -1,5 +1,4 @@
-﻿using CCL.Types.Json;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace CCL.Types.Proxies
@@ -29,17 +28,13 @@ namespace CCL.Types.Proxies
         [Tooltip("These will replace the material on all renderers of a GameObject")]
         public MaterialSwapData[] materialSwaps = new MaterialSwapData[0];
 
-        [HideInInspector]
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private Material[] mats = new Material[0];
-        [HideInInspector]
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private GameObject[][] affectedGos = new GameObject[0][];
-        [HideInInspector]
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private GameObject[] go2replace = new GameObject[0];
-        [HideInInspector]
-        [SerializeField]
+        [SerializeField, HideInInspector]
         private GameObject[] replaceFabs = new GameObject[0];
 
         public void OnValidate()

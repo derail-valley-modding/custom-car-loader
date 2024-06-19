@@ -20,6 +20,7 @@ namespace CCL.Creator.Wizards.SimSetup
             DieselElectric,
             BatteryElectric,
             Slug,
+            Steam,
             Tender
         }
 
@@ -60,6 +61,7 @@ namespace CCL.Creator.Wizards.SimSetup
                         SimulationType.DieselElectric => new DieselElectricSimCreator(_targetRoot),
                         SimulationType.BatteryElectric => new BatteryElectricSimCreator(_targetRoot),
                         SimulationType.Slug => new SlugSimCreator(_targetRoot),
+                        SimulationType.Steam => new SteamerSimCreator(_targetRoot),
                         SimulationType.Tender => new TenderSimCreator(_targetRoot),
                         _ => throw new NotImplementedException(),
                     };
@@ -252,6 +254,14 @@ namespace CCL.Creator.Wizards.SimSetup
             return control;
         }
 
+        protected ExternalControlDefinitionProxy CreateExternalControl(string id, bool saveState = false, float defaultValue = 0)
+        {
+            var control = CreateSimComponent<ExternalControlDefinitionProxy>(id);
+            control.saveState = saveState;
+            control.defaultValue = defaultValue;
+            return control;
+        }
+
         protected ReverserDefinitionProxy CreateReverserControl(string? idOverride = null)
         {
             idOverride ??= "reverser";
@@ -305,6 +315,15 @@ namespace CCL.Creator.Wizards.SimSetup
             consumer.disconnectedValue = disconnectValue;
             consumer.propagateConsumerValueChangeBackToProvider = propagateChangeBack;
             return consumer;
+        }
+
+        protected TractionPortFeedersProxy CreateTractionFeeders(TractionDefinitionProxy traction)
+        {
+            var tractionFeeders = CreateSibling<TractionPortFeedersProxy>(traction);
+            tractionFeeders.forwardSpeedPortId = FullPortId(traction, "FORWARD_SPEED_EXT_IN");
+            tractionFeeders.wheelRpmPortId = FullPortId(traction, "WHEEL_RPM_EXT_IN");
+            tractionFeeders.wheelSpeedKmhPortId = FullPortId(traction, "WHEEL_SPEED_KMH_EXT_IN");
+            return tractionFeeders;
         }
 
         protected string FullPortId(SimComponentDefinitionProxy component, string portId) => $"{component.ID}.{portId}";

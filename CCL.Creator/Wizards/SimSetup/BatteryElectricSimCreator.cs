@@ -5,12 +5,17 @@ using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Electric;
+using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 
 namespace CCL.Creator.Wizards.SimSetup
 {
     internal class BatteryElectricSimCreator : SimCreator
     {
+        // TODO:
+        // Horn
+        // Headlights
+
         public BatteryElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "BE2" };
@@ -63,10 +68,10 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var transmission = CreateSimComponent<TransmissionFixedGearDefinitionProxy>("transmission");
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
-            var tractionFeeders = CreateSibling<TractionPortFeedersProxy>(traction);
-            tractionFeeders.forwardSpeedPortId = FullPortId(traction, "FORWARD_SPEED_EXT_IN");
-            tractionFeeders.wheelRpmPortId = FullPortId(traction, "WHEEL_RPM_EXT_IN");
-            tractionFeeders.wheelSpeedKmhPortId = FullPortId(traction, "WHEEL_SPEED_KMH_EXT_IN");
+            var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(tm, "WORKING_TRACTION_MOTORS");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
 
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
@@ -120,6 +125,9 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(cooler, "HEAT_OUT", heat, "HEAT_IN_1");
 
             ApplyMethodToAll<IBE2Defaults>(s => s.ApplyBE2Defaults());
+
+            _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
+            _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
         }
     }
 }

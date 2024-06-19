@@ -21,7 +21,13 @@ namespace CCL.Importer.Proxies.Resources
             CreateMap<ResourceContainerProxy, ElectricChargeContainerDefinition>()
                 .AutoCacheAndMap(x => x.type == ResourceContainerType.ElectricCharge);
 
-            CreateMap<LocoResourceReceiverProxy, LocoResourceReceiver>().AutoCacheAndMap();
+            CreateMap<LocoResourceReceiverProxy, LocoResourceReceiver>()
+                .AutoCacheAndMap().AfterMap(LocoResourceReceiverAfter);
+        }
+
+        private void LocoResourceReceiverAfter(LocoResourceReceiverProxy _, LocoResourceReceiver real)
+        {
+            real.tag = "LocoResourceReceiver";
         }
     }
 }

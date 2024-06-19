@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
-    public class PoweredWheelRotationViaCodeProxy : PoweredWheelRotationBaseProxy
+    public class PoweredWheelRotationViaCodeProxy : PoweredWheelRotationBaseProxy, ICustomSerialized
     {
         [Serializable]
         public struct TransformRotationConfig

@@ -1,7 +1,9 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
+using CCL.Types.Proxies.Wheels;
 using DV.Simulation.Brake;
 using DV.Wheels;
+using LocoSim.Implementations.Wheels;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -13,6 +15,8 @@ namespace CCL.Importer.Processing
     [RequiresStep(typeof(ColliderProcessor))]
     internal class BogieProcessor : ModelProcessorStep
     {
+        private const float TRACK_GAUGE_2 = 0.76f;
+
         public override void ExecuteStep(ModelProcessor context)
         {
             var newFab = context.Car.prefab;
@@ -68,6 +72,7 @@ namespace CCL.Importer.Processing
 
             SetupBrakeGlows(newFab, frontBogie, rearBogie);
             SetupWheelSlideSparks(newFab, frontBogie, rearBogie);
+            SetupSlipSparks(newFab);
         }
 
         private static Bogie StealBaseCarBogie(Transform carRoot, Transform newBogieTransform, Transform bogieColliderRoot,
@@ -196,6 +201,58 @@ namespace CCL.Importer.Processing
 
             // Not part of a bogie, take it.
             return true;
+        }
+
+        private static void SetupSlipSparks(GameObject newFab)
+        {
+            // Auto add wheelslip sparks if there are powered wheels.
+            // The car needs to have both the powered wheels manager,
+            // and powered wheels from default bogies (not proxies).
+            if (!newFab.TryGetComponent(out PoweredWheelsManagerProxy _))
+            {
+                return;
+            }
+
+            var poweredWheels = newFab.GetComponentsInChildren<PoweredWheel>(newFab);
+
+            if (poweredWheels.Length == 0)
+            {
+                return;
+            }
+
+            var slide = newFab.GetComponentInChildren<WheelSlideSparksController>();
+            WheelslipSparksController controller;
+
+            if (slide != null)
+            {
+                controller = slide.gameObject.AddComponent<WheelslipSparksController>();
+            }
+            else
+            {
+                var sparks = new GameObject(CarPartNames.Particles.WHEEL_SPARKS);
+                sparks.transform.parent = newFab.transform;
+                sparks.transform.localPosition = Vector3.zero;
+                controller = sparks.gameObject.AddComponent<WheelslipSparksController>();
+            }
+
+            var list = new List<WheelslipSparksController.WheelSparksDefinition>();
+
+            foreach (var wheel in poweredWheels)
+            {
+                Transform t = wheel.transform;
+
+                Transform l = new GameObject($"L").transform;
+                l.parent = t.parent;
+                l.localPosition = new Vector3(-TRACK_GAUGE_2, 0, t.localPosition.z);
+
+                Transform r = new GameObject($"R").transform;
+                r.parent = t.parent;
+                r.localPosition = new Vector3(TRACK_GAUGE_2, 0, t.localPosition.z);
+
+                list.Add(new WheelslipSparksController.WheelSparksDefinition { poweredWheel = wheel, sparksLeftAnchor = l, sparksRightAnchor = r });
+            }
+
+            controller.wheelSparks = list.ToArray();
         }
     }
 }

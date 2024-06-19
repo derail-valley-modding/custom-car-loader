@@ -1,11 +1,11 @@
 ﻿using CCL.Types.Proxies.Ports;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
-    public class WheelslipControllerProxy : MonoBehaviour, IHasPortIdFields, IDM3Defaults, IDH4Defaults
+    public class WheelslipControllerProxy : MonoBehaviour, IHasPortIdFields,
+        IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults, IS060Defaults, IS282Defaults
     {
         public bool preventWheelslip;
 
@@ -21,6 +21,10 @@ namespace CCL.Types.Proxies.Wheels
         [PortId(DVPortValueType.STATE, false)]
         public string engineBrakingActivePortId;
 
+        [RenderMethodButtons]
+        [MethodButton(nameof(SetCurveToDefault), "Set curve to default")]
+        public bool buttonRender;
+
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(numberOfPoweredAxlesPortId), numberOfPoweredAxlesPortId, DVPortValueType.GENERIC),
@@ -32,6 +36,13 @@ namespace CCL.Types.Proxies.Wheels
             new Keyframe(0, 1, 0, 0, 0.3333f, 1),
             new Keyframe(0.25f, 0.4f, -0.0085f, -0.0085f, 0.3333f, 0.3333f)
         );
+
+        private static void SetCurveToDefault(WheelslipControllerProxy proxy)
+        {
+            proxy.wheelslipToAdhesionDrop = proxy.DefaultAdhesionCurve;
+        }
+
+        #region Defaults
 
         public void ApplyDH4Defaults()
         {
@@ -46,5 +57,42 @@ namespace CCL.Types.Proxies.Wheels
             wheelslipToAdhesionDrop = DefaultAdhesionCurve;
             maxWheelslipRpm = 600;
         }
+
+        public void ApplyDE2Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 370;
+        }
+
+        public void ApplyDE6Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 600;
+        }
+
+        public void ApplyBE2Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 370;
+        }
+
+        public void ApplyS060Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 370;
+        }
+
+        public void ApplyS282Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 370;
+        }
+
+        #endregion
     }
 }
