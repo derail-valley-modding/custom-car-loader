@@ -24,7 +24,7 @@ namespace CCL.Importer.Patches
                         // If the group is supposed to use this spawner...
                         if (group.Track.ToName() == __instance.name)
                         {
-                            CCLPlugin.Log($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.Liveries)}]");
+                            CCLPlugin.Log($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.AdditionalLiveries)}]");
                             __instance.locoTypeGroupsToSpawn.Add(FromGroup(variant, group));
                         }
                     }
@@ -87,7 +87,7 @@ namespace CCL.Importer.Patches
         {
             List<TrainCarLivery> variants = new() { variant };
 
-            foreach (var item in group.Liveries)
+            foreach (var item in group.AdditionalLiveries)
             {
                 if (DV.Globals.G.Types.TryGetLivery(item, out TrainCarLivery livery))
                 {

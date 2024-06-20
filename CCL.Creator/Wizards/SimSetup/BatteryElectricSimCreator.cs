@@ -8,12 +8,13 @@ using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 
+using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
+
 namespace CCL.Creator.Wizards.SimSetup
 {
     internal class BatteryElectricSimCreator : SimCreator
     {
         // TODO:
-        // Horn
         // Headlights
 
         public BatteryElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
@@ -22,10 +23,22 @@ namespace CCL.Creator.Wizards.SimSetup
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
+            // Simulation components.
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
             var thrtCurv = CreateSimComponent<PowerFunctionDefinitionProxy>("throttleCurve");
             var reverser = CreateReverserControl();
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+
+            // Headlights.
+
+            var genericHornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");
+            genericHornControl.defaultValue = 0;
+            genericHornControl.smoothTime = 0.2f;
+            var hornControl = CreateSibling<HornControlProxy>(genericHornControl);
+            hornControl.portId = FullPortId(genericHornControl, "EXT_IN");
+            hornControl.neutralAt0 = true;
+            var horn = CreateSimComponent<HornDefinitionProxy>("horn");
+            horn.controlNeutralAt0 = true;
 
             var batteryCharge = CreateResourceContainer(ResourceContainerType.ElectricCharge, "batteryCharge");
             var batteryController = CreateSimComponent<BatteryDefinitionProxy>("batteryController");
@@ -73,6 +86,7 @@ namespace CCL.Creator.Wizards.SimSetup
             wheelslip.numberOfPoweredAxlesPortId = FullPortId(tm, "WORKING_TRACTION_MOTORS");
             wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
 
+            // Fusebox and fuse connections.
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
@@ -86,13 +100,17 @@ namespace CCL.Creator.Wizards.SimSetup
             deadTMs.tmFuseId = FullPortId(fusebox, "TM_POWER");
             compressor.powerFuseId = FullPortId(fusebox, "ELECTRICS_MAIN");
 
+            // Damage.
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
 
+            // Port connections.
             ConnectPorts(tm, "TORQUE_OUT", transmission, "TORQUE_IN");
             ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
 
+            // Port reference connections.
             ConnectPortRef(throttle, "EXT_IN", thrtCurv, "IN");
+            ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
 
             ConnectPortRef(batteryCharge, "NORMALIZED", batteryController, "NORMALIZED_CHARGE");
             ConnectPortRef(batteryCharge, "CONSUME_EXT_IN", batteryController, "CHARGE_CONSUMPTION");
@@ -124,10 +142,12 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(tm, "HEAT_OUT", heat, "HEAT_IN_0");
             ConnectPortRef(cooler, "HEAT_OUT", heat, "HEAT_IN_1");
 
+            // Apply defaults.
             ApplyMethodToAll<IBE2Defaults>(s => s.ApplyBE2Defaults());
 
-            _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
-            _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
+            // Control blockers.
+            AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
         }
     }
 }

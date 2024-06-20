@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CCL.Types.Proxies.Controls
+﻿namespace CCL.Types.Proxies.Controls
 {
     public enum DVControlClass
     {
@@ -29,7 +23,7 @@ namespace CCL.Types.Proxies.Controls
         HeadlightsFront = DVControlType.HeadlightsFront,
         HeadlightsRear = DVControlType.HeadlightsRear,
         DynamicBrake = DVControlType.DynamicBrake,
-        FuelCutoff = DVControlType.FuelCutoff,
+        //FuelCutoff = DVControlType.FuelCutoff,
     }
 
     public enum DVControlType

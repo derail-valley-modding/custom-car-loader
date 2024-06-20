@@ -17,6 +17,7 @@ namespace CCL.Importer.Proxies.Simulation
 
             // heat
             CreateMap<PassiveCoolerDefinitionProxy, PassiveCoolerDefinition>().AutoCacheAndMap();
+            CreateMap<AutomaticCoolerDefinitionProxy, AutomaticCoolerDefinition>().AutoCacheAndMap();
             CreateMap<DirectionalCoolerDefinitionProxy, DirectionalMovementCoolerDefinition>().AutoCacheAndMap();
             CreateMap<HeatReservoirDefinitionProxy, HeatReservoirDefinition>().AutoCacheAndMap();
 

@@ -18,6 +18,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             DieselMechanical,
             DieselElectric,
+            DieselHydraulic,
             BatteryElectric,
             Slug,
             Steam,
@@ -59,6 +60,7 @@ namespace CCL.Creator.Wizards.SimSetup
                     {
                         SimulationType.DieselMechanical => new DieselMechSimCreator(_targetRoot),
                         SimulationType.DieselElectric => new DieselElectricSimCreator(_targetRoot),
+                        SimulationType.DieselHydraulic => new DieselHydraulicSimCreator(_targetRoot),
                         SimulationType.BatteryElectric => new BatteryElectricSimCreator(_targetRoot),
                         SimulationType.Slug => new SlugSimCreator(_targetRoot),
                         SimulationType.Steam => new SteamerSimCreator(_targetRoot),
@@ -282,13 +284,19 @@ namespace CCL.Creator.Wizards.SimSetup
             return control;
         }
 
-        protected OverridableControlProxy AddControlBlocker(ExternalControlDefinitionProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
+        protected ControlBlockerProxy AddControlBlocker(ExternalControlDefinitionProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
             ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
         {
             return AddControlBlocker(control.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
         }
 
-        protected OverridableControlProxy AddControlBlocker(OverridableControlProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
+        protected ControlBlockerProxy AddControlBlocker(ReverserDefinitionProxy reverser, SimComponentDefinitionProxy blocking, string port, float threshold,
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+        {
+            return AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
+        }
+
+        protected ControlBlockerProxy AddControlBlocker(OverridableControlProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
             ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
         {
             control.OnValidate();
@@ -309,7 +317,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             control.controlBlocker.blockers = blockers.ToArray();
 
-            return control;
+            return control.controlBlocker;
         }
 
         protected CompressorSimControllerProxy CreateCompressorSim(SimComponentDefinitionProxy compressor)

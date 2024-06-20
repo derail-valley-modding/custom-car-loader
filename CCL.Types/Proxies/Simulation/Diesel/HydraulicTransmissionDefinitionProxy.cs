@@ -71,11 +71,6 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         #region Defaults
 
-        [MethodButton(nameof(ApplyDM3Defaults), "Apply DM3 Defaults")]
-        [MethodButton(nameof(ApplyDH4Defaults), "Apply DH4 Defaults")]
-        [RenderMethodButtons]
-        public bool renderButtons;
-
         public void ApplyDM3Defaults()
         {
             outputTorqueLimit = 25000;

@@ -3,8 +3,6 @@ using CCL.Types.Proxies.Controls;
 using DV.HUD;
 using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
-using System;
-using UnityEngine;
 
 namespace CCL.Importer.Proxies.Controls
 {
@@ -13,6 +11,7 @@ namespace CCL.Importer.Proxies.Controls
         public OverridableControlReplacer()
         {
             CreateMap<ControlBlockerProxy, ControlBlocker>().AutoCacheAndMap();
+            CreateMap<ControlBlockerProxy.BlockerDefinition, ControlBlocker.BlockerDefinition>();
 
             CachedBlocker(CreateMap<OverridableControlProxy, ThrottleControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Throttle));
             CachedBlocker(CreateMap<OverridableControlProxy, BrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.TrainBrake));
@@ -25,7 +24,8 @@ namespace CCL.Importer.Proxies.Controls
             CachedBlocker(CreateMap<OverridableControlProxy, HeadlightsControlFront>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsFront));
             CachedBlocker(CreateMap<OverridableControlProxy, HeadlightsControlRear>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsRear));
             CachedBlocker(CreateMap<OverridableControlProxy, DynamicBrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.DynamicBrake));
-            CachedBlocker(CreateMap<OverridableControlProxy, PowerOffControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.FuelCutoff));
+            //CreateMap<OverridableControlProxy, PowerOffControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.FuelCutoff);
+            CreateMap<PowerOffControlProxy, PowerOffControl>().AutoCacheAndMap().ForMember(d => d.controlBlocker, o => o.MapFrom(s => s.controlBlocker));
 
             CreateMap<InteriorControlsManagerProxy, InteriorControlsManager>().AutoCacheAndMap();
             CreateMap<BaseControlsOverriderProxy, BaseControlsOverrider>().AutoCacheAndMap();
@@ -36,7 +36,7 @@ namespace CCL.Importer.Proxies.Controls
             where TSource : OverridableControlProxy
             where TDestination : OverridableBaseControl
         {
-            return cfg.ForMember(d => d.controlBlocker, o => o.MapFrom(s => s.controlBlocker));
+            return cfg.ForMember(d => d.controlBlocker, o => o.MapFrom(s => Mapper.GetFromCache(s.controlBlocker)));
         }
     }
 }

@@ -8,6 +8,7 @@ using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Steam;
 using CCL.Types.Proxies.Wheels;
 using UnityEngine;
+
 using static CCL.Types.Proxies.Controls.BaseControlsOverriderProxy;
 using static CCL.Types.Proxies.Ports.ConfigurablePortsDefinitionProxy;
 
@@ -16,9 +17,7 @@ namespace CCL.Creator.Wizards.SimSetup
     internal class SteamerSimCreator : SimCreator
     {
         // TODO:
-        // Whistle control
         // Headlights
-        // Power off
 
         public SteamerSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
@@ -26,6 +25,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
+            // Simulation components.
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
 
@@ -33,7 +33,9 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var blower = CreateExternalControl("blower");
             var whistle = CreateExternalControl("whistle");
-            // Whistle control.
+            var hornControl = CreateSibling<HornControlProxy>(whistle);
+            hornControl.portId = FullPortId(whistle, "EXT_IN");
+            hornControl.neutralAt0 = true;
             var damper = CreateExternalControl("damper", true, 1.0f);
             var cylCock = CreateExternalControl("cylinderCock", true);
             var fireDoor = CreateExternalControl("fireboxDoor", true);
@@ -64,7 +66,9 @@ namespace CCL.Creator.Wizards.SimSetup
             fireboxSimController.fireboxDoorPortId = FullPortId(fireDoor, "EXT_IN");
             var engineOn = CreateSibling<EngineOnReaderProxy>(firebox);
             engineOn.portId = FullPortId(firebox, "FIRE_ON");
-            // Power Off Control
+            var engineOff = CreateSibling<PowerOffControlProxy>(firebox);
+            engineOff.portId = FullPortId(firebox, "EXTINGUISH_EXT_IN");
+            engineOff.signalClearedBySim = true;
             var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(firebox);
             environmentDamage.damagerPortId = FullPortId(firebox, "COAL_ENV_DAMAGE_METER");
             environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageCoal;
@@ -124,6 +128,7 @@ namespace CCL.Creator.Wizards.SimSetup
             wheelslip.numberOfPoweredAxlesPortId = FullPortId(poweredAxles, "NUM");
             wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
 
+            // Handle tender and non tender steam engines.
             SimComponentDefinitionProxy water = null!;
             SimComponentDefinitionProxy coal = null!;
 
@@ -169,6 +174,7 @@ namespace CCL.Creator.Wizards.SimSetup
                     break;
             }
 
+            // Fusebox and fuse connections.
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fuseboxDummy");
             fusebox.fuses = new[]
             {
@@ -187,6 +193,7 @@ namespace CCL.Creator.Wizards.SimSetup
                     break;
             }
 
+            // Neutral states.
             _baseControls.neutralStateSetters = new[]
             {
                 new PortSetter(FullPortId(injector, "EXT_IN"), 0),
@@ -198,8 +205,16 @@ namespace CCL.Creator.Wizards.SimSetup
                 new PortSetter(FullPortId(compressorControl, "EXT_IN"), 0)
             };
 
+            // Damage.
+            _damageController.bodyHealthStateExternalInPortIds = new[] { FullPortId(boiler, "BODY_HEALTH_EXT_IN") };
+
+            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(steamEngine, "GENERATED_MECHANICAL_DAMAGE") };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(steamEngine, "HEALTH_STATE_EXT_IN") };
+
+            // Port connections.
             ConnectPorts(steamEngine, "TORQUE_OUT", traction, "TORQUE_IN");
 
+            // Port reference connections.
             ConnectPortRef(oil, "AMOUNT", lubricator, "OIL");
             ConnectPortRef(oil, "CONSUME_EXT_IN", lubricator, "OIL_CONSUMPTION");
             ConnectPortRef(lubricatorControl, "EXT_IN", lubricator, "LUBRICATOR_CONTROL");
@@ -257,6 +272,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(blower, "EXT_IN", exhaust, "BLOWER_CONTROL");
             ConnectPortRef(whistle, "EXT_IN", exhaust, "WHISTLE_CONTROL");
 
+            // Apply defaults.
             switch (basisIndex)
             {
                 case 0:
@@ -269,15 +285,11 @@ namespace CCL.Creator.Wizards.SimSetup
                     break;
             }
 
+            // Shovelling.
             if (!_root.TryGetComponent(out MagicShovellingProxy shovelling))
             {
                 shovelling = _root.AddComponent<MagicShovellingProxy>();
             }
-
-            _damageController.bodyHealthStateExternalInPortIds = new[] { FullPortId(boiler, "BODY_HEALTH_EXT_IN") };
-
-            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(steamEngine, "GENERATED_MECHANICAL_DAMAGE") };
-            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(steamEngine, "HEALTH_STATE_EXT_IN") };
         }
     }
 }

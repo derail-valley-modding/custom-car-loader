@@ -70,14 +70,14 @@ namespace CCL.Types
         [Tooltip("The track where the loco(s) will spawn")]
         public SpawnTrack Track;
         [Tooltip("Extra locos/tenders to spawn together (in order)")]
-        public string[] Liveries;
+        public string[] AdditionalLiveries;
 
         public LocoSpawnGroup() : this(SpawnTrack.MachineFactoryA1, new string[0]) { }
 
         public LocoSpawnGroup(SpawnTrack track, string[] liveries)
         {
             Track = track;
-            Liveries = liveries;
+            AdditionalLiveries = liveries;
         }
     }
 

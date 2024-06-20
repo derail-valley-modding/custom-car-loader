@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
@@ -10,7 +11,6 @@ namespace CCL.Types.Proxies.Indicators
         public bool unclamped;
         public Vector3 rotationAxis = Vector3.forward;
         public float gizmoRadius = 0.1f;
-
 
         protected const float GIZMO_RADIUS = 0.1f;
         protected const int GIZMO_SEGMENTS = 20;
@@ -55,5 +55,8 @@ namespace CCL.Types.Proxies.Indicators
     public class IndicatorGaugeLaggingProxy : IndicatorGaugeProxy
     {
         public float smoothTime = 0.5f;
+
+        [NonSerialized]
+        public bool? EnabledState = null;
     }
 }
