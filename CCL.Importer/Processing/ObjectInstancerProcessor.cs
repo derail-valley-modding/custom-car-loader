@@ -215,9 +215,37 @@ namespace CCL.Importer.Processing
                 var readers = audio.GetComponents<LayeredAudioPortReader>().OrderBy(x => x.portId).ToArray();
                 int length = Mathf.Min(readers.Length, item.Ports.Length);
 
+                // Readers are sorted alphabetically by port ID for consistency.
                 for (int i = 0; i < length; i++)
                 {
                     readers[i].portId = item.Ports[i];
+                }
+
+                if (item.SourcePositions.Length > 0)
+                {
+                    var layers = audio.layers.OrderBy(x => x.name).ToArray();
+                    length = layers.Length;
+
+                    // Similar to the previous, but sorted by layer name.
+                    for (int i = 0; i < length; i++)
+                    {
+                        if (item.SourcePositions[i] != null)
+                        {
+                            layers[i].source.gameObject.transform.position = item.SourcePositions[i].position;
+                        }
+                        else
+                        {
+                            layers[i].source.gameObject.transform.localPosition = Vector3.zero;
+                        }
+                    }
+                }
+                else
+                {
+                    // If no positions exist, move everything to the (local) origin.
+                    foreach (var layer in audio.layers)
+                    {
+                        layer.source.gameObject.transform.localPosition = Vector3.zero;
+                    }
                 }
 
                 Object.Destroy(item);

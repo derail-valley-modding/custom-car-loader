@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using DV.CabControls;
+using DV.Openables;
 using DV.Optimizers;
 using DV.Simulation.Brake;
 using DV.ThingTypes;
@@ -123,6 +124,7 @@ namespace CCL.Importer.Processing
 
             interactables.SetLayersRecursive(ModelProcessor.NonStandardLayerExclusion, DVLayer.Interactable);
             FixControlColliders(interactables);
+            SetupOpenables(interactables);
         }
 
         private static void SetupExternalConnectors(GameObject prefab)
@@ -152,6 +154,16 @@ namespace CCL.Importer.Processing
             foreach (var control in controls)
             {
                 control.isTrigger = true;
+            }
+        }
+
+        private static void SetupOpenables(GameObject prefab)
+        {
+            var children = prefab.GetComponentsInChildren<OpenableControl>();
+
+            if (children.Length > 0)
+            {
+                prefab.AddComponent<DoorsAndWindowsController>().entries = children;
             }
         }
     }

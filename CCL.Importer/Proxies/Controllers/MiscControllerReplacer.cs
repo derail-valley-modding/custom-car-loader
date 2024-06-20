@@ -51,6 +51,8 @@ namespace CCL.Importer.Proxies.Controllers
             CreateMap<CoalPileSimControllerProxy, CoalPileSimController>().AutoCacheAndMap();
             CreateMap<FireboxSimControllerProxy, FireboxSimController>().AutoCacheAndMap();
             CreateMap<BoilerSimControllerProxy, BoilerSimController>().AutoCacheAndMap();
+
+            CreateMap<WindowsBreakingControllerProxy, WindowsBreakingController>().AutoCacheAndMap();
         }
 
         private void DeadTractionMotorsControllerAfter(DeadTractionMotorsControllerProxy _, DeadTractionMotorsController controller)

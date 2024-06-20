@@ -1,4 +1,5 @@
-﻿using CCL.Types.Components;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Components;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,109 +11,126 @@ namespace CCL.Creator.Inspector
         private SerializedProperty _audioSystem = null!;
         private SerializedProperty _port1 = null!;
         private SerializedProperty _port2 = null!;
-        private string? _portName;
+        private SerializedProperty _positions = null!;
 
         private void OnEnable()
         {
             _audioSystem = serializedObject.FindProperty(nameof(CopyVanillaAudioSystem.AudioSystem));
             _port1 = serializedObject.FindProperty(nameof(CopyVanillaAudioSystem.PortId1));
             _port2 = serializedObject.FindProperty(nameof(CopyVanillaAudioSystem.PortId2));
+            _positions = serializedObject.FindProperty(nameof(CopyVanillaAudioSystem.SourcePositions));
         }
 
         public override void OnInspectorGUI()
         {
             EditorGUILayout.PropertyField(_audioSystem);
+            var system = (VanillaAudioSystem)_audioSystem.intValue;
 
-            if (!string.IsNullOrEmpty(_portName = GetPort1Name((VanillaAudioSystem)_audioSystem.intValue)))
+            var ports = GetPortNames(system);
+
+            if (ports.Length > 0)
             {
-                EditorGUILayout.PropertyField(_port1, new GUIContent(_portName));
+                EditorHelpers.DrawHeader("Ports",
+                    "The port connections that control the Layered Audio");
+
+                EditorGUILayout.PropertyField(_port1, new GUIContent(ports[0]));
             }
 
-            if (!string.IsNullOrEmpty(_portName = GetPort2Name((VanillaAudioSystem)_audioSystem.intValue)))
+            if (ports.Length > 1)
             {
-                EditorGUILayout.PropertyField(_port2, new GUIContent(_portName));
+                EditorGUILayout.PropertyField(_port2, new GUIContent(ports[1]));
+            }
+
+            var layers = GetSourcePositionNames(system);
+            int length = layers.Length;
+            _positions.arraySize = length;
+
+            if (length > 0)
+            {
+                EditorHelpers.DrawHeader("Layer Audio Source Positions",
+                    "Optional transforms to move the audio source of each layer\n" +
+                    "Leave empty to use the position of this object");
+
+                for (int i = 0; i < length; i++)
+                {
+                    var label = new GUIContent(layers[i]);
+                    EditorGUILayout.PropertyField(_positions.GetArrayElementAtIndex(i), label);
+                }
             }
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        private static string? GetPort1Name(VanillaAudioSystem system)
+        private static string[] GetPortNames(VanillaAudioSystem system)
         {
             switch (system)
             {
                 case VanillaAudioSystem.TMOverspeed:
-                    return "TM Overspeed Port ID";
+                    return new[] { "TM Overspeed Port ID", "TM RPM Port ID" };
 
                 case VanillaAudioSystem.DE2EnginePiston:
                 case VanillaAudioSystem.DE6EngineThrottling:
                 case VanillaAudioSystem.DH4EnginePiston:
                 case VanillaAudioSystem.DM3EnginePiston:
-                    return "Fuel Consumption Port ID";
+                    return new[] { "Fuel Consumption Port ID", "Engine RPM Port ID" };
                 case VanillaAudioSystem.DE2ElectricMotor:
                 case VanillaAudioSystem.DE6ElectricMotor:
-                    return "Amps Per TM Port ID";
+                    return new[] { "Amps Per TM Port ID", "TM RPM Port ID" };
 
                 case VanillaAudioSystem.DH4FluidCoupler:
-                    return "Pump Torque Port ID";
+                    return new[] { "Pump Torque Port ID", "Turbine RPM Port ID" };
                 case VanillaAudioSystem.DH4HydroDynamicBrake:
-                    return "Hydro Dynamic Brake Port ID";
+                    return new[] { "Hydro Dynamic Brake Port ID", "Turbine RPM Port ID" };
                 case VanillaAudioSystem.DH4TransmissionEngaged:
                 case VanillaAudioSystem.DM3TransmissionEngaged:
                 case VanillaAudioSystem.DM3JakeBrake:
-                    return "Transmission Engaged Port ID";
+                    return new[] { "Transmission Engaged Port ID", "Wheel Speed Port ID" };
 
                 case VanillaAudioSystem.SteamerChestAdmission:
-                    return "Steam Injection Port ID";
+                    return new[] { "Steam Injection Port ID", "Exhaust Pressure Port ID" };
                 case VanillaAudioSystem.SteamerValveGearDamaged:
-                    return "Lubrication Port ID";
+                    return new[] { "Lubrication Port ID", "Wheel RPM Port ID" };
                 case VanillaAudioSystem.SteamerCrownSheet:
-                    return "Crown Sheet Temperature Port ID";
+                    return new[] { "Crown Sheet Temperature Port ID", "Boiler Broken Port ID" };
                 case VanillaAudioSystem.SteamerCylinderCock:
-                    return null;
+                    return new string[0];
 
                 case VanillaAudioSystem.BE2ElectricMotor:
-                    return "TM RPM Port ID";
+                    return new[] { "TM RPM Port ID", "Total Amps Port ID" };
 
                 default:
-                    return "Port ID";
+                    return new[] { "Port ID" };
             }
         }
-
-        private static string? GetPort2Name(VanillaAudioSystem system)
+        
+        private string[] GetSourcePositionNames(VanillaAudioSystem system)
         {
             switch (system)
             {
-                case VanillaAudioSystem.TMOverspeed:
-                case VanillaAudioSystem.DE2ElectricMotor:
-                case VanillaAudioSystem.DE6ElectricMotor:
-                    return "TM RPM Port ID";
-
+                case VanillaAudioSystem.DE2Engine:
+                case VanillaAudioSystem.DH4Engine:
+                case VanillaAudioSystem.DM3Engine:
+                    return new[] { "Gear", "Idle" };
                 case VanillaAudioSystem.DE2EnginePiston:
+                    return new[] { "Piston", "Throttle" };
+
+                case VanillaAudioSystem.DE6EngineIdle:
+                    return new[] { "Compressor Whine (Tail)", "Engine Exhaust (Idle)", "Shaft Whine" };
                 case VanillaAudioSystem.DE6EngineThrottling:
-                case VanillaAudioSystem.DH4EnginePiston:
-                case VanillaAudioSystem.DM3EnginePiston:
-                    return "Engine RPM Port ID";
+                    return new[] { "Combustion Bass", "Compressor Whine", "Engine Exhaust" };
 
-                case VanillaAudioSystem.DH4FluidCoupler:
-                case VanillaAudioSystem.DH4HydroDynamicBrake:
-                    return "Turbine RPM Port ID";
-                case VanillaAudioSystem.DH4TransmissionEngaged:
-                case VanillaAudioSystem.DM3TransmissionEngaged:
-                case VanillaAudioSystem.DM3JakeBrake:
-                    return "Wheel Speed Port ID";
+                case VanillaAudioSystem.SteamerFire:
+                    return new[] { "Strong Fire", "Weak Fire" };
+                case VanillaAudioSystem.SteamerValveGear:
+                    return new[] { "4s", "8s", "16s" };
 
-                case VanillaAudioSystem.SteamerChestAdmission:
-                    return "Exhaust Pressure Port ID";
-                case VanillaAudioSystem.SteamerValveGearDamaged:
-                    return "Wheel RPM Port ID";
-                case VanillaAudioSystem.SteamerCrownSheet:
-                    return "Boiler Broken Port ID";
-
-                case VanillaAudioSystem.BE2ElectricMotor:
-                    return "Total Amps Port ID";
+                case VanillaAudioSystem.S060Whistle:
+                    return new[] { "Chime 1", "Chime 2", "Chord (Steam)" };
+                case VanillaAudioSystem.S282Whistle:
+                    return new[] { "Chime 1", "Chime 2", "Chime 3", "Chime 4", "Chime 5", "Chord (Steam)" };
 
                 default:
-                    return null;
+                    return new string[0];
             }
         }
     }

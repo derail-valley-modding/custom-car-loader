@@ -3,6 +3,7 @@ using CCL.Types;
 using CCL.Types.Proxies;
 using DV;
 using DV.Interaction;
+using DV.RemoteControls;
 using DV.Simulation.Cars;
 using DV.ThingTypes.TransitionHelpers;
 using UnityEngine;
@@ -21,6 +22,8 @@ namespace CCL.Importer.Proxies
         {
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
+                .AutoCacheAndMap();
+            CreateMap<InternalExternalSnapshotSwitcherDoorsAndWindowsProxy, InternalExternalSnapshotSwitcherDoorsAndWindows>()
                 .AutoCacheAndMap();
 
             CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
@@ -42,8 +45,10 @@ namespace CCL.Importer.Proxies
             CreateMap<TeleportHoverGlowProxy, TeleportHoverGlow>().AutoCacheAndMap()
                 .AfterMap(TeleportHoverGlowAfter);
             CreateMap<GrabberRaycastPassThroughProxy, GrabberRaycastPassThrough>().AutoCacheAndMap();
+            CreateMap<HighlightTagProxy, HighlightTagProxy>().AutoCacheAndMap();
 
             CreateMap<MultipleUnitStateObserverProxy, MultipleUnitStateObserver>().AutoCacheAndMap();
+            CreateMap<RemoteControllerModuleProxy, RemoteControllerModule>().AutoCacheAndMap();
 
             CreateMap<FireProxy, Fire>().AutoCacheAndMap()
                 .ReplaceInstancedObjects();

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Weather;
+using DV.Openables;
 using DV.Rain;
 using PlaceholderSoftware.WetStuff;
 
@@ -19,6 +20,8 @@ namespace CCL.Importer.Proxies.Weather
             CreateMap<DecalSettingsProxy, DecalSettings>();
             CreateMap<DecalLayerProxy, DecalLayer>();
             CreateMap<DecalLayerChannelProxy, DecalLayerChannel>();
+
+            CreateMap<OpenableControlProxy, OpenableControl>().AutoCacheAndMap();
         }
     }
 }
