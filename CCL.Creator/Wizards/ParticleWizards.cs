@@ -280,8 +280,10 @@ namespace CCL.Creator.Wizards
 
             var embers = new GameObject("SmokeEmbers").AddComponent<CopyVanillaParticleSystem>();
             embers.SystemToCopy = VanillaParticleSystem.SteamerEmberClusters;
+            embers.AllowReplacing = false;
             embers = embers.gameObject.AddComponent<CopyVanillaParticleSystem>();
             embers.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
+            embers.AllowReplacing = false;
             embers.transform.parent = chimney.transform;
 
             chimney.smokeParticlesParent = smokeParent.gameObject;

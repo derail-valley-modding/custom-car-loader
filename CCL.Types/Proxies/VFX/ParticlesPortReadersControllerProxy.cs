@@ -162,6 +162,7 @@ namespace CCL.Types.Proxies.VFX
             public float startColorMaxA;
             public AnimationCurve colorLerpCurve;
 
+            // Default constructor for deserialization.
             public FakeParticleColorPortReader() { }
 
             public FakeParticleColorPortReader(ParticleColorPortReader p)

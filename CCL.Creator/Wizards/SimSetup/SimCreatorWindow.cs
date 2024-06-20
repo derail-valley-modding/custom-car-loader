@@ -282,6 +282,36 @@ namespace CCL.Creator.Wizards.SimSetup
             return control;
         }
 
+        protected OverridableControlProxy AddControlBlocker(ExternalControlDefinitionProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+        {
+            return AddControlBlocker(control.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
+        }
+
+        protected OverridableControlProxy AddControlBlocker(OverridableControlProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+        {
+            control.OnValidate();
+
+            if (control.controlBlocker == null)
+            {
+                control.controlBlocker = control.gameObject.AddComponent<ControlBlockerProxy>();
+            }
+
+            var blockers = control.controlBlocker.blockers.ToList();
+
+            blockers.Add(new ControlBlockerProxy.BlockerDefinition
+            {
+                blockerPortId = FullPortId(blocking, port),
+                thresholdValue = threshold,
+                blockType = blockerType,
+            });
+
+            control.controlBlocker.blockers = blockers.ToArray();
+
+            return control;
+        }
+
         protected CompressorSimControllerProxy CreateCompressorSim(SimComponentDefinitionProxy compressor)
         {
             var airController = CreateSibling<CompressorSimControllerProxy>(compressor);
