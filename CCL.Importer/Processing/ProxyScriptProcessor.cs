@@ -7,7 +7,7 @@ namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
     [RequiresStep(typeof(GrabberProcessor))]
-    [RequiresStep(typeof(VFXProcessor))]
+    [RequiresStep(typeof(ObjectInstancerProcessor))]
     internal class ProxyScriptProcessor : ModelProcessorStep
     {
         public override void ExecuteStep(ModelProcessor context)

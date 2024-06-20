@@ -51,7 +51,7 @@ namespace CCL.Importer
             return cfg.ForMember(member, opt => opt.MapFrom(s => Mapper.GetFromCache(s)));
         }
 
-        public static IMappingExpression<TSource, TDestination> ReplaceGOs<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
+        public static IMappingExpression<TSource, TDestination> ReplaceInstancedObjects<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
             where TSource : ICanReplaceInstanced
         {
             return cfg.BeforeMap((proxy, real) => proxy.DoFieldReplacing());

@@ -120,7 +120,7 @@ namespace CCL.Importer.Processing
             HandleCustomSerialization(prefab);
             GrabberProcessor.ProcessGrabbersOnPrefab(prefab);
             ShaderProcessor.ReplaceShaderGrabbers(prefab);
-            VFXProcessor.ProcessParticles(prefab);
+            ObjectInstancerProcessor.ProcessAll(prefab);
             Mapper.ProcessConfigs(prefab);
             Mapper.ClearComponentCache();
         }

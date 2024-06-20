@@ -14,9 +14,9 @@ namespace CCL.Importer
 {
     public static class CarAudioProcessor
     {
-        private static GameObject? _dm3AudioPrefab = null;
-        private static GameObject DM3AudioPrefab =>
-            Extensions.GetCached(ref _dm3AudioPrefab, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
+        private static GameObject? s_audioDM3;
+        private static GameObject AudioDM3 =>
+            Extensions.GetCached(ref s_audioDM3, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
 
         private static bool NeedsWheelsAudioModule(CCL_CarType carType)
         {
@@ -45,7 +45,7 @@ namespace CCL.Importer
 
                 if (carType.SimAudioPrefab)
                 {
-                    var simAudioFab = ModelProcessor.CreateModifiablePrefab(carType.SimAudioPrefab);
+                    var simAudioFab = carType.SimAudioPrefab;
 
                     simAudioFab.transform.SetParent(newAudioFab.transform, false);
                     simAudioFab.SetActive(true);
@@ -54,7 +54,7 @@ namespace CCL.Importer
                     var rainLocation = simAudioFab.transform.Find(CarPartNames.Audio.RAIN_DUMMY_TRANSFORM);
                     if (rainLocation)
                     {
-                        var rainAudio = DM3AudioPrefab.transform.Find(CarPartNames.Audio.RAIN_MODULE).gameObject;
+                        var rainAudio = AudioDM3.transform.Find(CarPartNames.Audio.RAIN_MODULE).gameObject;
                         var newRainAudio = Object.Instantiate(rainAudio, newAudioFab.transform);
                         newRainAudio.transform.position = rainLocation.position;
 
@@ -77,7 +77,7 @@ namespace CCL.Importer
 
                 if (NeedsWheelsAudioModule(carType))
                 {
-                    var wheelsAudio = DM3AudioPrefab.transform.Find(CarPartNames.Audio.WHEELS_MODULE).gameObject;
+                    var wheelsAudio = AudioDM3.transform.Find(CarPartNames.Audio.WHEELS_MODULE).gameObject;
                     var newWheelsAudio = Object.Instantiate(wheelsAudio, newAudioFab.transform);
                     var wheelAudioModule = newWheelsAudio.GetComponent<WheelsAudioModule>();
                     modularAudio.audioModules.Add(wheelAudioModule);
