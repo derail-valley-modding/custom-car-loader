@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using CCL.Types.Catalog;
 using DV;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
@@ -17,6 +18,7 @@ namespace CCL.Importer.Types
         public TranslationData NameTranslations = new();
         public LoadableCargo? CargoTypes;
         public GameObject[] ExtraModels = new GameObject[0];
+        public CatalogPage? CatalogPage;
         public ExtraTranslations ExtraTranslations;
 
         public GameObject SimAudioPrefab;

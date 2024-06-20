@@ -26,6 +26,7 @@
 		<Reference Include="0Harmony" />
 		<Reference Include="I2.Localization" />
 		<Reference Include="Newtonsoft.Json" />
+    <Reference Include="Unity.TextMeshPro" />
 		<Reference Include="UnityEditor" />
 		<Reference Include="UnityEngine" />
 		<Reference Include="UnityEngine.AnimationModule" />
@@ -38,6 +39,7 @@
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="DVLangHelper.Data" />
 		<Reference Include="DVLangHelper.Runtime" />
+		<Reference Include="DV.Common" />
 		<Reference Include="DV.Interaction" />
 		<Reference Include="DV.Localization" />
 		<Reference Include="DV.NAudio" />

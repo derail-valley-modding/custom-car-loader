@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace CCL.Types
 {
@@ -38,6 +40,25 @@ namespace CCL.Types
         public static T AddComponentCopy<T>(this GameObject go, T component) where T : Component
         {
             return ComponentUtil.CopyComponent(component, go.AddComponent<T>());
+        }
+
+        // https://stackoverflow.com/a/10120982
+        public static float ClosestTo(this IEnumerable<float> collection, float target)
+        {
+            var closest = float.PositiveInfinity;
+            var minDifference = float.PositiveInfinity;
+
+            foreach (var element in collection)
+            {
+                var difference = Math.Abs(element - target);
+                if (minDifference > difference)
+                {
+                    minDifference = difference;
+                    closest = element;
+                }
+            }
+
+            return closest;
         }
     }
 }
