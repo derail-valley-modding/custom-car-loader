@@ -29,14 +29,14 @@ namespace CCL.Creator.Wizards
 
             List<string> requirements = new List<string>() { ExporterConstants.MOD_ID };
 
-            if (carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Passengers))
+            if (OtherMods.RequiresPassengerJobsMod(carType))
             {
-                requirements.Add(ExporterConstants.PASSENGER_JOBS);
+                requirements.Add(OtherMods.PASSENGER_JOBS);
             }
 
-            if (carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Custom))
+            if (OtherMods.RequiresCustomCargoMod(carType))
             {
-                requirements.Add(ExporterConstants.CUSTOM_CARGO);
+                requirements.Add(OtherMods.CUSTOM_CARGO);
             }
 
             Requirements = requirements.ToArray();
@@ -218,6 +218,47 @@ namespace CCL.Creator.Wizards
             Livery.SetAssetBundle(Parent.BundleName);
 
             return true;
+        }
+    }
+
+    internal static class OtherMods
+    {
+        public const string PASSENGER_JOBS = "PassengerJobs";
+        public const string CUSTOM_CARGO = "DVCustomCargo";
+
+        public static bool RequiresPassengerJobsMod(CustomCarType carType)
+        {
+            if (carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Passengers))
+            {
+                return true;
+            }
+
+            if (carType.CatalogPage != null && carType.CatalogPage.AllLicenses.Any(x => x == "Passengers"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool RequiresCustomCargoMod(CustomCarType carType)
+        {
+            return carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Custom);
+        }
+
+        public static bool RequiresCustomLicenseMod(CustomCarType carType)
+        {
+            if (!Utilities.IsVanillaLicense(carType.LicenseID))
+            {
+                return true;
+            }
+
+            if (carType.CatalogPage != null && carType.CatalogPage.AllLicenses.Any(x => !Utilities.IsVanillaLicense(x)))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -38,12 +38,6 @@ namespace CCL.Types
 
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
-        [Header("Audio (Optional)")]
-        public GameObject SimAudioPrefab;
-
-        [Header("HUD - optional")]
-        public VanillaHUDLayout HUDLayout = null!;
-
         [Header("Physics")]
         public float mass;
         public float bogieSuspensionMultiplier = 1;
@@ -69,8 +63,18 @@ namespace CCL.Types
         [Tooltip("Any extra prefab that has scripts on it should be added here")]
         public GameObject[] ExtraModels = new GameObject[0];
 
+        [Header("Audio - optional")]
+        public GameObject SimAudioPrefab;
+
+        [Header("HUD - optional")]
+        public VanillaHUDLayout HUDLayout = null!;
+
         [Header("Catalog - optional")]
         public CatalogPage CatalogPage = null!;
+
+        [Header("License - optional")]
+        [Tooltip("Only general license IDs are supported (not job licenses)")]
+        public string LicenseID = "";
 
         [SerializeField, HideInInspector]
         private string? brakesJson;

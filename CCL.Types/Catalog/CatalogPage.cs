@@ -89,6 +89,16 @@ namespace CCL.Types.Catalog
             }
         }
 
+        public IEnumerable<string> AllLicenses
+        {
+            get
+            {
+                yield return License1;
+                yield return License2;
+                yield return License3;
+            }
+        }
+
         public void OnValidate()
         {
             _loadJson = JSONObject.ToJson(LoadFlat);
