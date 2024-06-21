@@ -8,7 +8,7 @@ namespace CCL.Types.Proxies.Ports
 {
     public class ConfigurablePortsDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
-        [Serializable]
+        [Serializable, NotProxied]
         public class PortStartValue
         {
             public PortDefinition Port;

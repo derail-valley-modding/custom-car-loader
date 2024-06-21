@@ -11,6 +11,6 @@ namespace CCL.Types.Proxies.Controllers
 
         public BaseResourceType environmentDamageResource;
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(damagerPortId), damagerPortId) };
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(damagerPortId), damagerPortId, DVPortType.EXTERNAL_IN) };
     }
 }

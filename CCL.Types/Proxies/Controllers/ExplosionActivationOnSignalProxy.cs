@@ -20,7 +20,7 @@ namespace CCL.Types.Proxies.Controllers
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(explosionSignalPortId), explosionSignalPortId, DVPortValueType.GENERIC),
+            new PortIdField(this, nameof(explosionSignalPortId), explosionSignalPortId),
         };
     }
 

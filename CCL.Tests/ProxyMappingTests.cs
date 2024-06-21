@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using CCL.Importer;
+using CCL.Types.Proxies;
 
 namespace CCL.Tests
 {
@@ -29,7 +30,7 @@ namespace CCL.Tests
 
             if (failures.Count > 0)
             {
-                Assert.Fail(string.Join("\n", failures));
+                Assert.Fail("\n" + string.Join("\n", failures));
             }
         }
 
@@ -37,7 +38,7 @@ namespace CCL.Tests
         {
             foreach (var scriptType in scriptTypes)
             {
-                if (scriptType.IsAbstract || scriptType.IsEnum) continue;
+                if (scriptType.IsAbstract || scriptType.IsEnum || (scriptType.GetCustomAttribute<NotProxiedAttribute>() != null)) continue;
 
                 if (!typeMaps.Any(map => map.SourceType == scriptType))
                 {

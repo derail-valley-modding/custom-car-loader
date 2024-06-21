@@ -9,6 +9,6 @@ namespace CCL.Types.Proxies.Controllers
         [PortId(DVPortType.READONLY_OUT, DVPortValueType.STATE, false, local = true)]
         public string portId;
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(portId), portId) };
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(portId), portId, DVPortType.READONLY_OUT, DVPortValueType.STATE) };
     }
 }

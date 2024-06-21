@@ -14,6 +14,8 @@ namespace CCL.Types.Proxies
         [SerializeField]
         private float overheatCriticalThreshold = 105f;
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(temperaturePortId), temperaturePortId) };
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[] {
+            new PortIdField(this, nameof(temperaturePortId), temperaturePortId, DVPortValueType.TEMPERATURE)
+        };
     }
 }

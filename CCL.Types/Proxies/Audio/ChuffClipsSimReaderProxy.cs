@@ -45,11 +45,11 @@ namespace CCL.Types.Proxies.Audio
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(chuffEventPortId), chuffEventPortId),
-            new PortIdField(this, nameof(exhaustPressurePortId), exhaustPressurePortId),
-            new PortIdField(this, nameof(chuffFrequencyPortId), chuffFrequencyPortId),
-            new PortIdField(this, nameof(cylinderWaterNormalizedPortId), cylinderWaterNormalizedPortId),
-            new PortIdField(this, nameof(cylinderCockControlPortId), cylinderCockControlPortId)
+            new PortIdField(this, nameof(chuffEventPortId), chuffEventPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(exhaustPressurePortId), exhaustPressurePortId, DVPortValueType.PRESSURE),
+            new PortIdField(this, nameof(chuffFrequencyPortId), chuffFrequencyPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(cylinderWaterNormalizedPortId), cylinderWaterNormalizedPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(cylinderCockControlPortId), cylinderCockControlPortId, DVPortValueType.CONTROL),
         };
 
         public void DoFieldReplacing()

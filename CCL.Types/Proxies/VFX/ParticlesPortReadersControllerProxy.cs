@@ -146,7 +146,7 @@ namespace CCL.Types.Proxies.VFX
             public AnimationCurve colorLerpCurve;
         }
 
-        [Serializable]
+        [Serializable, NotProxied]
         public class FakeParticleColorPortReader
         {
             public string portId;

@@ -15,7 +15,7 @@ namespace CCL.Types.Proxies.Controllers
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(overheatFuseOffPortId), overheatFuseOffPortId, DVPortValueType.GENERIC),
+            new PortIdField(this, nameof(overheatFuseOffPortId), overheatFuseOffPortId),
         };
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
