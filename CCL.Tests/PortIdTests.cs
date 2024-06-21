@@ -14,52 +14,62 @@ namespace CCL.Tests
     {
         private static readonly BindingFlags ALL_INSTANCE = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        [TestMethod]
-        public void AllPortIdFieldsAreEnumerated()
+        public static IEnumerable<object[]> ScriptsWithPorts
         {
-            var scriptTypes = Assembly.GetAssembly(typeof(PortIdAttribute)).GetTypes()
-                .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t));
+            get
+            {
+                var scriptTypes = Assembly.GetAssembly(typeof(PortIdAttribute)).GetTypes()
+                    .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t));
 
+                foreach (var scriptType in scriptTypes)
+                {
+                    if (scriptType.IsAbstract) continue;
+
+                    var portIds = scriptType.GetFields(ALL_INSTANCE)
+                        .Select(f => new KeyValuePair<string, PortIdAttribute>(f.Name, f.GetCustomAttribute<PortIdAttribute>()))
+                        .Where(kvp => kvp.Value != null)
+                        .ToList();
+
+                    if (portIds.Any())
+                    {
+                        yield return new object[] { scriptType, portIds };
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ScriptsWithPorts))]
+        public void AllPortIdFieldsAreEnumerated(Type scriptType, IEnumerable<KeyValuePair<string, PortIdAttribute>> portIds)
+        {
             var failures = new List<string>();
 
-            foreach (var scriptType in scriptTypes)
+            if (!typeof(IHasPortIdFields).IsAssignableFrom(scriptType))
             {
-                if (scriptType.IsAbstract) continue;
+                failures.Add($"Script \"{scriptType.Name}\" with port IDs must expose them via {nameof(IHasPortIdFields)}");
+            }
+            else
+            {
+                var instance = Activator.CreateInstance(scriptType);
+                var exposedFields = ((IHasPortIdFields)instance).ExposedPortIdFields.ToList();
 
-                var portIds = scriptType.GetFields(ALL_INSTANCE)
-                    .Select(f => new KeyValuePair<string, PortIdAttribute>(f.Name, f.GetCustomAttribute<PortIdAttribute>()))
-                    .Where(kvp => kvp.Value != null)
-                    .ToList();
-
-                if (portIds.Any())
+                foreach (var idField in portIds)
                 {
-                    if (!typeof(IHasPortIdFields).IsAssignableFrom(scriptType))
+                    var matchingExposed = exposedFields.Find(f => f.FieldName == idField.Key);
+
+                    if (matchingExposed == null)
                     {
-                        failures.Add($"Script \"{scriptType.Name}\" with port IDs must expose them via {nameof(IHasPortIdFields)}");
-                        continue;
+                        failures.Add($"Port ID field {scriptType.Name}.{idField.Key} must be exposed via {nameof(IHasPortIdFields)}");
                     }
-
-                    var instance = Activator.CreateInstance(scriptType);
-                    var exposedFields = ((IHasPortIdFields)instance).ExposedPortIdFields.ToList();
-
-                    foreach (var idField in portIds)
+                    else
                     {
-                        var matchingExposed = exposedFields.Find(f => f.FieldName == idField.Key);
-
-                        if (matchingExposed == null)
+                        if (!SetsAreEqual(idField.Value.typeFilters, matchingExposed.TypeFilters))
                         {
-                            failures.Add($"Port ID field {idField.Key} must be exposed via {nameof(IHasPortIdFields)}");
+                            failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} type filter does not match definition");
                         }
-                        else
+                        if (!SetsAreEqual(idField.Value.valueTypeFilters, matchingExposed.ValueFilters))
                         {
-                            if (!SetsAreEqual(idField.Value.typeFilters, matchingExposed.TypeFilters))
-                            {
-                                failures.Add($"Exposed port ID field {idField.Key} type filter does not match definition");
-                            }
-                            if (!SetsAreEqual(idField.Value.valueTypeFilters, matchingExposed.ValueFilters))
-                            {
-                                failures.Add($"Exposed port ID field {idField.Key} value type filter does not match definition");
-                            }
+                            failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} value type filter does not match definition");
                         }
                     }
                 }
@@ -71,31 +81,42 @@ namespace CCL.Tests
             }
         }
 
-        [TestMethod]
-        public void AllFuseIdFieldsAreEnumerated()
+        public static IEnumerable<object[]> ScriptsWithFuses
         {
-            var scriptTypes = Assembly.GetAssembly(typeof(FuseIdAttribute)).GetTypes()
+            get
+            {
+                var scriptTypes = Assembly.GetAssembly(typeof(FuseIdAttribute)).GetTypes()
                 .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t));
 
+
+                foreach (var scriptType in scriptTypes)
+                {
+                    if (scriptType.IsAbstract) continue;
+
+                    var fuseIds = scriptType.GetFields(ALL_INSTANCE)
+                        .Select(f => new KeyValuePair<string, FuseIdAttribute>(f.Name, f.GetCustomAttribute<FuseIdAttribute>()))
+                        .Where(kvp => kvp.Value != null)
+                        .ToList();
+
+                    if (!fuseIds.Any()) continue;
+
+                    yield return new object[] { scriptType, fuseIds };
+                }
+            }
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ScriptsWithFuses))]
+        public void AllFuseIdFieldsAreEnumerated(Type scriptType, IEnumerable<KeyValuePair<string, FuseIdAttribute>> fuseIds)
+        {
             var failures = new List<string>();
 
-            foreach (var scriptType in scriptTypes)
+            if (!typeof(IHasFuseIdFields).IsAssignableFrom(scriptType))
             {
-                if (scriptType.IsAbstract) continue;
-
-                var fuseIds = scriptType.GetFields(ALL_INSTANCE)
-                    .Select(f => new KeyValuePair<string, FuseIdAttribute>(f.Name, f.GetCustomAttribute<FuseIdAttribute>()))
-                    .Where(kvp => kvp.Value != null)
-                    .ToList();
-
-                if (!fuseIds.Any()) continue;
-
-                if (!typeof(IHasFuseIdFields).IsAssignableFrom(scriptType))
-                {
-                    failures.Add($"Script \"{scriptType.Name}\" with fuse IDs must expose them via {nameof(IHasFuseIdFields)}");
-                    continue;
-                }
-
+                failures.Add($"Script \"{scriptType.Name}\" with fuse IDs must expose them via {nameof(IHasFuseIdFields)}");
+            }
+            else
+            {
                 var instance = Activator.CreateInstance(scriptType);
                 var exposedFields = ((IHasFuseIdFields)instance).ExposedFuseIdFields.ToList();
 
@@ -105,7 +126,7 @@ namespace CCL.Tests
 
                     if (matchingExposed == null)
                     {
-                        failures.Add($"Fuse ID field {idField.Key} must be exposed via {nameof(IHasFuseIdFields)}");
+                        failures.Add($"Fuse ID field {scriptType.Name}.{idField.Key} must be exposed via {nameof(IHasFuseIdFields)}");
                     }
                 }
             }

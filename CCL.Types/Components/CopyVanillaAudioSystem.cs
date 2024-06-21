@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
-    public class CopyVanillaAudioSystem : MonoBehaviour, IInstancedObject<GameObject>
+    public class CopyVanillaAudioSystem : MonoBehaviour, IInstancedObject<GameObject>, IHasPortIdFields
     {
         public VanillaAudioSystem AudioSystem;
 

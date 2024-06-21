@@ -12,7 +12,7 @@ namespace CCL.Types.Proxies.Controls
         public string blockedControlPortId;
         public BlockerDefinition[] blockers = new BlockerDefinition[0];
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(blockedControlPortId), blockedControlPortId) };
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(blockedControlPortId), blockedControlPortId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL) };
 
         [SerializeField, HideInInspector]
         private string? _json;

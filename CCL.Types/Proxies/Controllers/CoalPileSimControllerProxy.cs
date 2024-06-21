@@ -1,9 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
-    public class CoalPileSimControllerProxy : MonoBehaviour, IS060Defaults, IS282Defaults
+    public class CoalPileSimControllerProxy : MonoBehaviour, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         public float coalChunkMass;
         [PortId(DVPortType.READONLY_OUT, DVPortValueType.COAL, true)]
@@ -12,6 +13,13 @@ namespace CCL.Types.Proxies.Controllers
         public string coalCapacityPortId = string.Empty;
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.COAL, true)]
         public string coalConsumePortId = string.Empty;
+
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(coalAvailablePortId), coalAvailablePortId, DVPortType.READONLY_OUT, DVPortValueType.COAL),
+            new PortIdField(this, nameof(coalCapacityPortId), coalCapacityPortId, DVPortType.READONLY_OUT, DVPortValueType.COAL),
+            new PortIdField(this, nameof(coalConsumePortId), coalConsumePortId, DVPortType.EXTERNAL_IN, DVPortValueType.COAL),
+        };
 
         public void ApplyS060Defaults()
         {

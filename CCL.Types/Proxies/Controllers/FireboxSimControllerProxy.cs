@@ -26,13 +26,13 @@ namespace CCL.Types.Proxies.Controllers
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(fireboxCapacityPortId), fireboxCapacityPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(fireboxContentsPortId), fireboxContentsPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(fireboxDoorPortId), fireboxDoorPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(combustionRateNormalizedPortId), combustionRateNormalizedPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(fireOnPortId), fireOnPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(fireboxCoalControlPortId), fireboxCoalControlPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(fireboxIgnitionPortId), fireboxIgnitionPortId, DVPortValueType.GENERIC)
+            new PortIdField(this, nameof(fireboxCapacityPortId), fireboxCapacityPortId),
+            new PortIdField(this, nameof(fireboxContentsPortId), fireboxContentsPortId),
+            new PortIdField(this, nameof(fireboxDoorPortId), fireboxDoorPortId),
+            new PortIdField(this, nameof(combustionRateNormalizedPortId), combustionRateNormalizedPortId),
+            new PortIdField(this, nameof(fireOnPortId), fireOnPortId),
+            new PortIdField(this, nameof(fireboxCoalControlPortId), fireboxCoalControlPortId),
+            new PortIdField(this, nameof(fireboxIgnitionPortId), fireboxIgnitionPortId),
         };
 
         private void Reset()

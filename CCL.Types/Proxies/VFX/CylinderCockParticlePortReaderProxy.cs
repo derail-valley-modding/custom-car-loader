@@ -63,11 +63,11 @@ namespace CCL.Types.Proxies.VFX
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(crankRotationPortId), crankRotationPortId),
-            new PortIdField(this, nameof(reverserPortId), reverserPortId),
-            new PortIdField(this, nameof(cylindersSteamInjectionPortId), cylindersSteamInjectionPortId),
-            new PortIdField(this, nameof(cylinderCockFlowNormalizedPortId), cylinderCockFlowNormalizedPortId),
-            new PortIdField(this, nameof(forwardSpeedPortId), forwardSpeedPortId),
+            new PortIdField(this, nameof(crankRotationPortId), crankRotationPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(reverserPortId), reverserPortId, DVPortValueType.CONTROL),
+            new PortIdField(this, nameof(cylindersSteamInjectionPortId), cylindersSteamInjectionPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(cylinderCockFlowNormalizedPortId), cylinderCockFlowNormalizedPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(forwardSpeedPortId), forwardSpeedPortId, DVPortValueType.GENERIC),
         };
 
         public void OnValidate()

@@ -34,10 +34,10 @@ namespace CCL.Types.Proxies.VFX
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(fireOnPortId), fireOnPortId),
-            new PortIdField(this, nameof(chuffEventPortId), chuffEventPortId),
-            new PortIdField(this, nameof(isBoilerBrokenPortId), isBoilerBrokenPortId),
-            new PortIdField(this, nameof(exhaustPressurePortId), exhaustPressurePortId)
+            new PortIdField(this, nameof(fireOnPortId), fireOnPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(chuffEventPortId), chuffEventPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(isBoilerBrokenPortId), isBoilerBrokenPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(exhaustPressurePortId), exhaustPressurePortId, DVPortValueType.PRESSURE)
         };
 
         public void ApplyS060Defaults()
