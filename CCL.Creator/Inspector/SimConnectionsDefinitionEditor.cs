@@ -2,6 +2,7 @@
 using CCL.Creator.Wizards;
 using CCL.Types.Proxies.Ports;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace CCL.Creator.Inspector
@@ -10,15 +11,23 @@ namespace CCL.Creator.Inspector
     internal class SimConnectionsDefinitionEditor : Editor
     {
         private SimConnectionsDefinitionProxy _proxy = null!;
-        private SerializedProperty _order = null!;
         private SerializedProperty _connections = null!;
         private SerializedProperty _refConnections = null!;
+        private ReorderableList _orderList = null!;
 
         private void OnEnable()
         {
-            _order = serializedObject.FindProperty(nameof(SimConnectionsDefinitionProxy.executionOrder));
             _connections = serializedObject.FindProperty(nameof(SimConnectionsDefinitionProxy.connections));
             _refConnections = serializedObject.FindProperty(nameof(SimConnectionsDefinitionProxy.portReferenceConnections));
+
+            _orderList = EditorHelpers.CreateReorderableList(serializedObject, serializedObject.FindProperty(nameof(SimConnectionsDefinitionProxy.executionOrder)),
+                true, true, true, "Execution Order");
+
+            _orderList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                var element = _orderList.serializedProperty.GetArrayElementAtIndex(index);
+                EditorGUI.ObjectField(rect, element, GUIContent.none);
+            };
         }
 
         public override void OnInspectorGUI()
@@ -38,7 +47,7 @@ namespace CCL.Creator.Inspector
             }
 
             EditorGUILayout.Space();
-            EditorHelpers.ReorderableArrayField(_order);
+            _orderList.DoLayoutList();
             EditorGUILayout.PropertyField(_connections);
             EditorGUILayout.PropertyField(_refConnections);
 

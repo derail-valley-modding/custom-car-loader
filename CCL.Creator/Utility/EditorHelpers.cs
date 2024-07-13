@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
@@ -317,6 +318,18 @@ namespace CCL.Creator.Utility
         {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField(content, EditorStyles.boldLabel);
+        }
+
+        public static ReorderableList CreateReorderableList(SerializedObject obj, SerializedProperty elements, bool draggable, bool displayHeader, bool displayButtons,
+            string header)
+        {
+            return new ReorderableList(obj, elements, draggable, displayHeader, displayButtons, displayButtons)
+            {
+                drawHeaderCallback = (Rect rect) =>
+                {
+                    EditorGUI.LabelField(rect, header);
+                }
+            };
         }
     }
 
