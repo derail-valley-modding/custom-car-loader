@@ -45,11 +45,11 @@ namespace CCL.Creator.Utility
             BaseCargoType.ToolsTraeg,
         };
 
-        public static BaseCargoType[] GetCargosForType(CarParentType car)
+        public static BaseCargoType[] GetCargosForType(CarCargoSet car)
         {
             switch (car)
             {
-                case CarParentType.Flatbed:
+                case CarCargoSet.Flatbed:
                     return new[]
                     {
                         // Shared with Boxcar
@@ -100,13 +100,13 @@ namespace CCL.Creator.Utility
                         BaseCargoType.ToolsTraeg,
                         BaseCargoType.Tractors
                     };
-                case CarParentType.FlatbedStakes:
+                case CarCargoSet.FlatbedStakes:
                     return new[]
                     {
                         BaseCargoType.Logs,
                         BaseCargoType.Pipes
                     };
-                case CarParentType.FlatbedMilitary:
+                case CarCargoSet.FlatbedMilitary:
                     return new[]
                     {
                         BaseCargoType.Biohazard,
@@ -114,37 +114,37 @@ namespace CCL.Creator.Utility
                         BaseCargoType.MilitaryTrucks,
                         BaseCargoType.Tanks
                     };
-                case CarParentType.Autorack:
+                case CarCargoSet.Autorack:
                     return new[]
                     {
                         BaseCargoType.ImportedNewCars,
                         BaseCargoType.NewCars
                     };
-                case CarParentType.TankOil:
+                case CarCargoSet.TankOil:
                     return new[]
                     {
                         BaseCargoType.CrudeOil,
                         BaseCargoType.Diesel,
                         BaseCargoType.Gasoline
                     };
-                case CarParentType.TankGas:
+                case CarCargoSet.TankGas:
                     return new[]
                     {
                         BaseCargoType.Alcohol,
                         BaseCargoType.Methane
                     };
-                case CarParentType.TankChem:
+                case CarCargoSet.TankChem:
                     return new[]
                     {
                         BaseCargoType.Ammonia,
                         BaseCargoType.SodiumHydroxide
                     };
-                case CarParentType.TankFood:
+                case CarCargoSet.TankFood:
                     return new[]
                     {
                         BaseCargoType.Milk
                     };
-                case CarParentType.Stock:
+                case CarCargoSet.Stock:
                     return new[]
                     {
                         BaseCargoType.Cows,
@@ -153,7 +153,7 @@ namespace CCL.Creator.Utility
                         BaseCargoType.Poultry,
                         BaseCargoType.Sheep
                     };
-                case CarParentType.Boxcar:
+                case CarCargoSet.Boxcar:
                     return new[]
                     {
                         BaseCargoType.Bread,
@@ -169,19 +169,19 @@ namespace CCL.Creator.Utility
                         BaseCargoType.ChemicalsSperex,
                         BaseCargoType.Furniture
                     };
-                case CarParentType.BoxcarMilitary:
+                case CarCargoSet.BoxcarMilitary:
                     return new[]
                     {
                         BaseCargoType.Ammunition
                     };
-                case CarParentType.Refrigerator:
+                case CarCargoSet.Refrigerator:
                     return new[]
                     {
                         BaseCargoType.DairyProducts,
                         BaseCargoType.MeatProducts,
                         BaseCargoType.Medicine
                     };
-                case CarParentType.Hopper:
+                case CarCargoSet.Hopper:
                     return new[]
                     {
                         BaseCargoType.Coal,
@@ -190,17 +190,17 @@ namespace CCL.Creator.Utility
                         BaseCargoType.SunflowerSeeds,
                         BaseCargoType.Wheat
                     };
-                case CarParentType.Gondola:
+                case CarCargoSet.Gondola:
                     return new[]
                     {
                         BaseCargoType.ScrapMetal
                     };
-                case CarParentType.Passenger:
+                case CarCargoSet.Passenger:
                     return new[]
                     {
                         BaseCargoType.Passengers
                     };
-                case CarParentType.NuclearFlask:
+                case CarCargoSet.NuclearFlask:
                     return new[]
                     {
                         BaseCargoType.SpentNuclearFuel

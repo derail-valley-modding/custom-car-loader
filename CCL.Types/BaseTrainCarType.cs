@@ -30,7 +30,8 @@
         Passenger,
         NuclearFlask,
         Caboose,
-        Handcar
+        Handcar,
+        Custom
     }
 
     public enum BaseCargoType

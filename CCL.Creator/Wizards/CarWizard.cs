@@ -219,6 +219,9 @@ namespace CCL.Creator.Wizards
                     return BogieType.Microshunter;
                 case BaseTrainCarType.Handcar:
                     return BogieType.Handcar;
+
+                case BaseTrainCarType.Custom:
+                    return BogieType.Custom;
                 default:
                     return BogieType.Default;
             }
@@ -265,6 +268,9 @@ namespace CCL.Creator.Wizards
 
                 case BaseTrainCarType.S282Tender:
                     return BufferType.S282B;
+
+                case BaseTrainCarType.Custom:
+                    return BufferType.Custom;
 
                 default:
                     return BufferType.Buffer09;
