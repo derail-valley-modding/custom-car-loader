@@ -38,6 +38,25 @@ namespace CCL.Creator.Inspector
                 _grabber.PickSame();
                 AssetHelper.SaveAsset(_grabber);
             }
+
+            // Quick replace when importing vanilla models directly and swapping before use.
+            if (GUILayout.Button("Use Object Name"))
+            {
+                _grabber.ReplacementName = _grabber.gameObject.name;
+                AssetHelper.SaveAsset(_grabber);
+            }
+
+            // Remove the mesh in the filter if it will be replaced anyways.
+            GUI.enabled = _grabber.Filter;
+            if (GUILayout.Button("Set Mesh In Filter To None"))
+            {
+                if (_grabber.Filter != null)
+                {
+                    _grabber.Filter.mesh = null;
+                    AssetHelper.SaveAsset(_grabber);
+                }
+            }
+            GUI.enabled = true;
         }
     }
 }

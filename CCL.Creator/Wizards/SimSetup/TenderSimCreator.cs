@@ -40,6 +40,8 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ELECTRONICS_MAIN", true)
             };
 
+            fuseController.fuseId = FullFuseId(fusebox, 0);
+
             _baseControls.propagateNeutralStateToFront = true;
 
             ConnectPortRef(dynamo, dynamo.port.ID, fuseController, fuseController.controllingPort.ID);
