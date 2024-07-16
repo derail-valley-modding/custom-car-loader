@@ -4,29 +4,36 @@ namespace CCL.Types.Proxies.Indicators
 {
     public class IndicatorScalerProxy : IndicatorProxy
     {
-        public Transform indicatorToScale;
+        public Transform indicatorToScale = null!;
         public Vector3 startScale = Vector3.one;
         public Vector3 endScale = Vector3.one;
+
+        [Header("Editor visualization")]
+        public bool scaleFromModel = true;
+        public Vector3 sizeMultiplier = Vector3.one;
 
         public void OnDrawGizmos()
         {
             if (!indicatorToScale) return;
 
-            Vector3 worldCenter = ModelUtil.GetModelCenterline(gameObject);
-            Vector3 localCenter = transform.InverseTransformPoint(worldCenter);
-            Vector3 worldStart = transform.TransformPoint(Vector3.Scale(localCenter, startScale));
-            Vector3 worldEnd = transform.TransformPoint(Vector3.Scale(localCenter, endScale));
+            Gizmos.matrix = Matrix4x4.TRS(indicatorToScale.position, indicatorToScale.rotation,
+                scaleFromModel ? ModelUtil.GetModelBounds(indicatorToScale.gameObject).size : sizeMultiplier);
 
-            float tickScale = Vector3.Distance(worldStart, worldEnd) * 0.1f;
-            Vector3 axis = (worldEnd - worldStart).normalized;
-            Vector3 perpendicular = (axis.z < axis.x) ? new Vector3(axis.y, -axis.x, 0) : new Vector3(0, -axis.z, axis.y);
-
+            // Bleh
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(worldStart, worldEnd);
+            Gizmos.DrawLine(new Vector3(startScale.x, startScale.y, startScale.z) * 0.5f, new Vector3(endScale.x, endScale.y, endScale.z) * 0.5f);
+            Gizmos.DrawLine(new Vector3(startScale.x, startScale.y, -startScale.z) * 0.5f, new Vector3(endScale.x, endScale.y, -endScale.z)  * 0.5f);
+            Gizmos.DrawLine(new Vector3(startScale.x, -startScale.y, startScale.z) * 0.5f, new Vector3(endScale.x, -endScale.y, endScale.z)  * 0.5f);
+            Gizmos.DrawLine(new Vector3(startScale.x, -startScale.y, -startScale.z) * 0.5f, new Vector3(endScale.x, -endScale.y, -endScale.z) * 0.5f);
+            Gizmos.DrawLine(new Vector3(-startScale.x, startScale.y, startScale.z) * 0.5f, new Vector3(-endScale.x, endScale.y, endScale.z)  * 0.5f);
+            Gizmos.DrawLine(new Vector3(-startScale.x, startScale.y, -startScale.z) * 0.5f, new Vector3(-endScale.x, endScale.y, -endScale.z) * 0.5f);
+            Gizmos.DrawLine(new Vector3(-startScale.x, -startScale.y, startScale.z) * 0.5f, new Vector3(-endScale.x, -endScale.y, endScale.z) * 0.5f);
+            Gizmos.DrawLine(new Vector3(-startScale.x, -startScale.y, -startScale.z) * 0.5f, new Vector3(-endScale.x, -endScale.y, -endScale.z) * 0.5f);
+
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(worldStart + perpendicular * tickScale, worldStart + perpendicular * -tickScale);
+            Gizmos.DrawWireCube(Vector3.zero, startScale);
             Gizmos.color = Color.green;
-            Gizmos.DrawLine(worldEnd + perpendicular * tickScale, worldEnd + perpendicular * -tickScale);
+            Gizmos.DrawWireCube(Vector3.zero, endScale);
         }
     }
 }
