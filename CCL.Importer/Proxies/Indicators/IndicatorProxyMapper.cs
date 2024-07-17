@@ -29,7 +29,7 @@ namespace CCL.Importer.Proxies.Indicators
             CreateMap<LampFuseReaderProxy, LampFuseReader>().AutoCacheAndMap();
             CreateMap<LampBrakeIssueReaderProxy, LampBrakeLeaksAndHandbrakeStateReader>().AutoCacheAndMap();
             CreateMap<LampControlProxy, LampControl>().AutoCacheAndMap()
-                .WithCachedMember(d => d.lampInd);
+                .ForMember(d => d.lampInd, o => o.MapFrom(s => Mapper.GetFromCache(s.lampInd)));
 
             CreateMap<LabelLocalizer, Localize>();
         }
