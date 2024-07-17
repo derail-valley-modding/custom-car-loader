@@ -9,7 +9,7 @@ namespace CCL.Types.Proxies.Indicators
         public float minAngle = -180f;
         public float maxAngle = 180f;
         public bool unclamped;
-        public Vector3 rotationAxis = Vector3.forward;
+        public Vector3 rotationAxis = Vector3.back;
 
         [Header("Editor visualization")]
         public float gizmoRadius = 0.1f;
@@ -26,14 +26,13 @@ namespace CCL.Types.Proxies.Indicators
                 return;
             }
 
-            float num = gizmoRadius;
             Vector3 start = Vector3.zero;
 
             for (int i = 0; i <= GIZMO_SEGMENTS; i++)
             {
                 Gizmos.color = Color.Lerp(START_COLOR, END_COLOR, (float)i / GIZMO_SEGMENTS);
                 Vector3 position = transform.TransformPoint(
-                    Quaternion.AngleAxis(Mathf.Lerp(minAngle, maxAngle, (float)i / GIZMO_SEGMENTS), rotationAxis) * Vector3.up * num);
+                    Quaternion.AngleAxis(Mathf.Lerp(minAngle, maxAngle, (float)i / GIZMO_SEGMENTS), rotationAxis) * Vector3.up * gizmoRadius);
 
                 if (i == 0 || i == GIZMO_SEGMENTS)
                 {
