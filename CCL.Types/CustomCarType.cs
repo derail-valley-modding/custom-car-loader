@@ -20,6 +20,10 @@ namespace CCL.Types
     [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
     public class CustomCarType : ScriptableObject, IAssetLoadCallback
     {
+        public const float ROLLING_RESISTANCE_COEFFICIENT = 0.002f;
+        public const float WHEELSLIDE_FRICTION_COEFFICIENT = 0.13f;
+        public const float WHEELSLIP_FRICTION_COEFFICIENT = 0.2f;
+
         [Header("Basic Properties")]
         public DVTrainCarKind KindSelection = DVTrainCarKind.Car;
 
@@ -41,9 +45,9 @@ namespace CCL.Types
         [Header("Physics")]
         public float mass;
         public float bogieSuspensionMultiplier = 1;
-        public float rollingResistanceMultiplier = 1;
-        public float wheelSlidingFrictionMultiplier = 1;
-        public float wheelslipFrictionMultiplier = 1;
+        public float rollingResistanceCoefficient = ROLLING_RESISTANCE_COEFFICIENT;
+        public float wheelSlidingFrictionCoefficient = WHEELSLIDE_FRICTION_COEFFICIENT;
+        public float wheelslipFrictionCoefficient = WHEELSLIP_FRICTION_COEFFICIENT;
 
         [Header("Wheels")]
         public float wheelRadius;

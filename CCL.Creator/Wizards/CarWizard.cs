@@ -142,7 +142,7 @@ namespace CCL.Creator.Wizards
             carType.author = settings.Author!;
             carType.KindSelection = settings.Kind;
             carType.NameTranslations = TranslationData.Default(settings.Name!);
-            carType.carIdPrefix = $"{GetInitials(settings.Name!)}-";
+            carType.carIdPrefix = GetCarIdPrefix(settings.Name!, settings.Kind);
             carType.mass = 25000;
             carType.wheelRadius = 0.459f;
 
@@ -193,6 +193,12 @@ namespace CCL.Creator.Wizards
             PrefabUtility.InstantiatePrefab(prefab);
             return prefab;
         }
+
+        private static string GetCarIdPrefix(string name, DVTrainCarKind kind) => kind switch
+        {
+            DVTrainCarKind.Car => GetInitials(name),
+            _ => "-",
+        };
 
         private static string GetInitials(string value)
         {
