@@ -16,7 +16,7 @@
 		<ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Publicize Include="Assembly-CSharp" IncludeVirtualMembers="false" />
+		<Publicize Include="Assembly-CSharp" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using CCL.Types.Components;
+using System;
 using UnityEngine;
 
 namespace CCL.Importer.Components
@@ -6,20 +7,27 @@ namespace CCL.Importer.Components
     internal class AttachToCoupledInternal : MonoBehaviour
     {
         private TrainCar _car = null!;
-        private Coupler _coupledToFront = null!;
-        private Coupler _coupledToRear = null!;
         private Transform _target = null!;
+        private bool _coupledFront = false;
+        private bool _coupledRear = false;
         private Vector3 _position = Vector3.zero;
         private Quaternion _rotation = Quaternion.identity;
         private Vector3 _scale = Vector3.one;
-        private bool _coupleStateFront = false;
-        private bool _coupleStateRear = false;
 
-        public CouplingDirection Direction;
-        public CouplingDirection OtherDirection = CouplingDirection.Rear;
+        public string FrontConnectionTransformFront = string.Empty;
+        public string FrontConnectionTransformRear = string.Empty;
+        public string RearConnectionTransformFront = string.Empty;
+        public string RearConnectionTransformRear = string.Empty;
         public ConnectionMode Mode;
         public bool HideWhenUncoupled = false;
-        public string TransformPath = string.Empty;
+
+        public bool ConnectFF => !string.IsNullOrEmpty(FrontConnectionTransformFront);
+        public bool ConnectFR => !string.IsNullOrEmpty(FrontConnectionTransformRear);
+        public bool ConnectRF => !string.IsNullOrEmpty(RearConnectionTransformFront);
+        public bool ConnectRR => !string.IsNullOrEmpty(RearConnectionTransformRear);
+
+        public bool HasFrontConnection => ConnectFF || ConnectFR;
+        public bool HasRearConnection => ConnectRF || ConnectRR;
 
         private void Start()
         {
@@ -28,9 +36,35 @@ namespace CCL.Importer.Components
 
             if (!_car)
             {
-                Debug.Log($"Could not find attached TrainCar! ({name})");
+                Debug.Log($"Could not find attached TrainCar! AttachToCoupler {name}");
                 Destroy(this);
                 return;
+            }
+
+            if (HasFrontConnection)
+            {
+                if (!_car.frontCoupler)
+                {
+                    Debug.Log($"Could not find front coupler! AttachToCoupler {name}");
+                    Destroy(this);
+                    return;
+                }
+
+                _car.frontCoupler.Coupled += OnCoupleFront;
+                _car.frontCoupler.Uncoupled += OnUncoupleFront;
+            }
+
+            if (HasRearConnection)
+            {
+                if (!_car.rearCoupler)
+                {
+                    Debug.Log($"Could not find rear coupler! AttachToCoupler {name}");
+                    Destroy(this);
+                    return;
+                }
+
+                _car.rearCoupler.Coupled += OnCoupleRear;
+                _car.rearCoupler.Uncoupled += OnUncoupleRear;
             }
 
             // Grab the original position to reset.
@@ -39,10 +73,62 @@ namespace CCL.Importer.Components
             _scale = transform.localScale;
         }
 
-        private void FixedUpdate()
+        private void OnCoupleFront(object sender, CoupleEventArgs e)
         {
-            // Why aren't events working 😔
-            CheckForCoupling();
+            // Already coupled to something.
+            if (_target)
+            {
+                return;
+            }
+
+            if (ConnectFF && e.otherCoupler == e.otherCoupler.train.frontCoupler)
+            {
+                _coupledFront = AcquireTarget(e.otherCoupler.train, FrontConnectionTransformFront);
+                return;
+            }
+
+            if (ConnectFR && e.otherCoupler == e.otherCoupler.train.rearCoupler)
+            {
+                _coupledFront = AcquireTarget(e.otherCoupler.train, FrontConnectionTransformRear);
+                return;
+            }
+        }
+
+        private void OnUncoupleFront(object sender, UncoupleEventArgs e)
+        {
+            // Don't disconnect if it was the other coupler that triggered the targetting.
+            if (_coupledFront && _target)
+            {
+                ResetState();
+            }
+        }
+
+        private void OnCoupleRear(object sender, CoupleEventArgs e)
+        {
+            if (_target)
+            {
+                return;
+            }
+
+            if (ConnectRF && e.otherCoupler == e.otherCoupler.train.frontCoupler)
+            {
+                _coupledFront = AcquireTarget(e.otherCoupler.train, RearConnectionTransformFront);
+                return;
+            }
+
+            if (ConnectRR && e.otherCoupler == e.otherCoupler.train.rearCoupler)
+            {
+                _coupledFront = AcquireTarget(e.otherCoupler.train, RearConnectionTransformRear);
+                return;
+            }
+        }
+
+        private void OnUncoupleRear(object sender, UncoupleEventArgs e)
+        {
+            if (_coupledRear && _target)
+            {
+                ResetState();
+            }
         }
 
         private void Update()
@@ -66,120 +152,19 @@ namespace CCL.Importer.Components
             }
         }
 
-        private void CheckForCoupling()
+        private bool AcquireTarget(TrainCar other, string path)
         {
-            switch (Direction)
-            {
-                case CouplingDirection.Front:
-                    FrontCheck();
-                    break;
-                case CouplingDirection.Rear:
-                    RearCheck();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        private void FrontCheck()
-        {
-            // Coupled.
-            if (!_coupledToFront && _car.frontCoupler.coupledTo)
-            {
-                Coupler other = _car.frontCoupler.coupledTo;
-
-                switch (OtherDirection)
-                {
-                    case CouplingDirection.Front:
-                        if (other == other.train.frontCoupler)
-                        {
-                            AcquireTarget(other.train, CouplingDirection.Front);
-                        }
-                        break;
-                    case CouplingDirection.Rear:
-                        if (other == other.train.rearCoupler)
-                        {
-                            AcquireTarget(other.train, CouplingDirection.Front);
-                        }
-                        break;
-                    default:
-                        return;
-                }
-
-                _coupledToFront = _car.frontCoupler.coupledTo;
-                return;
-            }
-
-            // Uncoupled.
-            if (_coupledToFront && !_car.frontCoupler.coupledTo && _coupleStateFront)
-            {
-                ResetState();
-                _coupledToFront = _car.frontCoupler.coupledTo;
-                _coupleStateFront = false;
-            }
-        }
-
-        private void RearCheck()
-        {
-            // Coupled.
-            if (!_coupledToRear && _car.rearCoupler.coupledTo)
-            {
-                Coupler other = _car.rearCoupler.coupledTo;
-
-                switch (OtherDirection)
-                {
-                    case CouplingDirection.Front:
-                        if (other == other.train.frontCoupler)
-                        {
-                            AcquireTarget(other.train, CouplingDirection.Rear);
-                        }
-                        break;
-                    case CouplingDirection.Rear:
-                        if (other == other.train.rearCoupler)
-                        {
-                            AcquireTarget(other.train, CouplingDirection.Rear);
-                        }
-                        break;
-                    default:
-                        return;
-                }
-
-                _coupledToRear = _car.rearCoupler.coupledTo;
-                return;
-            }
-
-            // Uncoupled.
-            if (_coupledToRear && !_car.rearCoupler.coupledTo && _coupleStateRear)
-            {
-                ResetState();
-                _coupledToRear = _car.rearCoupler.coupledTo;
-                _coupleStateRear = false;
-            }
-        }
-
-        private void AcquireTarget(TrainCar other, CouplingDirection direction)
-        {
-            _target = other.transform.Find(TransformPath);
+            _target = other.transform.Find(path);
 
             if (_target)
             {
-                switch (direction)
-                {
-                    case CouplingDirection.Front:
-                        _coupleStateFront = true;
-                        break;
-                    case CouplingDirection.Rear:
-                        _coupleStateRear = true;
-                        break;
-                    default:
-                        break;
-                }
-
                 transform.localScale = _scale;
+                return true;
             }
             else
             {
-                CCLPlugin.Error($"Failed to acquire target '{TransformPath}' for '{name}'");
+                CCLPlugin.Error($"Failed to acquire target '{path}' for '{name}'");
+                return false;
             }
         }
 
@@ -188,6 +173,8 @@ namespace CCL.Importer.Components
             transform.localPosition = _position;
             transform.localRotation = _rotation;
             _target = null!;
+            _coupledFront = false;
+            _coupledRear = false;
 
             if (HideWhenUncoupled)
             {
@@ -197,11 +184,12 @@ namespace CCL.Importer.Components
 
         public void Copy(AttachToCoupled source)
         {
-            Direction = source.Direction;
-            OtherDirection = source.OtherDirection;
+            FrontConnectionTransformFront = source.FrontConnectionTransformFront;
+            FrontConnectionTransformRear = source.FrontConnectionTransformRear;
+            RearConnectionTransformFront = source.RearConnectionTransformFront;
+            RearConnectionTransformRear = source.RearConnectionTransformRear;
             Mode = source.Mode;
             HideWhenUncoupled = source.HideWhenUncoupled;
-            TransformPath = source.TransformPath;
         }
     }
 }

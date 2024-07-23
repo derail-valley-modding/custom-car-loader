@@ -4,23 +4,21 @@ namespace CCL.Types.Components
 {
     public class AttachToCoupled : MonoBehaviour
     {
-        [Tooltip("Connect when coupled to the following direction")]
-        public CouplingDirection Direction = CouplingDirection.Front;
-        [Tooltip("Connect when coupled to the other car's direction")]
-        public CouplingDirection OtherDirection = CouplingDirection.Rear;
+        [Header("Connections")]
+        [Tooltip("If specified, will attempt to connect to a transform at this path in the front vehicle when that vehicle's front connects to this vehicle's front")]
+        public string FrontConnectionTransformFront = string.Empty;
+        [Tooltip("If specified, will attempt to connect to a transform at this path in the front vehicle when that vehicle's rear connects to this vehicle's front")]
+        public string FrontConnectionTransformRear = string.Empty;
+        [Tooltip("If specified, will attempt to connect to a transform at this path in the rear vehicle when that vehicle's front connects to this vehicle's rear")]
+        public string RearConnectionTransformFront = string.Empty;
+        [Tooltip("If specified, will attempt to connect to a transform at this path in the rear vehicle when that vehicle's rear connects to this vehicle's rear")]
+        public string RearConnectionTransformRear = string.Empty;
+
+        [Header("Behaviour")]
         [Tooltip("How this object will behave")]
         public ConnectionMode Mode;
         [Tooltip("Hide gameobject when not uncoupled")]
         public bool HideWhenUncoupled = false;
-        [Tooltip("The path to the attachment point")]
-        public string TransformPath = string.Empty;
-
-    }
-
-    public enum CouplingDirection
-    {
-        Front,
-        Rear
     }
 
     public enum ConnectionMode

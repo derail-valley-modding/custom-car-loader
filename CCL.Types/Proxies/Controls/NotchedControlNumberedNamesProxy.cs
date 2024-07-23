@@ -2,7 +2,5 @@
 
 namespace CCL.Types.Proxies.Controls
 {
-    public class NotchedControlNumberedNamesProxy : MonoBehaviour
-    {
-    }
+    public class NotchedControlNumberedNamesProxy : MonoBehaviour { }
 }
