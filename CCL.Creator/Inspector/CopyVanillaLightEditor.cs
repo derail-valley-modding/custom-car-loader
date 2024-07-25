@@ -16,7 +16,8 @@ namespace CCL.Creator.Inspector
             base.OnInspectorGUI();
 
             EditorGUILayout.HelpBox("This component will apply the properties to the light in the same GameObject.\n" +
-                "It will also attempt to add a LightShadowQualityProxy if one is used by the original light.", MessageType.Info);
+                "It will also attempt to add a LightShadowQualityProxy if one is used by the original light.\n" +
+                "You should remove this component before exporting.", MessageType.Info);
 
             if (GUILayout.Button("Apply"))
             {

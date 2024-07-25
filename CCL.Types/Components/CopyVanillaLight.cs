@@ -23,11 +23,9 @@ namespace CCL.Types.Components
 
         public static void ApplyProperties(Light light, VanillaLight source)
         {
-            LightShadowQualityProxy quality = null!;
-
             switch (source)
             {
-                case VanillaLight.DE2HeadlightsHigh:
+                case VanillaLight.LocoHeadlightsHigh:
                     light.type = LightType.Spot;
                     light.range = 250.0f;
                     light.spotAngle = 20.0f;
@@ -45,14 +43,9 @@ namespace CCL.Types.Components
 
                     light.cullingMask = ~0;
 
-                    if (!light.TryGetComponent(out quality))
-                    {
-                        quality = light.gameObject.AddComponent<LightShadowQualityProxy>();
-                    }
-
-                    quality.settings = LightShadowQualitySettings.HeadlightConfig;
+                    AddQuality(light, LightShadowQualitySettings.HeadlightConfig);
                     break;
-                case VanillaLight.DE2HeadlightsLow:
+                case VanillaLight.LocoHeadlightsLow:
                     light.type = LightType.Spot;
                     light.range = 120.0f;
                     light.spotAngle = 32.0f;
@@ -70,15 +63,11 @@ namespace CCL.Types.Components
 
                     light.cullingMask = ~0;
 
-                    if (!light.TryGetComponent(out quality))
-                    {
-                        quality = light.gameObject.AddComponent<LightShadowQualityProxy>();
-                    }
-
-                    quality.settings = LightShadowQualitySettings.HeadlightConfig;
+                    AddQuality(light, LightShadowQualitySettings.HeadlightConfig);
                     break;
 
                 case VanillaLight.DE2Cablights:
+                case VanillaLight.DE6Cablights:
                     light.type = LightType.Point;
                     light.range = 2.5f;
                     light.color = new Color32(229, 208, 176, 255);
@@ -94,6 +83,70 @@ namespace CCL.Types.Components
                     light.shadowNearPlane = 0.2f;
 
                     light.cullingMask = ~0;
+
+                    RemoveQuality(light);
+                    break;
+                case VanillaLight.DH4Cablights:
+                case VanillaLight.DM3Cablights:
+                    light.type = LightType.Point;
+                    light.range = 2.5f;
+                    light.color = new Color32(233, 218, 195, 255);
+
+                    // Mode missing...
+                    light.intensity = 2.5f;
+
+                    light.shadows = LightShadows.None;
+
+                    light.cullingMask = ~0;
+
+                    RemoveQuality(light);
+                    break;
+                case VanillaLight.BE2Cablights:
+                    light.type = LightType.Point;
+                    light.range = 2.5f;
+                    light.color = new Color32(233, 218, 195, 255);
+
+                    // Mode missing...
+                    light.intensity = 2.5f;
+
+                    light.shadows = LightShadows.None;
+
+                    light.cullingMask = ~0;
+
+                    AddQuality(light, new LightShadowQualitySettings[]
+                    {
+                        new LightShadowQualitySettings
+                        {
+                            qualityIndex = 0,
+                            shadows = LightShadows.None,
+                            resolution = LightShadowResolution.Low
+                        },
+                        new LightShadowQualitySettings
+                        {
+                            qualityIndex = 6,
+                            shadows = LightShadows.Soft,
+                            resolution = LightShadowResolution.Medium
+                        }
+                    });
+                    break;
+                case VanillaLight.S060Cablights:
+                    light.type = LightType.Point;
+                    light.range = 2.5f;
+                    light.color = new Color32(250, 194, 107, 255);
+
+                    // Mode missing...
+                    light.intensity = 2.5f;
+
+                    light.shadows = LightShadows.Soft;
+                    light.shadowStrength = 1.0f;
+                    light.shadowResolution = LightShadowResolution.Low;
+                    light.shadowBias = 0.05f;
+                    light.shadowNormalBias = 0.4f;
+                    light.shadowNearPlane = 0.2f;
+
+                    light.cullingMask = ~0;
+
+                    RemoveQuality(light);
                     break;
 
                 case VanillaLight.S060Fire:
@@ -114,12 +167,28 @@ namespace CCL.Types.Components
 
                     light.cullingMask = ~0;
 
-                    if (!light.TryGetComponent(out quality))
-                    {
-                        quality = light.gameObject.AddComponent<LightShadowQualityProxy>();
-                    }
+                    AddQuality(light, LightShadowQualitySettings.DefaultConfig);
+                    break;
 
-                    quality.settings = LightShadowQualitySettings.DefaultConfig;
+                case VanillaLight.S282GearLight:
+                    light.type = LightType.Spot;
+                    light.range = 8.0f;
+                    light.spotAngle = 35.9f;
+                    light.color = new Color32(238, 204, 152, 255);
+
+                    // Mode missing...
+                    light.intensity = 5.0f;
+
+                    light.shadows = LightShadows.Soft;
+                    light.shadowStrength = 1.0f;
+                    light.shadowResolution = LightShadowResolution.Low;
+                    light.shadowBias = 0.05f;
+                    light.shadowNormalBias = 0.4f;
+                    light.shadowNearPlane = 0.2f;
+
+                    light.cullingMask = ~0;
+
+                    RemoveQuality(light);
                     break;
 
                 default:
@@ -127,16 +196,41 @@ namespace CCL.Types.Components
                     break;
             }
         }
+
+        private static void AddQuality(Light light, LightShadowQualitySettings[] config)
+        {
+            if (!light.TryGetComponent(out LightShadowQualityProxy quality))
+            {
+                quality = light.gameObject.AddComponent<LightShadowQualityProxy>();
+            }
+
+            quality.settings = config;
+        }
+
+        private static void RemoveQuality(Light light)
+        {
+            if (!light.TryGetComponent(out LightShadowQualityProxy quality))
+            {
+                Destroy(quality);
+            }
+        }
     }
 
     public enum VanillaLight
     {
-        DE2HeadlightsHigh = 0,
-        DE2HeadlightsLow,
+        LocoHeadlightsHigh = 0,
+        LocoHeadlightsLow,
 
         DE2Cablights = 100,
+        DE6Cablights,
+        DH4Cablights,
+        DM3Cablights,
+        BE2Cablights,
+        S060Cablights,
 
         S060Fire = 200,
         S282Fire,
+
+        S282GearLight = 250
     }
 }

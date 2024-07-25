@@ -1,5 +1,5 @@
-﻿using CCL.Types.Components;
-using System;
+﻿using CCL.Types;
+using CCL.Types.Components;
 using UnityEngine;
 
 namespace CCL.Importer.Components
@@ -10,6 +10,7 @@ namespace CCL.Importer.Components
         private Transform _target = null!;
         private bool _coupledFront = false;
         private bool _coupledRear = false;
+        private bool _flipDirection = false;
         private Vector3 _position = Vector3.zero;
         private Quaternion _rotation = Quaternion.identity;
         private Vector3 _scale = Vector3.one;
@@ -84,12 +85,13 @@ namespace CCL.Importer.Components
             if (ConnectFF && e.otherCoupler == e.otherCoupler.train.frontCoupler)
             {
                 _coupledFront = AcquireTarget(e.otherCoupler.train, FrontConnectionTransformFront);
+                _flipDirection = GetFlipStatus(transform.forward, _target.forward);
                 return;
             }
-
-            if (ConnectFR && e.otherCoupler == e.otherCoupler.train.rearCoupler)
+            else if (ConnectFR && e.otherCoupler == e.otherCoupler.train.rearCoupler)
             {
                 _coupledFront = AcquireTarget(e.otherCoupler.train, FrontConnectionTransformRear);
+                _flipDirection = GetFlipStatus(transform.forward, _target.forward);
                 return;
             }
         }
@@ -113,12 +115,14 @@ namespace CCL.Importer.Components
             if (ConnectRF && e.otherCoupler == e.otherCoupler.train.frontCoupler)
             {
                 _coupledFront = AcquireTarget(e.otherCoupler.train, RearConnectionTransformFront);
+                _flipDirection = GetFlipStatus(transform.forward, _target.forward);
                 return;
             }
 
             if (ConnectRR && e.otherCoupler == e.otherCoupler.train.rearCoupler)
             {
                 _coupledFront = AcquireTarget(e.otherCoupler.train, RearConnectionTransformRear);
+                _flipDirection = GetFlipStatus(transform.forward, _target.forward);
                 return;
             }
         }
@@ -128,27 +132,6 @@ namespace CCL.Importer.Components
             if (_coupledRear && _target)
             {
                 ResetState();
-            }
-        }
-
-        private void Update()
-        {
-            if (!_target) return;
-
-            switch (Mode)
-            {
-                case ConnectionMode.Rigid:
-                    transform.LookAt(_target);
-                    break;
-                case ConnectionMode.Attach:
-                    transform.position = _target.position;
-                    transform.rotation = _target.rotation;
-                    break;
-                case ConnectionMode.HalfMeet:
-                    // WIP
-                    break;
-                default:
-                    break;
             }
         }
 
@@ -168,6 +151,11 @@ namespace CCL.Importer.Components
             }
         }
 
+        private static bool GetFlipStatus(Vector3 here, Vector3 other)
+        {
+            return Vector3.Dot(here, other) < 0;
+        }
+
         public void ResetState()
         {
             transform.localPosition = _position;
@@ -180,6 +168,52 @@ namespace CCL.Importer.Components
             {
                 transform.localScale = Vector3.zero;
             }
+        }
+
+        private void Update()
+        {
+            if (!_target) return;
+
+            switch (Mode)
+            {
+                case ConnectionMode.Rigid:
+                    RigidUpdate();
+                    break;
+                case ConnectionMode.Attach:
+                    AttachUpdate();
+                    break;
+                case ConnectionMode.HalfMeet:
+                    HalfMeetUpdate();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void RigidUpdate()
+        {
+            transform.LookAt(_target);
+        }
+
+        private void AttachUpdate()
+        {
+            transform.position = _target.position;
+            transform.rotation = _target.rotation;
+        }
+
+        private void HalfMeetUpdate()
+        {
+            transform.localPosition = _position;
+            transform.localRotation = _rotation;
+
+            float scale = (transform.position - _target.position).magnitude;
+            Vector3 forward = scale * transform.forward;
+            Vector3 otherF = -scale * _target.forward;
+
+            transform.position = MathHelper.Bezier(
+                transform.position, transform.position + forward, _target.position - otherF, _target.position, 0.5f);
+            transform.rotation = Quaternion.LookRotation(MathHelper.BezierDerivative1(
+                transform.position, transform.position + forward, _target.position - otherF, _target.position, 0.5f));
         }
 
         public void Copy(AttachToCoupled source)

@@ -27,7 +27,8 @@ namespace CCL.Types.Components
         Rigid,
         [Tooltip("Object will move to the attach point position")]
         Attach,
-        [Tooltip("Object will meet another object halfway")]
+        [Tooltip("Object will meet another object halfway\n" +
+            "You should ensure this object and the target face eachother")]
         HalfMeet
     }
 }
