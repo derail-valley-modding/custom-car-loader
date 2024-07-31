@@ -15,6 +15,7 @@ namespace CCL.Importer.Components
         private Quaternion _rotation = Quaternion.identity;
         private Vector3 _scale = Vector3.one;
 
+        public Transform MovedObject = null!;
         public string FrontConnectionTransformFront = string.Empty;
         public string FrontConnectionTransformRear = string.Empty;
         public string RearConnectionTransformFront = string.Empty;
@@ -69,9 +70,9 @@ namespace CCL.Importer.Components
             }
 
             // Grab the original position to reset.
-            _position = transform.localPosition;
-            _rotation = transform.localRotation;
-            _scale = transform.localScale;
+            _position = MovedObject.localPosition;
+            _rotation = MovedObject.localRotation;
+            _scale = MovedObject.localScale;
         }
 
         private void OnCoupleFront(object sender, CoupleEventArgs e)
@@ -141,7 +142,7 @@ namespace CCL.Importer.Components
 
             if (_target)
             {
-                transform.localScale = _scale;
+                MovedObject.localScale = _scale;
                 return true;
             }
             else
@@ -158,15 +159,15 @@ namespace CCL.Importer.Components
 
         public void ResetState()
         {
-            transform.localPosition = _position;
-            transform.localRotation = _rotation;
+            MovedObject.localPosition = _position;
+            MovedObject.localRotation = _rotation;
             _target = null!;
             _coupledFront = false;
             _coupledRear = false;
 
             if (HideWhenUncoupled)
             {
-                transform.localScale = Vector3.zero;
+                MovedObject.localScale = Vector3.zero;
             }
         }
 
@@ -192,32 +193,30 @@ namespace CCL.Importer.Components
 
         private void RigidUpdate()
         {
-            transform.LookAt(_target);
+            MovedObject.LookAt(_target);
         }
 
         private void AttachUpdate()
         {
-            transform.position = _target.position;
-            transform.rotation = _target.rotation;
+            MovedObject.position = _target.position;
+            MovedObject.rotation = _target.rotation;
         }
 
         private void HalfMeetUpdate()
         {
-            transform.localPosition = _position;
-            transform.localRotation = _rotation;
-
-            float scale = (transform.position - _target.position).magnitude;
+            float scale = (transform.position - _target.position).magnitude * 0.3f;
             Vector3 forward = scale * transform.forward;
             Vector3 otherF = -scale * _target.forward;
 
-            transform.position = MathHelper.Bezier(
+            MovedObject.position = MathHelper.Bezier(
                 transform.position, transform.position + forward, _target.position - otherF, _target.position, 0.5f);
-            transform.rotation = Quaternion.LookRotation(MathHelper.BezierDerivative1(
+            MovedObject.rotation = Quaternion.LookRotation(MathHelper.BezierDerivative1(
                 transform.position, transform.position + forward, _target.position - otherF, _target.position, 0.5f));
         }
 
         public void Copy(AttachToCoupled source)
         {
+            MovedObject = source.MovedObject;
             FrontConnectionTransformFront = source.FrontConnectionTransformFront;
             FrontConnectionTransformRear = source.FrontConnectionTransformRear;
             RearConnectionTransformFront = source.RearConnectionTransformFront;

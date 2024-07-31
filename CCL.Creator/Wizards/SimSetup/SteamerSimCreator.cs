@@ -132,46 +132,43 @@ namespace CCL.Creator.Wizards.SimSetup
             SimComponentDefinitionProxy water = null!;
             SimComponentDefinitionProxy coal = null!;
 
-            switch (basisIndex)
+            if (HasTender(basisIndex))
             {
-                case 0:
-                    var locoWater = CreateResourceContainer(ResourceContainerType.Water);
-                    var locoCoal = CreateResourceContainer(ResourceContainerType.Coal);
-                    CreateCoalPile(locoCoal);
-
-                    water = locoWater;
-                    coal = locoCoal;
-                    break;
-                case 1:
-                    var tenderWater = CreateSimComponent<ConfigurablePortsDefinitionProxy>("tenderWater");
-                    tenderWater.Ports = new[]
-                    {
+                var tenderWater = CreateSimComponent<ConfigurablePortsDefinitionProxy>("tenderWater");
+                tenderWater.Ports = new[]
+                {
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "NORMALIZED"), 0),
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "CAPACITY"), 30000),
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "AMOUNT"), 0),
                         new PortStartValue(new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "CONSUME_EXT_IN"), 0)
                     };
-                    tenderWater.OnValidate();
-                    CreateBroadcastConsumer(tenderWater, "NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_NORMALIZED", 0, false);
-                    CreateBroadcastConsumer(tenderWater, "CAPACITY", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_CAPACITY", 1, false);
-                    CreateBroadcastConsumer(tenderWater, "AMOUNT", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_AMOUNT", 0, false);
-                    CreateBroadcastProvider(tenderWater, "CONSUME_EXT_IN", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_CONSUME");
+                tenderWater.OnValidate();
+                CreateBroadcastConsumer(tenderWater, "NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_NORMALIZED", 0, false);
+                CreateBroadcastConsumer(tenderWater, "CAPACITY", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_CAPACITY", 1, false);
+                CreateBroadcastConsumer(tenderWater, "AMOUNT", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_AMOUNT", 0, false);
+                CreateBroadcastProvider(tenderWater, "CONSUME_EXT_IN", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_CONSUME");
 
-                    var tenderCoal = CreateSimComponent<ConfigurablePortsDefinitionProxy>("tenderCoal");
-                    tenderCoal.Ports = new[]
-                    {
+                var tenderCoal = CreateSimComponent<ConfigurablePortsDefinitionProxy>("tenderCoal");
+                tenderCoal.Ports = new[]
+                {
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "NORMALIZED"), 0),
                         new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "CAPACITY"), 10000),
                     };
-                    tenderCoal.OnValidate();
-                    CreateBroadcastConsumer(tenderCoal, "NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_COAL_NORMALIZED", 0, false);
-                    CreateBroadcastConsumer(tenderCoal, "CAPACITY", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_COAL_CAPACITY", 1, false);
+                tenderCoal.OnValidate();
+                CreateBroadcastConsumer(tenderCoal, "NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_COAL_NORMALIZED", 0, false);
+                CreateBroadcastConsumer(tenderCoal, "CAPACITY", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_COAL_CAPACITY", 1, false);
 
-                    water = tenderWater;
-                    coal = tenderCoal;
-                    break;
-                default:
-                    break;
+                water = tenderWater;
+                coal = tenderCoal;
+            }
+            else
+            {
+                var locoWater = CreateResourceContainer(ResourceContainerType.Water);
+                var locoCoal = CreateResourceContainer(ResourceContainerType.Coal);
+                CreateCoalPile(locoCoal);
+
+                water = locoWater;
+                coal = locoCoal;
             }
 
             // Fusebox and fuse connections.
@@ -262,7 +259,14 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(reverser, "REVERSER", steamEngine, "REVERSER_CONTROL");
             ConnectPortRef(cylCock, "EXT_IN", steamEngine, "CYLINDER_COCK_CONTROL");
             ConnectPortRef(throttleCalc, "STEAM_CHEST_PRESSURE", steamEngine, "STEAM_CHEST_PRESSURE");
-            ConnectPortRef(firebox, "TEMPERATURE", steamEngine, "STEAM_CHEST_TEMPERATURE");
+            if (HasSuperheater(basisIndex))
+            {
+                ConnectPortRef(firebox, "TEMPERATURE", steamEngine, "STEAM_CHEST_TEMPERATURE");
+            }
+            else
+            {
+                ConnectPortRef(boiler, "TEMPERATURE", steamEngine, "STEAM_CHEST_TEMPERATURE");
+            }
             ConnectPortRef(boiler, "OUTLET_STEAM_QUALITY", steamEngine, "STEAM_QUALITY");
             ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", steamEngine, "CRANK_RPM");
             ConnectPortRef(lubricator, "LUBRICATION_NORMALIZED", steamEngine, "LUBRICATION_NORMALIZED");
@@ -289,6 +293,28 @@ namespace CCL.Creator.Wizards.SimSetup
             if (!_root.TryGetComponent(out MagicShovellingProxy shovelling))
             {
                 shovelling = _root.AddComponent<MagicShovellingProxy>();
+            }
+        }
+
+        private static bool HasTender(int basis)
+        {
+            switch (basis)
+            {
+                case 1:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool HasSuperheater(int basis)
+        {
+            switch (basis)
+            {
+                case 1:
+                    return true;
+                default:
+                    return false;
             }
         }
     }

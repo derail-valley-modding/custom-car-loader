@@ -44,7 +44,7 @@ namespace CCL.Types.Proxies.VFX
             /// <summary>
             /// Default values.
             /// </summary>
-            public static LightShadowQualitySettings[] DefaultConfig => new LightShadowQualitySettings[]
+            public static LightShadowQualitySettings[] DefaultConfig => new[]
             {
                 new LightShadowQualitySettings
                 {
@@ -62,7 +62,7 @@ namespace CCL.Types.Proxies.VFX
             /// <summary>
             /// Used on headlights.
             /// </summary>
-            public static LightShadowQualitySettings[] HeadlightConfig => new LightShadowQualitySettings[]
+            public static LightShadowQualitySettings[] HeadlightConfig => new[]
             {
                 new LightShadowQualitySettings
                 {

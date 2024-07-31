@@ -4,6 +4,9 @@ namespace CCL.Types.Components
 {
     public class AttachToCoupled : MonoBehaviour
     {
+        [Tooltip("The object that will move/rotate")]
+        public Transform MovedObject = null!;
+
         [Header("Connections")]
         [Tooltip("If specified, will attempt to connect to a transform at this path in the front vehicle when that vehicle's front connects to this vehicle's front")]
         public string FrontConnectionTransformFront = string.Empty;

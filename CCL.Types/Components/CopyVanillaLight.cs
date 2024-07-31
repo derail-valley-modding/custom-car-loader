@@ -113,7 +113,7 @@ namespace CCL.Types.Components
 
                     light.cullingMask = ~0;
 
-                    AddQuality(light, new LightShadowQualitySettings[]
+                    AddQuality(light, new[]
                     {
                         new LightShadowQualitySettings
                         {
