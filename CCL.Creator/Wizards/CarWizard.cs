@@ -142,7 +142,7 @@ namespace CCL.Creator.Wizards
             carType.author = settings.Author!;
             carType.KindSelection = settings.Kind;
             carType.NameTranslations = TranslationData.Default(settings.Name!);
-            carType.carIdPrefix = $"{GetInitials(settings.Name!)}-";
+            carType.carIdPrefix = GetCarIdPrefix(settings.Name!, settings.Kind);
             carType.mass = 25000;
             carType.wheelRadius = 0.459f;
 
@@ -194,6 +194,12 @@ namespace CCL.Creator.Wizards
             return prefab;
         }
 
+        private static string GetCarIdPrefix(string name, DVTrainCarKind kind) => kind switch
+        {
+            DVTrainCarKind.Car => GetInitials(name),
+            _ => "-",
+        };
+
         private static string GetInitials(string value)
         {
             return string.Concat(value
@@ -206,19 +212,22 @@ namespace CCL.Creator.Wizards
         {
             switch (carType)
             {
-                case BaseTrainCarType.LocoShunter:
+                case BaseTrainCarType.LocoDE2:
                     return BogieType.DE2;
-                case BaseTrainCarType.LocoSteamHeavy:
+                case BaseTrainCarType.LocoS282:
                     return BogieType.S282;
-                case BaseTrainCarType.LocoDiesel:
+                case BaseTrainCarType.LocoDE6:
                 case BaseTrainCarType.LocoDE6Slug:
                     return BogieType.DE6;
                 case BaseTrainCarType.LocoDH4:
                     return BogieType.DH4;
                 case BaseTrainCarType.LocoMicroshunter:
                     return BogieType.Microshunter;
-                case BaseTrainCarType.HandCar:
+                case BaseTrainCarType.Handcar:
                     return BogieType.Handcar;
+
+                case BaseTrainCarType.Custom:
+                    return BogieType.Custom;
                 default:
                     return BogieType.Default;
             }
@@ -228,55 +237,46 @@ namespace CCL.Creator.Wizards
         {
             switch (carType)
             {
-                case BaseTrainCarType.BoxcarBrown:
-                case BaseTrainCarType.BoxcarGreen:
-                case BaseTrainCarType.BoxcarPink:
-                case BaseTrainCarType.BoxcarRed:
+                case BaseTrainCarType.Boxcar:
                     return BufferType.Buffer02;
 
-                case BaseTrainCarType.LocoShunter:
+                case BaseTrainCarType.LocoDE2:
                 case BaseTrainCarType.LocoDH4:
                 case BaseTrainCarType.LocoDM3:
-                case BaseTrainCarType.StockRed:
-                case BaseTrainCarType.StockGreen:
-                case BaseTrainCarType.StockBrown:
+                case BaseTrainCarType.Stock:
                     return BufferType.Buffer03;
 
                 case BaseTrainCarType.LocoS060:
-                case BaseTrainCarType.GondolaRed:
-                case BaseTrainCarType.GondolaGreen:
-                case BaseTrainCarType.GondolaGray:
+                case BaseTrainCarType.Gondola:
                     return BufferType.Buffer04;
 
-                case BaseTrainCarType.LocoDiesel:
+                case BaseTrainCarType.LocoDE6:
                 case BaseTrainCarType.LocoDE6Slug:
                 case BaseTrainCarType.LocoMicroshunter:
                     return BufferType.Buffer05;
 
                 case BaseTrainCarType.BoxcarMilitary:
-                case BaseTrainCarType.RefrigeratorWhite:
+                case BaseTrainCarType.Refrigerator:
                     return BufferType.Buffer06;
 
-                case BaseTrainCarType.CabooseRed:
-                case BaseTrainCarType.TankOrange:
-                case BaseTrainCarType.TankWhite:
-                case BaseTrainCarType.TankYellow:
-                case BaseTrainCarType.TankBlue:
-                case BaseTrainCarType.TankChrome:
-                case BaseTrainCarType.TankBlack:
-                case BaseTrainCarType.TankShortMilk:
+                case BaseTrainCarType.Caboose:
+                case BaseTrainCarType.TankGas:
+                case BaseTrainCarType.TankOil:
+                case BaseTrainCarType.TankChem:
+                case BaseTrainCarType.TankFood:
                     return BufferType.Buffer07;
 
-                case BaseTrainCarType.PassengerRed:
-                case BaseTrainCarType.PassengerGreen:
-                case BaseTrainCarType.PassengerBlue:
+                case BaseTrainCarType.Passenger:
                     return BufferType.Buffer08;
 
-                case BaseTrainCarType.LocoSteamHeavy:
+                case BaseTrainCarType.LocoS282:
                     return BufferType.S282A;
 
-                case BaseTrainCarType.Tender:
+                case BaseTrainCarType.S282Tender:
                     return BufferType.S282B;
+
+                case BaseTrainCarType.Custom:
+                    return BufferType.Custom;
 
                 default:
                     return BufferType.Buffer09;
@@ -289,13 +289,12 @@ namespace CCL.Creator.Wizards
             public string? ID;
             public string? Name;
             public string? Author;
-            public BaseTrainCarType BaseCarType;
+            public BaseTrainCarType BaseCarType = BaseTrainCarType.Flatbed;
 
             public bool IsValid =>
                 !string.IsNullOrWhiteSpace(ID) &&
                 !string.IsNullOrWhiteSpace(Name) &&
-                !string.IsNullOrWhiteSpace(Author) &&
-                (BaseCarType != BaseTrainCarType.NotSet);
+                !string.IsNullOrWhiteSpace(Author);
         }
     }
 }

@@ -51,6 +51,47 @@ namespace CCL.Types
             return (gizmoZeroVector, massZeroVector);
         }
 
+        public static Bounds GetModelBounds(GameObject gameObject)
+        {
+            var renderers = gameObject.GetComponentsInChildren<Renderer>();
+
+            if (renderers.Length == 0)
+            {
+                return new Bounds();
+            }
+
+            Bounds bounds = renderers[0].bounds;
+
+            for(int i = 1; i < renderers.Length; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+
+            return bounds;
+        }
+
+        public static Bounds GetModelBoundsWithInverse(GameObject gameObject, Vector3 point)
+        {
+            var renderers = gameObject.GetComponentsInChildren<Renderer>();
+
+            if (renderers.Length == 0)
+            {
+                return new Bounds();
+            }
+
+            Bounds bounds = renderers[0].bounds;
+
+            for (int i = 1; i < renderers.Length; i++)
+            {
+                bounds.Encapsulate(renderers[i].bounds);
+            }
+
+            Bounds bounds2 = bounds;
+            bounds.center = point - (bounds.center - point);
+            bounds.Encapsulate(bounds2);
+
+            return bounds;
+        }
 
         public static Transform? FindSafe(this Transform? tform, string name)
         {

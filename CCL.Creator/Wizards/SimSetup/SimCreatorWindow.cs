@@ -365,6 +365,7 @@ namespace CCL.Creator.Wizards.SimSetup
         }
 
         protected string FullPortId(SimComponentDefinitionProxy component, string portId) => $"{component.ID}.{portId}";
+        protected string FullFuseId(IndependentFusesDefinitionProxy fusebox, int index) => $"{fusebox.ID}.{fusebox.fuses[index].id}";
 
         protected void ConnectPorts(string fullSourceId, string fullDestId)
         {

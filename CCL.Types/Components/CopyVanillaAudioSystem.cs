@@ -14,6 +14,7 @@ namespace CCL.Types.Components
         public string PortId2;
 
         public Transform[] SourcePositions = new Transform[0];
+        public AudioClip[] Clips = new AudioClip[0];
 
         public GameObject? InstancedObject { get; set; }
         public bool CanReplace => InstancedObject != null;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies
@@ -31,7 +32,9 @@ namespace CCL.Types.Proxies
         [SerializeField, HideInInspector]
         private Material[] mats = new Material[0];
         [SerializeField, HideInInspector]
-        private GameObject[][] affectedGos = new GameObject[0][];
+        private List<GameObject> affectedGos = new List<GameObject>();
+        [SerializeField, HideInInspector]
+        private List<int> affectedGosLengths = new List<int>();
         [SerializeField, HideInInspector]
         private GameObject[] go2replace = new GameObject[0];
         [SerializeField, HideInInspector]
@@ -51,13 +54,15 @@ namespace CCL.Types.Proxies
 
             length = materialSwaps.Length;
             mats = new Material[length];
-            affectedGos = new GameObject[length][];
+            var affectedGosTemp = new GameObject[length][];
 
             for (int i = 0; i < length; i++)
             {
                 mats[i] = materialSwaps[i].swapMaterial;
-                affectedGos[i] = materialSwaps[i].affectedGameObjects;
+                affectedGosTemp[i] = materialSwaps[i].affectedGameObjects;
             }
+
+            SerializationUtility.SerializeJaggedArray(affectedGosTemp, out affectedGos, out affectedGosLengths);
         }
 
         public void AfterImport()
@@ -74,15 +79,16 @@ namespace CCL.Types.Proxies
                 };
             }
 
-            length = Mathf.Min(mats.Length, affectedGos.Length);
+            SerializationUtility.DeserializeJaggedArray(affectedGos, affectedGosLengths, out var affectedGosTemp);
+            length = Mathf.Min(mats.Length, affectedGosTemp.Length);
             materialSwaps = new MaterialSwapData[length];
 
-            for(int i = 0;i < length; i++)
+            for(int i = 0; i < length; i++)
             {
                 materialSwaps[i] = new MaterialSwapData()
                 {
                     swapMaterial = mats[i],
-                    affectedGameObjects = affectedGos[i]
+                    affectedGameObjects = affectedGosTemp[i]
                 };
             }
         }

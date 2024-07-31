@@ -96,7 +96,7 @@ namespace CCL.Creator.Wizards
                 Debug.Log($"assets: {builds}");
 
                 BuildPipeline.BuildAssetBundles(ExportFolderPath, trainCarBundleBuild.ToArray(), BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
-                Debug.Log($"Finished AssetBundle build for car: {CarType.id}.");
+                Debug.Log($"[{DateTime.Now:HH:mm:ss}] Finished AssetBundle build for car: {CarType.id}.");
 
                 // Create car.json file.
                 if (Progress("Writing car properties...", 0.80f)) return;

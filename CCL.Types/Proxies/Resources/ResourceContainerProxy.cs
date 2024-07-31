@@ -90,10 +90,10 @@ namespace CCL.Types.Proxies.Resources
         {
             capacity = type switch
             {
-                ResourceContainerType.Coal => 10000,
+                ResourceContainerType.Coal => 1200,
                 ResourceContainerType.Oil => 100,
-                ResourceContainerType.Sand => 600,
-                ResourceContainerType.Water => 30000,
+                ResourceContainerType.Sand => 240,
+                ResourceContainerType.Water => 4500,
                 _ => 100,
             };
             defaultValue = capacity;
@@ -103,10 +103,10 @@ namespace CCL.Types.Proxies.Resources
         {
             capacity = type switch
             {
-                ResourceContainerType.Coal => 1200,
+                ResourceContainerType.Coal => 10000,
                 ResourceContainerType.Oil => 100,
-                ResourceContainerType.Sand => 240,
-                ResourceContainerType.Water => 4500,
+                ResourceContainerType.Sand => 600,
+                ResourceContainerType.Water => 30000,
                 _ => 100,
             };
             defaultValue = capacity;

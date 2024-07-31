@@ -9,7 +9,9 @@ namespace CCL.Types.Proxies.Indicators
         public float minAngle = -180f;
         public float maxAngle = 180f;
         public bool unclamped;
-        public Vector3 rotationAxis = Vector3.forward;
+        public Vector3 rotationAxis = Vector3.back;
+
+        [Header("Editor visualization")]
         public float gizmoRadius = 0.1f;
 
         protected const float GIZMO_RADIUS = 0.1f;
@@ -24,30 +26,25 @@ namespace CCL.Types.Proxies.Indicators
                 return;
             }
 
-            Vector3 massCenter = ModelUtil.GetModelCenterline(gameObject);
-            Vector3 massZeroVector = transform.InverseTransformPoint(massCenter);
-            Vector3 massPivot = Vector3.Project(massZeroVector, rotationAxis);
+            Vector3 start = Vector3.zero;
 
-            Vector3 lastVector = Vector3.zero;
             for (int i = 0; i <= GIZMO_SEGMENTS; i++)
             {
-                Color segmentColor = Color.Lerp(START_COLOR, END_COLOR, (float)i / GIZMO_SEGMENTS);
+                Gizmos.color = Color.Lerp(START_COLOR, END_COLOR, (float)i / GIZMO_SEGMENTS);
+                Vector3 position = transform.TransformPoint(
+                    Quaternion.AngleAxis(Mathf.Lerp(minAngle, maxAngle, (float)i / GIZMO_SEGMENTS), rotationAxis) * Vector3.up * gizmoRadius);
 
-                Quaternion rotation = Quaternion.AngleAxis(Mathf.Lerp(minAngle, maxAngle, (float)i / GIZMO_SEGMENTS), rotationAxis);
-                Vector3 nextVector = transform.TransformPoint(rotation * massZeroVector);
-                
-                Gizmos.color = segmentColor;
                 if (i == 0 || i == GIZMO_SEGMENTS)
                 {
-                    Gizmos.DrawLine(transform.TransformPoint(massPivot), nextVector);
+                    Gizmos.DrawLine(needle.position, position);
                 }
 
                 if (i != 0)
                 {
-                    Gizmos.DrawLine(lastVector, nextVector);
+                    Gizmos.DrawLine(start, position);
                 }
 
-                lastVector = nextVector;
+                start = position;
             }
         }
     }

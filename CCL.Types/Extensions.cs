@@ -60,5 +60,15 @@ namespace CCL.Types
 
             return closest;
         }
+
+        public static Vector3 Flattened(this Vector3 vector)
+        {
+            return new Vector3(vector.x, 0, vector.z);
+        }
+
+        public static Vector2 FlattenedVector2(this Vector3 vector)
+        {
+            return new Vector2(vector.x, vector.z);
+        }
     }
 }

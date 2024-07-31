@@ -1,6 +1,6 @@
 ﻿namespace CCL.Creator.Utility
 {
-    internal enum CarParentType
+    internal enum CarCargoSet
     {
         None,
         Flatbed,

@@ -130,7 +130,10 @@ namespace CCL.Importer
 
             cfg.CreateMap<CustomCarType, CCL_CarType>()
                 .ForMember(c => c.carInstanceIdGenBase, o => o.MapFrom(ccl => ccl.carIdPrefix))
-                .ForMember(c => c.liveries, o => o.ConvertUsing(new LiveriesConverter()));
+                .ForMember(c => c.liveries, o => o.ConvertUsing(new LiveriesConverter()))
+                .ForMember(c => c.rollingResistanceMultiplier, o => o.MapFrom(ccl => ccl.rollingResistanceCoefficient / CustomCarType.ROLLING_RESISTANCE_COEFFICIENT))
+                .ForMember(c => c.wheelSlideFrictionMultiplier, o => o.MapFrom(ccl => ccl.wheelSlidingFrictionCoefficient / CustomCarType.WHEELSLIDE_FRICTION_COEFFICIENT))
+                .ForMember(c => c.wheelslipFrictionMultiplier, o => o.MapFrom(ccl => ccl.wheelslipFrictionCoefficient / CustomCarType.WHEELSLIP_FRICTION_COEFFICIENT));
 
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>()
                 .ForMember(b => b.trainBrake, o => o.MapFrom(s => s.brakeValveType));

@@ -2,7 +2,6 @@
 using CCL.Types.Proxies.VFX;
 using DV.Simulation.Controllers;
 using DV.VFX;
-using UnityEngine;
 
 namespace CCL.Importer.Proxies.VFX
 {
@@ -26,6 +25,9 @@ namespace CCL.Importer.Proxies.VFX
             CreateMap<SteamSmokeParticlePortReaderProxy, SteamSmokeParticlePortReader>().AutoCacheAndMap();
 
             CreateMap<WorldMoverParticleSimulationSpaceProxy, WorldMoverParticleSimulationSpace>().AutoCacheAndMap();
+
+            CreateMap<LightShadowQualityProxy, LightShadowQuality>().AutoCacheAndMap();
+            CreateMap<LightShadowQualityProxy.LightShadowQualitySettings, LightShadowQuality.LightShadowQualitySettings>();
         }
 
         private void ParticlesPortReadersControllerAfter(ParticlesPortReadersControllerProxy _, ParticlesPortReadersController comp)

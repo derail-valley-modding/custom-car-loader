@@ -11,6 +11,7 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<NotchedControlCustomNamesProxy, NotchedControlCustomNames>().AutoCacheAndMap();
             CreateMap<NotchedControlNumberedNamesProxy, NotchedControlNumberedNames>().AutoCacheAndMap();
             CreateMap<PercentageControlNamesProxy, PercentageControlNames>().AutoCacheAndMap();
+            CreateMap<ToggleSwitchZeroOneNamesProxy, ToggleSwitchZeroOneNames>().AutoCacheAndMap();
 
             CreateMap<LocoControlsReaderProxy, LocoControlsReader>().AutoCacheAndMap();
             CreateMap<LocoIndicatorReaderProxy, LocoIndicatorReader>().AutoCacheAndMap()

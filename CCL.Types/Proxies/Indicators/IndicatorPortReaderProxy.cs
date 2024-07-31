@@ -9,8 +9,8 @@ namespace CCL.Types.Proxies.Indicators
         [PortId(null, null, false)]
         public string portId;
 
-        [PortId(null, null, false)]
         [Header("Optional")]
+        [PortId(null, null, false)]
         public string indicatorRangeScalerPortId;
 
         [FuseId]
@@ -18,9 +18,7 @@ namespace CCL.Types.Proxies.Indicators
 
         [Header("Value modifiers")]
         public float valueMultiplier = 1f;
-
         public float valueOffset;
-
         public bool useAbsoluteValue;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]

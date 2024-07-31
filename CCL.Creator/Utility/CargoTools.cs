@@ -114,7 +114,7 @@ namespace CCL.Creator.Utility
 
         #region SET CARGO
 
-        private CarParentType _carParentType = CarParentType.None;
+        private CarCargoSet _carParentType = CarCargoSet.None;
         private float _amount = 1.0f;
 
         private float _cargoScroll = 0.0f;

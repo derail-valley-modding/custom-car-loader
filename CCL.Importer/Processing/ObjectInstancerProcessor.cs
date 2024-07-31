@@ -248,6 +248,20 @@ namespace CCL.Importer.Processing
                     }
                 }
 
+                if (item.Clips.Length > 0)
+                {
+                    var layers = audio.layers.OrderBy(x => x.name).ToArray();
+                    length = layers.Length;
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        if (item.Clips[i] != null)
+                        {
+                            layers[i].source.clip = item.Clips[i];
+                        }
+                    }
+                }
+
                 Object.Destroy(item);
             }
 
