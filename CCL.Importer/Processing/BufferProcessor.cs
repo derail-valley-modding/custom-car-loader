@@ -219,7 +219,7 @@ namespace CCL.Importer.Processing
                 else if (CarPartNames.Buffers.PLATE_FRONT.Equals(childName))
                 {
                     // front hook plate
-                    if (carSetup.HideFrontCoupler)
+                    if (carSetup.HideFrontCoupler || carSetup.HideHookPlates)
                     {
                         Object.Destroy(child.gameObject);
                         CCLPlugin.LogVerbose("Destroy Hook Plate F");
@@ -233,7 +233,7 @@ namespace CCL.Importer.Processing
                 else if (CarPartNames.Buffers.PLATE_REAR.Equals(childName))
                 {
                     // rear hook plate
-                    if (carSetup.HideBackCoupler)
+                    if (carSetup.HideBackCoupler || carSetup.HideHookPlates)
                     {
                         Object.Destroy(child.gameObject);
                         CCLPlugin.LogVerbose("Destroy Hook Plate R");
