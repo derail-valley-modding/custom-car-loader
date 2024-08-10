@@ -37,6 +37,7 @@ namespace CCL.Types
     {
         public JobLicenseFieldAttribute(bool customAllowed = true) : base(IdV2.JobLicenses, customAllowed) { }
     }
+
     public class AnyLicenseFieldAttribute : StringAndSelectorFieldAttribute
     {
         public AnyLicenseFieldAttribute(bool customAllowed = true) : base(IdV2.GeneralLicenses.Concat(IdV2.JobLicenses), customAllowed) { }
