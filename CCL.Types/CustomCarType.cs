@@ -78,6 +78,7 @@ namespace CCL.Types
 
         [Header("License - optional")]
         [Tooltip("Only general license IDs are supported (not job licenses)")]
+        [GeneralLicenseField]
         public string LicenseID = "";
 
         [SerializeField, HideInInspector]

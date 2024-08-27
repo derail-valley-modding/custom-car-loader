@@ -2,6 +2,7 @@
 using HarmonyLib;
 using System.Reflection;
 using DVLangHelper.Runtime;
+using System.Linq;
 
 namespace CCL.Importer
 {
@@ -37,6 +38,13 @@ namespace CCL.Importer
 
             var harmony = new Harmony(CCLPluginInfo.Guid);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            //Log(string.Join("\",\n\"", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id)));
+            //Log(string.Join("\",\n\"", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id)));
+            //Log(string.Join("\",\n\"", DV.Globals.G.Types.jobLicenses.OrderBy(x => x.v1).Select(x => x.id)));
+            //Log(string.Join("\",\n\"", DV.Globals.G.Types.garages.OrderBy(x => x.v1).Select(x => x.id)));
+            //Log(string.Join("\",\n\"", DV.Globals.G.Types.resources.OrderBy(x => x.v1).Select(x => x.id)));
+            //Log(string.Join("\",\n\"", DV.Globals.G.Types.carTypes.Select(x => x.id)));
 
             return true;
         }

@@ -18,6 +18,7 @@ namespace CCL.Importer.Types
         public bool HasMUCable;
         public bool UseCustomHosePositions;
 
+        public bool HideHookPlates;
         public bool HideFrontCoupler;
         public bool HideBackCoupler;
 

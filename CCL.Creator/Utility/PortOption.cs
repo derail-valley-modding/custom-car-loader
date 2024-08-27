@@ -35,7 +35,7 @@ namespace CCL.Creator.Utility
             PortValueType = valueType;
         }
 
-        public string Description => $"[{Code}] {ID} ({PrefabName})";
+        public string Description => CCLEditorSettings.Settings.DisplayCodeOnPortFields ? $"[{Code}] {ID} ({PrefabName})" : $"{ID} ({PrefabName})";
 
         public string Code => Type switch
         {

@@ -39,6 +39,7 @@ namespace CCL.Types
         public bool HasMUCable = false;
         public bool UseCustomHosePositions = false;
 
+        public bool HideHookPlates = false;
         public bool HideFrontCoupler = false;
         public bool HideBackCoupler = false;
 

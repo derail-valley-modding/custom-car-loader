@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace CCL.Types
 {

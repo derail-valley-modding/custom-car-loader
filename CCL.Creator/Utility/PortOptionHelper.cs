@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using System.IO;
 using System.Linq;
 using CCL.Types.Proxies.Ports;
-using static System.Net.WebRequestMethods;
 
 namespace CCL.Creator.Utility
 {
