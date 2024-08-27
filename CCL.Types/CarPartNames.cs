@@ -147,12 +147,16 @@
         {
             public const string RAIN_MODULE = "RainModule";
             public const string RAIN_DUMMY_TRANSFORM = "[rain]";
-
+            
             public const string WHEELS_MODULE = "WheelsModule";
             public const string WHEELS_FRONT = "WheelsFront";
             public const string WHEELS_REAR = "WheelsRear";
             public const string WHEELS_LAYERS_WHEELSLIP = "WheelslipLayers";
             public const string WHEELS_LAYERS_DAMAGED = "WheelDamagedLayers";
+
+            public const string BRAKE_MODULE = "BrakeModule";
+            public const string CYLINDER_EXHAUST = "Brake/CylinderExhaust_Layered";
+            public const string AIRFLOW = "Airflow/AirflowLayers";
         }
 
         public const string CENTER_OF_MASS = "[center of mass]";

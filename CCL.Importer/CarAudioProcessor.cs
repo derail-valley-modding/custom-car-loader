@@ -30,6 +30,9 @@ namespace CCL.Importer
         private static bool NeedsCustomAudio(CCL_CarType carType) =>
             (carType.SimAudioPrefab || NeedsWheelsAudioModule(carType));
 
+        private static bool NeedsBrakeAirFix(CCL_CarType carType) =>
+            carType.brakes.hasIndependentBrake || carType.brakes.trainBrake != TrainCarType_v2.BrakesSetup.TrainBrake.None;
+
         public static void InjectAudioPrefabs(TrainComponentPool pool)
         {
             foreach (var carType in CarManager.CustomCarTypes)
@@ -113,6 +116,18 @@ namespace CCL.Importer
                             };
                         }
                     }
+                }
+
+                if (NeedsBrakeAirFix(carType))
+                {
+                    var brakesModule = newAudioFab.GetComponentInChildren<BrakesAudioModule>();
+                    var dm3Brake = AudioDM3.transform.Find(CarPartNames.Audio.BRAKE_MODULE);
+
+                    var cylinder = Object.Instantiate(dm3Brake.Find(CarPartNames.Audio.CYLINDER_EXHAUST).gameObject, brakesModule.transform);
+                    var airflow = Object.Instantiate(dm3Brake.Find(CarPartNames.Audio.AIRFLOW).gameObject, brakesModule.transform);
+
+                    brakesModule.brakeCylinderExhaustAudio = cylinder.GetComponent<LayeredAudio>();
+                    brakesModule.airflowAudio = airflow.GetComponent<LayeredAudio>();
                 }
 
                 carType.audioPrefab = newAudioFab;
