@@ -29,6 +29,7 @@ namespace CCL.Importer.Proxies
             CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
             CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
+            CreateMap<ResourceExplosionBaseProxy, ResourceExplosionBase>().AutoCacheAndMap();
 
             CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
                 .AutoCacheAndMap()
