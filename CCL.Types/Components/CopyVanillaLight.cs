@@ -209,9 +209,9 @@ namespace CCL.Types.Components
 
         private static void RemoveQuality(Light light)
         {
-            if (!light.TryGetComponent(out LightShadowQualityProxy quality))
+            if (light.TryGetComponent(out LightShadowQualityProxy quality))
             {
-                Destroy(quality);
+                DestroyImmediate(quality);
             }
         }
     }

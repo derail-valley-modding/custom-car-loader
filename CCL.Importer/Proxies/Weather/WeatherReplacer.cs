@@ -11,7 +11,8 @@ namespace CCL.Importer.Proxies.Weather
         public WeatherReplacer()
         {
             CreateMap<WindowProxy, Window>().AutoCacheAndMap()
-                .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)));
+                .ForMember(d => d.duplicates, o => o.MapFrom(s => Mapper.GetFromCache(s.duplicates)))
+                .ForMember(d => d.wipers, o => o.MapFrom(s => Mapper.GetFromCache(s.wipers)));
             CreateMap<CabinDryVolumeProxy, CabinDryVolume>().AutoCacheAndMap()
                 .ForMember(d => d.subVolumes, o => o.MapFrom(s => Mapper.GetFromCache(s.subVolumes)));
 
@@ -22,6 +23,16 @@ namespace CCL.Importer.Proxies.Weather
             CreateMap<DecalLayerChannelProxy, DecalLayerChannel>();
 
             CreateMap<OpenableControlProxy, OpenableControl>().AutoCacheAndMap();
+
+            CreateMap<WipersSimControlInputProxy, WipersSimControlInput>().AutoCacheAndMap()
+                .ForMember(d => d.wiperController, o => o.MapFrom(s => Mapper.GetFromCache(s.wiperController)));
+            CreateMap<WiperControllerProxy, WiperController>().AutoCacheAndMap()
+                .ForMember(d => d.wiperDrivers, o => o.MapFrom(s => Mapper.GetFromCache(s.wiperDrivers)));
+            CreateMap<WiperDriverProxy, WiperDriver>().AutoCacheAndMap()
+                .ForMember(d => d.wiper, o => o.MapFrom(s => Mapper.GetFromCache(s.wiper)));
+            CreateMap<WiperProxy, Wiper>().AutoCacheAndMap()
+                .ForMember(d => d.windows, o => o.MapFrom(s => Mapper.GetFromCache(s.windows)));
+            CreateMap<RotaryWiperDriverProxy, RotaryWiperDriver>().AutoCacheAndMap();
         }
     }
 }

@@ -8,8 +8,7 @@ namespace CCL.Types.Proxies.Weather
     {
         public bool simulate = true;
         public MeshRenderer[] visuals = new MeshRenderer[0];
-        // To replace with WiperProxy.
-        //public Wiper[] wipers;
+        public WiperProxy[] wipers;
         public WindowProxy[] duplicates = new WindowProxy[0];
         public Transform[] windowEdges = new Transform[0];
         public Vector2 sizeInMeters;
