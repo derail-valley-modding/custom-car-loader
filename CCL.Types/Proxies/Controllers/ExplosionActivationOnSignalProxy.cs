@@ -26,10 +26,10 @@ namespace CCL.Types.Proxies.Controllers
 
     public enum ExplosionPrefab
     {
-        ExplosionBoiler,
-        ExplosionElectric,
-        ExplosionHydraulic,
-        ExplosionMechanical,
-        ExplosionTMOverspeed,
+        Boiler,
+        Electric,
+        Hydraulic,
+        Mechanical,
+        TMOverspeed,
     }
 }

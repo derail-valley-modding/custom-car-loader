@@ -3,12 +3,11 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
-    [DisallowMultipleComponent]
     public class WindowProxy : MonoBehaviour
     {
         public bool simulate = true;
         public MeshRenderer[] visuals = new MeshRenderer[0];
-        public WiperProxy[] wipers;
+        public WiperProxy[] wipers = new WiperProxy[0];
         public WindowProxy[] duplicates = new WindowProxy[0];
         public Transform[] windowEdges = new Transform[0];
         public Vector2 sizeInMeters;

@@ -59,7 +59,7 @@ namespace CCL.Creator.Wizards.SimSetup
             environmentDamage.damagerPortId = FullPortId(engine, "FUEL_ENV_DAMAGE_METER");
             environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageFuel;
             var engineExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(engine);
-            engineExplosion.explosion = ExplosionPrefab.ExplosionMechanical;
+            engineExplosion.explosion = ExplosionPrefab.Mechanical;
             engineExplosion.bodyDamagePercentage = 0.1f;
             engineExplosion.explosionSignalPortId = FullPortId(engine, "IS_BROKEN");
 
@@ -74,7 +74,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var fluidCoupler = CreateSimComponent<HydraulicTransmissionDefinitionProxy>("fluidCoupler");
             var couplerExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(fluidCoupler);
-            couplerExplosion.explosion = ExplosionPrefab.ExplosionHydraulic;
+            couplerExplosion.explosion = ExplosionPrefab.Hydraulic;
             couplerExplosion.bodyDamagePercentage = 0.1f;
             couplerExplosion.windowsBreakingDelay = 0.4f;
             couplerExplosion.explosionSignalPortId = FullPortId(fluidCoupler, "IS_BROKEN");
