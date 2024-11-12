@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Ports;
 using DV.Simulation.Controllers;
+using DV.Simulation.Ports;
 using LocoSim.Definitions;
 using System.Linq;
 
@@ -26,6 +27,8 @@ namespace CCL.Importer.Proxies
 
             CreateMap<BroadcastPortValueConsumerProxy, BroadcastPortValueConsumer>().AutoCacheAndMap();
             CreateMap<BroadcastPortValueProviderProxy, BroadcastPortValueProvider>().AutoCacheAndMap();
+
+            CreateMap<AnimatorPortReaderProxy, AnimatorPortReader>().AutoCacheAndMap();
         }
     }
 }

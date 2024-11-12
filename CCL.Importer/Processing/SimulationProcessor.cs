@@ -92,25 +92,25 @@ namespace CCL.Importer.Processing
 
         private static void AddAdditionalControllers(GameObject prefab)
         {
-            if (prefab.GetComponentsInChildren<InteractablePortFeeder>().Length > 0)
-            {
-                var controller = prefab.AddComponent<InteractablePortFeedersController>();
-                controller.entries = prefab.GetComponentsInChildren<InteractablePortFeeder>();
-            }
-
-            if (prefab.GetComponentsInChildren<IndicatorPortReader>().Length > 0)
-            {
-                var controller = prefab.AddComponent<IndicatorPortReadersController>();
-                controller.entries = prefab.GetComponentsInChildren<IndicatorPortReader>();
-            }
-
-            if (prefab.GetComponentsInChildren<InteractableFuseFeeder>().Length > 0)
-            {
-                var controller = prefab.AddComponent<InteractableFuseFeedersController>();
-                controller.entries = prefab.GetComponentsInChildren<InteractableFuseFeeder>();
-            }
+            AddController<InteractablePortFeedersController, InteractablePortFeeder>(prefab);
+            AddController<IndicatorPortReadersController, IndicatorPortReader>(prefab);
+            AddController<InteractableFuseFeedersController, InteractableFuseFeeder>(prefab);
+            AddController<AnimatorPortReadersController, AnimatorPortReader>(prefab);
 
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
+        }
+
+        private static void AddController<TController, TComp>(GameObject prefab)
+            where TController : ARefreshableChildrenController<TComp>
+            where TComp : MonoBehaviour
+        {
+            var entries = prefab.GetComponentsInChildren<TComp>();
+
+            if (entries.Length > 0)
+            {
+                var controller = prefab.AddComponent<TController>();
+                controller.entries = entries;
+            }
         }
 
         private static SimConnectionDefinition AttachSimConnectionsToPrefab(GameObject prefab)

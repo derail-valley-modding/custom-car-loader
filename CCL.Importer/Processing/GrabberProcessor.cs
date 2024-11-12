@@ -49,6 +49,7 @@ namespace CCL.Importer.Processing
 
                 // Cache all resources of a type for easy access.
                 _cachedResources = Resources.FindObjectsOfTypeAll<T>()
+                    .Where(x  => x != null)
                     .GroupBy(x => x.name, StringComparer.Ordinal)
                     .ToDictionary(k => k.Key, v => v.First());
 
