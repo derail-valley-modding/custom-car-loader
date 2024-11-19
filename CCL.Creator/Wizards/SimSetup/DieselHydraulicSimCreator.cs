@@ -165,10 +165,10 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(compressor, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_0");
             ConnectPortRef(fluidCoupler, "INPUT_SHAFT_TORQUE", loadTorque, "LOAD_TORQUE_1");
 
-            ConnectPortRef(engine, "HEAT_OUT", cooler, "HEAT_IN_0");
-            ConnectPortRef(fluidCoupler, "HEAT_OUT", cooler, "HEAT_IN_1");
-            ConnectPortRef(cooler, "HEAT_OUT", cooler, "HEAT_IN_2");
-            ConnectPortRef(autoCooler, "HEAT_OUT", cooler, "HEAT_IN_3");
+            ConnectPortRef(engine, "HEAT_OUT", coolant, "HEAT_IN_0");
+            ConnectPortRef(fluidCoupler, "HEAT_OUT", coolant, "HEAT_IN_1");
+            ConnectPortRef(cooler, "HEAT_OUT", coolant, "HEAT_IN_2");
+            ConnectPortRef(autoCooler, "HEAT_OUT", coolant, "HEAT_IN_3");
 
             // Apply defaults.
             ApplyMethodToAll<IDH4Defaults>(s => s.ApplyDH4Defaults());
