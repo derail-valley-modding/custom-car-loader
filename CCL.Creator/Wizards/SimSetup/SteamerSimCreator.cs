@@ -93,7 +93,7 @@ namespace CCL.Creator.Wizards.SimSetup
             explosion.wheelsDamagePercentage = 1.0f;
             explosion.mechanicalPTDamagePercentage = 1.0f;
             explosion.electricalPTDamagePercentage = 1.0f;
-            explosion.explosion = ExplosionPrefab.ExplosionBoiler;
+            explosion.explosion = ExplosionPrefab.Boiler;
             explosion.explosionSignalPortId = FullPortId(boiler, "IS_BROKEN");
             explosion.explodeTrainCar = true;
 

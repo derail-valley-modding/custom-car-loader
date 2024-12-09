@@ -68,11 +68,11 @@ namespace CCL.Importer.Proxies.Controllers
         {
             explosion.explosionPrefab = proxy.explosion switch
             {
-                ExplosionPrefab.ExplosionBoiler => BoilerExplosion,
-                ExplosionPrefab.ExplosionElectric => ElectricExplosion,
-                ExplosionPrefab.ExplosionHydraulic => HydraulicExplosion,
-                ExplosionPrefab.ExplosionMechanical => MechanicalExplosion,
-                ExplosionPrefab.ExplosionTMOverspeed => TMOverspeedExplosion,
+                ExplosionPrefab.Boiler => BoilerExplosion,
+                ExplosionPrefab.Electric => ElectricExplosion,
+                ExplosionPrefab.Hydraulic => HydraulicExplosion,
+                ExplosionPrefab.Mechanical => MechanicalExplosion,
+                ExplosionPrefab.TMOverspeed => TMOverspeedExplosion,
                 _ => null!
             };
         }
