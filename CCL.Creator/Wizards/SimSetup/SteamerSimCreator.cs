@@ -27,6 +27,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             // Simulation components.
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
 
             // Lights.
