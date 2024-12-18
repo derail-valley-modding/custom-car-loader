@@ -43,24 +43,23 @@ namespace CCL.Creator.Wizards.SimSetup
             var injector = CreateExternalControl("injector", true);
             var blowdown = CreateExternalControl("blowdown", true);
 
-            var reverser = CreateReverserControl();
-            reverser.isAnalog = true;
+            var reverser = CreateReverserControl(isAnalog: true);
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
 
             var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
-            poweredAxles.value = basisIndex switch
-            {
-                0 => 3,
-                1 => 4,
-                _ => 0
-            };
+            poweredAxles.value = PoweredAxleCount(basisIndex);
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
+            var waterDetector = CreateSimComponent<WaterDetectorDefinitionProxy>("waterDetector");
+            var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
+            waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
+
             var coalDump = CreateExternalControl("coalDumpControl", true);
             coalDump.defaultValue = 0.5f;
+
             var firebox = CreateSimComponent<FireboxDefinitionProxy>("firebox");
             var fireboxSimController = CreateSibling<FireboxSimControllerProxy>(firebox);
             fireboxSimController.ConnectFirebox(firebox);
@@ -104,6 +103,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var compressorControl = CreateExternalControl("compressorControl", true);
             var compressor = CreateSimComponent<SteamCompressorDefinitionProxy>("compressor");
             var airController = CreateCompressorSim(compressor);
+            airController.mainResPressureNormalizedPortId = FullPortId(compressor, "MAIN_RES_PRESSURE_NORMALIZED");
 
             var dynamoControl = CreateExternalControl("dynamoControl", true);
             var dynamo = CreateSimComponent<DynamoDefinitionProxy>("dynamo");
@@ -118,7 +118,11 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
             var lubricatorControl = CreateExternalControl("lubricatorControl", true);
+            var lubricatorOutput = CreateSibling<SmoothedOutputDefinitionProxy>(lubricatorControl);
+            lubricatorOutput.smoothTime = 0.2f;
             var lubricator = CreateSimComponent<MechanicalLubricatorDefinitionProxy>("lubricator");
+
+            var oilingPoints = CreateSimComponent<ManualOilingPointsDefinitionProxy>("oilingPoints");
 
             var bellControl = CreateExternalControl("bellControl", true);
             var bell = CreateSimComponent<SteamBellDefinitionProxy>("bell");
@@ -299,6 +303,13 @@ namespace CCL.Creator.Wizards.SimSetup
                 shovelling = _root.AddComponent<MagicShovellingProxy>();
             }
         }
+
+        private static int PoweredAxleCount(int basis) => basis switch
+        {
+            0 => 3,
+            1 => 4,
+            _ => 0,
+        };
 
         private static bool HasTender(int basis)
         {

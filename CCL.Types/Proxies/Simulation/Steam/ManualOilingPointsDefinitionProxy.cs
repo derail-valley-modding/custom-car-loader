@@ -89,6 +89,9 @@ namespace CCL.Types.Proxies.Simulation.Steam
             pointOpenConsumptionMultiplier = 1000f;
             refillRate = 0.2f;
             damagePerRevWhenEmpty = 1f;
+
+            OilingPointCount = 6;
+            OnValidate();
         }
 
         public void ApplyS282Defaults()
@@ -98,6 +101,9 @@ namespace CCL.Types.Proxies.Simulation.Steam
             pointOpenConsumptionMultiplier = 1000f;
             refillRate = 0.2f;
             damagePerRevWhenEmpty = 1f;
+
+            OilingPointCount = 6;
+            OnValidate();
         }
 
         #endregion

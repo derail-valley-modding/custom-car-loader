@@ -22,8 +22,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "PRODUCTION_RATE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "PRODUCTION_RATE_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "MAIN_RES_VOLUME"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "ACTIVATION_PRESSURE_THRESHOLD"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "IS_POWERED")
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "ACTIVATION_PRESSURE_THRESHOLD")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
