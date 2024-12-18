@@ -73,6 +73,8 @@ namespace CCL.Creator.Wizards.SimSetup
             var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(firebox);
             environmentDamage.damagerPortId = FullPortId(firebox, "COAL_ENV_DAMAGE_METER");
             environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageCoal;
+            var fireMass = CreateSibling<ResourceMassPortReaderProxy>(firebox);
+            fireMass.resourceMassPortId = FullPortId(firebox, "COAL_LEVEL");
 
             var steamCalc = CreateSimComponent<MultiplePortSumDefinitionProxy>("steamConsumptionCalculator");
             steamCalc.inputs = new[]
@@ -80,7 +82,6 @@ namespace CCL.Creator.Wizards.SimSetup
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "EXHAUST"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "COMPRESSOR"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "ENGINE"),
-                new PortReferenceDefinition(DVPortValueType.MASS_RATE, "CYLINDER_DUMP"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "DYNAMO"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "BELL"),
             };
@@ -97,6 +98,8 @@ namespace CCL.Creator.Wizards.SimSetup
             explosion.explosion = ExplosionPrefab.Boiler;
             explosion.explosionSignalPortId = FullPortId(boiler, "IS_BROKEN");
             explosion.explodeTrainCar = true;
+            var boilerMass = CreateSibling<ResourceMassPortReaderProxy>(boiler);
+            boilerMass.resourceMassPortId = FullPortId(boiler, "WATER_MASS");
 
             var compressorControl = CreateExternalControl("compressorControl", true);
             var compressor = CreateSimComponent<SteamCompressorDefinitionProxy>("compressor");

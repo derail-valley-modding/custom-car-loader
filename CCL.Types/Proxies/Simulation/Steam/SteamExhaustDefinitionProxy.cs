@@ -20,15 +20,18 @@ namespace CCL.Types.Proxies.Simulation.Steam
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "STEAM_CONSUMPTION"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "AIR_FLOW"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "TOTAL_FLOW_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "WHISTLE_FLOW_NORMALIZED")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
             new PortReferenceDefinition(DVPortValueType.MASS_RATE, "EXHAUST_FLOW", false),
+            new PortReferenceDefinition(DVPortValueType.MASS_RATE, "ENGINE_MAX_FLOW", false),
             new PortReferenceDefinition(DVPortValueType.PRESSURE, "BOILER_PRESSURE", false),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "BLOWER_CONTROL", false),
-            new PortReferenceDefinition(DVPortValueType.CONTROL, "WHISTLE_CONTROL", false)
+            new PortReferenceDefinition(DVPortValueType.CONTROL, "WHISTLE_CONTROL", false),
+            new PortReferenceDefinition(DVPortValueType.CONTROL, "DAMPER_CONTROL", false)
         };
 
         #region Defaults

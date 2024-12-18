@@ -4,6 +4,7 @@ using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
 using DV.Simulation.Fuses;
 using DV.Simulation.Ports;
+using DV.Util;
 using LocoSim.Definitions;
 using System.ComponentModel.Composition;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace CCL.Importer.Processing
     [Export(typeof(IModelProcessorStep))]
     [RequiresStep(typeof(ExternalInteractableProcessor))]
     [RequiresStep(typeof(ProxyScriptProcessor))]
+    [RequiresStep(typeof(OilingPointsProcessor))]
     internal class SimulationProcessor : ModelProcessorStep
     {
         public override void ExecuteStep(ModelProcessor context)
@@ -96,6 +98,9 @@ namespace CCL.Importer.Processing
             AddController<IndicatorPortReadersController, IndicatorPortReader>(prefab);
             AddController<InteractableFuseFeedersController, InteractableFuseFeeder>(prefab);
             AddController<AnimatorPortReadersController, AnimatorPortReader>(prefab);
+            AddController<GenericPortReadersController, AGenericPortReader>(prefab);
+            AddController<PositionSyncConsumerController, PositionSyncConsumer>(prefab);
+            AddController<OilingPointsPortController, OilingPointPortFeederReader>(prefab);
 
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
         }

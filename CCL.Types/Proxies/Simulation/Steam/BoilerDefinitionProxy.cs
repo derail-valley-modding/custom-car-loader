@@ -45,12 +45,17 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "INJECTOR_FLOW_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "BLOWDOWN_FLOW_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "WATER_LEVEL_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "WATER_MASS"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUTLET_STEAM_QUALITY"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "WATER_INSTANT_REMOVAL_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "SAFETY_VALVE_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "CROWN_SHEET_TEMPERATURE_NORMALIZED"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "BODY_HEALTH_EXT_IN"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "IS_BROKEN")
-        };
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "IS_BROKEN"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "ENTHALPY"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_IN"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_OUT")
+    };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {

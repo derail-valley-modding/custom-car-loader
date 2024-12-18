@@ -33,17 +33,19 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COAL_DUMP_FLOW_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "SMOKE_DENSITY"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COMBUSTION_RATE_NORMALIZED"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "TEMPERATURE")
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "TEMPERATURE"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OXYGEN_AVAILABILITY")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
-            new PortReferenceDefinition(DVPortValueType.CONTROL, "DAMPER_CONTROL", false),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "COAL_DUMP_CONTROL", false),
+            new PortReferenceDefinition(DVPortValueType.STATE, "INTAKE_WATER_CONTENT", false),
             new PortReferenceDefinition(DVPortValueType.MASS_RATE, "AIR_FLOW", false),
             new PortReferenceDefinition(DVPortValueType.GENERIC, "FORWARD_SPEED", false),
             new PortReferenceDefinition(DVPortValueType.PRESSURE, "BOILER_PRESSURE", false),
-            new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "BOILER_TEMPERATURE", false)
+            new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "BOILER_TEMPERATURE", false),
+            new PortReferenceDefinition(DVPortValueType.STATE, "BOILER_BROKEN_STATE", false)
         };
 
         #region Defaults
