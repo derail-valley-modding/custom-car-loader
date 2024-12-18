@@ -17,7 +17,6 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public float temperatureSmoothTime = 15f;
 
         [Header("Fast Startup")]
-        public float startupMaxCombustionMultiplier = 100f;
         public float startupMaxPressure = 13f;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
@@ -52,29 +51,27 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         public void ApplyS060Defaults()
         {
-            maxCoalCapacity = 45.0f;
+            maxCoalCapacity = 60.0f;
             coalDumpRate = 4.0f;
 
-            burnTime = 120.0f;
+            burnTime = 150.0f;
             efficiencyAtMaxCombustion = 0.5f;
             combustionRateSmoothTime = 5.0f;
             temperatureSmoothTime = 15.0f;
 
-            startupMaxCombustionMultiplier = 25.0f;
             startupMaxPressure = 13.0f;
         }
 
         public void ApplyS282Defaults()
         {
-            maxCoalCapacity = 120.0f;
+            maxCoalCapacity = 150.0f;
             coalDumpRate = 10.0f;
 
-            burnTime = 120.0f;
+            burnTime = 150.0f;
             efficiencyAtMaxCombustion = 0.5f;
             combustionRateSmoothTime = 5.0f;
             temperatureSmoothTime = 15.0f;
 
-            startupMaxCombustionMultiplier = 25.0f;
             startupMaxPressure = 13.0f;
         }
 

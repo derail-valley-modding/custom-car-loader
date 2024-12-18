@@ -77,8 +77,8 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         public void ApplyS060Defaults()
         {
-            diameter = 1.4f;
-            length = 3.0f;
+            diameter = 1.25f;
+            length = 4.6f;
             capacityMultiplier = 0.85f;
 
             maxInjectorRate = 5.0f;
@@ -93,9 +93,9 @@ namespace CCL.Types.Proxies.Simulation.Steam
             maxSafetyValveVentRate = 2.0f;
 
             spawnPressure = 1.0f;
-            spawnWaterLevel = 3000.0f;
+            spawnWaterLevel = 3600.0f;
 
-            crownSheetNormalizedWaterLevel = 0.75f;
+            crownSheetNormalizedWaterLevel = 0.65f;
             crownSheetTempSmoothTime = 60.0f;
             crownSheetOverheatTemp = 600.0f;
             minimumExplosionPressure = 5.0f;
@@ -123,12 +123,12 @@ namespace CCL.Types.Proxies.Simulation.Steam
             spawnPressure = 1.0f;
             spawnWaterLevel = 13000.0f;
 
-            crownSheetNormalizedWaterLevel = 0.75f;
+            crownSheetNormalizedWaterLevel = 0.6f;
             crownSheetTempSmoothTime = 60.0f;
             crownSheetOverheatTemp = 600.0f;
             minimumExplosionPressure = 5.0f;
             explosionPressureThreshold = ExplosionCurve;
-            steamOutletNormalizedWaterLevel = 0.95f;
+            steamOutletNormalizedWaterLevel = 0.98f;
         }
 
         #endregion
