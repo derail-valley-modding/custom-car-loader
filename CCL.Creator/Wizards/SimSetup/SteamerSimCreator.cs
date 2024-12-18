@@ -206,10 +206,22 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             // Damage.
-            _damageController.bodyHealthStateExternalInPortIds = new[] { FullPortId(boiler, "BODY_HEALTH_EXT_IN") };
+            _damageController.bodyHealthStateExternalInPortIds = new[]
+            {
+                FullPortId(boiler, "BODY_HEALTH_EXT_IN")
+            };
 
-            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(steamEngine, "GENERATED_MECHANICAL_DAMAGE") };
-            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(steamEngine, "HEALTH_STATE_EXT_IN") };
+            _damageController.mechanicalPTDamagerPortIds = new[]
+            {
+                FullPortId(steamEngine, "GENERATED_MECHANICAL_DAMAGE"),
+                FullPortId(oilingPoints, "MECHANICAL_DAMAGE")
+            };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[]
+            {
+                FullPortId(steamEngine, "HEALTH_STATE_EXT_IN"),
+                FullPortId(lubricator, "MECHANICAL_PT_HEALTH_EXT_IN"),
+                FullPortId(oilingPoints, "MECHANICAL_PT_HEALTH_EXT_IN")
+            };
 
             // Port connections.
             ConnectPorts(steamEngine, "TORQUE_OUT", traction, "TORQUE_IN");
