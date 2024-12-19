@@ -86,6 +86,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var reverser = CreateReverserControl();
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
             var brake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
             var retarder = CreateOverridableControl(OverridableControlType.DynamicBrake, "retarder");
 
             var hornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");

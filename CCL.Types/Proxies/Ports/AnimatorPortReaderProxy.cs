@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
-    public class AnimatorPortReaderProxy : MonoBehaviour
+    public class AnimatorPortReaderProxy : MonoBehaviour, IHasPortIdFields
     {
         public enum UpdateType
         {
@@ -19,5 +20,10 @@ namespace CCL.Types.Proxies.Ports
         [Header("Value modifiers")]
         public float valueMultiplier = 1f;
         public float valueOffset;
+
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(portId), portId),
+        };
     }
 }

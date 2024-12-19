@@ -12,6 +12,8 @@ namespace CCL.Importer.Processing
     internal class ModelProcessor
     {
         private static readonly AggregateCatalog _catalog;
+        private static Transform? s_holder;
+        private static Transform Holder => Extensions.GetCached(ref s_holder, CreateHolder);
 
         static ModelProcessor()
         {
@@ -84,27 +86,21 @@ namespace CCL.Importer.Processing
             }
         }
 
+        private static Transform CreateHolder()
+        {
+            var go = new GameObject("[CCL HOLDER]");
+            go.SetActive(false);
+            Object.DontDestroyOnLoad(go);
+
+            return go.transform;
+        }
+
         public static GameObject CreateModifiablePrefab(GameObject gameObject)
         {
-            GameObject newFab = Object.Instantiate(gameObject, null);
+            GameObject newFab = Object.Instantiate(gameObject, Holder);
 
-            // Get enabled state of components on prefab.
-            // Unity disables the attached components on a GameObject when
-            // deactivating that object, and we don't want that or when we
-            // instance this prefab again they will all be disabled.
-            var states = newFab.GetComponents<MonoBehaviour>().ToDictionary(k => k, v => v.enabled);
-
-            newFab.SetActive(false);
-            Object.DontDestroyOnLoad(newFab);
             // No (Clone), makes it look bad.
             newFab.name = gameObject.name;
-
-            // Restore state.
-            foreach (var state in states)
-            {
-                state.Key.enabled = state.Value;
-            }
-
             return newFab;
         }
 

@@ -55,6 +55,7 @@ namespace CCL.Types.Proxies.Indicators
             "car/br_electrics",
             "car/br_starter",
             "car/br_tm",
+            "car/brake_cutout",
             "car/brake_cyl",
             "car/brake_pipe",
             "car/breakers",

@@ -24,6 +24,7 @@
         HeadlightsRear = DVControlType.HeadlightsRear,
         DynamicBrake = DVControlType.DynamicBrake,
         //FuelCutoff = DVControlType.FuelCutoff,
+        TrainBrakeCutout = DVControlType.TrainBrakeCutout
     }
 
     public enum DVControlType
@@ -69,6 +70,7 @@
         Dynamo,
         AirPump,
         Lubricator,
-        Bell
+        Bell,
+        TrainBrakeCutout
     }
 }

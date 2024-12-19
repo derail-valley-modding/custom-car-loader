@@ -8,6 +8,8 @@ namespace CCL.Types.Proxies.Controls
         public LampControlProxy fuel = null!;
         public LampControlProxy battery = null!;
         public LampControlProxy oil = null!;
+        public LampControlProxy automaticLubricator = null!;
+        public LampControlProxy manualLubricator = null!;
         public LampControlProxy sandLow = null!;
         public LampControlProxy sandDeploying = null!;
         public LampControlProxy engineTemp = null!;

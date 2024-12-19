@@ -121,26 +121,23 @@ namespace CCL.Importer.Processing
                     "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasWispy").GetComponent<ParticleSystem>(),
                 VanillaParticleSystem.SteamerExhaustSmallWave           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasWave").GetComponent<ParticleSystem>(),
-                VanillaParticleSystem.SteamerExhaustSmallLeak           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                    "LocoS282A_Particles/CylCockSteam/CylCockSteam FR/SteamExhaust Small/GasLeak").GetComponent<ParticleSystem>(),
 
 
                 VanillaParticleSystem.SteamerExhaustWispy               => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasWispy").GetComponent<ParticleSystem>(),
                 VanillaParticleSystem.SteamerExhaustWave                => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasWave").GetComponent<ParticleSystem>(),
-                VanillaParticleSystem.SteamerExhaustLeak                => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                    "LocoS282A_Particles/SteamSafetyRelease/SteamExhaust/GasLeak").GetComponent<ParticleSystem>(),
+
 
                 VanillaParticleSystem.SteamerExhaustLargeWispy          => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasWispy").GetComponent<ParticleSystem>(),
                 VanillaParticleSystem.SteamerExhaustLargeWave           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasWave").GetComponent<ParticleSystem>(),
-                VanillaParticleSystem.SteamerExhaustLargeLeak           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
-                    "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasLeak").GetComponent<ParticleSystem>(),
+
 
                 VanillaParticleSystem.SteamerSteamLeaks                 => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/RandomLeaks/SteamLeaks/SteamLeaks").GetComponent<ParticleSystem>(),
+
 
                 VanillaParticleSystem.FireboxFire                       => TrainCarType.LocoSteamHeavy.ToV2().interiorPrefab.transform.Find(
                     "Indicators/I_FireboxCoal/firebox_coal_pivot/fire").GetComponent<ParticleSystem>(),

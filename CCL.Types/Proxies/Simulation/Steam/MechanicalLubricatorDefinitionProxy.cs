@@ -12,14 +12,17 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OIL, "LUBRICATION_NORMALIZED")
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "LUBRICATION_RATE_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OIL, "LUBRICATION_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OIL, "LUBRICATION_AUDIO_NORMALIZED"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "MECHANICAL_PT_HEALTH_EXT_IN")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
             new PortReferenceDefinition(DVPortValueType.OIL, "OIL", false),
             new PortReferenceDefinition(DVPortValueType.OIL, "OIL_CONSUMPTION", true),
-            new PortReferenceDefinition(DVPortValueType.CONTROL, "LUBRICATOR_CONTROL", false),
+            new PortReferenceDefinition(DVPortValueType.GENERIC, "MANUAL_FILL_RATE_NORMALIZED", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM", false)
         };
 
