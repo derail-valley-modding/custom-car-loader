@@ -11,6 +11,7 @@ using UnityEditor;
 using UnityEngine;
 using static CCL.Types.Proxies.VFX.ParticlesPortReadersControllerProxy;
 using CCL.Types.Proxies.Controllers;
+using CCL.Types.Proxies.Controls;
 
 namespace CCL.Creator.Wizards
 {
@@ -221,6 +222,24 @@ namespace CCL.Creator.Wizards
 
             #endregion
 
+            #region Sim Components
+
+            var exhaust = root.transform.root.GetComponentInChildren<SteamExhaustDefinitionProxy>();
+            var boiler = root.transform.root.GetComponentInChildren<BoilerDefinitionProxy>();
+            var engine = root.transform.root.GetComponentInChildren<ReciprocatingSteamEngineDefinitionProxy>();
+            var cylCock = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
+                .FirstOrDefault(x => x.ID == "cylinderCock");
+            var throttleCalculator = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
+                .FirstOrDefault(x => x.ID == "throttleCalculator");
+            var traction = root.transform.root.GetComponentInChildren<TractionDefinitionProxy>();
+            var firebox = root.transform.root.GetComponentInChildren<FireboxDefinitionProxy>();
+            var fireboxDoor = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
+                .FirstOrDefault(x => x.ID == "fireboxDoor");
+            var dynamo = root.transform.root.GetComponentInChildren<DynamoDefinitionProxy>();
+            var reverser = root.transform.root.GetComponentInChildren<ReverserDefinitionProxy>();
+
+            #endregion
+
             #region Cylinder Cocks
 
             var cylCockDrip = new GameObject("CylCockWaterDrip");
@@ -234,6 +253,11 @@ namespace CCL.Creator.Wizards
 
             var cylCockSteam = new GameObject("CylCockSteam").AddComponent<CylinderCockParticlePortReaderProxy>();
             cylCockSteam.transform.parent = comp.transform;
+            cylCockSteam.crankRotationPortId = engine != null ? engine.GetFullPortId("CRANK_ROTATION") : "";
+            cylCockSteam.reverserPortId = reverser != null ? reverser.GetFullPortId("REVERSER") : "";
+            cylCockSteam.cylindersInletValveOpenPortId = engine != null ? engine.GetFullPortId("CYLINDERS_INLET_VALVE_OPEN") : "";
+            cylCockSteam.cylinderCockFlowNormalizedPortId = engine != null ? engine.GetFullPortId("CYLINDER_COCK_FLOW_NORMALIZED") : "";
+            cylCockSteam.forwardSpeedPortId = traction != null ? traction.GetFullPortId("FORWARD_SPEED_EXT_IN") : "";
 
             var ccFR = new GameObject("CylCockSteam FR");
             ccFR.transform.parent = cylCockSteam.transform;
@@ -259,6 +283,10 @@ namespace CCL.Creator.Wizards
 
             var chimney = new GameObject("SteamSmoke").AddComponent<SteamSmokeParticlePortReaderProxy>();
             chimney.transform.parent = comp.transform;
+            chimney.fireOnPortId = firebox != null ? firebox.GetFullPortId("FIRE_ON") : "";
+            chimney.chuffEventPortId = engine != null ? engine.GetFullPortId("CHUFF_EVENT") : "";
+            chimney.isBoilerBrokenPortId = boiler != null ? boiler.GetFullPortId("IS_BROKEN") : "";
+            chimney.exhaustPressurePortId = engine != null ? engine.GetFullPortId("EXHAUST_PRESSURE") : "";
             chimney.ApplyS282Defaults();
 
             var smokeParent = new GameObject("SteamSmoke");
@@ -321,26 +349,34 @@ namespace CCL.Creator.Wizards
 
             #endregion
 
+            #region Tunnels and Blowback
+
+            var tunnel = root.AddComponent<TunnelParticleDampeningProxy>();
+
+            tunnel.systems = new[]
+            {
+                smoke.gameObject,
+                thickSmoke.gameObject,
+                emberClusters.gameObject
+            };
+
+            var blowback = new GameObject("BlowbackParticles").AddComponent<BlowbackParticlePortReaderProxy>();
+            blowback.transform.parent = comp.transform;
+            blowback.spawnAnchor = new GameObject("Spawn Anchor").transform;
+            blowback.spawnAnchor.transform.parent = blowback.transform;
+            blowback.forwardSpeedId = traction != null ? traction.GetFullPortId("FORWARD_SPEED_EXT_IN") : "";
+            blowback.airflowId = exhaust != null ? exhaust.GetFullPortId("AIR_FLOW") : "";
+            blowback.fireOnId = firebox != null ? firebox.GetFullPortId("FIRE_ON") : "";
+            blowback.fireboxDoorId = fireboxDoor != null ? fireboxDoor.GetFullPortId("EXT_IN") : "";
+
+            var blowbackCollider = blowback.gameObject.AddComponent<BoxCollider>();
+            blowbackCollider.size = Vector3.one * 0.1f;
+
+            #endregion
+
             Object.DestroyImmediate(steam);
             Object.DestroyImmediate(steamSmall);
             Object.DestroyImmediate(steamLarge);
-
-            #region Sim Components
-
-            var exhaust = root.transform.root.GetComponentInChildren<SteamExhaustDefinitionProxy>();
-            var boiler = root.transform.root.GetComponentInChildren<BoilerDefinitionProxy>();
-            var engine = root.transform.root.GetComponentInChildren<ReciprocatingSteamEngineDefinitionProxy>();
-            var cylCock = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
-                .FirstOrDefault(x => x.ID == "cylinderCock");
-            var throttleCalculator = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
-                .FirstOrDefault(x => x.ID == "throttleCalculator");
-            var traction = root.transform.root.GetComponentInChildren<TractionDefinitionProxy>();
-            var firebox = root.transform.root.GetComponentInChildren<FireboxDefinitionProxy>();
-            var fireboxDoor = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
-                .FirstOrDefault(x => x.ID == "fireboxDoor");
-            var dynamo = root.transform.root.GetComponentInChildren<DynamoDefinitionProxy>();
-
-            #endregion
 
             comp.particlePortReaders = new List<ParticlePortReader>
             {
@@ -699,31 +735,6 @@ namespace CCL.Creator.Wizards
                         new Keyframe(20, 1, 0.05f, 0.05f))
                 },
             };
-
-            #region Tunnels and Blowback
-
-            var tunnel = root.AddComponent<TunnelParticleDampeningProxy>();
-
-            tunnel.systems = new[]
-            {
-                smoke.gameObject,
-                thickSmoke.gameObject,
-                emberClusters.gameObject
-            };
-
-            var blowback = new GameObject("BlowbackParticles").AddComponent<BlowbackParticlePortReaderProxy>();
-            blowback.transform.parent = comp.transform;
-            blowback.spawnAnchor = new GameObject("Spawn Anchor").transform;
-            blowback.spawnAnchor.transform.parent = blowback.transform;
-            blowback.forwardSpeedId = traction != null ? traction.GetFullPortId("FORWARD_SPEED_EXT_IN") : "";
-            blowback.airflowId = exhaust != null ? exhaust.GetFullPortId("AIR_FLOW") : "";
-            blowback.fireOnId = firebox != null ? firebox.GetFullPortId("FIRE_ON") : "";
-            blowback.fireboxDoorId = fireboxDoor != null ? fireboxDoor.GetFullPortId("EXT_IN") : "";
-
-            var blowbackCollider = blowback.gameObject.AddComponent<BoxCollider>();
-            blowbackCollider.size = Vector3.one * 0.1f;
-
-            #endregion
 
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");
         }
