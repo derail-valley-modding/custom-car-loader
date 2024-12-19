@@ -19,6 +19,11 @@ namespace CCL.Types.Proxies.Controllers
         [PortId(null, null, false)]
         public string fireboxDoorId;
 
+        [RenderMethodButtons]
+        [MethodButton(nameof(SetLayers), "Set Layers",
+            "This will put this GameObject in the correct layer to be detected by the game")]
+        public bool buttonRender;
+
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(forwardSpeedId), forwardSpeedId),
@@ -26,6 +31,11 @@ namespace CCL.Types.Proxies.Controllers
             new PortIdField(this, nameof(fireOnId), fireOnId),
             new PortIdField(this, nameof(fireboxDoorId), fireboxDoorId)
         };
+
+        public void SetLayers()
+        {
+            gameObject.SetLayer(DVLayer.Train_Big_Collider);
+        }
 
         #region Defaults
 

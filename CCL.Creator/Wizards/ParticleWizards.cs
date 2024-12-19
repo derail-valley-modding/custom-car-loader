@@ -1,4 +1,6 @@
 ﻿using CCL.Types.Components;
+using CCL.Types.Proxies.Controllers;
+using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Steam;
@@ -10,8 +12,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using static CCL.Types.Proxies.VFX.ParticlesPortReadersControllerProxy;
-using CCL.Types.Proxies.Controllers;
-using CCL.Types.Proxies.Controls;
 
 namespace CCL.Creator.Wizards
 {
@@ -366,6 +366,7 @@ namespace CCL.Creator.Wizards
             blowback.airflowId = exhaust != null ? exhaust.GetFullPortId("AIR_FLOW") : "";
             blowback.fireOnId = firebox != null ? firebox.GetFullPortId("FIRE_ON") : "";
             blowback.fireboxDoorId = fireboxDoor != null ? fireboxDoor.GetFullPortId("EXT_IN") : "";
+            blowback.SetLayers();
 
             var blowbackCollider = blowback.gameObject.AddComponent<BoxCollider>();
             blowbackCollider.size = Vector3.one * 0.1f;
@@ -703,15 +704,15 @@ namespace CCL.Creator.Wizards
                     startColorMin = new Color(0.5019608f, 0.5019608f, 0.5019608f, 1),
                     startColorMax = new Color(0.5019608f, 0.5019608f, 0.5019608f, 0.3137255f),
                     colorLerpCurve = new AnimationCurve(
-                        new Keyframe(0, 0, 0.05f, 0.05f),
-                        new Keyframe(20, 1, 0.05f, 0.05f))
+                        new Keyframe(0, 0, 1, 1),
+                        new Keyframe(1, 1, 1, 1))
                 },
                 new ParticleColorPortReader
                 {
                     particlesParent = thickSmoke.gameObject,
                     portId = firebox != null ? firebox.GetFullPortId("SMOKE_DENSITY") : "",
                     inputModifier = new ValueModifier(),
-                    changeType = ColorPropertyChange.ALL,
+                    changeType = ColorPropertyChange.RGB_ONLY,
                     startColorMin = new Color(1, 1, 1, 0),
                     startColorMax = new Color(0.12156863f, 0.12156863f, 0.12156863f, 1),
                     colorLerpCurve = new AnimationCurve(
@@ -726,11 +727,11 @@ namespace CCL.Creator.Wizards
                     portId = exhaust != null ? exhaust.GetFullPortId("TOTAL_FLOW_NORMALIZED") : "",
                     inputModifier = new ValueModifier(),
                     changeType = ColorPropertyChange.ALPHA_ONLY,
-                    startColorMin = new Color(0.5019608f, 0.5019608f, 0.5019608f, 1),
-                    startColorMax = new Color(0.5019608f, 0.5019608f, 0.5019608f, 0.3137255f),
+                    startColorMin = new Color(0.5f, 0.5f, 0.5f, 1),
+                    startColorMax = new Color(0.5f, 0.5f, 0.5f, 0.3137255f),
                     colorLerpCurve = new AnimationCurve(
-                        new Keyframe(0, 0, 0.05f, 0.05f),
-                        new Keyframe(20, 1, 0.05f, 0.05f))
+                        new Keyframe(0, 0, 1, 1),
+                        new Keyframe(1, 1, 1, 1))
                 },
             };
 

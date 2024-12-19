@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using static CCL.Types.CarPartNames;
 
 namespace CCL.Types.Proxies.VFX
 {

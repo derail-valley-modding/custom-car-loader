@@ -48,16 +48,16 @@ namespace CCL.Importer.Proxies.VFX
             // We can't link the bogies directly, so a workaround is needed. Using
             // the transform does not work either because it gets deleted when
             // using a default bogie.
-            var car = proxy.GetComponentInParent<TrainCar>();
+            var cars = proxy.GetComponentsInParent<TrainCar>(true);
 
-            if (car == null)
+            if (cars.Length == 0)
             {
                 CCLPlugin.Error("Could not find car for TunnelParticleDampening.");
                 Object.Destroy(dampening);
                 return;
             }
 
-            var bogies = car.GetComponentsInChildren<Bogie>().OrderBy(x => x.transform.localPosition.z);
+            var bogies = cars[0].GetComponentsInChildren<Bogie>().OrderBy(x => x.transform.localPosition.z);
 
             if (bogies.Count() == 0)
             {

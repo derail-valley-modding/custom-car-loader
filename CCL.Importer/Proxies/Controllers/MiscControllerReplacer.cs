@@ -38,7 +38,7 @@ namespace CCL.Importer.Proxies.Controllers
         private static GameObject TMOverspeedExplosion => Extensions.GetCached(ref s_tmOverspeedExplosion,
             () => DE6DeadTM.GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
         private static GameObject FireExplosion => Extensions.GetCached(ref s_fireExplosion,
-            () => DE6DeadTM.GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+            () => TrainCarType.LocoSteamHeavy.ToV2().prefab.GetComponentInChildren<BlowbackParticlePortReader>().blowbackParticlesPrefab);
 
         public MiscControllerReplacer()
         {
