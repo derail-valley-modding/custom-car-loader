@@ -7,6 +7,7 @@ using DV.Simulation.Controllers;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 using LocoSim.Definitions;
+using System;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies.Controllers
@@ -19,6 +20,7 @@ namespace CCL.Importer.Proxies.Controllers
         private static GameObject? s_hydraulicExplosion;
         private static GameObject? s_mechanicalExplosion;
         private static GameObject? s_tmOverspeedExplosion;
+        private static GameObject? s_fireExplosion;
 
         private static DeadTractionMotorsController DE6DeadTM => Extensions.GetCached(ref s_de6deadTM,
             () => TrainCarType.LocoDiesel.ToV2().prefab.GetComponentInChildren<DeadTractionMotorsController>());
@@ -35,6 +37,8 @@ namespace CCL.Importer.Proxies.Controllers
                 .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
         private static GameObject TMOverspeedExplosion => Extensions.GetCached(ref s_tmOverspeedExplosion,
             () => DE6DeadTM.GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+        private static GameObject FireExplosion => Extensions.GetCached(ref s_fireExplosion,
+            () => TrainCarType.LocoSteamHeavy.ToV2().prefab.GetComponentInChildren<BlowbackParticlePortReader>().blowbackParticlesPrefab);
 
         public MiscControllerReplacer()
         {
@@ -53,6 +57,8 @@ namespace CCL.Importer.Proxies.Controllers
             CreateMap<BoilerSimControllerProxy, BoilerSimController>().AutoCacheAndMap();
 
             CreateMap<WindowsBreakingControllerProxy, WindowsBreakingController>().AutoCacheAndMap();
+            CreateMap<BlowbackParticlePortReaderProxy, BlowbackParticlePortReader>().AutoCacheAndMap()
+                .AfterMap(BlowbackParticlePortReaderAfter);
 
             CreateMap<ClapperControllerProxy, ClapperController>().AutoCacheAndMap();
         }
@@ -66,15 +72,23 @@ namespace CCL.Importer.Proxies.Controllers
 
         private void ExplosionActivationOnSignalAfter(ExplosionActivationOnSignalProxy proxy, ExplosionActivationOnSignal explosion)
         {
-            explosion.explosionPrefab = proxy.explosion switch
-            {
-                ExplosionPrefab.Boiler => BoilerExplosion,
-                ExplosionPrefab.Electric => ElectricExplosion,
-                ExplosionPrefab.Hydraulic => HydraulicExplosion,
-                ExplosionPrefab.Mechanical => MechanicalExplosion,
-                ExplosionPrefab.TMOverspeed => TMOverspeedExplosion,
-                _ => null!
-            };
+            explosion.explosionPrefab = GetExplosionPrefab(proxy.explosion);
         }
+
+        private void BlowbackParticlePortReaderAfter(BlowbackParticlePortReaderProxy proxy, BlowbackParticlePortReader reader)
+        {
+            reader.blowbackParticlesPrefab = GetExplosionPrefab(proxy.BlowbackPrefab);
+        }
+
+        private static GameObject GetExplosionPrefab(ExplosionPrefab explosionPrefab) => explosionPrefab switch
+        {
+            ExplosionPrefab.Boiler => BoilerExplosion,
+            ExplosionPrefab.Electric => ElectricExplosion,
+            ExplosionPrefab.Hydraulic => HydraulicExplosion,
+            ExplosionPrefab.Mechanical => MechanicalExplosion,
+            ExplosionPrefab.TMOverspeed => TMOverspeedExplosion,
+            ExplosionPrefab.Fire => FireExplosion,
+            _ => null!
+        };
     }
 }

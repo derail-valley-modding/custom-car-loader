@@ -27,6 +27,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             // Simulation components.
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
 
             // Lights.
@@ -42,24 +43,23 @@ namespace CCL.Creator.Wizards.SimSetup
             var injector = CreateExternalControl("injector", true);
             var blowdown = CreateExternalControl("blowdown", true);
 
-            var reverser = CreateReverserControl();
-            reverser.isAnalog = true;
+            var reverser = CreateReverserControl(isAnalog: true);
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
 
             var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
-            poweredAxles.value = basisIndex switch
-            {
-                0 => 3,
-                1 => 4,
-                _ => 0
-            };
+            poweredAxles.value = PoweredAxleCount(basisIndex);
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
+            var waterDetector = CreateSimComponent<WaterDetectorDefinitionProxy>("waterDetector");
+            var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
+            waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
+
             var coalDump = CreateExternalControl("coalDumpControl", true);
             coalDump.defaultValue = 0.5f;
+
             var firebox = CreateSimComponent<FireboxDefinitionProxy>("firebox");
             var fireboxSimController = CreateSibling<FireboxSimControllerProxy>(firebox);
             fireboxSimController.ConnectFirebox(firebox);
@@ -72,6 +72,8 @@ namespace CCL.Creator.Wizards.SimSetup
             var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(firebox);
             environmentDamage.damagerPortId = FullPortId(firebox, "COAL_ENV_DAMAGE_METER");
             environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageCoal;
+            var fireMass = CreateSibling<ResourceMassPortReaderProxy>(firebox);
+            fireMass.resourceMassPortId = FullPortId(firebox, "COAL_LEVEL");
 
             var steamCalc = CreateSimComponent<MultiplePortSumDefinitionProxy>("steamConsumptionCalculator");
             steamCalc.inputs = new[]
@@ -79,7 +81,6 @@ namespace CCL.Creator.Wizards.SimSetup
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "EXHAUST"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "COMPRESSOR"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "ENGINE"),
-                new PortReferenceDefinition(DVPortValueType.MASS_RATE, "CYLINDER_DUMP"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "DYNAMO"),
                 new PortReferenceDefinition(DVPortValueType.MASS_RATE, "BELL"),
             };
@@ -96,10 +97,13 @@ namespace CCL.Creator.Wizards.SimSetup
             explosion.explosion = ExplosionPrefab.Boiler;
             explosion.explosionSignalPortId = FullPortId(boiler, "IS_BROKEN");
             explosion.explodeTrainCar = true;
+            var boilerMass = CreateSibling<ResourceMassPortReaderProxy>(boiler);
+            boilerMass.resourceMassPortId = FullPortId(boiler, "WATER_MASS");
 
             var compressorControl = CreateExternalControl("compressorControl", true);
             var compressor = CreateSimComponent<SteamCompressorDefinitionProxy>("compressor");
             var airController = CreateCompressorSim(compressor);
+            airController.mainResPressureNormalizedPortId = FullPortId(compressor, "MAIN_RES_PRESSURE_NORMALIZED");
 
             var dynamoControl = CreateExternalControl("dynamoControl", true);
             var dynamo = CreateSimComponent<DynamoDefinitionProxy>("dynamo");
@@ -107,14 +111,13 @@ namespace CCL.Creator.Wizards.SimSetup
             var fuseController = CreateSimComponent<FuseControllerDefinitionProxy>("electronicsFuseController");
             fuseController.controllingPort = new PortReferenceDefinition(DVPortValueType.STATE, "CONTROLLING_PORT");
 
-            var throttleCalc = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("throttleCalculator");
-            throttleCalc.aReader = new PortReferenceDefinition(DVPortValueType.PRESSURE, "BOILER_PRESSURE");
-            throttleCalc.bReader = new PortReferenceDefinition(DVPortValueType.CONTROL, "THROTTLE");
-            throttleCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.PRESSURE, "STEAM_CHEST_PRESSURE");
-
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
             var lubricatorControl = CreateExternalControl("lubricatorControl", true);
+            var lubricatorSmoothing = CreateSibling<SmoothedOutputDefinitionProxy>(lubricatorControl, "lubricatorControlSmoothing");
+            lubricatorSmoothing.smoothTime = 0.2f;
             var lubricator = CreateSimComponent<MechanicalLubricatorDefinitionProxy>("lubricator");
+
+            var oilingPoints = CreateSimComponent<ManualOilingPointsDefinitionProxy>("oilingPoints");
 
             var bellControl = CreateExternalControl("bellControl", true);
             var bell = CreateSimComponent<SteamBellDefinitionProxy>("bell");
@@ -137,11 +140,11 @@ namespace CCL.Creator.Wizards.SimSetup
                 var tenderWater = CreateSimComponent<ConfigurablePortsDefinitionProxy>("tenderWater");
                 tenderWater.Ports = new[]
                 {
-                        new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "NORMALIZED"), 0),
-                        new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "CAPACITY"), 30000),
-                        new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "AMOUNT"), 0),
-                        new PortStartValue(new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "CONSUME_EXT_IN"), 0)
-                    };
+                    new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "NORMALIZED"), 0),
+                    new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "CAPACITY"), 30000),
+                    new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "AMOUNT"), 0),
+                    new PortStartValue(new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "CONSUME_EXT_IN"), 0)
+                };
                 tenderWater.OnValidate();
                 CreateBroadcastConsumer(tenderWater, "NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_NORMALIZED", 0, false);
                 CreateBroadcastConsumer(tenderWater, "CAPACITY", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_WATER_CAPACITY", 1, false);
@@ -151,9 +154,9 @@ namespace CCL.Creator.Wizards.SimSetup
                 var tenderCoal = CreateSimComponent<ConfigurablePortsDefinitionProxy>("tenderCoal");
                 tenderCoal.Ports = new[]
                 {
-                        new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "NORMALIZED"), 0),
-                        new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "CAPACITY"), 10000),
-                    };
+                    new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "NORMALIZED"), 0),
+                    new PortStartValue(new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "CAPACITY"), 10000),
+                };
                 tenderCoal.OnValidate();
                 CreateBroadcastConsumer(tenderCoal, "NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_COAL_NORMALIZED", 0, false);
                 CreateBroadcastConsumer(tenderCoal, "CAPACITY", DVPortForwardConnectionType.COUPLED_REAR, "TENDER_COAL_CAPACITY", 1, false);
@@ -203,34 +206,51 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             // Damage.
-            _damageController.bodyHealthStateExternalInPortIds = new[] { FullPortId(boiler, "BODY_HEALTH_EXT_IN") };
+            _damageController.bodyHealthStateExternalInPortIds = new[]
+            {
+                FullPortId(boiler, "BODY_HEALTH_EXT_IN")
+            };
 
-            _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(steamEngine, "GENERATED_MECHANICAL_DAMAGE") };
-            _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(steamEngine, "HEALTH_STATE_EXT_IN") };
+            _damageController.mechanicalPTDamagerPortIds = new[]
+            {
+                FullPortId(steamEngine, "GENERATED_MECHANICAL_DAMAGE"),
+                FullPortId(oilingPoints, "MECHANICAL_DAMAGE")
+            };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[]
+            {
+                FullPortId(steamEngine, "HEALTH_STATE_EXT_IN"),
+                FullPortId(lubricator, "MECHANICAL_PT_HEALTH_EXT_IN"),
+                FullPortId(oilingPoints, "MECHANICAL_PT_HEALTH_EXT_IN")
+            };
 
             // Port connections.
             ConnectPorts(steamEngine, "TORQUE_OUT", traction, "TORQUE_IN");
 
             // Port reference connections.
+            ConnectPortRef(lubricatorControl, "EXT_IN", lubricatorSmoothing, "CONTROL");
             ConnectPortRef(oil, "AMOUNT", lubricator, "OIL");
             ConnectPortRef(oil, "CONSUME_EXT_IN", lubricator, "OIL_CONSUMPTION");
-            ConnectPortRef(lubricatorControl, "EXT_IN", lubricator, "LUBRICATOR_CONTROL");
+            ConnectPortRef(lubricatorSmoothing, "OUTPUT", lubricator, "MANUAL_FILL_RATE_NORMALIZED");
             ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", lubricator, "WHEEL_RPM");
+
+            ConnectPortRef(oil, "AMOUNT", oilingPoints, "OIL_STORAGE");
+            ConnectPortRef(oil, "CONSUME_EXT_IN", oilingPoints, "OIL_CONSUMPTION");
+            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", oilingPoints, "WHEEL_RPM");
 
             ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
             ConnectPortRef(boiler, "PRESSURE", bell, "STEAM_PRESSURE");
 
-            ConnectPortRef(damper, "EXT_IN", firebox, "DAMPER_CONTROL");
             ConnectPortRef(coalDump, "EXT_IN", firebox, "COAL_DUMP_CONTROL");
+            ConnectPortRef(waterDetector, "STATE_EXT_IN", firebox, "INTAKE_WATER_CONTENT");
             ConnectPortRef(exhaust, "AIR_FLOW", firebox, "AIR_FLOW");
             ConnectPortRef(traction, "FORWARD_SPEED_EXT_IN", firebox, "FORWARD_SPEED");
             ConnectPortRef(boiler, "PRESSURE", firebox, "BOILER_PRESSURE");
             ConnectPortRef(boiler, "TEMPERATURE", firebox, "BOILER_TEMPERATURE");
+            ConnectPortRef(boiler, "IS_BROKEN", firebox, "BOILER_BROKEN_STATE");
 
             ConnectPortRef(exhaust, "STEAM_CONSUMPTION", steamCalc, "EXHAUST");
             ConnectPortRef(compressor, "STEAM_CONSUMPTION", steamCalc, "COMPRESSOR");
-            ConnectPortRef(steamEngine, "STEAM_FLOW", steamCalc, "ENGINE");
-            ConnectPortRef(steamEngine, "DUMPED_FLOW", steamCalc, "CYLINDER_DUMP");
+            ConnectPortRef(steamEngine, "INTAKE_FLOW", steamCalc, "ENGINE");
             ConnectPortRef(dynamo, "STEAM_CONSUMPTION", steamCalc, "DYNAMO");
             ConnectPortRef(bell, "STEAM_CONSUMPTION", steamCalc, "BELL");
 
@@ -241,7 +261,15 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(blowdown, "EXT_IN", boiler, "BLOWDOWN");
             ConnectPortRef(firebox, "HEAT", boiler, "HEAT");
             ConnectPortRef(firebox, "TEMPERATURE", boiler, "FIREBOX_TEMPERATURE");
-            //ConnectPortRef(, "", boiler, "FEEDWATER_TEMPERATURE");
+            switch (basisIndex)
+            {
+                case 1:
+                    ConnectPortRef(steamEngine, "EXHAUST_TEMPERATURE", boiler, "FEEDWATER_TEMPERATURE");
+                    break;
+                default:
+                    ConnectPortRef("-EMPTY-", FullPortId(boiler, "FEEDWATER_TEMPERATURE"));
+                    break;
+            }
             ConnectPortRef(steamCalc, "OUT", boiler, "STEAM_CONSUMPTION");
             ConnectPortRef(water, "AMOUNT", boiler, "WATER");
             ConnectPortRef(water, "CONSUME_EXT_IN", boiler, "WATER_CONSUMPTION");
@@ -253,28 +281,28 @@ namespace CCL.Creator.Wizards.SimSetup
 
             ConnectPortRef(dynamo, "DYNAMO_FLOW_NORMALIZED", fuseController, "CONTROLLING_PORT");
 
-            ConnectPortRef(boiler, "PRESSURE", throttleCalc, "BOILER_PRESSURE");
-            ConnectPortRef(throttle, "EXT_IN", throttleCalc, "THROTTLE");
-
+            ConnectPortRef(throttle, "EXT_IN", steamEngine, "THROTTLE_CONTROL");
             ConnectPortRef(reverser, "REVERSER", steamEngine, "REVERSER_CONTROL");
             ConnectPortRef(cylCock, "EXT_IN", steamEngine, "CYLINDER_COCK_CONTROL");
-            ConnectPortRef(throttleCalc, "STEAM_CHEST_PRESSURE", steamEngine, "STEAM_CHEST_PRESSURE");
+            ConnectPortRef(boiler, "PRESSURE", steamEngine, "INTAKE_PRESSURE");
             if (HasSuperheater(basisIndex))
             {
-                ConnectPortRef(firebox, "TEMPERATURE", steamEngine, "STEAM_CHEST_TEMPERATURE");
+                ConnectPortRef(firebox, "TEMPERATURE", steamEngine, "INTAKE_TEMPERATURE");
             }
             else
             {
-                ConnectPortRef(boiler, "TEMPERATURE", steamEngine, "STEAM_CHEST_TEMPERATURE");
+                ConnectPortRef(boiler, "TEMPERATURE", steamEngine, "INTAKE_TEMPERATURE");
             }
-            ConnectPortRef(boiler, "OUTLET_STEAM_QUALITY", steamEngine, "STEAM_QUALITY");
+            ConnectPortRef(boiler, "OUTLET_STEAM_QUALITY", steamEngine, "INTAKE_QUALITY");
             ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", steamEngine, "CRANK_RPM");
             ConnectPortRef(lubricator, "LUBRICATION_NORMALIZED", steamEngine, "LUBRICATION_NORMALIZED");
 
-            ConnectPortRef(steamEngine, "STEAM_FLOW", exhaust, "EXHAUST_FLOW");
+            ConnectPortRef(steamEngine, "EXHAUST_FLOW", exhaust, "EXHAUST_FLOW");
+            ConnectPortRef(steamEngine, "MAX_FLOW", exhaust, "ENGINE_MAX_FLOW");
             ConnectPortRef(boiler, "PRESSURE", exhaust, "BOILER_PRESSURE");
             ConnectPortRef(blower, "EXT_IN", exhaust, "BLOWER_CONTROL");
             ConnectPortRef(whistle, "EXT_IN", exhaust, "WHISTLE_CONTROL");
+            ConnectPortRef(damper, "EXT_IN", exhaust, "DAMPER_CONTROL");
 
             // Apply defaults.
             switch (basisIndex)
@@ -295,6 +323,13 @@ namespace CCL.Creator.Wizards.SimSetup
                 shovelling = _root.AddComponent<MagicShovellingProxy>();
             }
         }
+
+        private static int PoweredAxleCount(int basis) => basis switch
+        {
+            0 => 3,
+            1 => 4,
+            _ => 0,
+        };
 
         private static bool HasTender(int basis)
         {

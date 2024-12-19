@@ -28,6 +28,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var thrtCurv = CreateSimComponent<PowerFunctionDefinitionProxy>("throttleCurve");
             var reverser = CreateReverserControl();
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
 
             // Headlights.
 

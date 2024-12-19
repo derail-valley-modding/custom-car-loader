@@ -11,7 +11,10 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public float pistonStroke = 0.711f;
         public float minCutoff = 0.05f;
         public float maxCutoff = 0.9f;
-        public AnimationCurve volumetricEfficiency = new AnimationCurve();
+
+        [Header("Throttle and steam chest")]
+        public float throttleMaxFlow;
+        public float steamChestVolume;
 
         [Header("Water in cylinders")]
         public float cylinderHeatRate = 0.05f;
@@ -26,22 +29,27 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public float cylinderCrackDamage = 100f;
         public float passiveDamagePerRev = 0.01f;
         public float noOilDamagePerRev = 1f;
+        public float ashChuffDamage = 1f;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CRANK_ROTATION"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CYLINDERS_STEAM_INJECTION"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CYLINDERS_INLET_VALVE_OPEN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "DUMPED_FLOW"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "STEAM_FLOW"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "MAX_FLOW"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "INTAKE_FLOW"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "INTAKE_FLOW_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "EXHAUST_FLOW"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.PRESSURE, "EXHAUST_PRESSURE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "EXHAUST_TEMPERATURE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CHUFF_EVENT"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CHUFF_FREQUENCY"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "CYLINDER_TEMPERATURE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "WATER_IN_CYLINDERS_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "ASHES_IN_PIPES"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CYLINDER_COCK_FLOW_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CYLINDER_CRACK_FLOW_NORMALIZED"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.PRESSURE, "STEAM_CHEST_INDICATOR"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.PRESSURE, "STEAM_CHEST_PRESSURE"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "HEALTH_STATE_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.DAMAGE, "GENERATED_MECHANICAL_DAMAGE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "IS_CYLINDER_CRACKED"),
@@ -50,11 +58,12 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
+            new PortReferenceDefinition(DVPortValueType.CONTROL, "THROTTLE_CONTROL", false),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "REVERSER_CONTROL", false),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "CYLINDER_COCK_CONTROL", false),
-            new PortReferenceDefinition(DVPortValueType.PRESSURE, "STEAM_CHEST_PRESSURE", false),
-            new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "STEAM_CHEST_TEMPERATURE", false),
-            new PortReferenceDefinition(DVPortValueType.GENERIC, "STEAM_QUALITY", false),
+            new PortReferenceDefinition(DVPortValueType.PRESSURE, "INTAKE_PRESSURE", false),
+            new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "INTAKE_TEMPERATURE", false),
+            new PortReferenceDefinition(DVPortValueType.GENERIC, "INTAKE_QUALITY", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "CRANK_RPM", false),
             new PortReferenceDefinition(DVPortValueType.OIL, "LUBRICATION_NORMALIZED", false)
         };
@@ -68,9 +77,9 @@ namespace CCL.Types.Proxies.Simulation.Steam
             pistonStroke = 0.61f;
             minCutoff = 0.05f;
             maxCutoff = 0.9f;
-            volumetricEfficiency = new AnimationCurve(
-                new Keyframe(  0.0f, 1.0f) { inTangent = 0.0f, outTangent = 0.0f, outWeight = 0.03769634f },
-                new Keyframe(250.0f, 0.0f) { inTangent = -0.012575501f, outTangent = -0.012575501f, inWeight = 0.014659607f });
+
+            throttleMaxFlow = 3f;
+            steamChestVolume = 200f;
 
             cylinderHeatRate = 0.01f;
             maxCondensationRate = 1.0f/300.0f;
@@ -83,6 +92,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             cylinderCrackDamage = 100f;
             passiveDamagePerRev = 0.01f;
             noOilDamagePerRev = 1f;
+            ashChuffDamage = 3f;
         }
 
         public void ApplyS282Defaults()
@@ -92,9 +102,9 @@ namespace CCL.Types.Proxies.Simulation.Steam
             pistonStroke = 0.711f;
             minCutoff = 0.05f;
             maxCutoff = 0.9f;
-            volumetricEfficiency = new AnimationCurve(
-                new Keyframe(  0.0f, 1.0f) { inTangent = 0.0f, outTangent = 0.0f, outWeight = 0.33333334f },
-                new Keyframe(500.0f, 0.0f) { inTangent = -0.004447582f, outTangent = -0.004447582f, inWeight = 0.016753845f });
+
+            throttleMaxFlow = 8f;
+            steamChestVolume = 1000;
 
             cylinderHeatRate = 0.01f;
             maxCondensationRate = 0.015f;
@@ -107,6 +117,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             cylinderCrackDamage = 100f;
             passiveDamagePerRev = 0.01f;
             noOilDamagePerRev = 1f;
+            ashChuffDamage = 3f;
         }
 
         #endregion

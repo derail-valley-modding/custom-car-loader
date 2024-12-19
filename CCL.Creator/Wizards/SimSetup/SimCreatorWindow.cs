@@ -264,10 +264,11 @@ namespace CCL.Creator.Wizards.SimSetup
             return control;
         }
 
-        protected ReverserDefinitionProxy CreateReverserControl(string? idOverride = null)
+        protected ReverserDefinitionProxy CreateReverserControl(string? idOverride = null, bool isAnalog = false)
         {
             idOverride ??= "reverser";
             var control = CreateSimComponent<ReverserDefinitionProxy>(idOverride);
+            control.isAnalog = isAnalog;
             var overrider = CreateSibling<OverridableControlProxy>(control);
             overrider.ControlType = OverridableControlType.Reverser;
             overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
@@ -324,7 +325,6 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             var airController = CreateSibling<CompressorSimControllerProxy>(compressor);
             airController.activationSignalExtInPortId = FullPortId(compressor, "ACTIVATION_SIGNAL_EXT_IN");
-            airController.isPoweredPortId = FullPortId(compressor, "IS_POWERED");
             airController.productionRateOutPortId = FullPortId(compressor, "PRODUCTION_RATE");
             airController.mainReservoirVolumePortId = FullPortId(compressor, "MAIN_RES_VOLUME");
             airController.activationPressureThresholdPortId = FullPortId(compressor, "ACTIVATION_PRESSURE_THRESHOLD");

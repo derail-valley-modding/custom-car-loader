@@ -37,7 +37,7 @@ namespace CCL.Types.Proxies.VFX
         [PortId(DVPortValueType.CONTROL, false)]
         public string reverserPortId;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylindersSteamInjectionPortId;
+        public string cylindersInletValveOpenPortId;
         [PortId(DVPortValueType.STATE, false)]
         public string cylinderCockFlowNormalizedPortId;
         [PortId(DVPortValueType.GENERIC, false)]
@@ -65,7 +65,7 @@ namespace CCL.Types.Proxies.VFX
         {
             new PortIdField(this, nameof(crankRotationPortId), crankRotationPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(reverserPortId), reverserPortId, DVPortValueType.CONTROL),
-            new PortIdField(this, nameof(cylindersSteamInjectionPortId), cylindersSteamInjectionPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(cylindersInletValveOpenPortId), cylindersInletValveOpenPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(cylinderCockFlowNormalizedPortId), cylinderCockFlowNormalizedPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(forwardSpeedPortId), forwardSpeedPortId, DVPortValueType.GENERIC),
         };
