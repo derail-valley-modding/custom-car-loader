@@ -229,8 +229,6 @@ namespace CCL.Creator.Wizards
             var engine = root.transform.root.GetComponentInChildren<ReciprocatingSteamEngineDefinitionProxy>();
             var cylCock = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
                 .FirstOrDefault(x => x.ID == "cylinderCock");
-            var throttleCalculator = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
-                .FirstOrDefault(x => x.ID == "throttleCalculator");
             var traction = root.transform.root.GetComponentInChildren<TractionDefinitionProxy>();
             var firebox = root.transform.root.GetComponentInChildren<FireboxDefinitionProxy>();
             var fireboxDoor = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
@@ -298,7 +296,7 @@ namespace CCL.Creator.Wizards
             thickSmoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmokeThick;
             thickSmoke.transform.parent = smokeParent.transform;
 
-            var embersParent = new GameObject("SmokeEmbers").AddComponent<CopyVanillaParticleSystem>();
+            var embersParent = new GameObject("SmokeEmbers");
             embersParent.transform.parent = chimney.transform;
             var emberClusters = new GameObject("EmberClusters").AddComponent<CopyVanillaParticleSystem>();
             emberClusters.SystemToCopy = VanillaParticleSystem.SteamerEmberClusters;
@@ -607,7 +605,7 @@ namespace CCL.Creator.Wizards
                     {
                         new ParticlePortReader.PortParticleUpdateDefinition
                         {
-                            portId = throttleCalculator != null ? throttleCalculator.GetFullPortId("STEAM_CHEST_PRESSURE") : "",
+                            portId = engine != null ? engine.GetFullPortId("STEAM_CHEST_PRESSURE") : "",
                             inputModifier = new ValueModifier(),
                             propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
                             {
