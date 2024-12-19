@@ -201,9 +201,6 @@ namespace CCL.Creator.Wizards
             steam = steam.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustWave;
             steam.AllowReplacing = false;
-            steam = steam.gameObject.AddComponent<CopyVanillaParticleSystem>();
-            steam.SystemToCopy = VanillaParticleSystem.SteamerExhaustLeak;
-            steam.AllowReplacing = false;
 
             var steamSmall = new GameObject("SteamExhaust Small").AddComponent<CopyVanillaParticleSystem>();
             steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallWispy;
@@ -211,18 +208,12 @@ namespace CCL.Creator.Wizards
             steamSmall = steamSmall.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallWave;
             steamSmall.AllowReplacing = false;
-            steamSmall = steamSmall.gameObject.AddComponent<CopyVanillaParticleSystem>();
-            steamSmall.SystemToCopy = VanillaParticleSystem.SteamerExhaustSmallLeak;
-            steamSmall.AllowReplacing = false;
 
             var steamLarge = new GameObject("SteamExhaust Large").AddComponent<CopyVanillaParticleSystem>();
             steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeWispy;
             steamLarge.AllowReplacing = false;
             steamLarge = steamLarge.gameObject.AddComponent<CopyVanillaParticleSystem>();
             steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeWave;
-            steamLarge.AllowReplacing = false;
-            steamLarge = steamLarge.gameObject.AddComponent<CopyVanillaParticleSystem>();
-            steamLarge.SystemToCopy = VanillaParticleSystem.SteamerExhaustLargeLeak;
             steamLarge.AllowReplacing = false;
 
             CopyVanillaParticleSystem system;
@@ -313,6 +304,11 @@ namespace CCL.Creator.Wizards
             crack = Object.Instantiate(steamLarge, crack.transform).gameObject;
             crack.name = steamLarge.name;
 
+            var dynamoSteam = new GameObject("DynamoSteam");
+            dynamoSteam.transform.parent = comp.transform;
+            dynamoSteam = Object.Instantiate(steamSmall, crack.transform).gameObject;
+            dynamoSteam.name = steamSmall.name;
+
             var leaksParent = new GameObject("RandomLeaks");
             leaksParent.transform.parent = comp.transform;
             leaksParent.SetActive(false);
@@ -337,6 +333,7 @@ namespace CCL.Creator.Wizards
                 .FirstOrDefault(x => x.ID == "throttleCalculator");
             var traction = root.transform.root.GetComponentInChildren<TractionDefinitionProxy>();
             var firebox = root.transform.root.GetComponentInChildren<FireboxDefinitionProxy>();
+            var dynamo = root.transform.root.GetComponentInChildren<DynamoDefinitionProxy>();
 
             #endregion
 
@@ -605,6 +602,42 @@ namespace CCL.Creator.Wizards
                             }
                         }
                     }
+                },
+                new ParticlePortReader
+                {
+                    particlesParent = dynamoSteam,
+                    particleUpdaters = new List<ParticlePortReader.PortParticleUpdateDefinition>
+                    {
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = dynamo != null ? dynamo.GetFullPortId("DYNAMO_FLOW_NORMALIZED") : "",
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 1, 1),
+                                        new Keyframe(1, 1, 1, 1))
+                                },
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.START_SPEED_MULTIPLIER,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0.1f, 0.9f, 0.9f),
+                                        new Keyframe(1, 1, 0.9f, 0.9f))
+                                },
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.START_SIZE_MULTIPLIER,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0.1f, 0.9f, 0.9f),
+                                        new Keyframe(1, 1, 0.9f, 0.9f))
+                                }
+                            }
+                        }
+                    }
                 }
             };
 
@@ -625,7 +658,7 @@ namespace CCL.Creator.Wizards
                 new ParticleColorPortReader
                 {
                     particlesParent = smoke.gameObject,
-                    portId = exhaust != null ? exhaust.GetFullPortId("AIR_FLOW") : "",
+                    portId = exhaust != null ? exhaust.GetFullPortId("TOTAL_FLOW_NORMALIZED") : "",
                     inputModifier = new ValueModifier(),
                     changeType = ColorPropertyChange.ALPHA_ONLY,
                     startColorMin = new Color(0.5019608f, 0.5019608f, 0.5019608f, 1),
@@ -647,7 +680,19 @@ namespace CCL.Creator.Wizards
                         new Keyframe(0.3f, 0, 0.0056568207f, 0.0056568207f, 1 / 3f, 0.17435893f),
                         new Keyframe(0.7f, 1, 0.020209895f, 0.020209895f, 0.21227589f, 1 / 3f),
                         new Keyframe(1.01f, 1.0027869f, 0.036841f, 0.036841f, 0.38064513f, 0))
-                }
+                },
+                new ParticleColorPortReader
+                {
+                    particlesParent = thickSmoke.gameObject,
+                    portId = exhaust != null ? exhaust.GetFullPortId("TOTAL_FLOW_NORMALIZED") : "",
+                    inputModifier = new ValueModifier(),
+                    changeType = ColorPropertyChange.ALPHA_ONLY,
+                    startColorMin = new Color(0.5019608f, 0.5019608f, 0.5019608f, 1),
+                    startColorMax = new Color(0.5019608f, 0.5019608f, 0.5019608f, 0.3137255f),
+                    colorLerpCurve = new AnimationCurve(
+                        new Keyframe(0, 0, 0.05f, 0.05f),
+                        new Keyframe(20, 1, 0.05f, 0.05f))
+                },
             };
 
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");

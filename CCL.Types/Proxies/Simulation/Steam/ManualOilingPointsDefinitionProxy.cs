@@ -61,15 +61,18 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         public void OnValidate()
         {
-            for (int i = 0; i < oilingPoints.Length; i++)
-            {
-                var point = oilingPoints[i];
+            oilingPoints = new OilingPointDefinition[OilingPointCount];
 
-                point.oilLevelReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OIL, $"OIL_LEVEL_{i}");
-                point.oilLevelNormalizedReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OIL, $"OIL_LEVEL_NORMALIZED_{i}");
-                point.pointDoorExtIn = new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, $"POINT_DOOR_EXT_IN_{i}");
-                point.refillExtIn = new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, $"REFILL_EXT_IN_{i}");
-                point.refillingFlowNormalizedReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, $"REFILLING_FLOW_NORMALIZED_{i}");
+            for (int i = 0; i < OilingPointCount; i++)
+            {
+                oilingPoints[i] = new OilingPointDefinition
+                {
+                    oilLevelReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OIL, $"OIL_LEVEL_{i}"),
+                    oilLevelNormalizedReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OIL, $"OIL_LEVEL_NORMALIZED_{i}"),
+                    pointDoorExtIn = new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, $"POINT_DOOR_EXT_IN_{i}"),
+                    refillExtIn = new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, $"REFILL_EXT_IN_{i}"),
+                    refillingFlowNormalizedReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, $"REFILLING_FLOW_NORMALIZED_{i}")
+                };
             }
 
             _json = JSONObject.ToJson(oilingPoints);

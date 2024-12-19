@@ -44,7 +44,7 @@ namespace CCL.Importer.Processing
                 point.transform.localScale = dummy.localScale;
                 point.name = dummy.name;
 
-                point.GetComponent<PositionSyncConsumer>().syncTag = $"o{i}";
+                point.GetComponent<PositionSyncConsumer>().syncTag = oilingPoints[i].SyncTag;
                 point.GetComponentInChildren<InteractablePortFeeder>().portId = $"{definition.ID}.POINT_DOOR_EXT_IN_{i}";
                 var oilPort = point.GetComponentInChildren<OilingPointPortFeederReader>();
                 oilPort.refillPortId = $"{definition.ID}.REFILL_EXT_IN_{i}";
