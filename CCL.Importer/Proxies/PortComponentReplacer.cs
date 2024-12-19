@@ -30,6 +30,8 @@ namespace CCL.Importer.Proxies
             CreateMap<BroadcastPortValueProviderProxy, BroadcastPortValueProvider>().AutoCacheAndMap();
 
             CreateMap<AnimatorPortReaderProxy, AnimatorPortReader>().AutoCacheAndMap();
+            CreateMap<RotatorPortReaderProxy, RotatorPortReader>().AutoCacheAndMap();
+            CreateMap<RotatorPortReaderProxy.RotationData, RotatorPortReader.RotationData>();
 
             CreateMap<ResourceMassPortReaderProxy, ResourceMassPortReader>().AutoCacheAndMap();
         }
