@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using static CCL.Types.Proxies.VFX.ParticlesPortReadersControllerProxy;
+using CCL.Types.Proxies.Controllers;
 
 namespace CCL.Creator.Wizards
 {
@@ -335,6 +336,8 @@ namespace CCL.Creator.Wizards
                 .FirstOrDefault(x => x.ID == "throttleCalculator");
             var traction = root.transform.root.GetComponentInChildren<TractionDefinitionProxy>();
             var firebox = root.transform.root.GetComponentInChildren<FireboxDefinitionProxy>();
+            var fireboxDoor = root.transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>()
+                .FirstOrDefault(x => x.ID == "fireboxDoor");
             var dynamo = root.transform.root.GetComponentInChildren<DynamoDefinitionProxy>();
 
             #endregion
@@ -697,6 +700,8 @@ namespace CCL.Creator.Wizards
                 },
             };
 
+            #region Tunnels and Blowback
+
             var tunnel = root.AddComponent<TunnelParticleDampeningProxy>();
 
             tunnel.systems = new[]
@@ -705,6 +710,20 @@ namespace CCL.Creator.Wizards
                 thickSmoke.gameObject,
                 emberClusters.gameObject
             };
+
+            var blowback = new GameObject("BlowbackParticles").AddComponent<BlowbackParticlePortReaderProxy>();
+            blowback.transform.parent = comp.transform;
+            blowback.spawnAnchor = new GameObject("Spawn Anchor").transform;
+            blowback.spawnAnchor.transform.parent = blowback.transform;
+            blowback.forwardSpeedId = traction != null ? traction.GetFullPortId("FORWARD_SPEED_EXT_IN") : "";
+            blowback.airflowId = exhaust != null ? exhaust.GetFullPortId("AIR_FLOW") : "";
+            blowback.fireOnId = firebox != null ? firebox.GetFullPortId("FIRE_ON") : "";
+            blowback.fireboxDoorId = fireboxDoor != null ? fireboxDoor.GetFullPortId("EXT_IN") : "";
+
+            var blowbackCollider = blowback.gameObject.AddComponent<BoxCollider>();
+            blowbackCollider.size = Vector3.one * 0.1f;
+
+            #endregion
 
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");
         }

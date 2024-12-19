@@ -31,5 +31,6 @@ namespace CCL.Types.Proxies.Controllers
         Hydraulic,
         Mechanical,
         TMOverspeed,
+        Fire
     }
 }
