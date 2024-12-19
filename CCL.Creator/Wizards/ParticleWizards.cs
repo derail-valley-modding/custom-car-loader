@@ -269,16 +269,18 @@ namespace CCL.Creator.Wizards
             thickSmoke.SystemToCopy = VanillaParticleSystem.SteamerSteamSmokeThick;
             thickSmoke.transform.parent = smokeParent.transform;
 
-            var embers = new GameObject("SmokeEmbers").AddComponent<CopyVanillaParticleSystem>();
-            embers.SystemToCopy = VanillaParticleSystem.SteamerEmberClusters;
-            embers.AllowReplacing = false;
-            embers = embers.gameObject.AddComponent<CopyVanillaParticleSystem>();
-            embers.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
-            embers.AllowReplacing = false;
-            embers.transform.parent = chimney.transform;
+            var embersParent = new GameObject("SmokeEmbers").AddComponent<CopyVanillaParticleSystem>();
+            embersParent.transform.parent = chimney.transform;
+            var emberClusters = new GameObject("EmberClusters").AddComponent<CopyVanillaParticleSystem>();
+            emberClusters.SystemToCopy = VanillaParticleSystem.SteamerEmberClusters;
+            emberClusters.transform.parent = embersParent.transform;
+            var emberSparks = new GameObject("EmberSparks").AddComponent<CopyVanillaParticleSystem>();
+            emberSparks.SystemToCopy = VanillaParticleSystem.SteamerEmberSparks;
+            emberSparks.transform.parent = chimney.transform;
+            emberSparks.transform.parent = embersParent.transform;
 
             chimney.smokeParticlesParent = smokeParent.gameObject;
-            chimney.emberParticlesParent = embers.gameObject;
+            chimney.emberParticlesParent = embersParent.gameObject;
 
             #endregion
 
@@ -306,7 +308,7 @@ namespace CCL.Creator.Wizards
 
             var dynamoSteam = new GameObject("DynamoSteam");
             dynamoSteam.transform.parent = comp.transform;
-            dynamoSteam = Object.Instantiate(steamSmall, crack.transform).gameObject;
+            dynamoSteam = Object.Instantiate(steamSmall, dynamoSteam.transform).gameObject;
             dynamoSteam.name = steamSmall.name;
 
             var leaksParent = new GameObject("RandomLeaks");
@@ -693,6 +695,15 @@ namespace CCL.Creator.Wizards
                         new Keyframe(0, 0, 0.05f, 0.05f),
                         new Keyframe(20, 1, 0.05f, 0.05f))
                 },
+            };
+
+            var tunnel = root.AddComponent<TunnelParticleDampeningProxy>();
+
+            tunnel.systems = new[]
+            {
+                smoke.gameObject,
+                thickSmoke.gameObject,
+                emberClusters.gameObject
             };
 
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");
