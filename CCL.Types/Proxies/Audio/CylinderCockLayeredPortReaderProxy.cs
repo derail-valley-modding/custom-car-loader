@@ -9,9 +9,11 @@ namespace CCL.Types.Proxies.Audio
         [PortId(DVPortValueType.STATE, false)]
         public string crankRotationPortId;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylindersSteamInjectionPortId;
+        public string cylindersInletValveOpenPortId;
         [PortId(DVPortValueType.STATE, false)]
         public string cylinderCockFlowNormalizedPortId;
+        [PortId(DVPortValueType.CONTROL, false)]
+        public string cylinderCockControlPortId;
 
         // Using gameobjects to allow the audio replacer to work.
         [Header("order matters, need to match with cylinder index")]
@@ -20,8 +22,9 @@ namespace CCL.Types.Proxies.Audio
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(crankRotationPortId), crankRotationPortId, DVPortValueType.STATE),
-            new PortIdField(this, nameof(cylindersSteamInjectionPortId), cylindersSteamInjectionPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(cylindersInletValveOpenPortId), cylindersInletValveOpenPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(cylinderCockFlowNormalizedPortId), cylinderCockFlowNormalizedPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(cylinderCockControlPortId), cylinderCockControlPortId, DVPortValueType.STATE),
         };
 
         public void DoFieldReplacing()

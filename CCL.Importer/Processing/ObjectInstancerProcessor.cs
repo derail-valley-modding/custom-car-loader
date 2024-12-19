@@ -25,19 +25,19 @@ namespace CCL.Importer.Processing
         private static GameObject? s_audioMicroshunter;
 
         private static GameObject AudioDE2 =>
-            Extensions.GetCached(ref s_audioDE2, () => TrainCarType.LocoShunter.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioDE2, () => QuickAccess.Locomotives.DE2.parentType.audioPrefab);
         private static GameObject AudioDE6 =>
-            Extensions.GetCached(ref s_audioDE6, () => TrainCarType.LocoDiesel.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioDE6, () => QuickAccess.Locomotives.DE6.parentType.audioPrefab);
         private static GameObject AudioDH4 =>
-            Extensions.GetCached(ref s_audioDH4, () => TrainCarType.LocoDH4.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioDH4, () => QuickAccess.Locomotives.DH4.parentType.audioPrefab);
         private static GameObject AudioDM3 =>
-            Extensions.GetCached(ref s_audioDM3, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioDM3, () => QuickAccess.Locomotives.DM3.parentType.audioPrefab);
         private static GameObject AudioS060 =>
-            Extensions.GetCached(ref s_audioS060, () => TrainCarType.LocoS060.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioS060, () => QuickAccess.Locomotives.S060.parentType.audioPrefab);
         private static GameObject AudioS282 =>
-            Extensions.GetCached(ref s_audioS282, () => TrainCarType.LocoSteamHeavy.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioS282, () => QuickAccess.Locomotives.S282A.parentType.audioPrefab);
         private static GameObject AudioMicroshunter =>
-            Extensions.GetCached(ref s_audioMicroshunter, () => TrainCarType.LocoMicroshunter.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioMicroshunter, () => QuickAccess.Locomotives.Microshunter.parentType.audioPrefab);
 
         public override void ExecuteStep(ModelProcessor context)
         {
@@ -204,62 +204,69 @@ namespace CCL.Importer.Processing
         {
             foreach (var item in prefab.GetComponentsInChildren<CopyVanillaAudioSystem>())
             {
-                var audio = Object.Instantiate(GetAudio(item.AudioSystem), item.transform);
-                audio.transform.localPosition = Vector3.zero;
-                audio.transform.localRotation = Quaternion.identity;
-
-                item.InstancedObject = audio.gameObject;
-                var readers = audio.GetComponents<LayeredAudioPortReader>().OrderBy(x => x.portId).ToArray();
-                int length = Mathf.Min(readers.Length, item.Ports.Length);
-
-                // Readers are sorted alphabetically by port ID for consistency.
-                for (int i = 0; i < length; i++)
+                try
                 {
-                    readers[i].portId = item.Ports[i];
-                }
+                    var audio = Object.Instantiate(GetAudio(item.AudioSystem), item.transform);
+                    audio.transform.localPosition = Vector3.zero;
+                    audio.transform.localRotation = Quaternion.identity;
 
-                if (item.SourcePositions.Length > 0)
-                {
-                    var layers = audio.layers.OrderBy(x => x.name).ToArray();
-                    length = layers.Length;
+                    item.InstancedObject = audio.gameObject;
+                    var readers = audio.GetComponents<LayeredAudioPortReader>().OrderBy(x => x.portId).ToArray();
+                    int length = Mathf.Min(readers.Length, item.Ports.Length);
 
-                    // Similar to the previous, but sorted by layer name.
+                    // Readers are sorted alphabetically by port ID for consistency.
                     for (int i = 0; i < length; i++)
                     {
-                        if (item.SourcePositions[i] != null)
-                        {
-                            layers[i].source.gameObject.transform.position = item.SourcePositions[i].position;
-                        }
-                        else
-                        {
-                            layers[i].source.gameObject.transform.localPosition = Vector3.zero;
-                        }
+                        readers[i].portId = item.Ports[i];
                     }
-                }
-                else
-                {
-                    // If no positions exist, move everything to the (local) origin.
-                    foreach (var layer in audio.layers)
+
+                    if (item.SourcePositions.Length > 0)
                     {
-                        layer.source.gameObject.transform.localPosition = Vector3.zero;
-                    }
-                }
+                        var layers = audio.layers.OrderBy(x => x.name).ToArray();
+                        length = layers.Length;
 
-                if (item.Clips.Length > 0)
-                {
-                    var layers = audio.layers.OrderBy(x => x.name).ToArray();
-                    length = layers.Length;
-
-                    for (int i = 0; i < length; i++)
-                    {
-                        if (item.Clips[i] != null)
+                        // Similar to the previous, but sorted by layer name.
+                        for (int i = 0; i < length; i++)
                         {
-                            layers[i].source.clip = item.Clips[i];
+                            if (item.SourcePositions[i] != null)
+                            {
+                                layers[i].source.gameObject.transform.position = item.SourcePositions[i].position;
+                            }
+                            else
+                            {
+                                layers[i].source.gameObject.transform.localPosition = Vector3.zero;
+                            }
                         }
                     }
-                }
+                    else
+                    {
+                        // If no positions exist, move everything to the (local) origin.
+                        foreach (var layer in audio.layers)
+                        {
+                            layer.source.gameObject.transform.localPosition = Vector3.zero;
+                        }
+                    }
 
-                Object.Destroy(item);
+                    if (item.Clips.Length > 0)
+                    {
+                        var layers = audio.layers.OrderBy(x => x.name).ToArray();
+                        length = layers.Length;
+
+                        for (int i = 0; i < length; i++)
+                        {
+                            if (item.Clips[i] != null)
+                            {
+                                layers[i].source.clip = item.Clips[i];
+                            }
+                        }
+                    }
+
+                    Object.Destroy(item);
+                }
+                catch (System.Exception e)
+                {
+                    CCLPlugin.Error($"Error loading audio {item.AudioSystem}: {e.Message}");
+                }
             }
 
             foreach (var item in prefab.GetComponentsInChildren<CopyChuffSystem>())
@@ -280,6 +287,7 @@ namespace CCL.Importer.Processing
                 audio.chuffFrequencyPortId = item.chuffFrequencyPortId;
                 audio.cylinderWaterNormalizedPortId = item.cylinderWaterNormalizedPortId;
                 audio.cylinderCockControlPortId = item.cylinderCockControlPortId;
+                audio.ashesInPipesPortId = item.ashesInPipesPortId;
 
                 item.InstancedObject = audio.gameObject;
                 Object.Destroy(item);
@@ -416,6 +424,8 @@ namespace CCL.Importer.Processing
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.SteamerValveGearDamaged => AudioS282.transform.Find("[sim] Engine/ValveGearMechanism/DamagedMechanism_Layered")
                     .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerValveGearNoOil => AudioS282.transform.Find("[sim] Engine/ValveGearMechanism/NoOilOilingPoints_Layered")
+                    .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.SteamerCrownSheet => AudioS282.transform.Find("[sim] Engine/CrownSheetBoiling/CrownSheetBoiling_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.SteamerAirPump => AudioS282.transform.Find("[sim] Engine/AirPump/AirPump_Layered")
@@ -425,6 +435,10 @@ namespace CCL.Importer.Processing
                 VanillaAudioSystem.SteamerBellRing => AudioS282.transform.Find("[sim] Engine/Bell_Layered")
                     .GetComponent<LayeredAudio>(),
                 VanillaAudioSystem.SteamerBellPump => AudioS282.transform.Find("[sim] Engine/Bell_Pump")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerLubricator => AudioS282.transform.Find("[sim] Engine/MechanicalLubricator/Lubricator_Layered")
+                    .GetComponent<LayeredAudio>(),
+                VanillaAudioSystem.SteamerPrimingCrank => AudioS282.transform.Find("[sim] Engine/MechanicalLubricator/PrimingCrank_Layered")
                     .GetComponent<LayeredAudio>(),
 
                 VanillaAudioSystem.S060Whistle => AudioS060.transform.Find("[sim] Engine/Whistle/Whistle_Layered")
