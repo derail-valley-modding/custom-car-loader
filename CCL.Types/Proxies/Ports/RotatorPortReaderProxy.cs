@@ -50,9 +50,12 @@ namespace CCL.Types.Proxies.Ports
 
             for (int i = 0; i < _transforms.Length; i++)
             {
-                transformsToRotate[i].transformToRotate = _transforms[i];
-                transformsToRotate[i].rotationAxis = _axis[i];
-                transformsToRotate[i].maxRps = _rps[i];
+                transformsToRotate[i] = new RotationData
+                {
+                    transformToRotate = _transforms[i],
+                    rotationAxis = _axis[i],
+                    maxRps = _rps[i]
+                };
             }
         }
     }
