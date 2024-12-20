@@ -32,6 +32,8 @@ namespace CCL.Creator
 
         [Tooltip("Whether or not to display the port code on fields ([Port], [Fuse]...)")]
         public bool DisplayCodeOnPortFields = true;
+        [Tooltip("Displays ports with a folder structure instead of a simple list")]
+        public bool UseFolderSystemOnPortFields = false;
         [Tooltip("Extra Cargo IDs to display in cargo fields\n" +
             "Only works on fields that support custom values")]
         public string[] ExtraCargos = new string[0];
