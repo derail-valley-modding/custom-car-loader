@@ -1,7 +1,5 @@
-﻿using CCL.Types.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
@@ -11,7 +9,6 @@ namespace CCL.Types.Proxies.Ports
         [Serializable]
         public class RotationData
         {
-            [JsonIgnore]
             public Transform transformToRotate;
             public Vector3 rotationAxis = Vector3.forward;
             public float maxRps = 10f;
@@ -19,12 +16,14 @@ namespace CCL.Types.Proxies.Ports
 
         [PortId(null, null, false)]
         public string portId;
-        public RotationData[] transformsToRotate;
+        public RotationData[] transformsToRotate = new RotationData[0];
 
         [SerializeField, HideInInspector]
-        private string? _json;
-        [SerializeField, HideInInspector]
         private Transform[] _transforms = new Transform[0];
+        [SerializeField, HideInInspector]
+        private Vector3[] _axis = new Vector3[0];
+        [SerializeField, HideInInspector]
+        private float[] _rps = new float[0];
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
@@ -33,17 +32,27 @@ namespace CCL.Types.Proxies.Ports
 
         public void OnValidate()
         {
-            _transforms = transformsToRotate.Select(x => x.transformToRotate).ToArray();
-            _json = JSONObject.ToJson(transformsToRotate);
+            _transforms = new Transform[transformsToRotate.Length];
+            _axis = new Vector3[transformsToRotate.Length];
+            _rps = new float[transformsToRotate.Length];
+
+            for (int i = 0; i < transformsToRotate.Length; i++)
+            {
+                _transforms[i] = transformsToRotate[i].transformToRotate;
+                _axis[i] = transformsToRotate[i].rotationAxis;
+                _rps[i] = transformsToRotate[i].maxRps;
+            }
         }
 
         public void AfterImport()
         {
-            transformsToRotate = JSONObject.FromJson(_json, () => new RotationData[0]);
+            transformsToRotate = new RotationData[_transforms.Length];
 
             for (int i = 0; i < _transforms.Length; i++)
             {
                 transformsToRotate[i].transformToRotate = _transforms[i];
+                transformsToRotate[i].rotationAxis = _axis[i];
+                transformsToRotate[i].maxRps = _rps[i];
             }
         }
     }
