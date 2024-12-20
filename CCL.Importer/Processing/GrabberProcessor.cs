@@ -45,6 +45,9 @@ namespace CCL.Importer.Processing
                     ClearCache();
                 }
 
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+
                 //_cachedResources = Resources.FindObjectsOfTypeAll<T>().ToDictionary(k => k.name, v => v);
 
                 // Cache all resources of a type for easy access.
@@ -56,7 +59,9 @@ namespace CCL.Importer.Processing
                 // Hash set for quick checking if everything is here.
                 var hashes = _cachedResources.Keys.ToHashSet();
 
-                CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} items.");
+                sw.Stop();
+
+                CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} items [{sw.Elapsed.TotalSeconds:F4}s]");
                 List<string> missing = new List<string>();
 
                 foreach (var item in _nameGetter())
@@ -86,7 +91,7 @@ namespace CCL.Importer.Processing
             // Used for debug.
             public void PrintCache(string separator = ", ")
             {
-                CCLPlugin.Log(string.Join(separator, Cache.Keys));
+                CCLPlugin.Log($"\"{string.Join(separator, Cache.Keys)}\"");
             }
         }
 
