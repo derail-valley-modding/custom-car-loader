@@ -55,7 +55,8 @@ namespace CCL.Creator.Validators
             GUILayout.BeginVertical();
             foreach (var result in entries)
             {
-                GUILayout.Label($"{result.TestName}: ");
+                // All rows need 1 extra pixel to align with the buttons.
+                GUILayout.Label($"{result.TestName}: ", GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
             }
             GUILayout.EndVertical();
 
@@ -64,16 +65,53 @@ namespace CCL.Creator.Validators
             foreach (var result in entries)
             {
                 GUI.skin.label.normal.textColor = result.StatusColor;
-                GUILayout.Label(Enum.GetName(typeof(ResultStatus), result.Status));
+                GUILayout.Label(Enum.GetName(typeof(ResultStatus), result.Status), GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
+            }
+            GUILayout.EndVertical();
+
+            // Quick link
+            GUI.skin.label.normal.textColor = defaultText;
+            GUILayout.BeginVertical();
+            GUILayout.Space(2);
+            foreach (var result in entries)
+            {
+                if (result.HasContext)
+                {
+                    // Opens the offending object/component in the inspector.
+                    if (GUILayout.Button("Go"))
+                    {
+                        // Open the prefab if needed.
+                        var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(result.Context);
+
+                        if (!string.IsNullOrEmpty(prefabPath))
+                        {
+                            AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
+                        }
+
+                        Selection.activeObject = result.Context;
+                    }
+                }
+                else if (result.HasSettingContext)
+                {
+                    // Opens project settings.
+                    if (GUILayout.Button("Go"))
+                    {
+                        SettingsService.OpenProjectSettings(result.SettingsContext);
+                    }
+                }
+                else
+                {
+                    // Padding so the buttons aren't misaligned.
+                    GUILayout.Label(" ", GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
+                }
             }
             GUILayout.EndVertical();
 
             // Messages
-            GUI.skin.label.normal.textColor = defaultText;
             GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
             foreach (var result in entries)
             {
-                GUILayout.Label(" " + result.Message);
+                GUILayout.Label(" " + result.Message, GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
             }
             GUILayout.EndVertical();
 
@@ -84,7 +122,7 @@ namespace CCL.Creator.Validators
             {
                 if (GUILayout.Button("Open CCL Documentation"))
                 {
-                    Application.OpenURL("https://foxden.cc/articles/read/car-loader");
+                    Application.OpenURL("https://github.com/derail-valley-modding/custom-car-loader/wiki");
                 }
             }
 
@@ -93,7 +131,7 @@ namespace CCL.Creator.Validators
             {
                 GUILayout.Label("Validation passed :)");
 
-                if (GUILayout.Button("Continue Export", GUILayout.Height(GUI.skin.button.lineHeight * 2)))
+                if (GUILayout.Button("Continue Export"))
                 {
                     ExportTrainCar.ShowWindow(carType!);
                     Close();

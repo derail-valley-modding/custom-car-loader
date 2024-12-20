@@ -29,7 +29,7 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortExists(components, connection.fullPortIdOut) || !CheckPortExists(components, connection.fullPortIdIn))
                 {
-                    result.Warning($"Invalid port connection \"{connection.fullPortIdOut}\"->\"{connection.fullPortIdIn}\"");
+                    result.Warning($"Invalid port connection \"{connection.fullPortIdOut}\"->\"{connection.fullPortIdIn}\"", connectionDef);
                 }
             }
 
@@ -37,7 +37,7 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortExists(components, connection.portId) || !CheckPortReferenceExists(components, connection.portReferenceId))
                 {
-                    result.Warning($"Invalid ref connection \"{connection.portId}\"->\"{connection.portReferenceId}\"");
+                    result.Warning($"Invalid ref connection \"{connection.portId}\"->\"{connection.portReferenceId}\"", connectionDef);
                 }
             }
 
@@ -50,7 +50,8 @@ namespace CCL.Creator.Validators
                     {
                         if (!CheckPortExists(components, id))
                         {
-                            result.Warning($"Port field {field.FullName} target \"{id}\" was not found");
+                            result.Warning($"Port field {field.FullName} target \"{id}\" was not found",
+                                hasPortId is UnityEngine.Object obj ? obj : null);
                         }
                     }
                 }
@@ -64,7 +65,8 @@ namespace CCL.Creator.Validators
                     {
                         if (!CheckFuseExists(components, id))
                         {
-                            result.Warning($"Fuse field {field.FullName} target \"{id}\" was not found");
+                            result.Warning($"Fuse field {field.FullName} target \"{id}\" was not found",
+                                hasFuseId is UnityEngine.Object obj ? obj : null);
                         }
                     }
                 }

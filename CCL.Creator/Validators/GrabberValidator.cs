@@ -49,7 +49,8 @@ namespace CCL.Creator.Validators
             {
                 if (!grabber.GetNames().Contains(item.ReplacementName))
                 {
-                    result.Fail($"{grabber.GetType().Name} in {grabber.gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).");
+                    result.Fail($"{grabber.GetType().Name} in {grabber.gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).",
+                        grabber is UnityEngine.Object obj ? obj : null);
                 }
             }
         }
@@ -60,7 +61,8 @@ namespace CCL.Creator.Validators
             {
                 if (!MaterialGrabber.MaterialNames.Contains(item.ReplacementName))
                 {
-                    result.Fail($"MaterialGrabberRenderer in {grabber.gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).");
+                    result.Fail($"MaterialGrabberRenderer in {grabber.gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).",
+                        grabber);
                 }
             }
         }

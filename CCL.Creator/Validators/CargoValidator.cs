@@ -70,7 +70,7 @@ namespace CCL.Creator.Validators
             var collidersRoot = model.transform.FindSafe(CarPartNames.Colliders.ROOT);
             if (!collidersRoot)
             {
-                result.Fail($"Cargo {model.name} model {CarPartNames.Colliders.ROOT} root is missing");
+                result.Fail($"Cargo {model.name} model {CarPartNames.Colliders.ROOT} root is missing", model);
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace CCL.Creator.Validators
 
             if (!(collision && collisionComp))
             {
-                result.Warning($"Cargo {model.name} bounding {CarPartNames.Colliders.COLLISION} collider is missing");
+                result.Warning($"Cargo {model.name} bounding {CarPartNames.Colliders.COLLISION} collider is missing", collidersRoot);
             }
         }
     }

@@ -170,24 +170,30 @@ namespace CCL.Creator.Validators
         }
 
         /// <summary>Add a warning message to this result. If status is currently Passing, this will escalate it to Warning level</summary>
-        public void Warning(string message)
+        public void Warning(string message, UnityEngine.Object? context = null)
         {
-            _warnings.Add(new ResultEntry(TestName, ResultStatus.Warning, message));
+            _warnings.Add(new ResultEntry(TestName, ResultStatus.Warning, message, context));
             Escalate(ResultStatus.Warning);
         }
 
         /// <summary>Add a failure message to this result. If status is currently Warning or below, this will escalate it to Failure level</summary>
-        public void Fail(string message)
+        public void Fail(string message, UnityEngine.Object? context = null)
         {
-            _warnings.Add(new ResultEntry(TestName, ResultStatus.Failed, message));
+            _warnings.Add(new ResultEntry(TestName, ResultStatus.Failed, message, context));
             Escalate(ResultStatus.Failed);
         }
 
         /// <summary>Add a critical failure message to this result. Status will be escalated to Critical and no more validators will be run</summary>
-        public void CriticalFail(string message)
+        public void CriticalFail(string message, UnityEngine.Object? context = null)
         {
-            _warnings.Add(new ResultEntry(TestName, ResultStatus.Critical, message));
+            _warnings.Add(new ResultEntry(TestName, ResultStatus.Critical, message, context));
             Escalate(ResultStatus.Critical);
+        }
+
+        /// <summary>Add an instruction to open the settings menu to the last warning</summary>
+        public void AddSettingsContextToLast(string context)
+        {
+            _warnings.Last().SettingsContext = context;
         }
 
         /// <summary>Clear all warnings and set the status to Skipped</summary>
@@ -210,12 +216,16 @@ namespace CCL.Creator.Validators
         public string TestName;
         public ResultStatus Status;
         public string Message;
+        public UnityEngine.Object? Context;
+        public string? SettingsContext;
 
-        public ResultEntry(string testName, ResultStatus status, string message = "")
+        public ResultEntry(string testName, ResultStatus status, string message = "", UnityEngine.Object? context = null)
         {
             TestName = testName;
             Status = status;
             Message = message;
+            Context = context;
+            SettingsContext = null;
         }
 
         private static readonly ResultStatus[] correctable =
@@ -225,6 +235,8 @@ namespace CCL.Creator.Validators
 
         public bool IsCorrectable => correctable.Contains(Status);
         public bool IsFailure => Status == ResultStatus.Failed || Status == ResultStatus.Critical;
+        public bool HasContext => Context != null;
+        public bool HasSettingContext => !string.IsNullOrEmpty(SettingsContext);
 
         public Color StatusColor
         {
