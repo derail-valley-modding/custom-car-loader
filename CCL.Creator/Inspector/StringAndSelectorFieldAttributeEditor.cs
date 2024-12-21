@@ -83,6 +83,9 @@ namespace CCL.Creator.Inspector
         }
     }
 
+    // These are needed to include the extra options from the settings.
+    // If no settings options are needed, then the inspector above can
+    // handle all cases.
     [CustomPropertyDrawer(typeof(CargoFieldAttribute), true)]
     internal class CargoFieldAttributeEditor : StringAndSelectorFieldAttributeEditor
     {
@@ -168,6 +171,30 @@ namespace CCL.Creator.Inspector
 
                 att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraGeneralLicenses);
                 att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraJobLicenses);
+
+                base.OnGUI(position, property, label);
+
+                att.Options = original;
+            }
+            else
+            {
+                base.OnGUI(position, property, label);
+            }
+        }
+    }
+
+    [CustomPropertyDrawer(typeof(JobLicenseFieldAttribute), true)]
+    internal class PaintFieldAttributeEditor : StringAndSelectorFieldAttributeEditor
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            var att = (StringAndSelectorFieldAttribute)attribute;
+
+            if (att.CustomAllowed)
+            {
+                var original = att.Options.ToList();
+
+                att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraPaints);
 
                 base.OnGUI(position, property, label);
 

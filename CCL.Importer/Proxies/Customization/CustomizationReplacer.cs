@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Customization;
-using DV.CabControls.Spec;
 using DV.Customization.Paint;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,27 +35,33 @@ namespace CCL.Importer.Proxies.Customization
         {
             Object.Destroy(set);
 
-            if (set is not DefaultBogieMaterialSet bogieSet)
+            return set switch
             {
-                return new TrainCarPaint.MaterialSet
+                DefaultBogieMaterialSet bogieSet => FromBogieSet(bogieSet),
+                _ => new TrainCarPaint.MaterialSet
                 {
                     originalMaterial = set.OriginalMaterial,
                     renderers = set.Replacements.Select(r =>
                         new TrainCarPaint.RendererMaterialReplacement(r.Renderer, r.MaterialIndex)).ToArray()
-                };
-            }
+                },
+            };
+        }
 
-            var cars = set.GetComponentsInParent<TrainCar>(true);
+        private static TrainCarPaint.MaterialSet FromBogieSet(DefaultBogieMaterialSet set)
+        {
+            // Need to find the bogies, so grab the car somewhere up the hierarchy
+            // then find the child bogies.
+            var car = set.GetComponentInParentIncludingInactive<TrainCar>();
 
-            if (cars.Length == 0)
+            if (car == null)
             {
                 CCLPlugin.Error("Could not find car for DefaultBogieMaterialSet.");
                 return new TrainCarPaint.MaterialSet();
             }
 
-            var bogies = cars[0].GetComponentsInChildren<Bogie>();
+            var bogies = car.GetComponentsInChildren<Bogie>();
 
-            if (bogies.Count() == 0)
+            if (bogies.Length == 0)
             {
                 CCLPlugin.Error("Could not find bogies for DefaultBogieMaterialSet.");
                 return new TrainCarPaint.MaterialSet();
@@ -69,8 +74,10 @@ namespace CCL.Importer.Proxies.Customization
             {
                 foreach (var renderer in bogie.GetComponentsInChildren<Renderer>())
                 {
+                    // Assign the first material as the main one.
                     mat ??= renderer.sharedMaterial;
 
+                    // And all matching ones afterwards.
                     if (renderer.sharedMaterial == mat)
                     {
                         renderers.Add(renderer);

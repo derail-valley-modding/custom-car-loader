@@ -69,6 +69,25 @@ namespace CCL.Importer
                 .Cast<T>();
         }
 
+        public static T GetComponentInParentIncludingInactive<T>(this GameObject gameObject)
+            where T : Component
+        {
+            var comps = gameObject.GetComponentsInParent<T>(true);
+
+            if (comps.Length > 0)
+            {
+                return comps[0];
+            }
+
+            return null!;
+        }
+
+        public static T GetComponentInParentIncludingInactive<T>(this Component component)
+            where T : Component
+        {
+            return GetComponentInParentIncludingInactive<T>(component.gameObject);
+        }
+
         public static void RefreshChildren<T>(this ARefreshableChildrenController<T> controller)
             where T : MonoBehaviour
         {
