@@ -6,6 +6,7 @@ using DV.Interaction;
 using DV.RemoteControls;
 using DV.Simulation.Cars;
 using DV.ThingTypes.TransitionHelpers;
+using LocoSim.DVExtensions.Test;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies
@@ -59,6 +60,8 @@ namespace CCL.Importer.Proxies
             CreateMap<InvalidTeleportLocationReactionProxy, InvalidTeleportLocationReaction>().AutoCacheAndMap()
                 .ForMember(d => d.blocker, o => o.MapFrom(s => Mapper.GetFromCache(s.blocker)))
                 .AfterMap(InvalidTeleportLocationReactionAfter);
+
+            CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap();
         }
 
         private void InteriorNonStandardLayerAfter(InteriorNonStandardLayerProxy src, InteriorNonStandardLayer dest)
