@@ -7,7 +7,6 @@ namespace CCL.Importer
 {
     internal static class PaintLoader
     {
-
         public static void LoadSubstitutions(IEnumerable<PaintSubstitutions> substitutions)
         {
             foreach (var substitution in substitutions)

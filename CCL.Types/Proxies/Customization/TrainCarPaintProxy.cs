@@ -23,6 +23,12 @@ namespace CCL.Types.Proxies.Customization
         private void AddSet()
         {
             Sets.Add(gameObject.AddComponent<MaterialSet>());
+            OnValidate();
+        }
+
+        private void OnValidate()
+        {
+            // Just because Unity doesn't like the method above.
         }
     }
 }

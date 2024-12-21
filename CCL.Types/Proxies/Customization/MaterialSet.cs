@@ -59,4 +59,7 @@ namespace CCL.Types.Proxies.Customization
             }
         }
     }
+
+    // To handle default bogies.
+    public class DefaultBogieMaterialSet : MaterialSet { }
 }
