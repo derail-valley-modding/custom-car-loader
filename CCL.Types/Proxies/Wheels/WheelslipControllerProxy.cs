@@ -37,9 +37,9 @@ namespace CCL.Types.Proxies.Wheels
             new Keyframe(0.25f, 0.4f, -0.0085f, -0.0085f, 0.3333f, 0.3333f)
         );
 
-        private static void SetCurveToDefault(WheelslipControllerProxy proxy)
+        private void SetCurveToDefault()
         {
-            proxy.wheelslipToAdhesionDrop = proxy.DefaultAdhesionCurve;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
         }
 
         #region Defaults
