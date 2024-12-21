@@ -101,6 +101,18 @@ namespace CCL.Importer
             return true;
         }
 
+        public static bool TryFind<T>(this T[] array, Predicate<T> match, out T value)
+        {
+            value = Array.Find(array, match);
+
+            if (value == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public static float Mapf(float fromMin, float fromMax, float toMin, float toMax, float value)
         {
             float fromRange = fromMax - fromMin;

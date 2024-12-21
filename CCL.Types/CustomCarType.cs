@@ -81,6 +81,9 @@ namespace CCL.Types
         [GeneralLicenseField]
         public string LicenseID = "";
 
+        [Header("Paints - optional")]
+        public PaintSubstitutions[] PaintSubstitutions = new PaintSubstitutions[0];
+
         [SerializeField, HideInInspector]
         private string? brakesJson;
         [SerializeField, HideInInspector]
@@ -170,6 +173,11 @@ namespace CCL.Types
                 {
                     livery.AfterAssetLoad();
                 }
+            }
+
+            foreach (var item in PaintSubstitutions)
+            {
+                item.AfterImport();
             }
         }
 
