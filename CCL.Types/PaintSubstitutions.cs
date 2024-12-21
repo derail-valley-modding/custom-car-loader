@@ -1,12 +1,17 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CCL.Types
 {
+    [CreateAssetMenu(menuName = "CCL/Paint Substitutions")]
     public class PaintSubstitutions : ScriptableObject, ICustomSerialized
     {
+        [Serializable]
         public class Substitution
         {
+            [Tooltip("The original material in the prefab")]
             public Material Original = null!;
+            [Tooltip("The new material applied to replace it")]
             public Material Substitute = null!;
         }
 

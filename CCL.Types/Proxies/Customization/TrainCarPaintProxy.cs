@@ -13,6 +13,7 @@ namespace CCL.Types.Proxies.Customization
 
         [PaintField]
         public string CurrentTheme = IdV2.Paints[0];
+        public Target targetArea = Target.Exterior;
         public List<MaterialSet> Sets = new List<MaterialSet>();
 
         [RenderMethodButtons]

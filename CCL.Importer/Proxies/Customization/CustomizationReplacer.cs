@@ -12,6 +12,7 @@ namespace CCL.Importer.Proxies.Customization
         {
             CreateMap<TrainCarPaintProxy, TrainCarPaint>().AutoCacheAndMap()
                 .ForMember(d => d.currentTheme, o => o.Ignore())
+                .ForMember(d => d.CurrentTheme, o => o.Ignore())
                 .ForMember(d => d.sets, o => o.Ignore())
                 .AfterMap(TrainCarPaintAfter);
         }
