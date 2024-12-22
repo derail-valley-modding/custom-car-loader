@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Customization;
+using DV.Customization;
 using DV.Customization.Paint;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,12 @@ namespace CCL.Importer.Proxies.Customization
                 .ForMember(d => d.CurrentTheme, o => o.Ignore())
                 .ForMember(d => d.sets, o => o.Ignore())
                 .AfterMap(TrainCarPaintAfter);
+
+            CreateMap<TrainCarCustomizationProxy, TrainCarCustomization>().AutoCacheAndMap()
+                .ForMember(d => d.standardizedPorts, o => o.MapFrom(s => s.Ports.Select(x =>
+                    new TrainCarCustomization.STDPortDefinition((STDSimPort)x.port, x.name, x.readOnly))));
+
+            CreateMap<CustomizationPlacementMeshesProxy, CustomizationPlacementMeshes>().AutoCacheAndMap();
         }
 
         private void TrainCarPaintAfter(TrainCarPaintProxy proxy, TrainCarPaint paint)
