@@ -46,10 +46,12 @@ namespace CCL.Importer
             private static TrainCarLivery? s_de6slug;
             private static TrainCarLivery? s_microshunter;
             private static TrainCarLivery? s_dm1u;
+            private static TrainCarLivery? s_h1;
 
             public static TrainCarLivery DE6Slug => Extensions.GetCached(ref s_de6slug, () => GetCarLivery("LocoDE6Slug"));
             public static TrainCarLivery Microshunter => Extensions.GetCached(ref s_microshunter, () => GetCarLivery("LocoMicroshunter"));
             public static TrainCarLivery DM1U => Extensions.GetCached(ref s_dm1u, () => GetCarLivery("LocoDM1U"));
+            public static TrainCarLivery Handcar => Extensions.GetCached(ref s_h1, () => GetCarLivery("LocoHandcar"));
         }
 
         public static class Wagons

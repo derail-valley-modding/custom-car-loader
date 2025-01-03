@@ -363,6 +363,9 @@ namespace CCL.Types.HUD
         [Header("Slot 10")]
         public ShouldDisplay ReleaseCylinder;
         public ShouldDisplay Handbrake;
+
+        [Header("Slot 26")]
+        public ShouldDisplay BrakeCutout;
     }
 
     [Serializable]
@@ -393,6 +396,7 @@ namespace CCL.Types.HUD
         public ShouldDisplay Blowdown;
 
         [Header("Slot 17")]
+        public ShouldDisplay ChestPressure;
         public ShouldDisplay FuelDump;
 
         [Header("Slot 18")]
@@ -439,6 +443,9 @@ namespace CCL.Types.HUD
     [Serializable]
     public class Mechanical
     {
+        [Header("Slot 23")]
+        public ShouldDisplay Alerter;
+
         [Header("Slot 24")]
         public ShouldDisplay Pantograph;
         public ShouldDisplay CabOrientation;
@@ -450,7 +457,6 @@ namespace CCL.Types.HUD
         public ShouldDisplay TractionMotorFuse;
 
         [Header("Slot 26")]
-        public ShouldDisplay Alerter;
         public ShouldDisplay Starter;
         public ShouldDisplay FuelCutoff;
     }

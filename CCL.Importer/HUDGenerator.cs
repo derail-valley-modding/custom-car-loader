@@ -1,6 +1,5 @@
 ﻿using CCL.Types.HUD;
 using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using DV.UI.LocoHUD;
 using UnityEngine;
 
@@ -17,31 +16,34 @@ namespace CCL.Importer
 
         private static Transform? s_holder;
         private static HUDLocoControls? s_hudDE2;
-        private static HUDLocoControls? s_hudDM3;
-        private static HUDLocoControls? s_hudDH4;
         private static HUDLocoControls? s_hudDE6;
+        private static HUDLocoControls? s_hudDH4;
+        private static HUDLocoControls? s_hudDM3;
         private static HUDLocoControls? s_hudS060;
         private static HUDLocoControls? s_hudS282;
         private static HUDLocoControls? s_hudBE2;
+        private static HUDLocoControls? s_hudDM1U;
         private static HUDLocoControls? s_hudHandcar;
 
         private static Transform Holder => Extensions.GetCached(ref s_holder, CreateHolder);
         private static HUDLocoControls HudDE2 => Extensions.GetCached(ref s_hudDE2,
-            () => TrainCarType.LocoShunter.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
-        private static HUDLocoControls HudDM3 => Extensions.GetCached(ref s_hudDM3,
-            () => TrainCarType.LocoDM3.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
-        private static HUDLocoControls HudDH4 => Extensions.GetCached(ref s_hudDH4,
-            () => TrainCarType.LocoDH4.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
+            () => GetHUD(QuickAccess.Locomotives.DE2));
         private static HUDLocoControls HudDE6 => Extensions.GetCached(ref s_hudDE6,
-            () => TrainCarType.LocoDiesel.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
+            () => GetHUD(QuickAccess.Locomotives.DE6));
+        private static HUDLocoControls HudDH4 => Extensions.GetCached(ref s_hudDH4,
+            () => GetHUD(QuickAccess.Locomotives.DH4));
+        private static HUDLocoControls HudDM3 => Extensions.GetCached(ref s_hudDM3,
+            () => GetHUD(QuickAccess.Locomotives.DM3));
         private static HUDLocoControls HudS060 => Extensions.GetCached(ref s_hudS060,
-            () => TrainCarType.LocoS060.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
+            () => GetHUD(QuickAccess.Locomotives.S060));
         private static HUDLocoControls HudS282 => Extensions.GetCached(ref s_hudS282,
-            () => TrainCarType.LocoSteamHeavy.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
+            () => GetHUD(QuickAccess.Locomotives.S282A));
         private static HUDLocoControls HudBE2 => Extensions.GetCached(ref s_hudBE2,
-            () => TrainCarType.LocoMicroshunter.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
+            () => GetHUD(QuickAccess.Locomotives.Microshunter));
+        private static HUDLocoControls HudDM1U => Extensions.GetCached(ref s_hudDM1U,
+            () => GetHUD(QuickAccess.Locomotives.DM1U));
         private static HUDLocoControls HudHandcar => Extensions.GetCached(ref s_hudHandcar,
-            () => TrainCarType.HandCar.ToV2().parentType.hudPrefab.GetComponent<HUDLocoControls>());
+            () => GetHUD(QuickAccess.Locomotives.Handcar));
 
         private static Transform CreateHolder()
         {
@@ -52,6 +54,8 @@ namespace CCL.Importer
 
             return hudHolder.transform;
         }
+
+        private static HUDLocoControls GetHUD(TrainCarLivery livery) => livery.parentType.hudPrefab.GetComponent<HUDLocoControls>();
 
         public static GameObject CreateHUD(VanillaHUDLayout layout)
         {
@@ -73,6 +77,8 @@ namespace CCL.Importer
                     return HudS282.gameObject;
                 case VanillaHUDLayout.BaseHUD.BE2:
                     return HudBE2.gameObject;
+                case VanillaHUDLayout.BaseHUD.DM1U:
+                    return HudDM1U.gameObject;
                 case VanillaHUDLayout.BaseHUD.Handcar:
                     return HudHandcar.gameObject;
                 case VanillaHUDLayout.BaseHUD.Custom:
@@ -87,8 +93,8 @@ namespace CCL.Importer
         {
             // Steal the DE6's HUD as a base.
             var newHUD = Object.Instantiate(HudDE6, Holder);
-
             newHUD.text.powertrainTypeText.SetTextValue(layout.CustomHUDSettings.Powertrain);
+
             SetupBasicControls(newHUD, layout.CustomHUDSettings.BasicControls);
             SetupBrakeControls(newHUD.braking, layout.CustomHUDSettings.Braking);
             SetupSteamControls(newHUD.steam, layout.CustomHUDSettings.Steam);
@@ -103,10 +109,7 @@ namespace CCL.Importer
             var newHUD = newHUDFull.basicControls;
 
             // Slot 0.
-            if (layout.AmpMeter == ShouldDisplay.None)
-            {
-                newHUD.ampMeter.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.ampMeter, layout.AmpMeter);
 
             switch (layout.Throttle)
             {
@@ -164,27 +167,14 @@ namespace CCL.Importer
             }
 
             // Slot 2.
-            if (layout.GearboxA == ShouldDisplay.Display)
-            {
-                newHUD.gearboxA.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.gearboxA, layout.GearboxA);
 
             // Slot 3.
-            if (layout.Speedometer == ShouldDisplay.None)
-            {
-                newHUD.speedMeter.gameObject.SetActive(false);
-            }
-
-            if (layout.GearboxB == ShouldDisplay.Display)
-            {
-                newHUD.gearboxB.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.speedMeter, layout.Speedometer);
+            SetDisplay(newHUD.gearboxB, layout.GearboxB);
 
             // Slot 4.
-            if (layout.RPM == ShouldDisplay.None)
-            {
-                newHUD.rpmMeter.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.rpmMeter, layout.RPM);
 
             switch (layout.TurbineOrVoltage)
             {
@@ -237,30 +227,17 @@ namespace CCL.Importer
                     break;
             }
 
-            if (layout.Power == ShouldDisplay.Display)
-            {
-                newHUD.powerMeter.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.powerMeter, layout.Power);
 
             // Slot 5.
-            if (layout.WheelslipIndicator == ShouldDisplay.None)
-            {
-                newHUD.wheelSlipIndicator.gameObject.SetActive(false);
-            }
-
-            if (layout.Sander == ShouldDisplay.None)
-            {
-                newHUD.sand.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.wheelSlipIndicator, layout.WheelslipIndicator);
+            SetDisplay(newHUD.sand, layout.Sander);
         }
 
         private static void SetupBrakeControls(HUDLocoControls.BrakingReferences newHUD, Braking layout)
         {
             // Slot 7.
-            if (layout.BrakePipe == ShouldDisplay.None)
-            {
-                newHUD.brakePipeMeter.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.brakePipeMeter, layout.BrakePipe);
 
             switch (layout.BrakeType)
             {
@@ -279,133 +256,55 @@ namespace CCL.Importer
             }
 
             // Slot 8.
-            if (layout.MainReservoir == ShouldDisplay.None)
-            {
-                newHUD.mainResMeter.gameObject.SetActive(false);
-            }
-
-            if (layout.IndependentBrake == ShouldDisplay.None)
-            {
-                newHUD.indBrake.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.mainResMeter, layout.MainReservoir);
+            SetDisplay(newHUD.indBrake, layout.IndependentBrake);
 
             // Slot 9.
-            if (layout.BrakeCylinder == ShouldDisplay.None)
-            {
-                newHUD.brakeCylMeter.gameObject.SetActive(false);
-            }
-
-            if (layout.DynamicBrake == ShouldDisplay.None)
-            {
-                newHUD.dynBrake.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.brakeCylMeter, layout.BrakeCylinder);
+            SetDisplay(newHUD.dynBrake, layout.DynamicBrake);
 
             // Slot 10.
-            if (layout.ReleaseCylinder == ShouldDisplay.None)
-            {
-                newHUD.releaseCyl.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.releaseCyl, layout.ReleaseCylinder);
+            SetDisplay(newHUD.handbrake, layout.Handbrake);
 
-            if (layout.Handbrake == ShouldDisplay.None)
-            {
-                newHUD.handbrake.gameObject.SetActive(false);
-            }
+            // Slot 29.
+            SetDisplay(newHUD.brakeCutout, layout.BrakeCutout);
         }
 
         private static void SetupSteamControls(HUDLocoControls.SteamReferences newHUD, Steam layout)
         {
             // Slot 12.
-            if (layout.SteamMeter == ShouldDisplay.Display)
-            {
-                newHUD.steamMeter.gameObject.SetActive(true);
-            }
-
-            if (layout.CylinderCocks == ShouldDisplay.Display)
-            {
-                newHUD.cylCock.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.steamMeter, layout.SteamMeter);
+            SetDisplay(newHUD.cylCock, layout.CylinderCocks);
 
             // Slot 13.
-            if (layout.BoilerWater == ShouldDisplay.Display)
-            {
-                newHUD.locoWaterMeter.gameObject.SetActive(true);
-            }
-
-            if (layout.Injector == ShouldDisplay.Display)
-            {
-                newHUD.injector.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.locoWaterMeter, layout.BoilerWater);
+            SetDisplay(newHUD.injector, layout.Injector);
 
             // Slot 14.
-            if (layout.FireboxCoal == ShouldDisplay.Display)
-            {
-                newHUD.locoCoalMeter.gameObject.SetActive(true);
-                newHUD.locoCoalMeter.transform.localPosition = HudS060.steam.locoCoalMeter.transform.localPosition;
-            }
-
-            if (layout.Damper == ShouldDisplay.Display)
-            {
-                newHUD.damper.gameObject.SetActive(true);
-            }
+            SetDisplayAndPosition(newHUD.locoCoalMeter, layout.FireboxCoal, HudS060.steam.locoCoalMeter);
+            SetDisplay(newHUD.damper, layout.Damper);
 
             // Slot 15.
-            if (layout.FireTemperature == ShouldDisplay.Display)
-            {
-                newHUD.fireTemp.gameObject.SetActive(true);
-            }
-
-            if (layout.Blower == ShouldDisplay.Display)
-            {
-                newHUD.blower.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.fireTemp, layout.FireTemperature);
+            SetDisplay(newHUD.blower, layout.Blower);
 
             // Slot 16.
-            if (layout.Shovel == ShouldDisplay.Display)
-            {
-                newHUD.shovel.gameObject.SetActive(true);
-            }
-
-            if (layout.Firedoor == ShouldDisplay.Display)
-            {
-                newHUD.firedoor.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.shovel, layout.Shovel);
+            SetDisplay(newHUD.firedoor, layout.Firedoor);
 
             // Slot 17.
-            if (layout.LightFirebox == ShouldDisplay.Display)
-            {
-                newHUD.lightFirebox.gameObject.SetActive(true);
-                newHUD.lightFirebox.transform.localPosition = HudS060.steam.lightFirebox.transform.localPosition;
-            }
-
-            if (layout.Blowdown == ShouldDisplay.Display)
-            {
-                newHUD.blowdown.gameObject.SetActive(true);
-            }
+            SetDisplayAndPosition(newHUD.lightFirebox, layout.LightFirebox, HudS060.steam.lightFirebox);
+            SetDisplay(newHUD.blowdown, layout.Blowdown);
 
             // Slot 18.
-            if (layout.FuelDump == ShouldDisplay.Display)
-            {
-                newHUD.coalDump.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.chestPressureMeter, layout.ChestPressure);
+            SetDisplay(newHUD.coalDump, layout.FuelDump);
 
             // Slot 19.
-            if (layout.Dynamo == ShouldDisplay.Display)
-            {
-                newHUD.dynamo.gameObject.SetActive(true);
-                newHUD.dynamo.transform.localPosition = HudS060.steam.dynamo.transform.localPosition;
-            }
-
-            if (layout.AirPump == ShouldDisplay.Display)
-            {
-                newHUD.airPump.gameObject.SetActive(true);
-                newHUD.airPump.transform.localPosition = HudS060.steam.airPump.transform.localPosition;
-            }
-
-            if (layout.Lubricator == ShouldDisplay.Display)
-            {
-                newHUD.lubricator.gameObject.SetActive(true);
-                newHUD.lubricator.transform.localPosition = HudS060.steam.lubricator.transform.localPosition;
-            }
+            SetDisplayAndPosition(newHUD.dynamo, layout.Dynamo, HudS060.steam.dynamo);
+            SetDisplayAndPosition(newHUD.airPump, layout.AirPump, HudS060.steam.airPump);
+            SetDisplayAndPosition(newHUD.lubricator, layout.Lubricator, HudS060.steam.lubricator);
         }
 
         private static void SetupCabControls(HUDLocoControls newHUDFull, CustomHUDLayout layoutFull)
@@ -451,10 +350,7 @@ namespace CCL.Importer
             }
 
             // Slot 22
-            if (layout.OilLevel == ShouldDisplay.None)
-            {
-                newHUD.oilLevelMeter.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.oilLevelMeter, layout.OilLevel);
 
             switch (layout.CabLightStyle)
             {
@@ -480,10 +376,7 @@ namespace CCL.Importer
             }
 
             // Slot 23
-            if (layout.SandLevel == ShouldDisplay.None)
-            {
-                newHUD.sandMeter.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.sandMeter, layout.SandLevel);
 
             switch (layout.Headlights1)
             {
@@ -567,53 +460,45 @@ namespace CCL.Importer
 
         private static void SetupMechanicalControls(HUDLocoControls.MechanicalReferences newHUD, Mechanical layout)
         {
-            // Slot 27.
-            if (layout.Pantograph == ShouldDisplay.Display)
-            {
-                newHUD.pantograph.gameObject.SetActive(true);
-            }
+            // Slot 26.
+            SetDisplay(newHUD.alerter, layout.Alerter);
 
-            if (layout.CabOrientation == ShouldDisplay.Display)
-            {
-                newHUD.cabOrient.gameObject.SetActive(true);
-            }
+            // Slot 27.
+            SetDisplay(newHUD.pantograph, layout.Pantograph);
+            SetDisplay(newHUD.cabOrient, layout.CabOrientation);
 
             // Slot 28.
-            if (layout.TMOfflineIndicator == ShouldDisplay.None)
-            {
-                newHUD.tmOfflineIndicator.gameObject.SetActive(false);
-            }
-
-            if (layout.StarterFuse == ShouldDisplay.None)
-            {
-                newHUD.starterFuse.gameObject.SetActive(false);
-            }
-
-            if (layout.ElectricsFuse == ShouldDisplay.None)
-            {
-                newHUD.electricsFuse.gameObject.SetActive(false);
-            }
-
-            if (layout.TractionMotorFuse == ShouldDisplay.None)
-            {
-                newHUD.tractionMotorFuse.gameObject.SetActive(false);
-            }
+            SetDisplay(newHUD.tmOfflineIndicator, layout.TMOfflineIndicator);
+            SetDisplay(newHUD.starterFuse, layout.StarterFuse);
+            SetDisplay(newHUD.electricsFuse, layout.ElectricsFuse);
+            SetDisplay(newHUD.tractionMotorFuse, layout.TractionMotorFuse);
 
             // Slot 29.
-            if (layout.Alerter == ShouldDisplay.Display)
-            {
-                newHUD.alerter.gameObject.SetActive(true);
-            }
+            SetDisplay(newHUD.starterControl, layout.Starter);
+            SetDisplay(newHUD.fuelCutoff, layout.FuelCutoff);
+        }
 
-            if (layout.Starter == ShouldDisplay.None)
-            {
-                newHUD.starterControl.gameObject.SetActive(false);
-            }
+        private static void SetDisplay(LocoHUDControlBase control, ShouldDisplay display)
+        {
+            control.gameObject.SetActive(display == ShouldDisplay.Display);
+        }
 
-            if (layout.FuelCutoff == ShouldDisplay.None)
+        private static void SetDisplayAndPosition(LocoHUDControlBase control, ShouldDisplay display, Vector3 localPosition)
+        {
+            if (display == ShouldDisplay.Display)
             {
-                newHUD.fuelCutoff.gameObject.SetActive(false);
+                control.gameObject.SetActive(true);
+                control.transform.localPosition = localPosition;
             }
+            else
+            {
+                control.gameObject.SetActive(false);
+            }
+        }
+
+        private static void SetDisplayAndPosition(LocoHUDControlBase control, ShouldDisplay display, LocoHUDControlBase localPosition)
+        {
+            SetDisplayAndPosition(control, display, localPosition.transform.localPosition);
         }
     }
 }
