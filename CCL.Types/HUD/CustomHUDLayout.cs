@@ -25,7 +25,8 @@ namespace CCL.Types.HUD
             Display
         }
 
-        [Tooltip("The powertrain of this vehicle")]
+        [Tooltip("The powertrain of this vehicle"),
+            StringAndSelectorField(new[] { "DE", "DH", "DM", "S", "WE", "BE", "H"}, true)]
         public string Powertrain = "";
         [Space]
         public BasicControls BasicControls = new BasicControls();
@@ -257,6 +258,7 @@ namespace CCL.Types.HUD
             Steam.LightFirebox = ShouldDisplay.Display;
             Steam.Blowdown = ShouldDisplay.Display;
 
+            Steam.ChestPressure = ShouldDisplay.Display;
             Steam.FuelDump = ShouldDisplay.Display;
 
             Steam.Dynamo = ShouldDisplay.Display;
@@ -293,6 +295,8 @@ namespace CCL.Types.HUD
 
             Braking.ReleaseCylinder = ShouldDisplay.Display;
             Braking.Handbrake = ShouldDisplay.Display;
+
+            Braking.BrakeCutout = ShouldDisplay.Display;
         }
 
         public void NonSelfLappingBrakeSetup()
@@ -307,6 +311,8 @@ namespace CCL.Types.HUD
 
             Braking.ReleaseCylinder = ShouldDisplay.Display;
             Braking.Handbrake = ShouldDisplay.Display;
+
+            Braking.BrakeCutout = ShouldDisplay.Display;
         }
     }
 

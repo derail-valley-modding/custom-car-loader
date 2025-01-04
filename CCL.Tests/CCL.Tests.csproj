@@ -1,31 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netframework4.8</TargetFramework>
-    <Nullable>enable</Nullable>
-    <LangVersion>9</LangVersion>
+	<PropertyGroup>
+		<TargetFramework>netframework4.8</TargetFramework>
+		<Nullable>enable</Nullable>
+		<LangVersion>9</LangVersion>
 
-    <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+		<IsTestProject>true</IsTestProject>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.0.4" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.0.4" />
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="10.1.1" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.0.4" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.0.4" />
+		<PackageReference Include="coverlet.collector" Version="6.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-      <ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
-      <ProjectReference Include="..\CCL.Importer\CCL.Importer.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CCL.Types\CCL.Types.csproj" />
+		<ProjectReference Include="..\CCL.Importer\CCL.Importer.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-      <Reference Include="0Harmony" />
-      <Reference Include="UnityEngine" />
-      <Reference Include="UnityEngine.CoreModule" />
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="0Harmony" />
+		<Reference Include="UnityEngine" />
+		<Reference Include="UnityEngine.CoreModule" />
+	</ItemGroup>
 
 </Project>

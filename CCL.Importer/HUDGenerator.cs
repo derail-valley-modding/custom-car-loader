@@ -298,7 +298,7 @@ namespace CCL.Importer
             SetDisplay(newHUD.blowdown, layout.Blowdown);
 
             // Slot 18.
-            SetDisplay(newHUD.chestPressureMeter, layout.ChestPressure);
+            SetDisplayAndPosition(newHUD.chestPressureMeter, layout.ChestPressure, HudS060.steam.chestPressureMeter);
             SetDisplay(newHUD.coalDump, layout.FuelDump);
 
             // Slot 19.

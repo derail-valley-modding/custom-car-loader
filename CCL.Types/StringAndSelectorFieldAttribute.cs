@@ -21,6 +21,8 @@ namespace CCL.Types
 
             CustomAllowed = customAllowed;
         }
+
+        public StringAndSelectorFieldAttribute(string[] optionsArray, bool customAllowed) : this(options: optionsArray, customAllowed) { }
     }
 
     public class CargoFieldAttribute : StringAndSelectorFieldAttribute

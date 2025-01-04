@@ -22,8 +22,6 @@ namespace CCL.Importer
         private static Transform TransformBE2 { get; set; } = null!;
         private static Transform TransformH1 { get; set; } = null!;
 
-        private static System.Globalization.NumberFormatInfo CurrencyFormat = new() { CurrencySymbol = "$" };
-
         public static void GeneratePages(VehicleCatalogRender original)
         {
             PageBE2 = original.vehiclePages[7];
@@ -251,12 +249,12 @@ namespace CCL.Importer
                     return;
                 }
 
-                licensePrice = jobLicense.price.ToString("C0", CurrencyFormat);
+                licensePrice = FormatPrice(jobLicense.price);
                 licenseIcon = jobLicense.icon;
             }
             else
             {
-                licensePrice = generalLicense.price.ToString("C0", CurrencyFormat);
+                licensePrice = FormatPrice(generalLicense.price);
                 licenseIcon = generalLicense.icon;
             }
 
@@ -691,6 +689,8 @@ namespace CCL.Importer
             VehicleRole.CrewSupport => "vc/role/crew_support",
             _ => throw new System.ArgumentOutOfRangeException(nameof(role)),
         };
+
+        private static string FormatPrice(float price) => "$" + price.ToString("N0", LocalizationAPI.CC);
 
         private static void ClearCache()
         {
