@@ -17,6 +17,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Publicize Include="Assembly-CSharp" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false" />
+		<Publicize Include="DV.Localization" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false" />
 	</ItemGroup>
 
 	<ItemGroup>

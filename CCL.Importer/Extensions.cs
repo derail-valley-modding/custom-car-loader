@@ -9,6 +9,8 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
+using UObject = UnityEngine.Object;
+
 namespace CCL.Importer
 {
     public static class Extensions
@@ -158,6 +160,12 @@ namespace CCL.Importer
         {
             localize.key = key;
             localize.UpdateLocalization();
+        }
+
+        public static void ManualLocalize(this Localize localize, string key)
+        {
+            TMPHelper.GetTMP(localize).SetTextAndUpdate(LocalizationAPI.L(key));
+            UObject.DestroyImmediate(localize);
         }
 
         //public static bool IsCustomCargoClass(this CargoContainerType containerType)

@@ -79,8 +79,8 @@ namespace CCL.Importer
         private static void ProcessHeader(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
         {
             Paths.GetImage(page, Paths.PageColor).color = layout.HeaderColour;
-            Paths.GetText(page, Paths.PageName).text = layout.PageName;
-            Paths.GetText(page, Paths.Units).text = layout.ConsistUnits;
+            Paths.GetText(page, Paths.PageName).SetTextAndUpdate(layout.PageName);
+            Paths.GetText(page, Paths.Units).SetTextAndUpdate(layout.ConsistUnits);
 
             if (string.IsNullOrEmpty(layout.Nickname))
             {
@@ -90,7 +90,7 @@ namespace CCL.Importer
             {
                 var nick = Paths.GetText(page, Paths.Nickname);
                 nick.gameObject.SetActive(true);
-                nick.text = layout.Nickname;
+                nick.SetTextAndUpdate(layout.Nickname);
             }
 
             Paths.GetImage(page, Paths.Icon).sprite = layout.Icon;
@@ -106,7 +106,7 @@ namespace CCL.Importer
 
             //    var text = Paths.GetText(page, Paths.LicenseContainer + "1" + Paths.LicenseValue);
             //    text.gameObject.SetActive(true);
-            //    text.text = layout.GaragePrice.ToString("C0", CurrencyFormat);
+            //    text.SetTextAndUpdate(FormatPrice(layout.GaragePrice));
 
             //    page.Find(Paths.License1).gameObject.SetActive(false);
             //    page.Find(Paths.License2).gameObject.SetActive(false);
@@ -136,7 +136,7 @@ namespace CCL.Importer
             {
                 var text = Paths.GetText(page, Paths.ProductionYears);
                 text.gameObject.SetActive(true);
-                text.text = layout.ProductionYears;
+                text.SetTextAndUpdate(layout.ProductionYears);
             }
             else
             {
@@ -151,7 +151,7 @@ namespace CCL.Importer
             //    page.Find(Paths.SummonIcon).gameObject.SetActive(true);
             //    var text = Paths.GetText(page, Paths.SummonPrice);
             //    text.gameObject.SetActive(true);
-            //    text.text = layout.SummonPrice.ToString("C0", CurrencyFormat);
+            //    text.SetTextAndUpdate(FormatPrice(layout.SummonPrice));
             //}
             //else
             //{
@@ -262,7 +262,7 @@ namespace CCL.Importer
             text.gameObject.SetActive(true);
             icon.gameObject.SetActive(true);
 
-            text.text = licensePrice;
+            text.SetTextAndUpdate(licensePrice);
             icon.sprite = licenseIcon;
         }
 
@@ -293,7 +293,7 @@ namespace CCL.Importer
                     throw new System.ArgumentOutOfRangeException(nameof(rating.Rating));
             }
 
-            Paths.GetText(root, Paths.LoadRatings.Tonnage).text = $"{rating.Tonnage}t";
+            Paths.GetLocalizedNumber(root, Paths.LoadRatings.Tonnage).value = rating.Tonnage;
         }
 
         private static void ProcessRoles(Transform page, CatalogPage layout)
@@ -359,20 +359,20 @@ namespace CCL.Importer
             root.Find(Paths.Diagrams.BufferL).gameObject.SetActive(extras.HasFrontBumper);
             root.Find(Paths.Diagrams.BufferR).gameObject.SetActive(extras.HasRearBumper);
 
-            Paths.GetText(root, Paths.Diagrams.XText).text = $"{extras.Length} mm";
-            Paths.GetText(root, Paths.Diagrams.YText).text = $"{extras.Height} mm";
-            Paths.GetText(root, Paths.Diagrams.ZText).text = $"{extras.Width} mm";
+            Paths.GetText(root, Paths.Diagrams.XText).SetTextAndUpdate($"{extras.Length} mm");
+            Paths.GetText(root, Paths.Diagrams.YText).SetTextAndUpdate($"{extras.Height} mm");
+            Paths.GetText(root, Paths.Diagrams.ZText).SetTextAndUpdate($"{extras.Width} mm");
 
             //var cost = Paths.GetText(root, Paths.Diagrams.Price);
-            //cost.text = extras.TotalCost.ToString("C0", CurrencyFormat);
+            //cost.SetTextAndUpdate(FormatPrice(extras.TotalCost));
             //cost.gameObject.SetActive(extras.TotalCost > 0);
 
             //var mass = Paths.GetText(root, Paths.Diagrams.MassFull);
-            //mass.text = $"{extras.MassFull}t";
+            //mass.SetTextAndUpdate($"{extras.MassFull}t");
             //mass.transform.parent.gameObject.SetActive(extras.MassFull > 0);
 
             //mass = Paths.GetText(root, Paths.Diagrams.MassEmpty);
-            //mass.text = $"{extras.MassEmpty}t";
+            //mass.SetTextAndUpdate($"{extras.MassEmpty}t");
             //mass.transform.parent.gameObject.SetActive(extras.MassEmpty > 0);
         }
 
@@ -544,12 +544,16 @@ namespace CCL.Importer
                     return;
             }
 
-            var desc = Paths.GetText(slot, Paths.TechItems.TechnologyDesc);
-            desc.gameObject.SetActive(true);
-            desc.text = tech.Description;
-            var type = Paths.GetText(slot, Paths.TechItems.TechnologyType);
+            if (tech.Description.Entries.Length > 0)
+            {
+                var desc = Paths.GetLocalizeSequence(slot, Paths.TechItems.TechnologyDesc);
+                desc.gameObject.SetActive(true);
+                desc.sequence = tech.Description.ToSequence();
+            }
+
+            var type = Paths.GetLocalize(slot, Paths.TechItems.TechnologyType);
             type.gameObject.SetActive(true);
-            type.text = tech.Type;
+            type.SetKeyAndUpdate(tech.Type);
         }
 
         #region Score Lists
@@ -592,7 +596,7 @@ namespace CCL.Importer
                 child.gameObject.SetActive(false);
             }
 
-            TMP_Text text = Paths.GetText(root, Paths.ScoreLists.TotalScore);
+            var total = Paths.GetLocalizedNumber(root, Paths.ScoreLists.TotalScore);
 
             switch (list.TotalScoreDisplay)
             {
@@ -613,16 +617,18 @@ namespace CCL.Importer
                             break;
                     }
 
-                    text.text = list.FormattedTotal;
+                    total.value = list.Total;
                     break;
                 case TotalScoreDisplay.NotApplicable:
                     root.Find(Paths.ScoreLists.BgDisqualified).gameObject.SetActive(true);
-                    text.text = "-";
+                    Object.Destroy(total);
+                    Paths.GetText(root, Paths.ScoreLists.TotalScore).SetTextAndUpdate("-");
                     break;
                 default:
                     return;
             }
-            text.gameObject.SetActive(true);
+
+            total.gameObject.SetActive(true);
         }
 
         private static void ProcessScoreItem(Transform item, CatalogScore score)
@@ -675,6 +681,11 @@ namespace CCL.Importer
             VehicleType.Slug => "vc/vehicletype/slug",
             VehicleType.Draisine => "vc/vehicletype/draisine",
             VehicleType.Car => "vc/vehicletype/car",
+            VehicleType.Booster => "vc/vehicletype/booster",
+            VehicleType.Railcar => "vc/vehicletype/railcar",
+            VehicleType.ControlCar => "vc/vehicletype/control_car",
+            VehicleType.Support => "vc/vehicletype/support",
+            VehicleType.Special => "vc/vehicletype/special",
             _ => throw new System.ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -687,6 +698,10 @@ namespace CCL.Importer
             VehicleRole.FuelSupply => "vc/role/fuel_supply",
             VehicleRole.CrewTransport => "vc/role/crew_transport",
             VehicleRole.CrewSupport => "vc/role/crew_support",
+            VehicleRole.PassengerTransport => "vc/role/passenger_transport",
+            VehicleRole.FreightTransport => "vc/role/freight",
+            VehicleRole.UtilityTransport => "vc/role/utility",
+            VehicleRole.TrackMaintenance => "vc/role/track_maintenance",
             _ => throw new System.ArgumentOutOfRangeException(nameof(role)),
         };
 
@@ -836,6 +851,10 @@ namespace CCL.Importer
             public static TMP_Text GetText(Transform root, string path) => TMPHelper.GetTMP(root.Find(path));
 
             public static Localize GetLocalize(Transform root, string path) => root.Find(path).GetComponent<Localize>();
+
+            public static LocalizedNumber GetLocalizedNumber(Transform root, string path) => root.Find(path).GetComponent<LocalizedNumber>();
+
+            public static LocalizeSequence GetLocalizeSequence(Transform root, string path) => root.Find(path).GetComponent<LocalizeSequence>();
 
             public static Image GetImage(Transform root, string path) => root.Find(path).GetComponent<Image>();
         }

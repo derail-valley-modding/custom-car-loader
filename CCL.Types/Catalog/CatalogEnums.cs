@@ -4,11 +4,16 @@ namespace CCL.Types.Catalog
 {
     public enum VehicleType
     {
+        Car,
         Locomotive,
         Tender,
         Slug,
+        Booster,
         Draisine,
-        Car
+        Railcar,
+        ControlCar,
+        Support,
+        Special
     }
 
     public enum VehicleRole
@@ -20,7 +25,11 @@ namespace CCL.Types.Catalog
         HeavyHauling,
         FuelSupply = 30,
         CrewTransport = 40,
-        CrewSupport
+        CrewSupport,
+        PassengerTransport = 50,
+        FreightTransport,
+        UtilityTransport,
+        TrackMaintenance = 60
     }
 
     public enum TechIcon
@@ -57,7 +66,7 @@ namespace CCL.Types.Catalog
         None,
         [Tooltip("A score calculated from the values below")]
         Average,
-        [Tooltip("A dash in case the vehicle cannot do a role (Handcar cannot Haul or Shunt)")]
+        [Tooltip("A dash in case the vehicle cannot do a role (i.e. Handcar cannot Haul or Shunt)")]
         NotApplicable
     }
 

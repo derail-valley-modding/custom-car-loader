@@ -27,8 +27,11 @@ namespace CCL.Creator.Inspector.Catalog
             GUI.enabled = (TechIcon)icon.intValue != TechIcon.None;
 
             controlPos.position += offset;
-            EditorGUI.PropertyField(controlPos, desc);
+            controlPos.height = EditorGUI.GetPropertyHeight(desc);
+            EditorGUI.PropertyField(controlPos, desc, true);
+            offset.y = controlPos.height + 2;
             controlPos.position += offset;
+            controlPos.height = EditorGUI.GetPropertyHeight(type);
             EditorGUI.PropertyField(controlPos, type);
 
             GUI.enabled = true;
@@ -37,7 +40,12 @@ namespace CCL.Creator.Inspector.Catalog
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return EditorGUIUtility.singleLineHeight * 4 + 6;
+            var icon = property.FindPropertyRelative(nameof(TechEntry.Icon));
+            var desc = property.FindPropertyRelative(nameof(TechEntry.Description));
+            var type = property.FindPropertyRelative(nameof(TechEntry.Type));
+
+            return EditorGUI.GetPropertyHeight(icon) + EditorGUI.GetPropertyHeight(desc) + EditorGUI.GetPropertyHeight(type)
+                + EditorGUIUtility.singleLineHeight + 6;
         }
     }
 }

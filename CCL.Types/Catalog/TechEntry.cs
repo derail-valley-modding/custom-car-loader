@@ -7,9 +7,9 @@ namespace CCL.Types.Catalog
     public class TechEntry
     {
         public TechIcon Icon = TechIcon.None;
-        [Tooltip("Description of the tech (\"I8 Diesel Turbocharged\", \"14 bar Coal Burner Superheated\")")]
-        public string Description = "";
-        [Tooltip("Type of the tech (\"Steam Engine\", \"Electric Transmission\")")]
+        [Tooltip("Description of the tech")]
+        public TechDescription Description = new TechDescription();
+        [Tooltip("Type of the tech"), TechType]
         public string Type = "";
 
         public static void TryToSetAppropriateType(TechEntry tech, VehicleType type)
@@ -21,43 +21,57 @@ namespace CCL.Types.Catalog
             
             tech.Type = tech.Icon switch
             {
-                //TechIcon.None => throw new NotImplementedException(),
+                TechIcon.None => "",
                 //TechIcon.Generic => throw new NotImplementedException(),
-                TechIcon.ClosedCab => "Closed Cab",
-                TechIcon.OpenCab => "Open Cab",
-                TechIcon.CrewCompartment => "Crew Compartment",
-                TechIcon.CompressedAirBrakeSystem => "Compressed Air Brake System",
-                TechIcon.DirectBrakeSystem => "Direct Brake System",
-                TechIcon.DynamicBrakeSystem => "Dynamic Brake System",
+                TechIcon.ClosedCab => "vc/techtype/closed_cab",
+                TechIcon.OpenCab => "vc/techtype/open_cab",
+                TechIcon.CrewCompartment => "vc/techtype/crew_quarters",
+                TechIcon.CompressedAirBrakeSystem => "vc/techtype/air_brake",
+                TechIcon.DirectBrakeSystem => "vc/techtype/direct_brake",
+                TechIcon.DynamicBrakeSystem => "vc/techtype/dynamic_brake",
                 //TechIcon.ElectricPowerSupplyAndTransmission => throw new NotImplementedException(),
-                TechIcon.ExternalControlInterface => "Aditional Control Interface",
-                TechIcon.HeatManagement => "Heat Management",
-                TechIcon.HydraulicTransmission => "Hydraulic Transmission",
-                TechIcon.InternalCombustionEngine => "Internal Combustion Engine",
-                TechIcon.MechanicalTransmission => "Mechanical Transmission",
-                TechIcon.PassengerCompartment => "Passenger Compartment",
-                TechIcon.SpecializedEquipment => "Specialized Equipment",
-                TechIcon.SteamEngine => "Steam Engine",
+                TechIcon.ExternalControlInterface => "vc/techtype/additional_control_interface",
+                TechIcon.HeatManagement => "vc/techtype/heat_management",
+                TechIcon.HydraulicTransmission => "vc/techtype/hydro_trans",
+                TechIcon.InternalCombustionEngine => "vc/techtype/engine",
+                TechIcon.MechanicalTransmission => "vc/techtype/mech_trans",
+                TechIcon.PassengerCompartment => "vc/techtype/passenger_compartment",
+                TechIcon.SpecializedEquipment => "vc/techtype/specialized_equipment",
+                TechIcon.SteamEngine => "vc/techtype/steam",
                 TechIcon.UnitEffect => TryToGuessUnitEffect(type),
-                TechIcon.CrewDelivery => "Order with comms radio",
+                TechIcon.CrewDelivery => "vc/techdesc/delivery/by_dv_crew",
                 _ => tech.Type
             };
-        }
 
-        private static string TryToGuessUnitEffect(VehicleType type)
-        {
-            switch (type)
+            // Unit effect is tied to the icon too so try to fill it.
+            if (tech.Icon == TechIcon.UnitEffect)
             {
-                case VehicleType.Locomotive:
-                    return "Score includes secondary unit(s) effects";
-                case VehicleType.Tender:
-                    return "Primary unit score already includes effects below";
-                case VehicleType.Slug:
-                case VehicleType.Car:
-                    return "Potential effect on other units shown below";
-                default:
-                    return "";
+                tech.Description ??= new TechDescription();
+
+                if (tech.Description.Entries.Length == 0)
+                {
+                    tech.Description.Entries = new TechDescription.Entry[1];
+                }
+
+                if (tech.Description.Entries.Length == 1 && string.IsNullOrEmpty(tech.Description.Entries[0].Key))
+                {
+                    tech.Description.Entries[0].Key = TryToGuessUnitEffectDesc(type);
+                }
             }
         }
+
+        private static string TryToGuessUnitEffect(VehicleType type) => type switch
+        {
+            VehicleType.Locomotive => "vc/techdesc/unit/primary_score",
+            VehicleType.Tender => "vc/techdesc/unit/secondary_score",
+            _ => "vc/techdesc/unit/optional_score",
+        };
+
+        private static string TryToGuessUnitEffectDesc(VehicleType type) => type switch
+        {
+            VehicleType.Locomotive => "vc/techdesc/unit/primary",
+            VehicleType.Tender => "vc/techdesc/unit/secondary",
+            _ => "vc/techdesc/unit/optional",
+        };
     }
 }
