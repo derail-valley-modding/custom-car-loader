@@ -16,17 +16,16 @@ namespace CCL.Importer
         public static List<CatalogPage> PageInfos = new();
         public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
         public static Dictionary<string, Dictionary<string, float>> NotSpawnChances = new();
-
-        private static VehicleCatalogPageTemplatePaper PageBE2 { get; set; } = null!;
+        private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
         private static VehicleCatalogPageTemplatePaper PageH1 { get; set; } = null!;
-        private static Transform TransformBE2 { get; set; } = null!;
+        private static Transform TransformDE2 { get; set; } = null!;
         private static Transform TransformH1 { get; set; } = null!;
 
         public static void GeneratePages(VehicleCatalogRender original)
         {
-            PageBE2 = original.vehiclePages[7];
+            PageDE2 = original.vehiclePages[0];
             PageH1 = original.vehiclePages[9];
-            TransformBE2 = PageBE2.transform;
+            TransformDE2 = PageDE2.transform;
             TransformH1 = PageH1.transform;
 
             NewCatalogPages.Clear();
@@ -62,7 +61,7 @@ namespace CCL.Importer
 
             CCLPlugin.Log($"Generating catalog page '{layout.PageName}'...");
 
-            var page = ModelProcessor.CreateModifiablePrefab(TransformBE2.gameObject).transform;
+            var page = ModelProcessor.CreateModifiablePrefab(TransformDE2.gameObject).transform;
             page.gameObject.SetActive(true);
             var paper = page.GetComponent<VehicleCatalogPageTemplatePaper>();
             paper.carLivery = livery;
@@ -95,7 +94,7 @@ namespace CCL.Importer
 
             Paths.GetImage(page, Paths.Icon).sprite = layout.Icon;
 
-            ProcessSpawnLocations(page.GetComponentInChildren<LocoSpawnRateRenderer>(), layout);
+            ProcessSpawnLocations(page.Find(Paths.Locations), layout);
 
             #region Licenses
 
@@ -124,13 +123,13 @@ namespace CCL.Importer
             //    ProcessLicense(page, 3, layout.License3);
             //}
 
-            if (!layout.UnlockedByGarage)
-            {
-                paper.garage.icon.gameObject.SetActive(false);
-                paper.garage.icon = null;
-                paper.garage.price.gameObject.SetActive(false);
-                paper.garage.price = null;
-            }
+            //if (!layout.UnlockedByGarage)
+            //{
+            //    paper.garage.icon.gameObject.SetActive(false);
+            //    paper.garage.icon = null;
+            //    paper.garage.price.gameObject.SetActive(false);
+            //    paper.garage.price = null;
+            //}
 
             if (!string.IsNullOrEmpty(layout.ProductionYears))
             {
@@ -158,13 +157,13 @@ namespace CCL.Importer
             //    page.Find(Paths.Summonable).gameObject.SetActive(false);
             //}
 
-            if (!layout.SummonableByRemote)
-            {
-                paper.summon.icon.gameObject.SetActive(false);
-                paper.summon.icon = null;
-                paper.summon.price.gameObject.SetActive(false);
-                paper.summon.price = null;
-            }
+            //if (!layout.SummonableByRemote)
+            //{
+            //    paper.summon.icon.gameObject.SetActive(false);
+            //    paper.summon.icon = null;
+            //    paper.summon.price.gameObject.SetActive(false);
+            //    paper.summon.price = null;
+            //}
 
             #region Load Ratings
 
@@ -187,27 +186,25 @@ namespace CCL.Importer
             #endregion
         }
 
-        private static void ProcessSpawnLocations(LocoSpawnRateRenderer spawner, CatalogPage layout)
+        private static void ProcessSpawnLocations(Transform locations, CatalogPage layout)
         {
-            if (spawner == null) return;
+            LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
 
-            // Disable spawn bar in case there's no ID defined,
-            // or car ID doesn't actually match anything.
-            if (string.IsNullOrEmpty(layout.CarLiveryId) || !DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery))
+            // If unlocked by a garage, don't show spawn bar.
+            if (layout.UnlockedByGarage)
             {
-                var temp = Object.Instantiate(TransformBE2.GetComponentInChildren<LocoSpawnRateRenderer>(), spawner.transform.parent);
-                temp.name = spawner.name;
-                Object.DestroyImmediate(spawner.gameObject);
-
-                if (!string.IsNullOrEmpty(layout.CarLiveryId))
-                {
-                    CCLPlugin.Error($"Missing car livery '{layout.CarLiveryId}'!");
-                }
-
+                Object.DestroyImmediate(spawner);
+                var rect = (RectTransform)locations.GetChild(0);
+                rect.sizeDelta = Vector2.zero;
+                rect.GetComponent<Image>().enabled = false;
                 return;
             }
 
+            DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery);
+            var og = PageDE2.GetComponentInChildren<LocoSpawnRateRenderer>();
             spawner.loco = livery.parentType;
+            spawner.spawnRateIndicatorPrefab = og.spawnRateIndicatorPrefab;
+            spawner.stationData = og.stationData;
 
             foreach (var item in spawner.stationData.stationsData)
             {
@@ -710,8 +707,12 @@ namespace CCL.Importer
         private static void ClearCache()
         {
             CCLPlugin.Log("Cleaning up...");
-            TransformBE2 = null!;
+            PageDE2 = null!;
+            PageDE2 = null!;
+            PageH1 = null!;
+            TransformDE2 = null!;
             TransformH1 = null!;
+            NotSpawnChances.Clear();
             Icons.ClearCache();
         }
 
@@ -887,52 +888,52 @@ namespace CCL.Importer
             private static RectTransform? s_bogie;
 
             public static Transform Generic => Extensions.GetCached(ref s_generic,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.Generic)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.Generic)));
             public static Transform ClosedCab => Extensions.GetCached(ref s_closedCab,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ClosedCab)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ClosedCab)));
             public static Transform OpenCab => Extensions.GetCached(ref s_openCab,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.OpenCab)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.OpenCab)));
             public static Transform CrewCompartment => Extensions.GetCached(ref s_crewCompartment,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewCompartment)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewCompartment)));
             public static Transform CompressedAirBrakeSystem => Extensions.GetCached(ref s_compressedAirBrakeSystem,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CompressedAirBrakeSystem)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CompressedAirBrakeSystem)));
             public static Transform DirectBrakeSystem => Extensions.GetCached(ref s_directBrakeSystem,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DirectBrakeSystem)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DirectBrakeSystem)));
             public static Transform DynamicBrakeSystem => Extensions.GetCached(ref s_dynamicBrakeSystem,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DynamicBrakeSystem)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DynamicBrakeSystem)));
             public static Transform ElectricPowerSupplyAndTransmission => Extensions.GetCached(ref s_electricPowerSupplyAndTransmission,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ElectricPowerSupplyAndTransmission)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ElectricPowerSupplyAndTransmission)));
             public static Transform ExternalControlInterface => Extensions.GetCached(ref s_externalControlInterface,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ExternalControlInterface)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ExternalControlInterface)));
             public static Transform HeatManagement => Extensions.GetCached(ref s_heatManagement,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HeatManagement)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HeatManagement)));
             public static Transform HydraulicTransmission => Extensions.GetCached(ref s_hydraulicTransmission,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HydraulicTransmission)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HydraulicTransmission)));
             public static Transform InternalCombustionEngine => Extensions.GetCached(ref s_internalCombustionEngine,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.InternalCombustionEngine)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.InternalCombustionEngine)));
             public static Transform MechanicalTransmission => Extensions.GetCached(ref s_mechanicalTransmission,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.MechanicalTransmission)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.MechanicalTransmission)));
             public static Transform PassengerCompartment => Extensions.GetCached(ref s_passengerCompartment,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.PassengerCompartment)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.PassengerCompartment)));
             public static Transform SpecializedEquipment => Extensions.GetCached(ref s_specializedEquipment,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SpecializedEquipment)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SpecializedEquipment)));
             public static Transform SteamEngine => Extensions.GetCached(ref s_steamEngine,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SteamEngine)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SteamEngine)));
             public static Transform UnitEffect => Extensions.GetCached(ref s_unitEffect,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.UnitEffect)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.UnitEffect)));
             public static Transform CrewDelivery => Extensions.GetCached(ref s_crewDelivery,
-                () => TransformBE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewDelivery)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewDelivery)));
 
             public static Transform Wheel => Extensions.GetCached(ref s_wheel,
-                () => TransformBE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Wheel")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Wheel")));
             public static Transform PoweredWheel => Extensions.GetCached(ref s_poweredWheel,
-                () => TransformBE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x1/Wheel")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x1/Wheel")));
             public static Transform PivotShort => Extensions.GetCached(ref s_pivotShort,
-                () => TransformBE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Bogie (1)")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Bogie (1)")));
             public static Transform PivotLong => Extensions.GetCached(ref s_pivotLong,
-                () => TransformBE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie (1)")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie (1)")));
             public static RectTransform Bogie => Extensions.GetCached(ref s_bogie,
-                () => TransformBE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie")).GetComponent<RectTransform>());
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie")).GetComponent<RectTransform>());
 
             public static Transform GetIcon(TechIcon icon) => icon switch
             {

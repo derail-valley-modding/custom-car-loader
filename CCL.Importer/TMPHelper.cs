@@ -18,7 +18,7 @@ namespace CCL.Importer
         public static void SetTextAndUpdate(this TMP_Text component, string text)
         {
             component.text = text;
-            component.ForceMeshUpdate();
+            component.ForceMeshUpdate(true);
         }
     }
 }

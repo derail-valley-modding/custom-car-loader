@@ -53,9 +53,14 @@ namespace CCL.Types.Catalog
                     tech.Description.Entries = new TechDescription.Entry[1];
                 }
 
-                if (tech.Description.Entries.Length == 1 && string.IsNullOrEmpty(tech.Description.Entries[0].Key))
+                if (tech.Description.Entries.Length == 1)
                 {
-                    tech.Description.Entries[0].Key = TryToGuessUnitEffectDesc(type);
+                    tech.Description.Entries[0] ??= new TechDescription.Entry();
+
+                    if (string.IsNullOrEmpty(tech.Description.Entries[0].Key))
+                    {
+                        tech.Description.Entries[0].Key = TryToGuessUnitEffectDesc(type);
+                    }
                 }
             }
         }

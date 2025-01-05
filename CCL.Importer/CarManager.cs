@@ -162,6 +162,11 @@ namespace CCL.Importer
                 {
                     CCLPlugin.Log("Generating HUD from layout settings...");
                     carType.hudPrefab = HUDGenerator.CreateHUD(serializedCar.HUDLayout);
+
+                    if (serializedCar.HUDLayout.HUDType == CCL.Types.HUD.VanillaHUDLayout.BaseHUD.Custom)
+                    {
+                        carType.hudPrefab.name = $"HUD-{serializedCar.id}";
+                    }
                 }
 
                 // Load paints.

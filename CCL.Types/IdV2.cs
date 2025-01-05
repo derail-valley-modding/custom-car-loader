@@ -101,11 +101,14 @@
             "ManualService",
             "ConcurrentJobs1",
             "ConcurrentJobs2",
-            "MultipleUnit"
+            "MultipleUnit",
+            "Dispatcher1",
+            "MuseumCitySouth"
         };
         public static readonly string[] JobLicenses =
         {
             "Basic",
+            "Fragile",
             "Hazmat1",
             "Hazmat2",
             "Hazmat3",
