@@ -15,7 +15,7 @@ namespace CCL.Importer
     {
         public static List<CatalogPage> PageInfos = new();
         public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
-        public static Dictionary<string, Dictionary<string, float>> NotSpawnChances = new();
+        public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
         private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
         private static VehicleCatalogPageTemplatePaper PageH1 { get; set; } = null!;
         private static Transform TransformDE2 { get; set; } = null!;
@@ -190,6 +190,22 @@ namespace CCL.Importer
         {
             LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
 
+            // Cache the children so they can be deleted without causing loop issues.
+            List<GameObject> children = new();
+
+            for (int i = 0; i < spawner.transform.childCount; i++)
+            {
+                children.Add(spawner.transform.GetChild(i).gameObject);
+            }
+
+            foreach (var item in children)
+            {
+                if (item.name != "YearPriceContainer")
+                {
+                    Object.DestroyImmediate(item);
+                }
+            }
+
             // If unlocked by a garage, don't show spawn bar.
             if (layout.UnlockedByGarage)
             {
@@ -208,13 +224,13 @@ namespace CCL.Importer
 
             foreach (var item in spawner.stationData.stationsData)
             {
-                if (NotSpawnChances.TryGetValue(item.id, out var chances))
+                if (SpawnChances.TryGetValue(item.id, out var chances))
                 {
                     // Get the chance for this ID.
                     // Need to invert since it's storing the chance to NOT spawn. Math.
                     if (chances.TryGetValue(layout.CarLiveryId, out var chance))
                     {
-                        item.locoSpawnChances.Add(new(livery.parentType, 1.0f - chance));
+                        item.locoSpawnChances.Add(new(livery.parentType, chance));
                     }
                 }
             }
@@ -712,7 +728,7 @@ namespace CCL.Importer
             PageH1 = null!;
             TransformDE2 = null!;
             TransformH1 = null!;
-            NotSpawnChances.Clear();
+            SpawnChances.Clear();
             Icons.ClearCache();
         }
 
