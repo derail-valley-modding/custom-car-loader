@@ -81,6 +81,9 @@ namespace CCL.Types
         [GeneralLicenseField]
         public string LicenseID = "";
 
+        [Header("Paints - optional")]
+        public PaintSubstitutions[] PaintSubstitutions = new PaintSubstitutions[0];
+
         [SerializeField, HideInInspector]
         private string? brakesJson;
         [SerializeField, HideInInspector]
@@ -171,6 +174,11 @@ namespace CCL.Types
                     livery.AfterAssetLoad();
                 }
             }
+
+            foreach (var item in PaintSubstitutions)
+            {
+                item.AfterImport();
+            }
         }
 
         public IEnumerable<GameObject> AllPrefabs
@@ -204,19 +212,32 @@ namespace CCL.Types
         [Serializable]
         public class BrakesSetup
         {
-            public bool hasCompressor;
-            public TrainBrakeType brakeValveType;
-            public bool hasIndependentBrake;
-            public bool hasHandbrake = true;
-            public bool ignoreOverheating;
-            public float brakingForcePerBogieMultiplier = 1;
-
             public enum TrainBrakeType
             {
                 None,
                 SelfLap,
                 ManualLap
             }
+
+            public enum BrakeCylinderPressureCalculation
+            {
+                Regular,
+                CopyFront,
+                CopyRear,
+                CopyMax
+            }
+
+            public bool hasCompressor;
+            public bool hasMainResConnections;
+            public TrainBrakeType brakeValveType;
+            public bool hasIndependentBrake;
+            public bool hasHandbrake = true;
+            public bool ignoreOverheating;
+            //[Header("Leave brake curve data blank for linear behaviour")]
+            //public BrakesCurve trainBrakeCurveData;
+            //public BrakesCurve indBrakeCurveData;
+            public BrakeCylinderPressureCalculation brakeCylinderPressureCalculation;
+            public float brakingForcePerBogieMultiplier = 1;
         }
 
         [Serializable]

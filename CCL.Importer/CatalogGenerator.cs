@@ -15,7 +15,7 @@ namespace CCL.Importer
     {
         public static List<CatalogPage> PageInfos = new();
         public static List<StaticPageTemplatePaper> NewCatalogPages = new();
-        public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
+        public static Dictionary<string, Dictionary<string, float>> NotSpawnChances = new();
 
         private static Transform PageDE2 { get; set; } = null!;
         private static Transform PageH1 { get; set; } = null!;
@@ -174,12 +174,13 @@ namespace CCL.Importer
 
             foreach (var item in spawner.stationData.stationsData)
             {
-                if (SpawnChances.TryGetValue(item.id, out var chances))
+                if (NotSpawnChances.TryGetValue(item.id, out var chances))
                 {
                     // Get the chance for this ID.
+                    // Need to invert since it's storing the chance to NOT spawn. Math.
                     if (chances.TryGetValue(layout.CarTypeId, out var chance))
                     {
-                        item.locoSpawnChances.Add(new(cartype, chance));
+                        item.locoSpawnChances.Add(new(cartype, 1.0f - chance));
                     }
                 }
             }

@@ -9,8 +9,11 @@ namespace CCL.Types
     {
         public static Dictionary<SpawnTrack, string> TrackToSpawnerName = new Dictionary<SpawnTrack, string>()
         {
-            { SpawnTrack.CoalMine, "LocoSpawnerCM" },
-            { SpawnTrack.CitySouthWest, "LocoSpawnerCSW1" },
+            { SpawnTrack.CoalMineEast, "LocoSpawnerCME" },
+            { SpawnTrack.CoalMineSouth, "LocoSpawnerCMS-B-P1" },
+            { SpawnTrack.CoalPowerPlant, "LocoSpawnerCP-P1" },
+            { SpawnTrack.CitySouth, "LocoSpawnerCS" },
+            { SpawnTrack.CityWest, "LocoSpawnerCW1" },
             { SpawnTrack.FoodFactory1, "LocoSpawnerFF1" },
             { SpawnTrack.FoodFactory2, "LocoSpawnerFF2" },
             { SpawnTrack.Farm, "LocoSpawnerFM" },
@@ -30,6 +33,7 @@ namespace CCL.Types
             { SpawnTrack.MachineFactoryRoundhouse3, "LocoSpawnerMF-T1-3" },
             { SpawnTrack.MachineFactoryRoundhouse4, "LocoSpawnerMF-T1-4" },
             { SpawnTrack.MachineFactoryRoundhouse7, "LocoSpawnerMF-T1-7" },
+            { SpawnTrack.OilRefinery, "LocoSpawnerOR-B-P1" },
             { SpawnTrack.OilWellCentral, "LocoSpawnerOWC-A-3" },
             { SpawnTrack.OilWellNorth, "LocoSpawnerOWN" },
             { SpawnTrack.Sawmill, "LocoSpawnerSW" },
@@ -39,8 +43,11 @@ namespace CCL.Types
 
         public static Dictionary<string, string> SpawnerNameToId = new Dictionary<string, string>
         {
-            { "LocoSpawnerCM", "CM" },
-            { "LocoSpawnerCSW1" , "CSW" },
+            { "LocoSpawnerCME", "CME" },
+            { "LocoSpawnerCMS-B-P1", "CMS" },
+            { "LocoSpawnerCP-P1", "CP" },
+            { "LocoSpawnerCS" , "CS" },
+            { "LocoSpawnerCW1" , "CW" },
             { "LocoSpawnerFF1" , "FF" },
             { "LocoSpawnerFF2" , "FF" },
             { "LocoSpawnerFM" , "FM" },
@@ -60,6 +67,7 @@ namespace CCL.Types
             { "LocoSpawnerMF-T1-3" , "MF" },
             { "LocoSpawnerMF-T1-4" , "MF" },
             { "LocoSpawnerMF-T1-7" , "MF" },
+            { "LocoSpawnerOR-B-P1" , "OR" },
             { "LocoSpawnerOWC-A-3" , "OWC" },
             { "LocoSpawnerOWN" , "OWN" },
             { "LocoSpawnerSW" , "SW" },
@@ -83,57 +91,65 @@ namespace CCL.Types
 
     public enum SpawnTrack
     {
+        [Tooltip("Length: 110m")]
+        CitySouth = 0,
         [Tooltip("Length: 155m")]
-        CitySouthWest,
+        CityWest = 100,
         [Tooltip("Length: 50m")]
-        CoalMine,
+        CoalMineEast = 200,
+        [Tooltip("Length: 170m")]
+        CoalMineSouth = 300,
+        [Tooltip("Length: 270m")]
+        CoalPowerPlant = 400,
         [Tooltip("Length: 300m")]
-        Farm,
+        Farm = 500,
         [Tooltip("Length: 50m")]
-        FoodFactory1,
+        FoodFactory1 = 600,
         [Tooltip("Length: 55m")]
-        FoodFactory2,
+        FoodFactory2 = 601,
         [Tooltip("Length: 60m")]
-        ForestCentral,
+        ForestCentral = 700,
         [Tooltip("Length: 62m")]
-        ForestSouth,
+        ForestSouth = 800,
         [Tooltip("Length: 60m")]
-        GoodsFactory1,
+        GoodsFactory1 = 900,
         [Tooltip("Length: 60m")]
-        GoodsFactory2,
+        GoodsFactory2 = 901,
         [Tooltip("Length: 65m")]
-        HarbourA1,
+        HarbourA1 = 1000,
         [Tooltip("Length: 45m (has turntable)")]
-        HarbourRoundhouse1,
+        HarbourRoundhouse1 = 1001,
         [Tooltip("Length: 45m (has turntable)")]
-        HarbourRoundhouse2,
+        HarbourRoundhouse2 = 1002,
         [Tooltip("Length: 45m (has turntable)")]
-        HarbourRoundhouse5,
+        HarbourRoundhouse5 = 1005,
         [Tooltip("Length: 45m (has turntable)")]
-        HarbourRoundhouse7,
+        HarbourRoundhouse7 = 1007,
         [Tooltip("Length: 45m")]
-        IronMineEast,
+        IronMineEast = 1100,
         [Tooltip("Length: 25m (has turntable)")]
-        IronMineWest,
+        IronMineWest = 1200,
         [Tooltip("Length: 140m")]
-        MachineFactoryA1,
+        MachineFactoryA1 = 1300,
         [Tooltip("Length: 45m (has turntable)")]
-        MachineFactoryRoundhouse2,
+        MachineFactoryRoundhouse2 = 1302,
         [Tooltip("Length: 45m (has turntable)")]
-        MachineFactoryRoundhouse3,
+        MachineFactoryRoundhouse3 = 1303,
         [Tooltip("Length: 45m (has turntable)")]
-        MachineFactoryRoundhouse4,
+        MachineFactoryRoundhouse4 = 1304,
         [Tooltip("Length: 45m (has turntable)")]
-        MachineFactoryRoundhouse7,
+        MachineFactoryRoundhouse7 = 1307,
+        [Tooltip("Length: 130m")]
+        OilRefinery = 1400,
         [Tooltip("Length: 32m (has turntable)")]
-        OilWellCentral,
+        OilWellCentral = 1500,
         [Tooltip("Length: 40m")]
-        OilWellNorth,
+        OilWellNorth = 1600,
         [Tooltip("Length: 95m")]
-        Sawmill,
+        Sawmill = 1700,
         [Tooltip("Length: 32m (has turntable)")]
-        SteelMillTurntable1,
+        SteelMillTurntable1 = 1800,
         [Tooltip("Length: 32m (has turntable)")]
-        SteelMillTurntable2
+        SteelMillTurntable2 = 1801
     }
 }

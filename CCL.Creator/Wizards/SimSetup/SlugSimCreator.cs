@@ -4,6 +4,7 @@ using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Electric;
+using CCL.Types.Proxies.Wheels;
 using System.Linq;
 using UnityEngine;
 
@@ -42,15 +43,20 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
             var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(tm, "WORKING_TRACTION_MOTORS");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
+            wheelslip.engineBrakingActivePortId = FullPortId(tm, "DYNAMIC_BRAKE_ACTIVE");
 
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
-                new FuseDefinition("ELECTRONICS_MAIN", true)
+                new FuseDefinition("PROVIDER_POWER", true)
             };
 
-            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            tm.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            sander.powerFuseId = FullFuseId(fusebox, 0);
+            tm.powerFuseId = FullFuseId(fusebox, 0);
+            slug.powerFuseId = FullFuseId(fusebox, 0);
 
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };

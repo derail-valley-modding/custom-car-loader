@@ -104,7 +104,7 @@
             "MultipleUnit"
         };
         public static readonly string[] JobLicenses =
-{
+        {
             "Basic",
             "Hazmat1",
             "Hazmat2",
@@ -117,6 +117,15 @@
             "LogisticalHaul",
             "TrainLength1",
             "TrainLength2"
+        };
+        // Not really an ID but oh well.
+        public static readonly string[] Paints =
+        {
+            "DVRT",
+            "DVRT_New",
+            "Null",
+            "Relic",
+            "Relic_Rusty",
         };
     }
 }

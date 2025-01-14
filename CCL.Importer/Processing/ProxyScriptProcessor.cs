@@ -6,9 +6,9 @@ using UnityEngine;
 namespace CCL.Importer.Processing
 {
     [Export(typeof(IModelProcessorStep))]
+    [RequiresStep(typeof(BogieProcessor))]
     [RequiresStep(typeof(GrabberProcessor))]
     [RequiresStep(typeof(ObjectInstancerProcessor))]
-    [RequiresStep(typeof(BogieProcessor))]
     internal class ProxyScriptProcessor : ModelProcessorStep
     {
         public override void ExecuteStep(ModelProcessor context)

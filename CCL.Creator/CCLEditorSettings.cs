@@ -46,5 +46,8 @@ namespace CCL.Creator
         [Tooltip("Extra Job License IDs to display in license fields\n" +
             "Only works on fields that support custom values")]
         public string[] ExtraJobLicenses = new string[0];
+        [Tooltip("Extra Paint asset names to display in paint fields\n" +
+            "Only works on fields that support custom values")]
+        public string[] ExtraPaints = new string[0];
     }
 }

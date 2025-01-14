@@ -42,4 +42,9 @@ namespace CCL.Types
     {
         public AnyLicenseFieldAttribute(bool customAllowed = true) : base(IdV2.GeneralLicenses.Concat(IdV2.JobLicenses), customAllowed) { }
     }
+
+    public class PaintFieldAttribute : StringAndSelectorFieldAttribute
+    {
+        public PaintFieldAttribute(bool customAllowed = true) : base(IdV2.Paints, customAllowed) { }
+    }
 }

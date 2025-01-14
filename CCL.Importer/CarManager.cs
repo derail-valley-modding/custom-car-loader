@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
+using DV.CabControls.Spec;
 using DV.JObjectExtstensions;
 using Newtonsoft.Json.Linq;
 using System;
@@ -162,6 +163,9 @@ namespace CCL.Importer
                     CCLPlugin.Log("Generating HUD from layout settings...");
                     carType.hudPrefab = HUDGenerator.CreateHUD(serializedCar.HUDLayout);
                 }
+
+                // Load paints.
+                PaintLoader.LoadSubstitutions(serializedCar.PaintSubstitutions);
 
                 CCLPlugin.Log($"Successfully loaded car type {carId}");
 
