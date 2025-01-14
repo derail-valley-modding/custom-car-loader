@@ -13,19 +13,19 @@ namespace CCL.Creator.Validators
 
             if (!livery.BufferType.IsDefined())
             {
-                result.Fail($"{livery.id} - Buffer type not defined");
+                result.Fail($"{livery.id} - Buffer type not defined", livery);
             }
 
             var frontRig = livery.prefab!.transform.FindSafe(CarPartNames.Couplers.RIG_FRONT);
             if (!frontRig)
             {
-                result.Fail("Missing front coupler rig " + CarPartNames.Couplers.RIG_FRONT);
+                result.Fail("Missing front coupler rig " + CarPartNames.Couplers.RIG_FRONT, livery.prefab);
             }
             else
             {
                 if (frontRig!.position.x != 0 || frontRig.position.y != 1.05f)
                 {
-                    result.Warning("Front coupler rig should be at x = 0, y = 1.05");
+                    result.Warning("Front coupler rig should be at x = 0, y = 1.05", frontRig);
                 }
 
                 if (livery.UseCustomBuffers)
@@ -35,7 +35,7 @@ namespace CCL.Creator.Validators
                         var pad = frontRig.FindSafe(name);
                         if (!pad)
                         {
-                            result.Warning("Missing buffer pad " + name);
+                            result.Warning("Missing buffer pad " + name, frontRig);
                         }
                     }
                 }
@@ -44,13 +44,13 @@ namespace CCL.Creator.Validators
             var rearRig = livery.prefab.transform.FindSafe(CarPartNames.Couplers.RIG_REAR);
             if (!rearRig)
             {
-                result.Fail("Missing rear coupler rig " + CarPartNames.Couplers.RIG_REAR);
+                result.Fail("Missing rear coupler rig " + CarPartNames.Couplers.RIG_REAR, livery.prefab);
             }
             else
             {
                 if (rearRig!.position.x != 0 || rearRig.position.y != 1.05f)
                 {
-                    result.Warning("Rear coupler rig should be at x = 0, y = 1.05");
+                    result.Warning("Rear coupler rig should be at x = 0, y = 1.05", frontRig);
                 }
 
                 if (livery.UseCustomBuffers)
@@ -60,7 +60,7 @@ namespace CCL.Creator.Validators
                         var pad = rearRig.FindSafe(name);
                         if (!pad)
                         {
-                            result.Warning("Missing buffer pad " + name);
+                            result.Warning("Missing buffer pad " + name, frontRig);
                         }
                     }
                 }

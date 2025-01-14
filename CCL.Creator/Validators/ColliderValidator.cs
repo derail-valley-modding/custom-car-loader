@@ -26,7 +26,7 @@ namespace CCL.Creator.Validators
             var collisionComp = collision ? collision!.GetComponentsInChildren<BoxCollider>(true) : Enumerable.Empty<Collider>();
             if (!collision || !collisionComp.Any())
             {
-                result.Warning($"{livery.id} - Bounding {CarPartNames.Colliders.COLLISION} collider will be auto-generated");
+                result.Warning($"{livery.id} - Bounding {CarPartNames.Colliders.COLLISION} collider will be auto-generated", collidersRoot);
             }
 
             // walkable
@@ -34,7 +34,7 @@ namespace CCL.Creator.Validators
             var walkableComp = walkable ? walkable!.GetComponentsInChildren<Collider>(true) : Enumerable.Empty<Collider>();
             if (!walkable || !walkableComp.Any())
             {
-                result.Fail($"{livery.id} - No {CarPartNames.Colliders.WALKABLE} colliders set - car has no player collision");
+                result.Fail($"{livery.id} - No {CarPartNames.Colliders.WALKABLE} colliders set - car has no player collision", collidersRoot);
             }
 
             // bogies
@@ -42,7 +42,7 @@ namespace CCL.Creator.Validators
             var bogieColliders = bogies ? bogies!.GetComponentsInChildren<Collider>(true) : Array.Empty<Collider>();
             if (!bogies || bogieColliders.Length != 2)
             {
-                result.Fail($"{livery.id} - Incorrect number of {CarPartNames.Colliders.BOGIES} colliders - should be 2");
+                result.Fail($"{livery.id} - Incorrect number of {CarPartNames.Colliders.BOGIES} colliders - should be 2", collidersRoot);
             }
 
             return result;

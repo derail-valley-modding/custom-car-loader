@@ -14,24 +14,24 @@ namespace CCL.Creator.Validators
 
             if (!livery.FrontBogie.IsDefined())
             {
-                result.Fail($"{livery.id} - Front bogie type not defined");
+                result.Fail($"{livery.id} - Front bogie type not defined", livery);
             }
 
             if (!livery.RearBogie.IsDefined())
             {
-                result.Fail($"{livery.id} - Rear bogie type not defined");
+                result.Fail($"{livery.id} - Rear bogie type not defined", livery);
             }
 
             var bogieF = livery.prefab!.transform.FindSafe(CarPartNames.Bogies.FRONT);
             if (!bogieF)
             {
-                result.Fail($"{livery.id} - Missing front bogie transform");
+                result.Fail($"{livery.id} - Missing front bogie transform", livery.prefab);
             }
             else
             {
                 if (bogieF!.transform.position.y != 0)
                 {
-                    result.Fail($"{livery.id} - BogieF must be at y=0");
+                    result.Fail($"{livery.id} - BogieF must be at y=0", bogieF);
                 }
 
                 if (livery.UseCustomFrontBogie)
@@ -47,11 +47,11 @@ namespace CCL.Creator.Validators
                         {
                             if (filter.sharedMesh == null)
                             {
-                                result.Warning($"{livery.id} - {filter.name} is missing a mesh");
+                                result.Warning($"{livery.id} - {filter.name} is missing a mesh", filter);
                             }
                             else if (!filter.sharedMesh.isReadable)
                             {
-                                result.Warning($"{livery.id} - Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled");
+                                result.Warning($"{livery.id} - Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled", filter.sharedMesh);
                             }
                         }
                     }
@@ -61,13 +61,13 @@ namespace CCL.Creator.Validators
             var bogieR = livery.prefab.transform.FindSafe(CarPartNames.Bogies.REAR);
             if (!bogieR)
             {
-                result.Fail($"{livery.id} - Missing rear bogie transform");
+                result.Fail($"{livery.id} - Missing rear bogie transform", livery);
             }
             else
             {
                 if (bogieR!.transform.position.y != 0)
                 {
-                    result.Fail($"{livery.id} - BogieR must be at y=0");
+                    result.Fail($"{livery.id} - BogieR must be at y=0", bogieR);
                 }
 
                 if (livery.UseCustomRearBogie)
@@ -83,11 +83,11 @@ namespace CCL.Creator.Validators
                         {
                             if (filter.sharedMesh == null)
                             {
-                                result.Warning($"{livery.id} - {filter.name} is missing a mesh");
+                                result.Warning($"{livery.id} - {filter.name} is missing a mesh", filter);
                             }
                             else if (!filter.sharedMesh.isReadable)
                             {
-                                result.Warning($"{livery.id} - Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled");
+                                result.Warning($"{livery.id} - Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled", filter.sharedMesh);
                             }
                         }
                     }

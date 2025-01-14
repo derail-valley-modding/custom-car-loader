@@ -6,6 +6,7 @@ using DV.Simulation.Fuses;
 using DV.Simulation.Ports;
 using DV.Util;
 using LocoSim.Definitions;
+using LocoSim.DVExtensions.Test;
 using System.ComponentModel.Composition;
 using UnityEngine;
 
@@ -55,19 +56,32 @@ namespace CCL.Importer.Processing
 
             var broadcastController = SetupBroadcastPortsIfNeeded(livery.prefab);
 
+            SimController simController = livery.prefab.GetComponentInChildren<SimController>(true);
+
             // If we have something that can use a sim controller and don't already have a sim controller
             var needsSimController = (livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ||
                 broadcastController != null ||
                 livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0) &&
-                !livery.prefab.GetComponentInChildren<SimController>(true);
+                !simController;
             if (needsSimController)
             {
-                var simController = livery.prefab.AddComponent<SimController>();
+                simController = livery.prefab.AddComponent<SimController>();
                 simController.OnValidate();
             }
 
+            // For debug.
+            if (simController)
+            {
+                var data = livery.prefab.GetComponentInChildren<SimDataDisplaySimController>(true);
+
+                if (data)
+                {
+                    data.simController = simController;
+                }
+            }
+
             // In the event we have a sim controller and *not* a damage controller, we need to add a dummy damage controller
-            var needsDamageController = livery.prefab.GetComponentInChildren<SimController>(true) &&
+            var needsDamageController = simController &&
                 !livery.prefab.GetComponentInChildren<DamageController>(true);
             if (needsDamageController)
             {

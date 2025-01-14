@@ -35,7 +35,14 @@ namespace CCL.Creator.Utility
             PortValueType = valueType;
         }
 
-        public string Description => CCLEditorSettings.Settings.DisplayCodeOnPortFields ? $"[{Code}] {ID} ({PrefabName})" : $"{ID} ({PrefabName})";
+        public string Description
+        {
+            get
+            {
+                string result = CCLEditorSettings.Settings.DisplayCodeOnPortFields ? $"[{Code}] {ID} ({PrefabName})" : $"{ID} ({PrefabName})";
+                return CCLEditorSettings.Settings.UseFolderSystemOnPortFields ? result.Replace('.', '/') : result;
+            }
+        }
 
         public string Code => Type switch
         {
