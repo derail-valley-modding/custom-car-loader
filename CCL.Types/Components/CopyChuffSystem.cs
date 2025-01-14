@@ -25,6 +25,8 @@ namespace CCL.Types.Components
         public string cylinderWaterNormalizedPortId;
         [PortId(DVPortValueType.CONTROL, false)]
         public string cylinderCockControlPortId;
+        [PortId(DVPortValueType.STATE, false)]
+        public string ashesInPipesPortId;
 
         public GameObject? InstancedObject { get; set; }
         public bool CanReplace => InstancedObject != null;
@@ -36,6 +38,7 @@ namespace CCL.Types.Components
             new PortIdField(this, nameof(chuffFrequencyPortId), chuffFrequencyPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(cylinderWaterNormalizedPortId), cylinderWaterNormalizedPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(cylinderCockControlPortId), cylinderCockControlPortId, DVPortValueType.CONTROL),
+            new PortIdField(this, nameof(ashesInPipesPortId), ashesInPipesPortId, DVPortValueType.STATE),
         };
     }
 }

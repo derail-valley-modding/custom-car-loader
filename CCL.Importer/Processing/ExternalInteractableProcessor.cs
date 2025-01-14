@@ -3,8 +3,6 @@ using DV.CabControls;
 using DV.Openables;
 using DV.Optimizers;
 using DV.Simulation.Brake;
-using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
@@ -25,32 +23,35 @@ namespace CCL.Importer.Processing
         private static readonly GameObject _dm3Handbrake;
         private static readonly GameObject _dh4Handbrake;
         private static readonly GameObject _microshunterHandbrake;
+        private static readonly GameObject _dm1uHandbrake;
 
         private static readonly GameObject _de2FuelPort;
         private static readonly GameObject _be2ChargePort;
 
         static ExternalInteractableProcessor()
         {
-            var flatbedInteractables = TrainCarType.FlatbedEmpty.ToV2().externalInteractablesPrefab;
+            var flatbedInteractables = QuickAccess.Wagons.Flatbed.externalInteractablesPrefab;
             _flatbedHandbrake = flatbedInteractables.transform.Find(HANDBRAKE_SMALL).gameObject;
             _flatbedBrakeRelease = flatbedInteractables.transform.Find(BRAKE_CYL_RELEASE).gameObject;
 
-            _s060Handbrake = TrainCarType.LocoS060.ToV2().interiorPrefab
+            _s060Handbrake = QuickAccess.Locomotives.S060.interiorPrefab
                 .transform.Find(HANDBRAKE_S060).gameObject;
-            _s282Handbrake = TrainCarType.Tender.ToV2().externalInteractablesPrefab
+            _s282Handbrake = QuickAccess.Locomotives.S282B.externalInteractablesPrefab
                 .transform.Find(HANDBRAKE_S282).gameObject;
-            _de2Handbrake = TrainCarType.LocoShunter.ToV2().interiorPrefab
+            _de2Handbrake = QuickAccess.Locomotives.DE2.interiorPrefab
                 .transform.Find(HANDBRAKE_DE2).gameObject;
-            _dm3Handbrake = TrainCarType.LocoDM3.ToV2().interiorPrefab
+            _dm3Handbrake = QuickAccess.Locomotives.DM3.interiorPrefab
                 .transform.Find(HANDBRAKE_DM3).gameObject;
-            _dh4Handbrake = TrainCarType.LocoDH4.ToV2().interiorPrefab
+            _dh4Handbrake = QuickAccess.Locomotives.DH4.interiorPrefab
                 .transform.Find(HANDBRAKE_DH4).gameObject;
-            _microshunterHandbrake = TrainCarType.LocoMicroshunter.ToV2().interiorPrefab
+            _microshunterHandbrake = QuickAccess.Locomotives.Microshunter.interiorPrefab
                 .transform.Find(HANDBRAKE_MICROSHUNTER).gameObject;
+            _dm1uHandbrake = QuickAccess.Locomotives.DM1U.interiorPrefab
+                .transform.Find(HANDBRAKE_DM1U).gameObject;
 
-            _de2FuelPort = TrainCarType.LocoShunter.ToV2().prefab
+            _de2FuelPort = QuickAccess.Locomotives.DE2.prefab
                 .transform.Find($"{FUEL_CAP_ROOT}/{FUEL_CAP_DE2}").gameObject;
-            _be2ChargePort = TrainCarType.LocoMicroshunter.ToV2().prefab
+            _be2ChargePort = QuickAccess.Locomotives.Microshunter.prefab
                 .transform.Find($"{CHARGE_PORT_ROOT}/{CHARGE_PORT_BE2}").gameObject;
         }
 

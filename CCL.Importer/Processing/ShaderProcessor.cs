@@ -14,7 +14,7 @@ namespace CCL.Importer.Processing
 
         private static Shader EngineShader => Extensions.GetCached(ref _engineShader, () =>
         {
-            var prefab = Globals.G.Types.TrainCarType_to_v2[TrainCarType.LocoShunter].prefab;
+            var prefab = QuickAccess.Locomotives.DE2.prefab;
             var exterior = prefab.transform.Find("LocoDE2_Body/ext 621_exterior");
             var material = exterior.GetComponent<MeshRenderer>().material;
             return material.shader;

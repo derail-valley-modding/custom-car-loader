@@ -1,8 +1,6 @@
 ﻿using CCL.Importer.Components;
 using CCL.Types;
 using CCL.Types.Components;
-using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using System.ComponentModel.Composition;
 using UnityEngine;
 
@@ -16,7 +14,7 @@ namespace CCL.Importer.Processing
         {
             var buffers = context.GetCompletedStep<BufferProcessor>();
             var basePrefab = context.Car.UseCustomBuffers ?
-                TrainCarType.FlatbedEmpty.ToV2().prefab :
+                QuickAccess.Wagons.Flatbed.prefab :
                 context.Car.BufferType.ToTypePrefab();
 
             GameObject copiedObject;

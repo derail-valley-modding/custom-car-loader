@@ -1,13 +1,6 @@
 ﻿using CCL.Types.Proxies.Indicators;
 using DV.Localization;
-using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CCL.Importer.Processing
@@ -23,7 +16,7 @@ namespace CCL.Importer.Processing
 
         static LabelProcessor()
         {
-            var s282Labels = TrainCarType.LocoSteamHeavy.ToV2().interiorPrefab.transform.Find("LocoS282A_Interior_Labels");
+            var s282Labels = QuickAccess.Locomotives.S282A.interiorPrefab.transform.Find("LocoS282A_Interior_Labels");
 
             _offsetLabelComplete = s282Labels.Find("BrakeTrain/Label_RM_1").gameObject;
             _offsetLabelModel = _offsetLabelComplete.transform.Find("Label").gameObject;

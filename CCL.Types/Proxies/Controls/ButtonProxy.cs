@@ -9,6 +9,7 @@ namespace CCL.Types.Proxies.Controls
         public bool useJoints = true;
         public float pushStrength = 0.5f;
         public float linearLimit = 0.003f;
+        public Vector3 pushLocalOffset;
         public bool isToggle;
         public bool isTogglingBack;
 
@@ -16,6 +17,7 @@ namespace CCL.Types.Proxies.Controls
         public AudioClip press;
         public AudioClip toggleOn;
         public AudioClip toggleOff;
+        public bool play2DAudio;
 
         [Header("VR")]
         public bool disableTouchUse;

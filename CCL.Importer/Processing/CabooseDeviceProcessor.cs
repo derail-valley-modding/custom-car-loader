@@ -1,7 +1,5 @@
 ﻿using CCL.Types;
 using CCL.Types.Devices;
-using DV.ThingTypes;
-using DV;
 using System.ComponentModel.Composition;
 using UnityEngine;
 
@@ -55,7 +53,7 @@ namespace CCL.Importer.Processing
 
         private static GameObject? _cabooseInterior;
         private static GameObject CabooseInterior =>
-            Extensions.GetCached(ref _cabooseInterior, () => Globals.G.Types.TrainCarType_to_v2[TrainCarType.CabooseRed].interiorPrefab);
+            Extensions.GetCached(ref _cabooseInterior, () => QuickAccess.Wagons.Caboose.interiorPrefab);
 
 
         private static GameObject? _careerManager;

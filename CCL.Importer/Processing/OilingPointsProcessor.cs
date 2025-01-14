@@ -1,12 +1,9 @@
 ﻿using CCL.Types.Components;
 using DV.Simulation.Ports;
-using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using DV.Util;
 using LocoSim.Definitions;
 using System.ComponentModel.Composition;
 using UnityEngine;
-using VLB;
 
 namespace CCL.Importer.Processing
 {
@@ -16,7 +13,7 @@ namespace CCL.Importer.Processing
     {
         private static GameObject? s_oilingPoint;
         private static GameObject OilingPoint = Extensions.GetCached(ref s_oilingPoint, () =>
-            TrainCarType.LocoSteamHeavy.ToV2().externalInteractablesPrefab.transform.Find("ManualOilingPoints/OilingPoint0").gameObject);
+            QuickAccess.Locomotives.S282A.externalInteractablesPrefab.transform.Find("ManualOilingPoints/OilingPoint0").gameObject);
 
         public override void ExecuteStep(ModelProcessor context)
         {

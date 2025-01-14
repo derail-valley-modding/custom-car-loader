@@ -2,8 +2,6 @@
 using CCL.Types;
 using CCL.Types.Proxies;
 using DV.MultipleUnit;
-using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
@@ -16,7 +14,7 @@ namespace CCL.Importer.Processing
         private static Transform? s_buffersDE2;
 
         private static Transform BuffersDE2 => Extensions.GetCached(ref s_buffersDE2,
-            () => TrainCarType.LocoShunter.ToV2().prefab.transform.Find(CarPartNames.Buffers.ROOT));
+            () => QuickAccess.Locomotives.DE2.prefab.transform.Find(CarPartNames.Buffers.ROOT));
 
         public Vector3 FrontRigPosition;
         public Vector3 RearRigPosition;
@@ -24,7 +22,7 @@ namespace CCL.Importer.Processing
         public override void ExecuteStep(ModelProcessor context)
         {
             var basePrefab = context.Car.UseCustomBuffers ?
-                TrainCarType.FlatbedEmpty.ToV2().prefab :
+                QuickAccess.Wagons.Flatbed.prefab :
                 context.Car.BufferType.ToTypePrefab();
 
             // copy main buffer part cohort

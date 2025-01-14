@@ -105,10 +105,10 @@ namespace CCL.Creator.Inspector
                 case VanillaAudioSystem.DM3JakeBrake:
                     return new[] { "Transmission Engaged Port ID", "Wheel Speed Port ID" };
 
-                case VanillaAudioSystem.SteamerChestAdmission:
-                    return new[] { "Steam Injection Port ID", "Exhaust Pressure Port ID" };
                 case VanillaAudioSystem.SteamerValveGearDamaged:
                     return new[] { "Lubrication Port ID", "Wheel RPM Port ID" };
+                case VanillaAudioSystem.SteamerValveGearNoOil:
+                    return new[] { "Lowest Oil Level Port ID", "Wheel RPM Port ID" };
                 case VanillaAudioSystem.SteamerCrownSheet:
                     return new[] { "Crown Sheet Temperature Port ID", "Boiler Broken Port ID" };
                 case VanillaAudioSystem.SteamerCylinderCock:
@@ -141,7 +141,7 @@ namespace CCL.Creator.Inspector
                 case VanillaAudioSystem.SteamerFire:
                     return new[] { "Strong Fire", "Weak Fire" };
                 case VanillaAudioSystem.SteamerValveGear:
-                    return new[] { "4s", "8s", "16s" };
+                    return new[] { "2s", "4s", "8s", "16s" };
 
                 case VanillaAudioSystem.S060Whistle:
                     return new[] { "Chime 1", "Chime 2", "Chord (Steam)" };
