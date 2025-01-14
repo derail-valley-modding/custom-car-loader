@@ -33,6 +33,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var thrtPowr = CreateSimComponent<ThrottleGammaPowerConversionDefinitionProxy>("throttlePower");
             var reverser = CreateReverserControl();
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
             var dynBrake = hasDynamic ? CreateOverridableControl(OverridableControlType.DynamicBrake) : null!;
 

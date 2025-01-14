@@ -16,28 +16,25 @@ namespace CCL.Types.Components
 
     public enum VanillaParticleSystem
     {
-        DieselExhaustSmoke1,
+        DieselExhaustSmoke1 = 0,
         DieselExhaustSmoke2,
         DieselHighTempSmoke,
         DieselDamageSmoke,
 
-        SteamerSteamSmoke,
+        SteamerSteamSmoke = 100,
         SteamerSteamSmokeThick,
         SteamerEmberClusters,
         SteamerEmberSparks,
-        SteamerCylCockWaterDripParticles,
-        SteamerExhaustSmallWispy,
+        SteamerCylCockWaterDripParticles = 120,
+        SteamerExhaustSmallWispy = 150,
         SteamerExhaustSmallWave,
-        SteamerExhaustSmallLeak,
         SteamerExhaustWispy,
         SteamerExhaustWave,
-        SteamerExhaustLeak,
         SteamerExhaustLargeWispy,
         SteamerExhaustLargeWave,
-        SteamerExhaustLargeLeak,
-        SteamerSteamLeaks,
+        SteamerSteamLeaks = 190,
 
-        FireboxFire,
+        FireboxFire = 200,
         FireboxSparks,
     }
 }

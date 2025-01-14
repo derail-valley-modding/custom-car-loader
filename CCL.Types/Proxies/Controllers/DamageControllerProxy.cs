@@ -1,5 +1,4 @@
 ﻿using CCL.Types.Proxies.Ports;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,27 +14,24 @@ namespace CCL.Types.Proxies.Controllers
         [Header("Body Damage")]
         [PortId(DVPortValueType.DAMAGE, false)]
         public string[] bodyDamagerPortIds;
-
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
         public string[] bodyHealthStateExternalInPortIds;
 
         [Header("Mechanical Damage")]
         [PortId(DVPortValueType.DAMAGE, false)]
         public string[] mechanicalPTDamagerPortIds;
-
+        [PortId(DVPortValueType.DAMAGE, false)]
+        public string[] mechanicalPTPercentualDamagerPortIds;
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
         public string[] mechanicalPTHealthStateExternalInPortIds;
-
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
         public string[] mechanicalPTOffExternalInPortIds;
 
         [Header("Electrical Damage")]
         [PortId(DVPortValueType.DAMAGE, false)]
         public string[] electricalPTDamagerPortIds;
-
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
         public string[] electricalPTHealthStateExternalInPortIds;
-
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
         public string[] electricalPTOffExternalInPortIds;
 
@@ -45,6 +41,7 @@ namespace CCL.Types.Proxies.Controllers
             new PortIdField(this, nameof(bodyHealthStateExternalInPortIds), bodyHealthStateExternalInPortIds, DVPortType.EXTERNAL_IN, DVPortValueType.STATE),
             
             new PortIdField(this, nameof(mechanicalPTDamagerPortIds), mechanicalPTDamagerPortIds, DVPortValueType.DAMAGE),
+            new PortIdField(this, nameof(mechanicalPTPercentualDamagerPortIds), mechanicalPTPercentualDamagerPortIds, DVPortValueType.DAMAGE),
             new PortIdField(this, nameof(mechanicalPTHealthStateExternalInPortIds), mechanicalPTHealthStateExternalInPortIds, DVPortType.EXTERNAL_IN, DVPortValueType.STATE),
             new PortIdField(this, nameof(mechanicalPTOffExternalInPortIds), mechanicalPTOffExternalInPortIds, DVPortType.EXTERNAL_IN, DVPortValueType.STATE),
 

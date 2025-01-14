@@ -45,12 +45,17 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "INJECTOR_FLOW_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "BLOWDOWN_FLOW_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "WATER_LEVEL_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "WATER_MASS"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUTLET_STEAM_QUALITY"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "WATER_INSTANT_REMOVAL_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "SAFETY_VALVE_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "CROWN_SHEET_TEMPERATURE_NORMALIZED"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "BODY_HEALTH_EXT_IN"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "IS_BROKEN")
-        };
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "IS_BROKEN"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "ENTHALPY"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_IN"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_OUT")
+    };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
@@ -72,8 +77,8 @@ namespace CCL.Types.Proxies.Simulation.Steam
 
         public void ApplyS060Defaults()
         {
-            diameter = 1.4f;
-            length = 3.0f;
+            diameter = 1.25f;
+            length = 4.6f;
             capacityMultiplier = 0.85f;
 
             maxInjectorRate = 5.0f;
@@ -88,9 +93,9 @@ namespace CCL.Types.Proxies.Simulation.Steam
             maxSafetyValveVentRate = 2.0f;
 
             spawnPressure = 1.0f;
-            spawnWaterLevel = 3000.0f;
+            spawnWaterLevel = 3600.0f;
 
-            crownSheetNormalizedWaterLevel = 0.75f;
+            crownSheetNormalizedWaterLevel = 0.65f;
             crownSheetTempSmoothTime = 60.0f;
             crownSheetOverheatTemp = 600.0f;
             minimumExplosionPressure = 5.0f;
@@ -118,12 +123,12 @@ namespace CCL.Types.Proxies.Simulation.Steam
             spawnPressure = 1.0f;
             spawnWaterLevel = 13000.0f;
 
-            crownSheetNormalizedWaterLevel = 0.75f;
+            crownSheetNormalizedWaterLevel = 0.6f;
             crownSheetTempSmoothTime = 60.0f;
             crownSheetOverheatTemp = 600.0f;
             minimumExplosionPressure = 5.0f;
             explosionPressureThreshold = ExplosionCurve;
-            steamOutletNormalizedWaterLevel = 0.95f;
+            steamOutletNormalizedWaterLevel = 0.98f;
         }
 
         #endregion

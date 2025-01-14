@@ -35,6 +35,9 @@ namespace CCL.Importer.Proxies.Simulation
 
             CreateMap<FuseControllerDefinitionProxy, FuseControllerDefinition>().AutoCacheAndMap();
             CreateMap<LocoFuseBoxReferenceProxy, LocoFuseBoxReference>().AutoCacheAndMap();
+
+            CreateMap<SmoothedOutputDefinitionProxy, SmoothedOutputDefinition>().AutoCacheAndMap();
+            CreateMap<WaterDetectorDefinitionProxy, WaterDetectorDefinition>().AutoCacheAndMap();
         }
 
         private static void AddDrivingForce(TractionDefinition traction)
