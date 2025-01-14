@@ -8,15 +8,19 @@ namespace CCL.Types.HUD
     {
         public enum BaseHUD
         {
-            DE2,
-            DE6,
-            DM3,
-            DH4,
-            S060,
-            S282,
-            BE2,
-            Handcar,
-            Custom
+            DE2         = 10,
+            DE6         = 40,
+            DH4         = 50,
+            DM3         = 60,
+
+            S060        = 25,
+            S282        = 20,
+
+            BE2         = 70,
+            DM1U        = 35,
+            Handcar     = 700,
+
+            Custom      = 1000
         }
 
         [Tooltip("The HUD layout this car should use")]

@@ -14,24 +14,28 @@ namespace CCL.Importer
     internal static class CatalogGenerator
     {
         public static List<CatalogPage> PageInfos = new();
-        public static List<StaticPageTemplatePaper> NewCatalogPages = new();
-        public static Dictionary<string, Dictionary<string, float>> NotSpawnChances = new();
+        public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
+        public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
+        private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
+        private static VehicleCatalogPageTemplatePaper PageH1 { get; set; } = null!;
+        private static Transform TransformDE2 { get; set; } = null!;
+        private static Transform TransformH1 { get; set; } = null!;
 
-        private static Transform PageDE2 { get; set; } = null!;
-        private static Transform PageH1 { get; set; } = null!;
-
-        private static System.Globalization.NumberFormatInfo CurrencyFormat = new() { CurrencySymbol = "$" };
-
-        public static void GeneratePages(StaticPagesRender original)
+        public static void GeneratePages(VehicleCatalogRender original)
         {
-            PageDE2 = original.staticPages[1].transform;
-            PageH1 = original.staticPages[10].transform;
+            PageDE2 = original.vehiclePages[0];
+            PageH1 = original.vehiclePages[9];
+            TransformDE2 = PageDE2.transform;
+            TransformH1 = PageH1.transform;
 
             NewCatalogPages.Clear();
 
             foreach (var item in PageInfos)
             {
                 var result = ProcessPage(item);
+
+                if (result == null) continue;
+
                 result.transform.parent = original.transform;
                 result.transform.localPosition = Vector3.zero;
                 result.transform.localRotation = Quaternion.identity;
@@ -41,27 +45,41 @@ namespace CCL.Importer
             ClearCache();
         }
 
-        private static StaticPageTemplatePaper ProcessPage(CatalogPage layout)
+        private static VehicleCatalogPageTemplatePaper? ProcessPage(CatalogPage layout)
         {
-            CCLPlugin.Log($"Generating catalog page '{layout.PageName}'");
+            if (string.IsNullOrEmpty(layout.CarLiveryId))
+            {
+                CCLPlugin.Error($"Catalog page '{layout.PageName}' has no livery set, skipping.");
+                return null;
+            }
 
-            var page = ModelProcessor.CreateModifiablePrefab(PageDE2.gameObject).transform;
+            if (!DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery))
+            {
+                CCLPlugin.Error($"Failed to find livery '{layout.CarLiveryId}' on catalog page '{layout.PageName}', skipping.");
+                return null;
+            }
+
+            CCLPlugin.Log($"Generating catalog page '{layout.PageName}'...");
+
+            var page = ModelProcessor.CreateModifiablePrefab(TransformDE2.gameObject).transform;
             page.gameObject.SetActive(true);
+            var paper = page.GetComponent<VehicleCatalogPageTemplatePaper>();
+            paper.carLivery = livery;
 
-            ProcessHeader(page, layout);
+            ProcessHeader(page, paper, layout);
             ProcessRoles(page, layout);
             ProcessDiagram(page, layout);
             ProcessTechList(page, layout);
             ProcessAllScoreLists(page, layout);
 
-            return page.GetComponent<StaticPageTemplatePaper>();
+            return paper;
         }
 
-        private static void ProcessHeader(Transform page, CatalogPage layout)
+        private static void ProcessHeader(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
         {
             Paths.GetImage(page, Paths.PageColor).color = layout.HeaderColour;
-            Paths.GetText(page, Paths.PageName).text = layout.PageName;
-            Paths.GetText(page, Paths.Units).text = layout.ConsistUnits;
+            Paths.GetText(page, Paths.PageName).SetTextAndUpdate(layout.PageName);
+            Paths.GetText(page, Paths.Units).SetTextAndUpdate(layout.ConsistUnits);
 
             if (string.IsNullOrEmpty(layout.Nickname))
             {
@@ -71,45 +89,53 @@ namespace CCL.Importer
             {
                 var nick = Paths.GetText(page, Paths.Nickname);
                 nick.gameObject.SetActive(true);
-                nick.text = layout.Nickname;
+                nick.SetTextAndUpdate(layout.Nickname);
             }
 
             Paths.GetImage(page, Paths.Icon).sprite = layout.Icon;
 
-            ProcessSpawnLocations(page.GetComponentInChildren<LocoSpawnRateRenderer>(), layout);
+            ProcessSpawnLocations(page.Find(Paths.Locations), layout);
 
             #region Licenses
 
-            if (layout.UnlockedByGarage)
-            {
-                page.Find(Paths.GarageIcon).gameObject.SetActive(true);
-                page.Find(Paths.LicenseContainer + "1" + Paths.LicenseLock).gameObject.SetActive(true);
+            //if (layout.UnlockedByGarage)
+            //{
+            //    page.Find(Paths.GarageIcon).gameObject.SetActive(true);
+            //    page.Find(Paths.LicenseContainer + "1" + Paths.LicenseLock).gameObject.SetActive(true);
 
-                var text = Paths.GetText(page, Paths.LicenseContainer + "1" + Paths.LicenseValue);
-                text.gameObject.SetActive(true);
-                text.text = layout.GaragePrice.ToString("C0", CurrencyFormat);
+            //    var text = Paths.GetText(page, Paths.LicenseContainer + "1" + Paths.LicenseValue);
+            //    text.gameObject.SetActive(true);
+            //    text.SetTextAndUpdate(FormatPrice(layout.GaragePrice));
 
-                page.Find(Paths.License1).gameObject.SetActive(false);
-                page.Find(Paths.License2).gameObject.SetActive(false);
-                page.Find(Paths.License3).gameObject.SetActive(false);
+            //    page.Find(Paths.License1).gameObject.SetActive(false);
+            //    page.Find(Paths.License2).gameObject.SetActive(false);
+            //    page.Find(Paths.License3).gameObject.SetActive(false);
 
-                page.Find(Paths.LicenseContainer + "2" + Paths.LicenseLock).gameObject.SetActive(false);
-                page.Find(Paths.LicenseContainer + "2" + Paths.LicenseValue).gameObject.SetActive(false);
-                page.Find(Paths.LicenseContainer + "3" + Paths.LicenseLock).gameObject.SetActive(false);
-                page.Find(Paths.LicenseContainer + "3" + Paths.LicenseValue).gameObject.SetActive(false);
-            }
-            else
-            {
-                ProcessLicense(page, 1, layout.License1);
-                ProcessLicense(page, 2, layout.License2);
-                ProcessLicense(page, 3, layout.License3);
-            }
+            //    page.Find(Paths.LicenseContainer + "2" + Paths.LicenseLock).gameObject.SetActive(false);
+            //    page.Find(Paths.LicenseContainer + "2" + Paths.LicenseValue).gameObject.SetActive(false);
+            //    page.Find(Paths.LicenseContainer + "3" + Paths.LicenseLock).gameObject.SetActive(false);
+            //    page.Find(Paths.LicenseContainer + "3" + Paths.LicenseValue).gameObject.SetActive(false);
+            //}
+            //else
+            //{
+            //    ProcessLicense(page, 1, layout.License1);
+            //    ProcessLicense(page, 2, layout.License2);
+            //    ProcessLicense(page, 3, layout.License3);
+            //}
+
+            //if (!layout.UnlockedByGarage)
+            //{
+            //    paper.garage.icon.gameObject.SetActive(false);
+            //    paper.garage.icon = null;
+            //    paper.garage.price.gameObject.SetActive(false);
+            //    paper.garage.price = null;
+            //}
 
             if (!string.IsNullOrEmpty(layout.ProductionYears))
             {
                 var text = Paths.GetText(page, Paths.ProductionYears);
                 text.gameObject.SetActive(true);
-                text.text = layout.ProductionYears;
+                text.SetTextAndUpdate(layout.ProductionYears);
             }
             else
             {
@@ -118,18 +144,26 @@ namespace CCL.Importer
 
             #endregion
 
-            if (layout.SummonableByRemote)
-            {
-                page.Find(Paths.Summonable).gameObject.SetActive(true);
-                page.Find(Paths.SummonIcon).gameObject.SetActive(true);
-                var text = Paths.GetText(page, Paths.SummonPrice);
-                text.gameObject.SetActive(true);
-                text.text = layout.SummonPrice.ToString("C0", CurrencyFormat);
-            }
-            else
-            {
-                page.Find(Paths.Summonable).gameObject.SetActive(false);
-            }
+            //if (layout.SummonableByRemote)
+            //{
+            //    page.Find(Paths.Summonable).gameObject.SetActive(true);
+            //    page.Find(Paths.SummonIcon).gameObject.SetActive(true);
+            //    var text = Paths.GetText(page, Paths.SummonPrice);
+            //    text.gameObject.SetActive(true);
+            //    text.SetTextAndUpdate(FormatPrice(layout.SummonPrice));
+            //}
+            //else
+            //{
+            //    page.Find(Paths.Summonable).gameObject.SetActive(false);
+            //}
+
+            //if (!layout.SummonableByRemote)
+            //{
+            //    paper.summon.icon.gameObject.SetActive(false);
+            //    paper.summon.icon = null;
+            //    paper.summon.price.gameObject.SetActive(false);
+            //    paper.summon.price = null;
+            //}
 
             #region Load Ratings
 
@@ -152,35 +186,51 @@ namespace CCL.Importer
             #endregion
         }
 
-        private static void ProcessSpawnLocations(LocoSpawnRateRenderer spawner, CatalogPage layout)
+        private static void ProcessSpawnLocations(Transform locations, CatalogPage layout)
         {
-            // Disable spawn bar in case there's no ID defined,
-            // or car ID doesn't actually match anything.
-            if (string.IsNullOrEmpty(layout.CarTypeId) || !DV.Globals.G.Types.TryGetCarType(layout.CarTypeId, out var cartype))
+            LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
+
+            // Cache the children so they can be deleted without causing loop issues.
+            List<GameObject> children = new();
+
+            for (int i = 0; i < spawner.transform.childCount; i++)
             {
-                var temp = Object.Instantiate(PageH1.GetComponentInChildren<LocoSpawnRateRenderer>(), spawner.transform.parent);
-                temp.name = spawner.name;
-                Object.DestroyImmediate(spawner.gameObject);
+                children.Add(spawner.transform.GetChild(i).gameObject);
+            }
 
-                if (!string.IsNullOrEmpty(layout.CarTypeId))
+            foreach (var item in children)
+            {
+                if (item.name != "YearPriceContainer")
                 {
-                    CCLPlugin.Error($"Missing car type '{layout.CarTypeId}'!");
+                    Object.DestroyImmediate(item);
                 }
+            }
 
+            // If unlocked by a garage, don't show spawn bar.
+            if (layout.UnlockedByGarage)
+            {
+                Object.DestroyImmediate(spawner);
+                var rect = (RectTransform)locations.GetChild(0);
+                rect.sizeDelta = Vector2.zero;
+                rect.GetComponent<Image>().enabled = false;
                 return;
             }
 
-            spawner.loco = cartype;
+            DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery);
+            var og = PageDE2.GetComponentInChildren<LocoSpawnRateRenderer>();
+            spawner.loco = livery.parentType;
+            spawner.spawnRateIndicatorPrefab = og.spawnRateIndicatorPrefab;
+            spawner.stationData = og.stationData;
 
             foreach (var item in spawner.stationData.stationsData)
             {
-                if (NotSpawnChances.TryGetValue(item.id, out var chances))
+                if (SpawnChances.TryGetValue(item.id, out var chances))
                 {
                     // Get the chance for this ID.
                     // Need to invert since it's storing the chance to NOT spawn. Math.
-                    if (chances.TryGetValue(layout.CarTypeId, out var chance))
+                    if (chances.TryGetValue(layout.CarLiveryId, out var chance))
                     {
-                        item.locoSpawnChances.Add(new(cartype, 1.0f - chance));
+                        item.locoSpawnChances.Add(new(livery.parentType, chance));
                     }
                 }
             }
@@ -212,12 +262,12 @@ namespace CCL.Importer
                     return;
                 }
 
-                licensePrice = jobLicense.price.ToString("C0", CurrencyFormat);
+                licensePrice = FormatPrice(jobLicense.price);
                 licenseIcon = jobLicense.icon;
             }
             else
             {
-                licensePrice = generalLicense.price.ToString("C0", CurrencyFormat);
+                licensePrice = FormatPrice(generalLicense.price);
                 licenseIcon = generalLicense.icon;
             }
 
@@ -225,7 +275,7 @@ namespace CCL.Importer
             text.gameObject.SetActive(true);
             icon.gameObject.SetActive(true);
 
-            text.text = licensePrice;
+            text.SetTextAndUpdate(licensePrice);
             icon.sprite = licenseIcon;
         }
 
@@ -256,7 +306,7 @@ namespace CCL.Importer
                     throw new System.ArgumentOutOfRangeException(nameof(rating.Rating));
             }
 
-            Paths.GetText(root, Paths.LoadRatings.Tonnage).text = $"{rating.Tonnage}t";
+            Paths.GetLocalizedNumber(root, Paths.LoadRatings.Tonnage).value = rating.Tonnage;
         }
 
         private static void ProcessRoles(Transform page, CatalogPage layout)
@@ -322,21 +372,21 @@ namespace CCL.Importer
             root.Find(Paths.Diagrams.BufferL).gameObject.SetActive(extras.HasFrontBumper);
             root.Find(Paths.Diagrams.BufferR).gameObject.SetActive(extras.HasRearBumper);
 
-            Paths.GetText(root, Paths.Diagrams.XText).text = $"{extras.Length} mm";
-            Paths.GetText(root, Paths.Diagrams.YText).text = $"{extras.Height} mm";
-            Paths.GetText(root, Paths.Diagrams.ZText).text = $"{extras.Width} mm";
+            Paths.GetText(root, Paths.Diagrams.XText).SetTextAndUpdate($"{extras.Length} mm");
+            Paths.GetText(root, Paths.Diagrams.YText).SetTextAndUpdate($"{extras.Height} mm");
+            Paths.GetText(root, Paths.Diagrams.ZText).SetTextAndUpdate($"{extras.Width} mm");
 
-            var cost = Paths.GetText(root, Paths.Diagrams.Price);
-            cost.text = extras.TotalCost.ToString("C0", CurrencyFormat);
-            cost.gameObject.SetActive(extras.TotalCost > 0);
+            //var cost = Paths.GetText(root, Paths.Diagrams.Price);
+            //cost.SetTextAndUpdate(FormatPrice(extras.TotalCost));
+            //cost.gameObject.SetActive(extras.TotalCost > 0);
 
-            var mass = Paths.GetText(root, Paths.Diagrams.MassFull);
-            mass.text = $"{extras.MassFull}t";
-            mass.transform.parent.gameObject.SetActive(extras.MassFull > 0);
+            //var mass = Paths.GetText(root, Paths.Diagrams.MassFull);
+            //mass.SetTextAndUpdate($"{extras.MassFull}t");
+            //mass.transform.parent.gameObject.SetActive(extras.MassFull > 0);
 
-            mass = Paths.GetText(root, Paths.Diagrams.MassEmpty);
-            mass.text = $"{extras.MassEmpty}t";
-            mass.transform.parent.gameObject.SetActive(extras.MassEmpty > 0);
+            //mass = Paths.GetText(root, Paths.Diagrams.MassEmpty);
+            //mass.SetTextAndUpdate($"{extras.MassEmpty}t");
+            //mass.transform.parent.gameObject.SetActive(extras.MassEmpty > 0);
         }
 
         private static void ProcessDiagramIcons(Transform root, Transform layout)
@@ -507,12 +557,16 @@ namespace CCL.Importer
                     return;
             }
 
-            var desc = Paths.GetText(slot, Paths.TechItems.TechnologyDesc);
-            desc.gameObject.SetActive(true);
-            desc.text = tech.Description;
-            var type = Paths.GetText(slot, Paths.TechItems.TechnologyType);
+            if (tech.Description.Entries.Length > 0)
+            {
+                var desc = Paths.GetLocalizeSequence(slot, Paths.TechItems.TechnologyDesc);
+                desc.gameObject.SetActive(true);
+                desc.sequence = tech.Description.ToSequence();
+            }
+
+            var type = Paths.GetLocalize(slot, Paths.TechItems.TechnologyType);
             type.gameObject.SetActive(true);
-            type.text = tech.Type;
+            type.SetKeyAndUpdate(tech.Type);
         }
 
         #region Score Lists
@@ -555,7 +609,7 @@ namespace CCL.Importer
                 child.gameObject.SetActive(false);
             }
 
-            TMP_Text text = Paths.GetText(root, Paths.ScoreLists.TotalScore);
+            var total = Paths.GetLocalizedNumber(root, Paths.ScoreLists.TotalScore);
 
             switch (list.TotalScoreDisplay)
             {
@@ -576,16 +630,18 @@ namespace CCL.Importer
                             break;
                     }
 
-                    text.text = list.FormattedTotal;
+                    total.value = list.Total;
                     break;
                 case TotalScoreDisplay.NotApplicable:
                     root.Find(Paths.ScoreLists.BgDisqualified).gameObject.SetActive(true);
-                    text.text = "-";
+                    Object.Destroy(total);
+                    Paths.GetText(root, Paths.ScoreLists.TotalScore).SetTextAndUpdate("-");
                     break;
                 default:
                     return;
             }
-            text.gameObject.SetActive(true);
+
+            total.gameObject.SetActive(true);
         }
 
         private static void ProcessScoreItem(Transform item, CatalogScore score)
@@ -638,6 +694,11 @@ namespace CCL.Importer
             VehicleType.Slug => "vc/vehicletype/slug",
             VehicleType.Draisine => "vc/vehicletype/draisine",
             VehicleType.Car => "vc/vehicletype/car",
+            VehicleType.Booster => "vc/vehicletype/booster",
+            VehicleType.Railcar => "vc/vehicletype/railcar",
+            VehicleType.ControlCar => "vc/vehicletype/control_car",
+            VehicleType.Support => "vc/vehicletype/support",
+            VehicleType.Special => "vc/vehicletype/special",
             _ => throw new System.ArgumentOutOfRangeException(nameof(type)),
         };
 
@@ -650,14 +711,24 @@ namespace CCL.Importer
             VehicleRole.FuelSupply => "vc/role/fuel_supply",
             VehicleRole.CrewTransport => "vc/role/crew_transport",
             VehicleRole.CrewSupport => "vc/role/crew_support",
+            VehicleRole.PassengerTransport => "vc/role/passenger_transport",
+            VehicleRole.FreightTransport => "vc/role/freight",
+            VehicleRole.UtilityTransport => "vc/role/utility",
+            VehicleRole.TrackMaintenance => "vc/role/track_maintenance",
             _ => throw new System.ArgumentOutOfRangeException(nameof(role)),
         };
+
+        private static string FormatPrice(float price) => "$" + price.ToString("N0", LocalizationAPI.CC);
 
         private static void ClearCache()
         {
             CCLPlugin.Log("Cleaning up...");
             PageDE2 = null!;
+            PageDE2 = null!;
             PageH1 = null!;
+            TransformDE2 = null!;
+            TransformH1 = null!;
+            SpawnChances.Clear();
             Icons.ClearCache();
         }
 
@@ -798,6 +869,10 @@ namespace CCL.Importer
 
             public static Localize GetLocalize(Transform root, string path) => root.Find(path).GetComponent<Localize>();
 
+            public static LocalizedNumber GetLocalizedNumber(Transform root, string path) => root.Find(path).GetComponent<LocalizedNumber>();
+
+            public static LocalizeSequence GetLocalizeSequence(Transform root, string path) => root.Find(path).GetComponent<LocalizeSequence>();
+
             public static Image GetImage(Transform root, string path) => root.Find(path).GetComponent<Image>();
         }
 
@@ -829,52 +904,52 @@ namespace CCL.Importer
             private static RectTransform? s_bogie;
 
             public static Transform Generic => Extensions.GetCached(ref s_generic,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.Generic)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.Generic)));
             public static Transform ClosedCab => Extensions.GetCached(ref s_closedCab,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ClosedCab)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ClosedCab)));
             public static Transform OpenCab => Extensions.GetCached(ref s_openCab,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.OpenCab)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.OpenCab)));
             public static Transform CrewCompartment => Extensions.GetCached(ref s_crewCompartment,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewCompartment)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewCompartment)));
             public static Transform CompressedAirBrakeSystem => Extensions.GetCached(ref s_compressedAirBrakeSystem,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CompressedAirBrakeSystem)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CompressedAirBrakeSystem)));
             public static Transform DirectBrakeSystem => Extensions.GetCached(ref s_directBrakeSystem,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DirectBrakeSystem)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DirectBrakeSystem)));
             public static Transform DynamicBrakeSystem => Extensions.GetCached(ref s_dynamicBrakeSystem,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DynamicBrakeSystem)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.DynamicBrakeSystem)));
             public static Transform ElectricPowerSupplyAndTransmission => Extensions.GetCached(ref s_electricPowerSupplyAndTransmission,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ElectricPowerSupplyAndTransmission)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ElectricPowerSupplyAndTransmission)));
             public static Transform ExternalControlInterface => Extensions.GetCached(ref s_externalControlInterface,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ExternalControlInterface)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.ExternalControlInterface)));
             public static Transform HeatManagement => Extensions.GetCached(ref s_heatManagement,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HeatManagement)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HeatManagement)));
             public static Transform HydraulicTransmission => Extensions.GetCached(ref s_hydraulicTransmission,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HydraulicTransmission)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.HydraulicTransmission)));
             public static Transform InternalCombustionEngine => Extensions.GetCached(ref s_internalCombustionEngine,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.InternalCombustionEngine)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.InternalCombustionEngine)));
             public static Transform MechanicalTransmission => Extensions.GetCached(ref s_mechanicalTransmission,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.MechanicalTransmission)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.MechanicalTransmission)));
             public static Transform PassengerCompartment => Extensions.GetCached(ref s_passengerCompartment,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.PassengerCompartment)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.PassengerCompartment)));
             public static Transform SpecializedEquipment => Extensions.GetCached(ref s_specializedEquipment,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SpecializedEquipment)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SpecializedEquipment)));
             public static Transform SteamEngine => Extensions.GetCached(ref s_steamEngine,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SteamEngine)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.SteamEngine)));
             public static Transform UnitEffect => Extensions.GetCached(ref s_unitEffect,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.UnitEffect)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.UnitEffect)));
             public static Transform CrewDelivery => Extensions.GetCached(ref s_crewDelivery,
-                () => PageDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewDelivery)));
+                () => TransformDE2.Find(Paths.Combine(Paths.TechnologyItem, Paths.TechItems.CrewDelivery)));
 
             public static Transform Wheel => Extensions.GetCached(ref s_wheel,
-                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Wheel")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Wheel")));
             public static Transform PoweredWheel => Extensions.GetCached(ref s_poweredWheel,
-                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x1/Wheel")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x1/Wheel")));
             public static Transform PivotShort => Extensions.GetCached(ref s_pivotShort,
-                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Bogie (1)")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DM1P, "VCBogie_1x0/Bogie (1)")));
             public static Transform PivotLong => Extensions.GetCached(ref s_pivotLong,
-                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie (1)")));
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie (1)")));
             public static RectTransform Bogie => Extensions.GetCached(ref s_bogie,
-                () => PageDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie")).GetComponent<RectTransform>());
+                () => TransformDE2.Find(Paths.Combine(Paths.DiagramParent, Paths.Diagrams.DH4, "VCBogie_2x2/Bogie")).GetComponent<RectTransform>());
 
             public static Transform GetIcon(TechIcon icon) => icon switch
             {

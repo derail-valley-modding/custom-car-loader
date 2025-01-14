@@ -40,10 +40,10 @@ namespace CCL.Importer.Patches
             if (!TryToVanillaStationId(__instance.name, out string id)) return;
 
             // Get the station chances instead of spawner chances.
-            if (!CatalogGenerator.NotSpawnChances.TryGetValue(id, out var chances))
+            if (!CatalogGenerator.SpawnChances.TryGetValue(id, out var chances))
             {
                 chances = new();
-                CatalogGenerator.NotSpawnChances.Add(id, chances);
+                CatalogGenerator.SpawnChances.Add(id, chances);
             }
 
             // Get how many spawn groups each car type is in.
@@ -75,8 +75,8 @@ namespace CCL.Importer.Patches
                     chances.Add(count.Key, 0);
                 }
 
-                // Apply the chance to NOT spawn.
-                chances[count.Key] *= 1.0f - ((float)count.Value / __instance.locoTypeGroupsToSpawn.Count);
+                // Actual chance is the maximum of all chances at each spawner of the station.
+                chances[count.Key] = Mathf.Max(chances[count.Key], (float)count.Value / __instance.locoTypeGroupsToSpawn.Count);
             }
         }
 
