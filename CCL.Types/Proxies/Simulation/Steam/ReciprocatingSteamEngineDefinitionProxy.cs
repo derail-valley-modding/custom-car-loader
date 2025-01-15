@@ -98,7 +98,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public void ApplyS282Defaults()
         {
             numCylinders = 2;
-            cylinderBore = 0.533f;
+            cylinderBore = 0.61f;
             pistonStroke = 0.711f;
             minCutoff = 0.05f;
             maxCutoff = 0.9f;
