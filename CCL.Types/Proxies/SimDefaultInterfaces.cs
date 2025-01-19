@@ -34,4 +34,9 @@
     {
         void ApplyS282Defaults();
     }
+
+    public interface IDM1UDefaults
+    {
+        void ApplyDM1UDefaults();
+    }
 }

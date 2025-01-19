@@ -6,10 +6,12 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDE2Defaults, IDE6Defaults, IBE2Defaults
+    public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
+        IDE2Defaults, IDE6Defaults, IBE2Defaults, IDM3Defaults, IDH4Defaults, IDM1UDefaults
     {
         public float heatCapacity = 1f;
         public float overheatingTemperatureThreshold = 120f;
+        public float maxTemperature = 300f;
 
         [Delayed]
         public int inputCount = 1;
@@ -49,22 +51,47 @@ namespace CCL.Types.Proxies.Simulation
         }
 
         #region Defaults
+
         public void ApplyDE2Defaults()
         {
             heatCapacity = 1000.0f;
             overheatingTemperatureThreshold = 120.0f;
+            maxTemperature = 300f;
         }
 
         public void ApplyDE6Defaults()
         {
             heatCapacity = 15000.0f;
             overheatingTemperatureThreshold = 120.0f;
+            maxTemperature = 300f;
         }
 
         public void ApplyBE2Defaults()
         {
             heatCapacity = 500.0f;
             overheatingTemperatureThreshold = 120.0f;
+            maxTemperature = 300f;
+        }
+
+        public void ApplyDM3Defaults()
+        {
+            heatCapacity = 100000.0f;
+            overheatingTemperatureThreshold = 120.0f;
+            maxTemperature = 300f;
+        }
+
+        public void ApplyDH4Defaults()
+        {
+            heatCapacity = 500000.0f;
+            overheatingTemperatureThreshold = 120.0f;
+            maxTemperature = 300f;
+        }
+
+        public void ApplyDM1UDefaults()
+        {
+            heatCapacity = 250000.0f;
+            overheatingTemperatureThreshold = 120.0f;
+            maxTemperature = 300f;
         }
 
         #endregion
