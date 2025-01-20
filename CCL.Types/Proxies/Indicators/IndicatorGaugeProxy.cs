@@ -51,6 +51,7 @@ namespace CCL.Types.Proxies.Indicators
 
     public class IndicatorGaugeLaggingProxy : IndicatorGaugeProxy
     {
+        public float updateThreshold = 0.001f;
         public float smoothTime = 0.5f;
 
         [NonSerialized]

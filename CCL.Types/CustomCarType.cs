@@ -17,6 +17,16 @@ namespace CCL.Types
         Slug
     }
 
+    public enum UnusedCarDeletePreventionMode
+    {
+        None = 0,
+        TimeBasedCarVisit = 10,
+        TimeBasedCarVisitPropagatedToFrontCar = 11,
+        TimeBasedCarVisitPropagatedToRearCar = 12,
+        TimeBasedCarVisitPropagatedToFrontAndRearCar = 13,
+        OnlyManualDeletePossible = 20
+    }
+
     [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
     public class CustomCarType : ScriptableObject, IAssetLoadCallback
     {
@@ -259,15 +269,5 @@ namespace CCL.Types
     public interface IAssetLoadCallback
     {
         void AfterAssetLoad(AssetBundle bundle);
-    }
-
-    public enum UnusedCarDeletePreventionMode
-    {
-        None = 0,
-        TimeBasedCarVisit = 10,
-        TimeBasedCarVisitPropagatedToFrontCar = 11,
-        TimeBasedCarVisitPropagatedToRearCar = 12,
-        TimeBasedCarVisitPropagatedToFrontAndRearCar = 13,
-        OnlyManualDeletePossible = 20
     }
 }
