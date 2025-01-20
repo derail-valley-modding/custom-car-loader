@@ -97,6 +97,7 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             horn.powerFuseId = FullFuseId(fusebox, 0);
+            batteryController.powerFuseId = FullFuseId(fusebox, 0);
             sander.powerFuseId = FullFuseId(fusebox, 0);
             horn.powerFuseId = FullFuseId(fusebox, 0);
             tm.powerFuseId = FullFuseId(fusebox, 1);
@@ -140,7 +141,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectEmptyPortRef(tm, "CONFIGURATION_OVERRIDE");
 
             ConnectPortRef(tmRpm, "TM_RPM", tm, "MOTOR_RPM");
-            ConnectPortRef(voltRegulator, "TM_VOLTAGE", tm, "APPLIED_VOLTAGE");
+            ConnectPortRef(voltRegulator, "OUTPUT_VOLTAGE", tm, "APPLIED_VOLTAGE");
 
             ConnectPortRef(waterDetector, "STATE_EXT_IN", tm, "ENVIRONMENT_WATER_STATE");
 

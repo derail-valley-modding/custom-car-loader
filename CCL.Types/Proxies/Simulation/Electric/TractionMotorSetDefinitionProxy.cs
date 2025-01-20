@@ -53,6 +53,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         {
             new PortDefinition(DVPortType.OUT, DVPortValueType.TORQUE, "TORQUE_OUT"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OHMS, "EFFECTIVE_RESISTANCE"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OHMS, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "TOTAL_AMPS"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "TOTAL_AMPS_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "AMPS_PER_TM"),
@@ -61,7 +62,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "WORKING_TRACTION_MOTORS"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.HEAT_RATE, "HEAT_OUT"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CONTACTOR_CHANGE"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CURRENT_DROP_REQUEST"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "CURRENT_LIMIT_REQUEST"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "DYNAMIC_BRAKE_ACTIVE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "OVERHEAT_POWER_FUSE_OFF"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "TMS_STATE"),
@@ -84,7 +85,8 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortReferenceDefinition(DVPortValueType.CONTROL, "CONFIGURATION_OVERRIDE", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "MOTOR_RPM", false),
             new PortReferenceDefinition(DVPortValueType.VOLTS, "APPLIED_VOLTAGE", false),
-            new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TM_TEMPERATURE", false)
+            new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TM_TEMPERATURE", false),
+            new PortReferenceDefinition(DVPortValueType.STATE, "ENVIRONMENT_WATER_STATE", false)
         };
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
