@@ -427,7 +427,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
             {
-                portId = Utilities.EmptyPort,
+                portId = string.Empty,
                 portReferenceId = FullPortId(refComp, refId)
             });
         }

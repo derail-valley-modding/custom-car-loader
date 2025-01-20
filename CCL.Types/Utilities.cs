@@ -5,8 +5,6 @@ namespace CCL.Types
 {
     public static class Utilities
     {
-        public const string EmptyPort = "-EMPTY-";
-
         public static bool IsVanillaLicense(string id)
         {
             return IdV2.GeneralLicenses.Any(x => x == id) || IdV2.JobLicenses.Any(x => x == id);
