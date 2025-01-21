@@ -267,7 +267,7 @@ namespace CCL.Creator.Wizards.SimSetup
                     ConnectPortRef(steamEngine, "EXHAUST_TEMPERATURE", boiler, "FEEDWATER_TEMPERATURE");
                     break;
                 default:
-                    ConnectPortRef("-EMPTY-", FullPortId(boiler, "FEEDWATER_TEMPERATURE"));
+                    ConnectEmptyPortRef(boiler, "FEEDWATER_TEMPERATURE");
                     break;
             }
             ConnectPortRef(steamCalc, "OUT", boiler, "STEAM_CONSUMPTION");

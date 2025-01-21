@@ -49,6 +49,10 @@ namespace CCL.Creator.Wizards.SimSetup
             pwrConsumCalc.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_CONSUMPTION_TOTAL");
             pwrConsumCalc.transform.parent = batteryController.transform;
 
+            var waterDetector = CreateSimComponent<WaterDetectorDefinitionProxy>("waterDetector");
+            var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
+            waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
+
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
@@ -57,10 +61,7 @@ namespace CCL.Creator.Wizards.SimSetup
             tmRpm.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_RATIO");
             tmRpm.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "TM_RPM");
 
-            var tmController = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("tmController");
-            tmController.aReader = new PortReferenceDefinition(DVPortValueType.VOLTS, "BATTERY_VOLTAGE");
-            tmController.bReader = new PortReferenceDefinition(DVPortValueType.CONTROL, "THROTTLE");
-            tmController.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "TM_VOLTAGE");
+            var voltRegulator = CreateSimComponent<VoltageRegulatorDefinitionProxy>("voltageRegulator");
 
             var tm = CreateSimComponent<TractionMotorSetDefinitionProxy>("tm");
             var deadTMs = CreateSibling<DeadTractionMotorsControllerProxy>(tm);
@@ -95,11 +96,13 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("TM_POWER", false),
             };
 
-            sander.powerFuseId = FullPortId(fusebox, "ELECTRICS_MAIN");
-            batteryController.powerFuseId = FullPortId(fusebox, "ELECTRICS_MAIN");
-            tm.powerFuseId = FullPortId(fusebox, "TM_POWER");
-            deadTMs.tmFuseId = FullPortId(fusebox, "TM_POWER");
-            compressor.powerFuseId = FullPortId(fusebox, "ELECTRICS_MAIN");
+            horn.powerFuseId = FullFuseId(fusebox, 0);
+            batteryController.powerFuseId = FullFuseId(fusebox, 0);
+            sander.powerFuseId = FullFuseId(fusebox, 0);
+            horn.powerFuseId = FullFuseId(fusebox, 0);
+            tm.powerFuseId = FullFuseId(fusebox, 1);
+            deadTMs.tmFuseId = FullFuseId(fusebox, 1);
+            compressor.powerFuseId = FullFuseId(fusebox, 0);
 
             // Damage.
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
@@ -128,20 +131,26 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", tmRpm, "WHEEL_RPM");
             ConnectPortRef(transmission, "GEAR_RATIO", tmRpm, "GEAR_RATIO");
 
-            ConnectPortRef(batteryController, "VOLTAGE", tmController, "BATTERY_VOLTAGE");
-            ConnectPortRef(thrtCurv, "OUT", tmController, "THROTTLE");
+            ConnectPortRef(thrtCurv, "OUT", voltRegulator, "THROTTLE");
+            ConnectPortRef(batteryController, "VOLTAGE", voltRegulator, "SUPPLY_VOLTAGE");
+            ConnectPortRef(tm, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE", voltRegulator, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE");
 
             ConnectPortRef(throttle, "EXT_IN", tm, "THROTTLE");
             ConnectPortRef(reverser, "REVERSER", tm, "REVERSER");
+            ConnectEmptyPortRef(tm, "DYNAMIC_BRAKE");
+            ConnectEmptyPortRef(tm, "CONFIGURATION_OVERRIDE");
 
             ConnectPortRef(tmRpm, "TM_RPM", tm, "MOTOR_RPM");
-            ConnectPortRef(tmController, "TM_VOLTAGE", tm, "APPLIED_VOLTAGE");
+            ConnectPortRef(voltRegulator, "OUTPUT_VOLTAGE", tm, "APPLIED_VOLTAGE");
+
+            ConnectPortRef(waterDetector, "STATE_EXT_IN", tm, "ENVIRONMENT_WATER_STATE");
 
             ConnectPortRef(heat, "TEMPERATURE", tm, "TM_TEMPERATURE");
             ConnectPortRef(heat, "TEMPERATURE", cooler, "TEMPERATURE");
+            ConnectEmptyPortRef(cooler, "TARGET_TEMPERATURE");
 
-            ConnectPortRef(tm, "HEAT_OUT", heat, "HEAT_IN_0");
-            ConnectPortRef(cooler, "HEAT_OUT", heat, "HEAT_IN_1");
+            ConnectHeatRef(tm, "HEAT_OUT", heat, 0);
+            ConnectHeatRef(cooler, "HEAT_OUT", heat, 1);
 
             // Apply defaults.
             ApplyMethodToAll<IBE2Defaults>(s => s.ApplyBE2Defaults());

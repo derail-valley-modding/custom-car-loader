@@ -21,5 +21,12 @@ namespace CCL.Types
             target.localRotation = source.localRotation;
             target.localScale = source.localScale;
         }
+
+        public static int GetAudioPoolSize(DVTrainCarKind kind) => kind switch
+        {
+            DVTrainCarKind.Loco => 10,
+            DVTrainCarKind.Slug => 1,
+            _ => 0,
+        };
     }
 }

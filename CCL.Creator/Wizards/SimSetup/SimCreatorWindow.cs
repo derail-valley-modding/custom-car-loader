@@ -1,4 +1,5 @@
 ﻿using CCL.Creator.Utility;
+using CCL.Types;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -253,6 +254,13 @@ namespace CCL.Creator.Wizards.SimSetup
             var overrider = CreateSibling<OverridableControlProxy>(control);
             overrider.ControlType = type;
             overrider.portId = $"{idOverride}.EXT_IN";
+
+            control.saveState = type switch
+            {
+                OverridableControlType.TrainBrakeCutout => true,
+                _ => false,
+            };
+
             return control;
         }
 
@@ -366,6 +374,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
         protected string FullPortId(SimComponentDefinitionProxy component, string portId) => $"{component.ID}.{portId}";
         protected string FullFuseId(IndependentFusesDefinitionProxy fusebox, int index) => $"{fusebox.ID}.{fusebox.fuses[index].id}";
+        protected string HeatPortId(HeatReservoirDefinitionProxy heat, int index) => $"{heat.ID}.HEAT_IN_{index}";
 
         protected void ConnectPorts(string fullSourceId, string fullDestId)
         {
@@ -399,6 +408,26 @@ namespace CCL.Creator.Wizards.SimSetup
             _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
             {
                 portId = FullPortId(portComp, portId),
+                portReferenceId = FullPortId(refComp, refId)
+            });
+        }
+
+        protected void ConnectHeatRef(SimComponentDefinitionProxy portComp, string portId, HeatReservoirDefinitionProxy refComp, int index)
+        {
+            _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
+            {
+                portId = FullPortId(portComp, portId),
+                portReferenceId = HeatPortId(refComp, index)
+            });
+        }
+
+        // This may be used by as placeholder for unconnected ports, instead of needing to add a port later from scratch.
+        // A few locomotives have empty ports defined like so.
+        protected void ConnectEmptyPortRef(SimComponentDefinitionProxy refComp, string refId)
+        {
+            _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
+            {
+                portId = string.Empty,
                 portReferenceId = FullPortId(refComp, refId)
             });
         }
