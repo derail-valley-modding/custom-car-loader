@@ -1,4 +1,6 @@
-﻿namespace CCL.Types
+﻿using System;
+
+namespace CCL.Types
 {
     public static class IdV2
     {
@@ -251,5 +253,16 @@
             "Relic",
             "Relic_Rusty",
         };
+
+        public static string[] AllLicenses
+        {
+            get
+            {
+                var all = new string[GeneralLicenses.Length + JobLicenses.Length];
+                GeneralLicenses.CopyTo(all, 0);
+                JobLicenses.CopyTo(all, GeneralLicenses.Length);
+                return all;
+            }
+        }
     }
 }

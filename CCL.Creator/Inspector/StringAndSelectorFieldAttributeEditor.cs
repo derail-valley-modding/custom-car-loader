@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -81,6 +82,27 @@ namespace CCL.Creator.Inspector
         {
             return EditorGUIUtility.singleLineHeight * 2;
         }
+
+        // Easy adding of extra options to prevent duplicate code.
+        public void OnGUIWithExtraOptions(Rect position, SerializedProperty property, GUIContent label, IEnumerable<string> extraOptions)
+        {
+            var att = (StringAndSelectorFieldAttribute)attribute;
+
+            if (att.CustomAllowed)
+            {
+                var original = att.Options.ToList();
+
+                att.Options.InsertRange(att.Options.Count - 1, extraOptions);
+
+                base.OnGUI(position, property, label);
+
+                att.Options = original;
+            }
+            else
+            {
+                base.OnGUI(position, property, label);
+            }
+        }
     }
 
     // These are needed to include the extra options from the settings.
@@ -91,22 +113,7 @@ namespace CCL.Creator.Inspector
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var att = (StringAndSelectorFieldAttribute)attribute;
-
-            if (att.CustomAllowed)
-            {
-                var original = att.Options.ToList();
-
-                att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraCargos);
-
-                base.OnGUI(position, property, label);
-
-                att.Options = original;
-            }
-            else
-            {
-                base.OnGUI(position, property, label);
-            }
+            OnGUIWithExtraOptions(position, property, label, CCLEditorSettings.Settings.ExtraCargos);
         }
     }
 
@@ -115,22 +122,7 @@ namespace CCL.Creator.Inspector
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var att = (StringAndSelectorFieldAttribute)attribute;
-
-            if (att.CustomAllowed)
-            {
-                var original = att.Options.ToList();
-
-                att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraGeneralLicenses);
-
-                base.OnGUI(position, property, label);
-
-                att.Options = original;
-            }
-            else
-            {
-                base.OnGUI(position, property, label);
-            }
+            OnGUIWithExtraOptions(position, property, label, CCLEditorSettings.Settings.ExtraGeneralLicenses);
         }
     }
 
@@ -139,22 +131,7 @@ namespace CCL.Creator.Inspector
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var att = (StringAndSelectorFieldAttribute)attribute;
-
-            if (att.CustomAllowed)
-            {
-                var original = att.Options.ToList();
-
-                att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraJobLicenses);
-
-                base.OnGUI(position, property, label);
-
-                att.Options = original;
-            }
-            else
-            {
-                base.OnGUI(position, property, label);
-            }
+            OnGUIWithExtraOptions(position, property, label, CCLEditorSettings.Settings.ExtraJobLicenses);
         }
     }
 
@@ -163,47 +140,17 @@ namespace CCL.Creator.Inspector
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var att = (StringAndSelectorFieldAttribute)attribute;
-
-            if (att.CustomAllowed)
-            {
-                var original = att.Options.ToList();
-
-                att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraGeneralLicenses);
-                att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraJobLicenses);
-
-                base.OnGUI(position, property, label);
-
-                att.Options = original;
-            }
-            else
-            {
-                base.OnGUI(position, property, label);
-            }
+            OnGUIWithExtraOptions(position, property, label,
+                CCLEditorSettings.Settings.ExtraGeneralLicenses.Concat(CCLEditorSettings.Settings.ExtraJobLicenses));
         }
     }
 
-    [CustomPropertyDrawer(typeof(JobLicenseFieldAttribute), true)]
+    [CustomPropertyDrawer(typeof(PaintFieldAttribute), true)]
     internal class PaintFieldAttributeEditor : StringAndSelectorFieldAttributeEditor
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var att = (StringAndSelectorFieldAttribute)attribute;
-
-            if (att.CustomAllowed)
-            {
-                var original = att.Options.ToList();
-
-                att.Options.InsertRange(att.Options.Count - 1, CCLEditorSettings.Settings.ExtraPaints);
-
-                base.OnGUI(position, property, label);
-
-                att.Options = original;
-            }
-            else
-            {
-                base.OnGUI(position, property, label);
-            }
+            OnGUIWithExtraOptions(position, property, label, CCLEditorSettings.Settings.ExtraPaints);
         }
     }
 }
