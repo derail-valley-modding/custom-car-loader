@@ -94,13 +94,13 @@ namespace CCL.Creator.Inspector
 
                 att.Options.InsertRange(att.Options.Count - 1, extraOptions);
 
-                base.OnGUI(position, property, label);
+                OnGUI(position, property, label);
 
                 att.Options = original;
             }
             else
             {
-                base.OnGUI(position, property, label);
+                OnGUI(position, property, label);
             }
         }
     }
