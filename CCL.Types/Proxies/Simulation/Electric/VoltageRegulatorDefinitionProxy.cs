@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
     public class VoltageRegulatorDefinitionProxy : SimComponentDefinitionProxy
     {
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
-{
+        {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "OUTPUT_VOLTAGE"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.AMPS, "EXTERNAL_CURRENT_LIMIT_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "EXTERNAL_CURRENT_LIMIT_ACTIVE")
