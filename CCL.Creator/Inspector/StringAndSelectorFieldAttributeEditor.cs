@@ -15,7 +15,7 @@ namespace CCL.Creator.Inspector
 
         private int _selected = 0;
 
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        private void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label)
         {
             var att = (StringAndSelectorFieldAttribute)attribute;
 
@@ -78,6 +78,11 @@ namespace CCL.Creator.Inspector
             }
         }
 
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            OnGUIInternal(position, property, label);
+        }
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return EditorGUIUtility.singleLineHeight * 2;
@@ -94,13 +99,13 @@ namespace CCL.Creator.Inspector
 
                 att.Options.InsertRange(att.Options.Count - 1, extraOptions);
 
-                OnGUI(position, property, label);
+                OnGUIInternal(position, property, label);
 
                 att.Options = original;
             }
             else
             {
-                OnGUI(position, property, label);
+                OnGUIInternal(position, property, label);
             }
         }
     }
