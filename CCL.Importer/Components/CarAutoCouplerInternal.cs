@@ -16,6 +16,7 @@ namespace CCL.Importer.Components
         private Coroutine? _checkAutoCoupleCoro;
 
         public CouplerDirection Direction;
+        public CouplerDirection OtherDirection;
         public bool AlwaysCouple = false;
         public string[] CarKinds = new string[0];
         public string[] CarTypes = new string[0];
@@ -73,11 +74,12 @@ namespace CCL.Importer.Components
 
                 if (_coupler.IsCoupled()) break;
 
-                Coupler firstCouplerInRange = _coupler.GetFirstCouplerInRange(2.5f);
+                var firstCouplerInRange = _coupler.GetFirstCouplerInRange(AUTOCOUPLE_RANGE);
                 if (firstCouplerInRange != null && !firstCouplerInRange.IsCoupled())
                 {
-                    TrainCar car = firstCouplerInRange.train;
-                    if (!car.derailed && MeetsConditions(car.carLivery) && !(car.frontCoupler != firstCouplerInRange))
+                    var car = firstCouplerInRange.train;
+                    var otherCoupler = OtherDirection == CouplerDirection.Front ? car.frontCoupler : car.rearCoupler;
+                    if (!car.derailed && MeetsConditions(car.carLivery) && otherCoupler == firstCouplerInRange)
                     {
                         _coupler.TryCouple(true, false, AUTOCOUPLE_RANGE);
 
