@@ -1,4 +1,4 @@
-﻿using CCL.Types.Components;
+﻿using CCL.Types;
 using DV.ThingTypes;
 using System.Collections;
 using UnityEngine;
@@ -27,7 +27,7 @@ namespace CCL.Importer.Components
             var car = GetComponent<TrainCar>();
             _coupler = Direction == CouplerDirection.Front ? car.frontCoupler : car.rearCoupler;
 
-            if (_coupler == null)
+            if (!_coupler)
             {
                 Debug.LogError("CarAutoCoupler couldn't find Coupler component during init", this);
                 yield break;

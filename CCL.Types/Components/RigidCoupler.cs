@@ -2,14 +2,11 @@
 
 namespace CCL.Types.Components
 {
-    public class CarAutoCoupler : MonoBehaviour
+    public class RigidCoupler : MonoBehaviour
     {
-        [Tooltip("The coupler of this car to connect")]
         public CouplerDirection Direction;
-        [Tooltip("The coupler of the other car to connect")]
-        public CouplerDirection OtherDirection;
 
-        public bool AlwaysCouple = false;
+        public bool AlwaysRigid = false;
         [CarKindField]
         public string[] CarKinds = new string[0];
         public string[] CarTypes = new string[0];

@@ -8,6 +8,7 @@ namespace CCL.Importer.Components
         public CustomComponentReplacer()
         {
             CreateMap<CarAutoCoupler, CarAutoCouplerInternal>().AutoCacheAndMap();
+            CreateMap<RigidCoupler, RigidCouplerInternal>().AutoCacheAndMap();
         }
     }
 }
