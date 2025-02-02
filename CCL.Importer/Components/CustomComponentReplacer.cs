@@ -9,6 +9,7 @@ namespace CCL.Importer.Components
         {
             CreateMap<CarAutoCoupler, CarAutoCouplerInternal>().AutoCacheAndMap();
             CreateMap<RigidCoupler, RigidCouplerInternal>().AutoCacheAndMap();
+            CreateMap<VirtualHandbrakeOverrider, VirtualHandbrakeOverriderInternal>().AutoCacheAndMap();
         }
     }
 }

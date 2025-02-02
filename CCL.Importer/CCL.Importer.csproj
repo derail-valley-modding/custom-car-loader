@@ -40,6 +40,7 @@
 		<Reference Include="UnityEngine.UI" />
 		<Reference Include="DVLangHelper.Data" />
 		<Reference Include="DVLangHelper.Runtime" />
+		<Reference Include="DV.BrakeSystem" />
 		<Reference Include="DV.Common" />
 		<Reference Include="DV.Interaction" />
 		<Reference Include="DV.Localization" />

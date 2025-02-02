@@ -18,7 +18,7 @@ namespace CCL.Importer.Components
 
         private void Start()
         {
-            _coupler = transform.Find(Direction == CouplerDirection.Front ? "[coupler front]" : "[coupler rear]").GetComponent<Coupler>();
+            _coupler = transform.Find(Direction.IsFront() ? "[coupler front]" : "[coupler rear]").GetComponent<Coupler>();
 
             if (!_coupler)
             {

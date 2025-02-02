@@ -25,7 +25,7 @@ namespace CCL.Importer.Components
         private IEnumerator Start()
         {
             var car = GetComponent<TrainCar>();
-            _coupler = Direction == CouplerDirection.Front ? car.frontCoupler : car.rearCoupler;
+            _coupler = Direction.IsFront() ? car.frontCoupler : car.rearCoupler;
 
             if (!_coupler)
             {
@@ -78,7 +78,7 @@ namespace CCL.Importer.Components
                 if (firstCouplerInRange != null && !firstCouplerInRange.IsCoupled())
                 {
                     var car = firstCouplerInRange.train;
-                    var otherCoupler = OtherDirection == CouplerDirection.Front ? car.frontCoupler : car.rearCoupler;
+                    var otherCoupler = OtherDirection.IsFront() ? car.frontCoupler : car.rearCoupler;
                     if (!car.derailed && MeetsConditions(car.carLivery) && otherCoupler == firstCouplerInRange)
                     {
                         _coupler.TryCouple(true, false, AUTOCOUPLE_RANGE);
