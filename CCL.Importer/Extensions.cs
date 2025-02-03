@@ -236,5 +236,10 @@ namespace CCL.Importer
         {
             return ((TrainCarType)buffer).ToV2().prefab;
         }
+
+        public static bool IsFront(this CouplerDirection direction)
+        {
+            return direction == CouplerDirection.Front;
+        }
     }
 }

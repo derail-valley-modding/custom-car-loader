@@ -49,4 +49,9 @@ namespace CCL.Types
     {
         public PaintFieldAttribute(bool customAllowed = true) : base(IdV2.Paints, customAllowed) { }
     }
+
+    public class CarKindFieldAttribute : StringAndSelectorFieldAttribute
+    {
+        public CarKindFieldAttribute() : base(IdV2.CarKinds, false) { }
+    }
 }
