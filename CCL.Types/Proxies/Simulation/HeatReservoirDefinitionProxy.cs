@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Simulation
 {
     public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
-        IDE2Defaults, IDE6Defaults, IBE2Defaults, IDM3Defaults, IDH4Defaults, IDM1UDefaults
+        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults
     {
         public float heatCapacity = 1f;
         public float overheatingTemperatureThreshold = 120f;
@@ -66,9 +66,9 @@ namespace CCL.Types.Proxies.Simulation
             maxTemperature = 300f;
         }
 
-        public void ApplyBE2Defaults()
+        public void ApplyDH4Defaults()
         {
-            heatCapacity = 500.0f;
+            heatCapacity = 500000.0f;
             overheatingTemperatureThreshold = 120.0f;
             maxTemperature = 300f;
         }
@@ -80,16 +80,16 @@ namespace CCL.Types.Proxies.Simulation
             maxTemperature = 300f;
         }
 
-        public void ApplyDH4Defaults()
+        public void ApplyDM1UDefaults()
         {
-            heatCapacity = 500000.0f;
+            heatCapacity = 250000.0f;
             overheatingTemperatureThreshold = 120.0f;
             maxTemperature = 300f;
         }
 
-        public void ApplyDM1UDefaults()
+        public void ApplyBE2Defaults()
         {
-            heatCapacity = 250000.0f;
+            heatCapacity = 500.0f;
             overheatingTemperatureThreshold = 120.0f;
             maxTemperature = 300f;
         }

@@ -3,7 +3,8 @@ using CCL.Types.Proxies.Ports;
 
 namespace CCL.Types.Proxies.Resources
 {
-    public class ResourceContainerProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults, IS060Defaults, IS282Defaults
+    public class ResourceContainerProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults,
+        IBE2Defaults, IS060Defaults, IS282Defaults
     {
         public float capacity = 100;
         public float defaultValue = 100;
@@ -27,24 +28,12 @@ namespace CCL.Types.Proxies.Resources
 
         #region Defaults
 
-        public void ApplyDM3Defaults()
+        public void ApplyDE2Defaults()
         {
             capacity = type switch
             {
-                ResourceContainerType.Fuel => 1500,
+                ResourceContainerType.Fuel => 600,
                 ResourceContainerType.Oil => 100,
-                ResourceContainerType.Sand => 250,
-                _ => 100
-            };
-            defaultValue = capacity;
-        }
-
-        public void ApplyDH4Defaults()
-        {
-            capacity = type switch
-            {
-                ResourceContainerType.Fuel => 6000,
-                ResourceContainerType.Oil => 300,
                 ResourceContainerType.Sand => 400,
                 _ => 100,
             };
@@ -63,14 +52,38 @@ namespace CCL.Types.Proxies.Resources
             defaultValue = capacity;
         }
 
-        public void ApplyDE2Defaults()
+        public void ApplyDH4Defaults()
         {
             capacity = type switch
             {
-                ResourceContainerType.Fuel => 600,
-                ResourceContainerType.Oil => 100,
+                ResourceContainerType.Fuel => 6000,
+                ResourceContainerType.Oil => 300,
                 ResourceContainerType.Sand => 400,
                 _ => 100,
+            };
+            defaultValue = capacity;
+        }
+
+        public void ApplyDM3Defaults()
+        {
+            capacity = type switch
+            {
+                ResourceContainerType.Fuel => 1500,
+                ResourceContainerType.Oil => 100,
+                ResourceContainerType.Sand => 250,
+                _ => 100
+            };
+            defaultValue = capacity;
+        }
+
+        public void ApplyDM1UDefaults()
+        {
+            capacity = type switch
+            {
+                ResourceContainerType.Fuel => 175,
+                ResourceContainerType.Oil => 25,
+                ResourceContainerType.Sand => 250,
+                _ => 100
             };
             defaultValue = capacity;
         }

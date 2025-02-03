@@ -3,14 +3,11 @@ using System.Collections.Generic;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class DirectionalCoolerDefinitionProxy : SimComponentDefinitionProxy
+    public class DirectionalCoolerDefinitionProxy : SimComponentDefinitionProxy, IDM3Defaults
     {
         public float coolingRate = 12500f;
-
         public float minCoolingSpeed = 2f;
-
         public float maxCoolingSpeed = 25f;
-
         public bool coolingInForwardDirection = true;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
@@ -24,5 +21,17 @@ namespace CCL.Types.Proxies.Simulation
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TEMPERATURE"),
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TARGET_TEMPERATURE"),
         };
+
+        #region Defaults
+
+        public void ApplyDM3Defaults()
+        {
+            coolingRate = 2000.0f;
+            minCoolingSpeed = 1.0f;
+            maxCoolingSpeed = 20.0f;
+            coolingInForwardDirection = true;
+        }
+
+        #endregion
     }
 }
