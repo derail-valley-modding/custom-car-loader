@@ -4,16 +4,16 @@ using DV.ThingTypes;
 
 namespace CCL.Importer.Implementations
 {
-    internal class VirtualHandbrake : HandbrakeControl
+    internal class DuplicateHandbrake : HandbrakeControl
     {
         private TrainCar? _coupled;
-        private VirtualHandbrakeOverriderInternal _overrider;
+        private DuplicateHandbrakeOverriderInternal _overrider;
+        private bool _fromMain = false;
+        private bool _fromDupe = false;
 
-        public override float Value => _coupled != null ? _coupled.brakeSystem.handbrakePosition : 0f;
+        public override float Value => _coupled != null ? _coupled.brakeSystem.handbrakePosition : base.Value;
 
-        protected override bool canExistWithoutHandbrake => true;
-
-        public VirtualHandbrake(TrainCar car, VirtualHandbrakeOverriderInternal overrider) : base(car)
+        public DuplicateHandbrake(TrainCar car, DuplicateHandbrakeOverriderInternal overrider) : base(car)
         {
             _overrider = overrider;
 
@@ -30,6 +30,8 @@ namespace CCL.Importer.Implementations
 
         public override void Set(float value)
         {
+            base.Set(value);
+
             if (_coupled != null)
             {
                 _coupled.brakeSystem.SetHandbrakePosition(value, true);
@@ -40,7 +42,8 @@ namespace CCL.Importer.Implementations
         {
             if (e.otherCoupler && (MeetsConditions(e.otherCoupler.train.carLivery) && _coupled == e.otherCoupler.train))
             {
-                _coupled.brakeSystem.HandbrakePositionChanged -= OnControlUpdated;
+                car.brakeSystem.HandbrakePositionChanged -= OnDupeControlUpdated;
+                _coupled.brakeSystem.HandbrakePositionChanged -= OnControlUpdatedCopy;
                 _coupled = null;
             }
         }
@@ -50,7 +53,51 @@ namespace CCL.Importer.Implementations
             if (e.otherCoupler && MeetsConditions(e.otherCoupler.train.carLivery))
             {
                 _coupled = e.otherCoupler.train;
-                _coupled.brakeSystem.HandbrakePositionChanged += OnControlUpdated;
+                _coupled.brakeSystem.HandbrakePositionChanged += OnControlUpdatedCopy;
+                car.brakeSystem.HandbrakePositionChanged += OnDupeControlUpdated;
+
+                CopyHandbrake();
+            }
+        }
+
+        private void OnControlUpdatedCopy((float value, bool forced) args)
+        {
+            CopyHandbrake();
+            OnControlUpdated(args);
+        }
+
+        private void CopyHandbrake()
+        {
+            if (_fromDupe)
+            {
+                _fromDupe = false;
+                return;
+            }
+
+            if (_coupled != null)
+            {
+                _fromMain = true;
+                car.brakeSystem.SetHandbrakePosition(_coupled.brakeSystem.handbrakePosition, true);
+            }
+        }
+
+        private void OnDupeControlUpdated((float value, bool forced) args)
+        {
+            CopyDupeHandbrake();
+        }
+
+        private void CopyDupeHandbrake()
+        {
+            if (_fromMain)
+            {
+                _fromMain = false;
+                return;
+            }
+
+            if (_coupled != null)
+            {
+                _fromDupe = true;
+                _coupled.brakeSystem.SetHandbrakePosition(car.brakeSystem.handbrakePosition, true);
             }
         }
 
