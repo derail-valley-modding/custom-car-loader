@@ -293,6 +293,15 @@ namespace CCL.Creator.Wizards.SimSetup
             return control;
         }
 
+        protected WaterDetectorDefinitionProxy CreateWaterDetector(string? idOverride = null)
+        {
+            idOverride ??= "waterDetector";
+            var waterDetector = CreateSimComponent<WaterDetectorDefinitionProxy>(idOverride);
+            var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
+            waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
+            return waterDetector;
+        }
+
         protected ControlBlockerProxy AddControlBlocker(ExternalControlDefinitionProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
             ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
         {

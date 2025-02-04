@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies;
+﻿using CCL.Types;
+using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -16,7 +17,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
         }
 
-        public override string[] SimBasisOptions => new[] { "DM3" };
+        public override string[] SimBasisOptions => new[] { "DM3", "DM1U" };
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
@@ -199,6 +200,100 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(transmissionAB, "MECHANICAL_GEAR_RATIO", gearRatioCalculator, "MECHANICAL_GEAR_RATIO");
 
             ApplyMethodToAll<IDM3Defaults>(s => s.ApplyDM3Defaults());
+        }
+
+        private void CreateDM3()
+        {
+
+        }
+
+        private void CreateDM1U()
+        {
+            // Simulation components.
+            var throttle = CreateOverridableControl(OverridableControlType.Throttle);
+            var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
+            var gearSelc = CreateSimComponent<ManualTransmissionInputDefinitionProxy>("gearSelect");
+            var reverser = CreateReverserControl();
+            
+            var genericHornControl = CreateExternalControl("hornControl");
+            var hornControl = CreateSibling<HornControlProxy>(genericHornControl);
+            hornControl.portId = FullPortId(genericHornControl, "EXT_IN");
+            hornControl.neutralAt0 = true;
+            var horn = CreateSimComponent<HornDefinitionProxy>("horn");
+            horn.controlNeutralAt0 = true;
+
+            var waterDetector = CreateWaterDetector();
+
+            var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
+            var oil = CreateResourceContainer(ResourceContainerType.Oil);
+            var sand = CreateResourceContainer(ResourceContainerType.Sand);
+            var sander = CreateSanderControl();
+
+            var driveRpmCalc = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("driveShaftRpmCalculator");
+            driveRpmCalc.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
+            driveRpmCalc.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
+            driveRpmCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "DRIVE_SHAFT_RPM");
+
+            var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
+            var engineOff = CreateSibling<PowerOffControlProxy>(engine);
+            engineOff.portId = FullPortId(engine, "EMERGENCY_ENGINE_OFF_EXT_IN");
+            var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
+            engineOn.portId = FullPortId(engine, "ENGINE_ON");
+            var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(engine);
+            environmentDamage.damagerPortId = FullPortId(engine, "FUEL_ENV_DAMAGE_METER");
+            environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageFuel;
+            var engineExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(engine);
+            engineExplosion.explosion = ExplosionPrefab.Mechanical;
+            engineExplosion.bodyDamagePercentage = 0.1f;
+            engineExplosion.explosionSignalPortId = FullPortId(engine, "IS_BROKEN");
+
+            var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
+            loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
+            loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
+            loadTorque.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE_TOTAL");
+            loadTorque.transform.parent = engine.transform;
+
+            var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
+            var airController = CreateCompressorSim(compressor);
+
+            var fluidCoupler = CreateSimComponent<HydraulicTransmissionDefinitionProxy>("fluidCoupler");
+            var couplerExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(fluidCoupler);
+            couplerExplosion.explosion = ExplosionPrefab.Hydraulic;
+            couplerExplosion.bodyDamagePercentage = 0.1f;
+            couplerExplosion.windowsBreakingDelay = 0.4f;
+            couplerExplosion.explosionSignalPortId = FullPortId(fluidCoupler, "IS_BROKEN");
+
+            var cooler = CreateSimComponent<PassiveCoolerDefinitionProxy>("fcCoolerPassive");
+            cooler.transform.parent = fluidCoupler.transform;
+            var coolant = CreateSimComponent<HeatReservoirDefinitionProxy>("coolant");
+            coolant.transform.parent = fluidCoupler.transform;
+            coolant.inputCount = 3;
+            coolant.OnValidate();
+
+            var transmission = CreateSimComponent<SmoothTransmissionDefinitionProxy>("transmission");
+
+            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            poweredAxles.value = 1;
+            poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
+
+            var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
+            var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(poweredAxles, "NUM");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
+            wheelslip.engineBrakingActivePortId = FullPortId(engine, "RETARDER_BRAKE_EFFECT");
+            var directWheelslip = CreateSibling<DirectDriveMaxWheelslipRpmCalculatorProxy>(traction);
+            directWheelslip.engineRpmMaxPortId = FullPortId(engine, "RPM");
+            directWheelslip.gearRatioPortId = FullPortId(fluidCoupler, "GEAR_RATIO");
+
+            // Fusebox and fuse connections.
+            var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
+            fusebox.fuses = new[]
+            {
+                new FuseDefinition("ELECTRONICS_MAIN", false),
+                new FuseDefinition("ENGINE_STARTER", false)
+            };
         }
     }
 }

@@ -6,9 +6,10 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDM3Defaults, IDH4Defaults
+    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDH4Defaults, IDM3Defaults, IDM1UDefaults
     {
         [Header("Torque Transmission")]
+        public bool hasFreewheel;
         public float outputTorqueLimit;
 
         public HydraulicConfigDefinition[] configs;
@@ -20,6 +21,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         [Header("Transitions")]
         public AnimationCurve pumpRpmFillCurve = AnimationCurve.EaseInOut(200f, 0f, 400f, 1f);
+        public bool fillCouplingAtIdle;
         public float couplingFillTime = 1f;
 
         [Header("Damage")]
@@ -51,6 +53,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
+            new PortReferenceDefinition(DVPortValueType.CONTROL, "THROTTLE"),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "HYDRODYNAMIC_BRAKE"),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "REVERSER"),
             new PortReferenceDefinition(DVPortValueType.RPM, "INPUT_SHAFT_RPM"),
@@ -71,56 +74,10 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         #region Defaults
 
-        public void ApplyDM3Defaults()
-        {
-            outputTorqueLimit = 25000;
-            hydroDynamicBrakeTorqueCapacity = 0;
-            couplingFillTime = 1;
-
-            overheatingThreshold = 120;
-            overheatingMaxTime = 6;
-            overheatingDamagePerDegreePerSecond = 0.1f;
-            overheatingExplosionDamage = 1000;
-
-            configs = new[]
-            {
-                new HydraulicConfigDefinition()
-                {
-                    torqueCapacity = 15,
-                    stallTorqueMultiplier = 1,
-                    couplingSpeedRatio = 1,
-                    maxEfficiency = 1,
-                    hasStatorUnlock = false,
-                    gearRatio = 1,
-                    upshiftThreshold = 0,
-                    downshiftThreshold = 0,
-                }
-            };
-
-            pumpRpmFillCurve = new AnimationCurve()
-            {
-                preWrapMode = WrapMode.ClampForever,
-                postWrapMode = WrapMode.ClampForever,
-                keys = new[]
-                {
-                    new Keyframe(0, 0, 5e-5f, 3.57142853e-05f, 0, 0.333333343f),
-                    new Keyframe(280, 0.01f, 5.9602713e-5f, 5.9602713e-5f, 0, 0.134199739f),
-                    new Keyframe(350, 1, 0.0141428569f, 0, 0, 0),
-                }
-            };
-        }
-
         public void ApplyDH4Defaults()
         {
+            hasFreewheel = false;
             outputTorqueLimit = 1e9f;
-            hydroDynamicBrakeTorqueCapacity = 50;
-            couplingFillTime = 2;
-
-            overheatingThreshold = 120;
-            overheatingMaxTime = 5;
-            overheatingDamagePerDegreePerSecond = 0.1f;
-            overheatingExplosionDamage = 1200;
-
             configs = new[]
             {
                 new HydraulicConfigDefinition()
@@ -158,6 +115,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                 }
             };
 
+            hydroDynamicBrakeTorqueCapacity = 50;
+
             pumpRpmFillCurve = new AnimationCurve
             {
                 preWrapMode = WrapMode.ClampForever,
@@ -168,6 +127,111 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                     new Keyframe(700, 1, 0, 0),
                 }
             };
+            fillCouplingAtIdle = false;
+            couplingFillTime = 5;
+
+            overheatingThreshold = 120;
+            overheatingMaxTime = 5;
+            overheatingDamagePerDegreePerSecond = 0.1f;
+            overheatingExplosionDamage = 1200;
+        }
+
+        public void ApplyDM3Defaults()
+        {
+            hasFreewheel = false;
+            outputTorqueLimit = 25000;
+            configs = new[]
+            {
+                new HydraulicConfigDefinition()
+                {
+                    torqueCapacity = 15,
+                    stallTorqueMultiplier = 1,
+                    couplingSpeedRatio = 1,
+                    maxEfficiency = 1,
+                    hasStatorUnlock = false,
+                    gearRatio = 1,
+                    upshiftThreshold = 0,
+                    downshiftThreshold = 0,
+                }
+            };
+
+            hydroDynamicBrakeTorqueCapacity = 0;
+
+            pumpRpmFillCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
+                keys = new[]
+                {
+                    new Keyframe(0, 0, 5e-5f, 3.57142853e-05f, 0, 0.333333343f),
+                    new Keyframe(280, 0.01f, 5.9602713e-5f, 5.9602713e-5f, 0, 0.134199739f),
+                    new Keyframe(350, 1, 0.0141428569f, 0, 0, 0),
+                }
+            };
+            fillCouplingAtIdle = true;
+            couplingFillTime = 1;
+
+            overheatingThreshold = 120;
+            overheatingMaxTime = 6;
+            overheatingDamagePerDegreePerSecond = 0.1f;
+            overheatingExplosionDamage = 1000;
+        }
+
+        public void ApplyDM1UDefaults()
+        {
+            hasFreewheel = false;
+            outputTorqueLimit = 25000;
+            configs = new[]
+            {
+                new HydraulicConfigDefinition()
+                {
+                    torqueCapacity = 0.2f,
+                    stallTorqueMultiplier = 1,
+                    couplingSpeedRatio = 1,
+                    maxEfficiency = 1,
+                    hasStatorUnlock = false,
+                    gearRatio = 1,
+                    upshiftThreshold = 0,
+                    downshiftThreshold = 0,
+                }
+            };
+
+            hydroDynamicBrakeTorqueCapacity = 0;
+
+            pumpRpmFillCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
+                keys = new[]
+                {
+                    new Keyframe
+                    {
+                        time = 650.0f,
+                        value = 0.0f,
+                        inTangent = 0.0f,
+                        outTangent = 0.0f,
+                        inWeight = 0.0f,
+                        outWeight = 0.02767017f,
+                    },
+                    new Keyframe
+                    {
+                        time = 800.0f,
+                        value = 1.0f,
+                        inTangent = 0.0f,
+                        outTangent = 0.0f,
+                        inWeight = 0.0f,
+                        outWeight = 0.02767017f,
+                    },
+                }
+            };
+
+            fillCouplingAtIdle = true;
+            couplingFillTime = 1;
+
+            overheatingThreshold = 120;
+            overheatingMaxTime = 6;
+            overheatingDamagePerDegreePerSecond = 0.1f;
+            overheatingExplosionDamage = 1000;
         }
 
         #endregion

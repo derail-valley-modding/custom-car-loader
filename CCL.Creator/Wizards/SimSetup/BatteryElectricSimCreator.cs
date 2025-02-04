@@ -49,9 +49,7 @@ namespace CCL.Creator.Wizards.SimSetup
             pwrConsumCalc.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_CONSUMPTION_TOTAL");
             pwrConsumCalc.transform.parent = batteryController.transform;
 
-            var waterDetector = CreateSimComponent<WaterDetectorDefinitionProxy>("waterDetector");
-            var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
-            waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
+            var waterDetector = CreateWaterDetector();
 
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();

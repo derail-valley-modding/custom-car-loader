@@ -53,9 +53,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
-            var waterDetector = CreateSimComponent<WaterDetectorDefinitionProxy>("waterDetector");
-            var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
-            waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
+            var waterDetector = CreateWaterDetector();
 
             var coalDump = CreateExternalControl("coalDumpControl", true);
             coalDump.defaultValue = 0.5f;
