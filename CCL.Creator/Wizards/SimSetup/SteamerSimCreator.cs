@@ -225,82 +225,82 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPorts(steamEngine, "TORQUE_OUT", traction, "TORQUE_IN");
 
             // Port reference connections.
-            ConnectPortRef(lubricatorControl, "EXT_IN", lubricatorSmoothing, "CONTROL");
-            ConnectPortRef(oil, "AMOUNT", lubricator, "OIL");
-            ConnectPortRef(oil, "CONSUME_EXT_IN", lubricator, "OIL_CONSUMPTION");
-            ConnectPortRef(lubricatorSmoothing, "OUTPUT", lubricator, "MANUAL_FILL_RATE_NORMALIZED");
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", lubricator, "WHEEL_RPM");
+            ConnectPortRef(lubricatorSmoothing, "CONTROL", lubricatorControl, "EXT_IN");
+            ConnectPortRef(lubricator, "OIL", oil, "AMOUNT");
+            ConnectPortRef(lubricator, "OIL_CONSUMPTION", oil, "CONSUME_EXT_IN");
+            ConnectPortRef(lubricator, "MANUAL_FILL_RATE_NORMALIZED", lubricatorSmoothing, "OUTPUT");
+            ConnectPortRef(lubricator, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
 
-            ConnectPortRef(oil, "AMOUNT", oilingPoints, "OIL_STORAGE");
-            ConnectPortRef(oil, "CONSUME_EXT_IN", oilingPoints, "OIL_CONSUMPTION");
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", oilingPoints, "WHEEL_RPM");
+            ConnectPortRef(oilingPoints, "OIL_STORAGE", oil, "AMOUNT");
+            ConnectPortRef(oilingPoints, "OIL_CONSUMPTION", oil, "CONSUME_EXT_IN");
+            ConnectPortRef(oilingPoints, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
 
-            ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
-            ConnectPortRef(boiler, "PRESSURE", bell, "STEAM_PRESSURE");
+            ConnectPortRef(bell, "CONTROL", bellControl, "EXT_IN");
+            ConnectPortRef(bell, "STEAM_PRESSURE", boiler, "PRESSURE");
 
-            ConnectPortRef(coalDump, "EXT_IN", firebox, "COAL_DUMP_CONTROL");
-            ConnectPortRef(waterDetector, "STATE_EXT_IN", firebox, "INTAKE_WATER_CONTENT");
-            ConnectPortRef(exhaust, "AIR_FLOW", firebox, "AIR_FLOW");
-            ConnectPortRef(traction, "FORWARD_SPEED_EXT_IN", firebox, "FORWARD_SPEED");
-            ConnectPortRef(boiler, "PRESSURE", firebox, "BOILER_PRESSURE");
-            ConnectPortRef(boiler, "TEMPERATURE", firebox, "BOILER_TEMPERATURE");
-            ConnectPortRef(boiler, "IS_BROKEN", firebox, "BOILER_BROKEN_STATE");
+            ConnectPortRef(firebox, "COAL_DUMP_CONTROL", coalDump, "EXT_IN");
+            ConnectPortRef(firebox, "INTAKE_WATER_CONTENT", waterDetector, "STATE_EXT_IN");
+            ConnectPortRef(firebox, "AIR_FLOW", exhaust, "AIR_FLOW");
+            ConnectPortRef(firebox, "FORWARD_SPEED", traction, "FORWARD_SPEED_EXT_IN");
+            ConnectPortRef(firebox, "BOILER_PRESSURE", boiler, "PRESSURE");
+            ConnectPortRef(firebox, "BOILER_TEMPERATURE", boiler, "TEMPERATURE");
+            ConnectPortRef(firebox, "BOILER_BROKEN_STATE", boiler, "IS_BROKEN");
 
-            ConnectPortRef(exhaust, "STEAM_CONSUMPTION", steamCalc, "EXHAUST");
-            ConnectPortRef(compressor, "STEAM_CONSUMPTION", steamCalc, "COMPRESSOR");
-            ConnectPortRef(steamEngine, "INTAKE_FLOW", steamCalc, "ENGINE");
-            ConnectPortRef(dynamo, "STEAM_CONSUMPTION", steamCalc, "DYNAMO");
-            ConnectPortRef(bell, "STEAM_CONSUMPTION", steamCalc, "BELL");
+            ConnectPortRef(steamCalc, "EXHAUST", exhaust, "STEAM_CONSUMPTION");
+            ConnectPortRef(steamCalc, "COMPRESSOR", compressor, "STEAM_CONSUMPTION");
+            ConnectPortRef(steamCalc, "ENGINE", steamEngine, "INTAKE_FLOW");
+            ConnectPortRef(steamCalc, "DYNAMO", dynamo, "STEAM_CONSUMPTION");
+            ConnectPortRef(steamCalc, "BELL", bell, "STEAM_CONSUMPTION");
 
-            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
-            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
 
-            ConnectPortRef(injector, "EXT_IN", boiler, "INJECTOR");
-            ConnectPortRef(blowdown, "EXT_IN", boiler, "BLOWDOWN");
-            ConnectPortRef(firebox, "HEAT", boiler, "HEAT");
-            ConnectPortRef(firebox, "TEMPERATURE", boiler, "FIREBOX_TEMPERATURE");
+            ConnectPortRef(boiler, "INJECTOR", injector, "EXT_IN");
+            ConnectPortRef(boiler, "BLOWDOWN", blowdown, "EXT_IN");
+            ConnectPortRef(boiler, "HEAT", firebox, "HEAT");
+            ConnectPortRef(boiler, "FIREBOX_TEMPERATURE", firebox, "TEMPERATURE");
             switch (basisIndex)
             {
                 case 1:
-                    ConnectPortRef(steamEngine, "EXHAUST_TEMPERATURE", boiler, "FEEDWATER_TEMPERATURE");
+                    ConnectPortRef(boiler, "FEEDWATER_TEMPERATURE", steamEngine, "EXHAUST_TEMPERATURE");
                     break;
                 default:
                     ConnectEmptyPortRef(boiler, "FEEDWATER_TEMPERATURE");
                     break;
             }
-            ConnectPortRef(steamCalc, "OUT", boiler, "STEAM_CONSUMPTION");
-            ConnectPortRef(water, "AMOUNT", boiler, "WATER");
-            ConnectPortRef(water, "CONSUME_EXT_IN", boiler, "WATER_CONSUMPTION");
+            ConnectPortRef(boiler, "STEAM_CONSUMPTION", steamCalc, "OUT");
+            ConnectPortRef(boiler, "WATER", water, "AMOUNT");
+            ConnectPortRef(boiler, "WATER_CONSUMPTION", water, "CONSUME_EXT_IN");
 
-            ConnectPortRef(compressorControl, "EXT_IN", compressor, "COMPRESSOR_CONTROL");
-            ConnectPortRef(boiler, "PRESSURE", compressor, "STEAM_PRESSURE");
-            ConnectPortRef(dynamoControl, "EXT_IN", dynamo, "CONTROL");
-            ConnectPortRef(boiler, "PRESSURE", dynamo, "STEAM_PRESSURE");
+            ConnectPortRef(compressor, "COMPRESSOR_CONTROL", compressorControl, "EXT_IN");
+            ConnectPortRef(compressor, "STEAM_PRESSURE", boiler, "PRESSURE");
+            ConnectPortRef(dynamo, "CONTROL", dynamoControl, "EXT_IN");
+            ConnectPortRef(dynamo, "STEAM_PRESSURE", boiler, "PRESSURE");
 
-            ConnectPortRef(dynamo, "DYNAMO_FLOW_NORMALIZED", fuseController, "CONTROLLING_PORT");
+            ConnectPortRef(fuseController, "CONTROLLING_PORT", dynamo, "DYNAMO_FLOW_NORMALIZED");
 
-            ConnectPortRef(throttle, "EXT_IN", steamEngine, "THROTTLE_CONTROL");
-            ConnectPortRef(reverser, "REVERSER", steamEngine, "REVERSER_CONTROL");
-            ConnectPortRef(cylCock, "EXT_IN", steamEngine, "CYLINDER_COCK_CONTROL");
-            ConnectPortRef(boiler, "PRESSURE", steamEngine, "INTAKE_PRESSURE");
+            ConnectPortRef(steamEngine, "THROTTLE_CONTROL", throttle, "EXT_IN");
+            ConnectPortRef(steamEngine, "REVERSER_CONTROL", reverser, "REVERSER");
+            ConnectPortRef(steamEngine, "CYLINDER_COCK_CONTROL", cylCock, "EXT_IN");
+            ConnectPortRef(steamEngine, "INTAKE_PRESSURE", boiler, "PRESSURE");
             if (HasSuperheater(basisIndex))
             {
-                ConnectPortRef(firebox, "TEMPERATURE", steamEngine, "INTAKE_TEMPERATURE");
+                ConnectPortRef(steamEngine, "INTAKE_TEMPERATURE", firebox, "TEMPERATURE");
             }
             else
             {
-                ConnectPortRef(boiler, "TEMPERATURE", steamEngine, "INTAKE_TEMPERATURE");
+                ConnectPortRef(steamEngine, "INTAKE_TEMPERATURE", boiler, "TEMPERATURE");
             }
-            ConnectPortRef(boiler, "OUTLET_STEAM_QUALITY", steamEngine, "INTAKE_QUALITY");
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", steamEngine, "CRANK_RPM");
-            ConnectPortRef(lubricator, "LUBRICATION_NORMALIZED", steamEngine, "LUBRICATION_NORMALIZED");
+            ConnectPortRef(steamEngine, "INTAKE_QUALITY", boiler, "OUTLET_STEAM_QUALITY");
+            ConnectPortRef(steamEngine, "CRANK_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(steamEngine, "LUBRICATION_NORMALIZED", lubricator, "LUBRICATION_NORMALIZED");
 
-            ConnectPortRef(steamEngine, "EXHAUST_FLOW", exhaust, "EXHAUST_FLOW");
-            ConnectPortRef(steamEngine, "MAX_FLOW", exhaust, "ENGINE_MAX_FLOW");
-            ConnectPortRef(boiler, "PRESSURE", exhaust, "BOILER_PRESSURE");
-            ConnectPortRef(blower, "EXT_IN", exhaust, "BLOWER_CONTROL");
-            ConnectPortRef(whistle, "EXT_IN", exhaust, "WHISTLE_CONTROL");
-            ConnectPortRef(damper, "EXT_IN", exhaust, "DAMPER_CONTROL");
+            ConnectPortRef(exhaust, "EXHAUST_FLOW", steamEngine, "EXHAUST_FLOW");
+            ConnectPortRef(exhaust, "ENGINE_MAX_FLOW", steamEngine, "MAX_FLOW");
+            ConnectPortRef(exhaust, "BOILER_PRESSURE", boiler, "PRESSURE");
+            ConnectPortRef(exhaust, "BLOWER_CONTROL", blower, "EXT_IN");
+            ConnectPortRef(exhaust, "WHISTLE_CONTROL", whistle, "EXT_IN");
+            ConnectPortRef(exhaust, "DAMPER_CONTROL", damper, "EXT_IN");
 
             // Apply defaults.
             switch (basisIndex)
