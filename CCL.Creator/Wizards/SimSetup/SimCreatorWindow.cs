@@ -119,7 +119,7 @@ namespace CCL.Creator.Wizards.SimSetup
         }
     }
 
-    internal abstract class SimCreator
+    internal abstract partial class SimCreator
     {
         public abstract string[] SimBasisOptions { get; }
 
@@ -412,21 +412,21 @@ namespace CCL.Creator.Wizards.SimSetup
             });
         }
 
-        protected void ConnectPortRef(SimComponentDefinitionProxy portComp, string portId, SimComponentDefinitionProxy refComp, string refId)
+        protected void ConnectPortRef(SimComponentDefinitionProxy refComp, string refId, SimComponentDefinitionProxy portComp, string portId)
         {
             _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
             {
-                portId = FullPortId(portComp, portId),
-                portReferenceId = FullPortId(refComp, refId)
+                portReferenceId = FullPortId(refComp, refId),
+                portId = FullPortId(portComp, portId)
             });
         }
 
-        protected void ConnectHeatRef(SimComponentDefinitionProxy portComp, string portId, HeatReservoirDefinitionProxy refComp, int index)
+        protected void ConnectHeatRef(HeatReservoirDefinitionProxy refComp, int index, SimComponentDefinitionProxy portComp, string portId = "HEAT_OUT")
         {
             _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
             {
-                portId = FullPortId(portComp, portId),
-                portReferenceId = HeatPortId(refComp, index)
+                portReferenceId = HeatPortId(refComp, index),
+                portId = FullPortId(portComp, portId)
             });
         }
 

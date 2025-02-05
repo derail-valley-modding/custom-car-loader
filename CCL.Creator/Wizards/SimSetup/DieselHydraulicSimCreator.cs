@@ -111,11 +111,11 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ENGINE_STARTER", false)
             };
 
-            horn.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            bell.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
-            autoCooler.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            horn.powerFuseId = FullFuseId(fusebox, 0);
+            bell.powerFuseId = FullFuseId(fusebox, 0);
+            sander.powerFuseId = FullFuseId(fusebox, 0);
+            engine.engineStarterFuseId = FullFuseId(fusebox, 1);
+            autoCooler.powerFuseId = FullFuseId(fusebox, 0);
 
             // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[]

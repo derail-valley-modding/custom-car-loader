@@ -152,20 +152,20 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
 
             // Port reference connections.
-            ConnectPortRef(throttle, "EXT_IN", thrtPowr, "THROTTLE");
-            ConnectPortRef(engine, "IDLE_RPM_NORMALIZED", thrtPowr, "IDLE_RPM_NORMALIZED");
-            ConnectPortRef(engine, "MAX_POWER_RPM_NORMALIZED", thrtPowr, "MAX_POWER_RPM_NORMALIZED");
-            ConnectPortRef(engine, "MAX_POWER", thrtPowr, "MAX_POWER");
+            ConnectPortRef(thrtPowr, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(thrtPowr, "IDLE_RPM_NORMALIZED", engine, "IDLE_RPM_NORMALIZED");
+            ConnectPortRef(thrtPowr, "MAX_POWER_RPM_NORMALIZED", engine, "MAX_POWER_RPM_NORMALIZED");
+            ConnectPortRef(thrtPowr, "MAX_POWER", engine, "MAX_POWER");
 
-            ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
+            ConnectPortRef(horn, "HORN_CONTROL", genericHornControl, "CONTROL");
 
             if (hasBell)
             {
-                ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
+                ConnectPortRef(bell, "CONTROL", bellControl, "EXT_IN");
             }
 
-            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
-            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
 
             ConnectPortRef(tractionGen, "THROTTLE", engine, "THROTTLE");
 
@@ -214,11 +214,11 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(heat, "TEMPERATURE", tm, "TM_TEMPERATURE");
             ConnectPortRef(heat, "TEMPERATURE", cooler, "TEMPERATURE");
 
-            ConnectPortRef(tm, "HEAT_OUT", heat, "HEAT_IN_0");
-            ConnectPortRef(cooler, "HEAT_OUT", heat, "HEAT_IN_1");
+            ConnectHeatRef(heat, 0, tm, "HEAT_OUT");
+            ConnectHeatRef(heat, 1, cooler, "HEAT_OUT");
 
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", tmRpm, "WHEEL_RPM");
-            ConnectPortRef(transmission, "GEAR_RATIO", tmRpm, "GEAR_RATIO");
+            ConnectPortRef(tmRpm, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(tmRpm, "GEAR_RATIO", transmission, "GEAR_RATIO");
 
             // Apply defaults.
             switch (basisIndex)
