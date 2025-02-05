@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Wheels
 {
     public class WheelslipControllerProxy : MonoBehaviour, IHasPortIdFields,
-        IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults, IS060Defaults, IS282Defaults
+        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults, IS060Defaults, IS282Defaults
     {
         public bool preventWheelslip;
 
@@ -44,6 +44,20 @@ namespace CCL.Types.Proxies.Wheels
 
         #region Defaults
 
+        public void ApplyDE2Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 370;
+        }
+
+        public void ApplyDE6Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 600;
+        }
+
         public void ApplyDH4Defaults()
         {
             preventWheelslip = false;
@@ -58,14 +72,7 @@ namespace CCL.Types.Proxies.Wheels
             maxWheelslipRpm = 600;
         }
 
-        public void ApplyDE2Defaults()
-        {
-            preventWheelslip = false;
-            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
-            maxWheelslipRpm = 370;
-        }
-
-        public void ApplyDE6Defaults()
+        public void ApplyDM1UDefaults()
         {
             preventWheelslip = false;
             wheelslipToAdhesionDrop = DefaultAdhesionCurve;

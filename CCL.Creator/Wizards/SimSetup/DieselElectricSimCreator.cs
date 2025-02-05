@@ -25,9 +25,6 @@ namespace CCL.Creator.Wizards.SimSetup
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
-            var hasDynamic = HasDynamicBrake(basisIndex);
-            var hasBell = HasBell(basisIndex);
-
             // Simulation components.
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
             var thrtPowr = CreateSimComponent<ThrottleGammaPowerConversionDefinitionProxy>("throttlePower");
@@ -35,12 +32,12 @@ namespace CCL.Creator.Wizards.SimSetup
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
             var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
-            var dynBrake = hasDynamic ? CreateOverridableControl(OverridableControlType.DynamicBrake) : null!;
+            var dynBrake = HasDynamicBrake(basisIndex) ? CreateOverridableControl(OverridableControlType.DynamicBrake) : null;
 
             // Headlights.
 
             var genericHornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");
-            genericHornControl.defaultValue = 0;
+            genericHornControl.defaultValue = 0.5f;
             genericHornControl.smoothTime = 0.2f;
             var hornControl = CreateSibling<HornControlProxy>(genericHornControl);
             hornControl.portId = FullPortId(genericHornControl, "EXT_IN");
@@ -51,12 +48,14 @@ namespace CCL.Creator.Wizards.SimSetup
             ExternalControlDefinitionProxy bellControl = null!;
             ElectricBellDefinitionProxy bell = null!;
 
-            if (hasBell)
+            if (HasBell(basisIndex))
             {
                 bellControl = CreateExternalControl("bellControl", true);
                 bell = CreateSimComponent<ElectricBellDefinitionProxy>("bell");
                 bell.smoothDownTime = 0.5f;
             }
+
+            var waterDetector = CreateWaterDetector();
 
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
@@ -71,6 +70,8 @@ namespace CCL.Creator.Wizards.SimSetup
             var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(engine);
             environmentDamage.damagerPortId = FullPortId(engine, "FUEL_ENV_DAMAGE_METER");
             environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageFuel;
+
+            engine = CreateDieselEngine(false);
 
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
@@ -126,21 +127,17 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("TM_POWER", false),
             };
 
-            horn.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-
-            if (hasBell)
-            {
-                bell.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            }
-
-            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
-            tractionGen.powerFuseId = FullPortId(fusebox, "TM_POWER");
-            tm.powerFuseId = FullPortId(fusebox, "TM_POWER");
-            deadTMs.tmFuseId = FullPortId(fusebox, "TM_POWER");
+            horn.powerFuseId = FullFuseId(fusebox, 0);
+            if (bell != null) bell.powerFuseId = FullFuseId(fusebox, 0);
+            sander.powerFuseId = FullFuseId(fusebox, 0);
+            engine.engineStarterFuseId = FullFuseId(fusebox, 1);
+            tractionGen.powerFuseId = FullFuseId(fusebox, 2);
+            tm.powerFuseId = FullFuseId(fusebox, 2);
+            deadTMs.tmFuseId = FullFuseId(fusebox, 2);
 
             // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_DAMAGE") };
+            _damageController.mechanicalPTPercentualDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_PERCENTUAL_DAMAGE") };
             _damageController.mechanicalPTHealthStateExternalInPortIds = new[] { FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN") };
             _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
 
@@ -152,73 +149,80 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
 
             // Port reference connections.
-            ConnectPortRef(throttle, "EXT_IN", thrtPowr, "THROTTLE");
-            ConnectPortRef(engine, "IDLE_RPM_NORMALIZED", thrtPowr, "IDLE_RPM_NORMALIZED");
-            ConnectPortRef(engine, "MAX_POWER_RPM_NORMALIZED", thrtPowr, "MAX_POWER_RPM_NORMALIZED");
-            ConnectPortRef(engine, "MAX_POWER", thrtPowr, "MAX_POWER");
+            ConnectPortRef(thrtPowr, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(thrtPowr, "IDLE_RPM_NORMALIZED", engine, "IDLE_RPM_NORMALIZED");
+            ConnectPortRef(thrtPowr, "MAX_POWER_RPM_NORMALIZED", engine, "MAX_POWER_RPM_NORMALIZED");
+            ConnectPortRef(thrtPowr, "MAX_POWER", engine, "MAX_POWER");
 
-            ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
-
-            if (hasBell)
+            ConnectPortRef(horn, "HORN_CONTROL", genericHornControl, "CONTROL");
+            if (bell != null)
             {
-                ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
+                ConnectPortRef(bell, "CONTROL", bellControl, "EXT_IN");
             }
 
-            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
-            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
 
-            ConnectPortRef(tractionGen, "THROTTLE", engine, "THROTTLE");
+            ConnectPortRef(engine, "THROTTLE", tractionGen, "THROTTLE");
+            ConnectEmptyPortRef(engine, "RETARDER");
+            ConnectEmptyPortRef(engine, "DRIVEN_RPM");
+            ConnectPortRef(engine, "INTAKE_WATER_CONTENT", waterDetector, "STATE_EXTERNAL_IN");
+            ConnectPortRef(engine, "FUEL", fuel, "AMOUNT");
+            ConnectPortRef(engine, "FUEL_CONSUMPTION", fuel, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "OIL", oil, "AMOUNT");
+            ConnectPortRef(engine, "OIL_CONSUMPTION", oil, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_TOTAL");
+            ConnectEmptyPortRef(engine, "TEMPERATURE");
 
-            ConnectPortRef(fuel, "AMOUNT", engine, "FUEL");
-            ConnectPortRef(fuel, "CONSUME_EXT_IN", engine, "FUEL_CONSUMPTION");
-            ConnectPortRef(oil, "AMOUNT", engine, "OIL");
-            ConnectPortRef(oil, "CONSUME_EXT_IN", engine, "OIL_CONSUMPTION");
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_0", compressor, "LOAD_TORQUE");
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_1", tractionGen, "LOAD_TORQUE");
 
-            ConnectPortRef(loadTorque, "LOAD_TORQUE_TOTAL", engine, "LOAD_TORQUE");
-            ConnectPortRef(compressor, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_0");
-            ConnectPortRef(tractionGen, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_1");
+            ConnectPortRef(compressor, "ENGINE_RPM_NORMALIZED", engine, "RPM_NORMALIZED");
 
-            ConnectPortRef(engine, "RPM_NORMALIZED", compressor, "ENGINE_RPM_NORMALIZED");
+            ConnectPortRef(slugPowerCalc, "INTERNAL_EFFECTIVE_RESISTANCE", tm, "EFFECTIVE_RESISTANCE");
+            ConnectPortRef(slugPowerCalc, "INTERNAL_AMPS", tm, "TOTAL_AMPS");
 
-            ConnectPortRef(tm, "EFFECTIVE_RESISTANCE", slugPowerCalc, "INTERNAL_EFFECTIVE_RESISTANCE");
-            ConnectPortRef(tm, "TOTAL_AMPS", slugPowerCalc, "INTERNAL_AMPS");
-
-            ConnectPortRef(thrtPowr, "GOAL_POWER", tractionGen, "GOAL_POWER");
-            ConnectPortRef(thrtPowr, "GOAL_RPM_NORMALIZED", tractionGen, "GOAL_RPM_NORMALIZED");
-
-            if (hasDynamic)
+            ConnectPortRef(tractionGen, "GOAL_POWER", thrtPowr, "GOAL_POWER");
+            ConnectPortRef(tractionGen, "GOAL_RPM_NORMALIZED", thrtPowr, "GOAL_RPM_NORMALIZED");
+            if (dynBrake != null)
             {
-                ConnectPortRef(dynBrake, "EXT_IN", tractionGen, "DYNAMIC_BRAKE");
+                ConnectPortRef(tractionGen, "DYNAMIC_BRAKE", dynBrake, "EXT_IN");
             }
-
-            ConnectPortRef(engine, "RPM", tractionGen, "RPM");
-            ConnectPortRef(engine, "RPM_NORMALIZED", tractionGen, "RPM_NORMALIZED");
-
-            ConnectPortRef(tm, "CURRENT_DROP_REQUEST", tractionGen, "CURRENT_DROP_REQUEST");
-
-            ConnectPortRef(slugPowerCalc, "TOTAL_AMPS", tractionGen, "TOTAL_AMPS");
-            ConnectPortRef(slugPowerCalc, "EFFECTIVE_RESISTANCE", tractionGen, "EFFECTIVE_RESISTANCE");
-
-            ConnectPortRef(throttle, "EXT_IN", tm, "THROTTLE");
-            ConnectPortRef(reverser, "REVERSER", tm, "REVERSER");
-
-            if (basisIndex == 1)
+            else
             {
-                ConnectPortRef(dynBrake, "EXT_IN", tm, "DYNAMIC_BRAKE");
+                ConnectEmptyPortRef(tractionGen, "DYNAMIC_BRAKE");
             }
+            ConnectPortRef(tractionGen, "RPM", engine, "RPM");
+            ConnectPortRef(tractionGen, "RPM_NORMALIZED", engine, "RPM_NORMALIZED");
+            ConnectPortRef(tractionGen, "TOTAL_AMPS", slugPowerCalc, "TOTAL_AMPS");
+            ConnectPortRef(tractionGen, "EFFECTIVE_RESISTANCE", slugPowerCalc, "EFFECTIVE_RESISTANCE");
+            ConnectPortRef(tractionGen, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE", tm, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE");
+            ConnectPortRef(tractionGen, "TRANSITION_CURRENT_LIMIT", tm, "CURRENT_LIMIT_REQUEST");
 
-            ConnectPortRef(tmRpm, "TM_RPM", tm, "MOTOR_RPM");
+            ConnectPortRef(tm, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(tm, "REVERSER", reverser, "REVERSER");
+            if (dynBrake != null)
+            {
+                ConnectPortRef(tm, "DYNAMIC_BRAKE", dynBrake, "EXT_IN");
+            }
+            else
+            {
+                ConnectEmptyPortRef(tm, "DYNAMIC_BRAKE");
+            }
+            ConnectEmptyPortRef(tm, "CONFIGURATION_OVERRIDE");
+            ConnectPortRef(tm, "MOTOR_RPM", tmRpm, "TM_RPM");
+            ConnectPortRef(tm, "APPLIED_VOLTAGE", tractionGen, "VOLTAGE");
+            ConnectPortRef(tm, "TM_TEMPERATURE", heat, "TEMPERATURE");
+            ConnectEmptyPortRef(tm, "ENVIRONMENT_WATER_STATE");
 
-            ConnectPortRef(tractionGen, "VOLTAGE", tm, "APPLIED_VOLTAGE");
+            ConnectPortRef(cooler, "TEMPERATURE", heat, "TEMPERATURE");
+            ConnectEmptyPortRef(compressor, "TARGET_TEMPERATURE");
 
-            ConnectPortRef(heat, "TEMPERATURE", tm, "TM_TEMPERATURE");
-            ConnectPortRef(heat, "TEMPERATURE", cooler, "TEMPERATURE");
+            ConnectHeatRef(heat, 0, tm, "HEAT_OUT");
+            ConnectHeatRef(heat, 1, cooler, "HEAT_OUT");
 
-            ConnectPortRef(tm, "HEAT_OUT", heat, "HEAT_IN_0");
-            ConnectPortRef(cooler, "HEAT_OUT", heat, "HEAT_IN_1");
-
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", tmRpm, "WHEEL_RPM");
-            ConnectPortRef(transmission, "GEAR_RATIO", tmRpm, "GEAR_RATIO");
+            ConnectPortRef(tmRpm, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(tmRpm, "GEAR_RATIO", transmission, "GEAR_RATIO");
 
             // Apply defaults.
             switch (basisIndex)
@@ -237,7 +241,7 @@ namespace CCL.Creator.Wizards.SimSetup
             AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
                 .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
 
-            if (hasDynamic)
+            if (dynBrake != null)
             {
                 AddControlBlocker(reverser, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
 

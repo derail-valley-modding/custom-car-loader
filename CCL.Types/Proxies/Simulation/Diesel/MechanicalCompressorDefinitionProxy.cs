@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class MechanicalCompressorDefinitionProxy : SimComponentDefinitionProxy, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults
+    public class MechanicalCompressorDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults
     {
         public float loadTorque = 400f;
         public float maxProductionRate = 250f;
@@ -29,24 +29,6 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         #region Defaults
 
-        public void ApplyDM3Defaults()
-        {
-            loadTorque = 250;
-            maxProductionRate = 45;
-            activationPressureThreshold = 7;
-            mainReservoirVolume = 50;
-            smoothTime = 0.3f;
-        }
-
-        public void ApplyDH4Defaults()
-        {
-            loadTorque = 270;
-            maxProductionRate = 75;
-            activationPressureThreshold = 7;
-            mainReservoirVolume = 80;
-            smoothTime = 0.3f;
-        }
-
         public void ApplyDE2Defaults()
         {
             loadTorque = 200.0f;
@@ -62,6 +44,33 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             maxProductionRate = 100.0f;
             activationPressureThreshold = 7.0f;
             mainReservoirVolume = 200.0f;
+            smoothTime = 0.3f;
+        }
+
+        public void ApplyDH4Defaults()
+        {
+            loadTorque = 270;
+            maxProductionRate = 75;
+            activationPressureThreshold = 7;
+            mainReservoirVolume = 80;
+            smoothTime = 0.3f;
+        }
+
+        public void ApplyDM3Defaults()
+        {
+            loadTorque = 250;
+            maxProductionRate = 45;
+            activationPressureThreshold = 7;
+            mainReservoirVolume = 50;
+            smoothTime = 0.3f;
+        }
+
+        public void ApplyDM1UDefaults()
+        {
+            loadTorque = 250;
+            maxProductionRate = 45;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 500;
             smoothTime = 0.3f;
         }
 

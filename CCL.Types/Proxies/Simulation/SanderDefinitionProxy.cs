@@ -5,10 +5,9 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Simulation
 {
     public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields,
-        IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults, IBE2Defaults, IS060Defaults, IS282Defaults
+        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults, IS060Defaults, IS282Defaults
     {
         public float sandConsumptionRate = 5f;
-
         [Min(1f)]
         public float sandCoeficientMax = 1.5f;
 
@@ -36,18 +35,6 @@ namespace CCL.Types.Proxies.Simulation
 
         #region Defaults
 
-        public void ApplyDM3Defaults()
-        {
-            sandConsumptionRate = 0.5f;
-            sandCoeficientMax = 2.25f;
-        }
-
-        public void ApplyDH4Defaults()
-        {
-            sandConsumptionRate = 0.5f;
-            sandCoeficientMax = 1.5f;
-        }
-
         public void ApplyDE2Defaults()
         {
             sandConsumptionRate = 0.5f;
@@ -57,6 +44,24 @@ namespace CCL.Types.Proxies.Simulation
         public void ApplyDE6Defaults()
         {
             sandConsumptionRate = 1.7f;
+            sandCoeficientMax = 2.25f;
+        }
+
+        public void ApplyDH4Defaults()
+        {
+            sandConsumptionRate = 0.5f;
+            sandCoeficientMax = 1.5f;
+        }
+
+        public void ApplyDM3Defaults()
+        {
+            sandConsumptionRate = 0.5f;
+            sandCoeficientMax = 2.25f;
+        }
+
+        public void ApplyDM1UDefaults()
+        {
+            sandConsumptionRate = 0.5f;
             sandCoeficientMax = 2.25f;
         }
 

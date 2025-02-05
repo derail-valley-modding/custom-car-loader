@@ -1,5 +1,4 @@
-﻿using CCL.Types;
-using CCL.Types.Proxies;
+﻿using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -24,7 +23,6 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             // Simulation components.
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
-            var thrtPowr = CreateSimComponent<ThrottleGammaPowerConversionDefinitionProxy>("throttlePower");
             var reverser = CreateReverserControl();
             var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
             var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
@@ -46,23 +44,14 @@ namespace CCL.Creator.Wizards.SimSetup
 
             // Headlights.
 
+            var waterDetector = CreateWaterDetector();
+
             var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
             var oil = CreateResourceContainer(ResourceContainerType.Oil);
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
-            var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
-            var engineOff = CreateSibling<PowerOffControlProxy>(engine);
-            engineOff.portId = FullPortId(engine, "EMERGENCY_ENGINE_OFF_EXT_IN");
-            var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
-            engineOn.portId = FullPortId(engine, "ENGINE_ON");
-            var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(engine);
-            environmentDamage.damagerPortId = FullPortId(engine, "FUEL_ENV_DAMAGE_METER");
-            environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageFuel;
-            var engineExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(engine);
-            engineExplosion.explosion = ExplosionPrefab.Mechanical;
-            engineExplosion.bodyDamagePercentage = 0.1f;
-            engineExplosion.explosionSignalPortId = FullPortId(engine, "IS_BROKEN");
+            var engine = CreateDieselEngine(true);
 
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
@@ -112,11 +101,11 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ENGINE_STARTER", false)
             };
 
-            horn.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            bell.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-            engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
-            autoCooler.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            horn.powerFuseId = FullFuseId(fusebox, 0);
+            bell.powerFuseId = FullFuseId(fusebox, 0);
+            sander.powerFuseId = FullFuseId(fusebox, 0);
+            engine.engineStarterFuseId = FullFuseId(fusebox, 1);
+            autoCooler.powerFuseId = FullFuseId(fusebox, 0);
 
             // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[]
@@ -124,52 +113,64 @@ namespace CCL.Creator.Wizards.SimSetup
                 FullPortId(engine, "GENERATED_ENGINE_DAMAGE"),
                 FullPortId(fluidCoupler, "GENERATED_DAMAGE")
             };
+            _damageController.mechanicalPTPercentualDamagerPortIds = new[]
+            {
+                FullPortId(engine, "GENERATED_ENGINE_PERCENTUAL_DAMAGE")
+            };
             _damageController.mechanicalPTHealthStateExternalInPortIds = new[]
             {
                 FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN"),
                 FullPortId(fluidCoupler, "MECHANICAL_PT_HEALTH_EXT_IN")
             };
-            _damageController.mechanicalPTOffExternalInPortIds = new[] { FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN") };
+            _damageController.mechanicalPTOffExternalInPortIds = new[]
+            {
+                FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN")
+            };
 
             // Port connections.
             ConnectPorts(fluidCoupler, "OUTPUT_SHAFT_TORQUE", traction, "TORQUE_IN");
 
             // Port reference connections.
-            ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
-            ConnectPortRef(bellControl, "EXT_IN", bell, "CONTROL");
+            ConnectPortRef(horn, "HORN_CONTROL", genericHornControl, "CONTROL");
+            ConnectPortRef(bell, "CONTROL", bellControl, "EXT_IN");
 
-            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
-            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
 
-            ConnectPortRef(throttle, "EXT_IN", engine, "THROTTLE");
-            ConnectPortRef(fluidCoupler, "TURBINE_RPM", engine, "DRIVEN_RPM");
-            ConnectPortRef(fuel, "AMOUNT", engine, "FUEL");
-            ConnectPortRef(fuel, "CONSUME_EXT_IN", engine, "FUEL_CONSUMPTION");
-            ConnectPortRef(oil, "AMOUNT", engine, "OIL");
-            ConnectPortRef(oil, "CONSUME_EXT_IN", engine, "OIL_CONSUMPTION");
-            ConnectPortRef(loadTorque, "LOAD_TORQUE_TOTAL", engine, "LOAD_TORQUE");
-            ConnectPortRef(coolant, "TEMPERATURE", engine, "TEMPERATURE");
+            ConnectPortRef(engine, "THROTTLE", throttle, "EXT_IN");
+            ConnectEmptyPortRef(engine, "RETARDER");
+            ConnectPortRef(engine, "DRIVEN_RPM", fluidCoupler, "TURBINE_RPM");
+            ConnectPortRef(engine, "INTAKE_WATER_CONTENT", waterDetector, "STATE_EXT_IN");
+            ConnectPortRef(engine, "FUEL", fuel, "AMOUNT");
+            ConnectPortRef(engine, "FUEL_CONSUMPTION", fuel, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "OIL", oil, "AMOUNT");
+            ConnectPortRef(engine, "OIL_CONSUMPTION", oil, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_TOTAL");
+            ConnectPortRef(engine, "TEMPERATURE", coolant, "TEMPERATURE");
 
-            ConnectPortRef(engine, "RPM_NORMALIZED", compressor, "ENGINE_RPM_NORMALIZED");
+            ConnectPortRef(compressor, "ENGINE_RPM_NORMALIZED", engine, "RPM_NORMALIZED");
 
-            ConnectPortRef(dynBrake, "EXT_IN", fluidCoupler, "HYDRODYNAMIC_BRAKE");
-            ConnectPortRef(reverser, "REVERSER", fluidCoupler, "REVERSER");
-            ConnectPortRef(engine, "RPM", fluidCoupler, "INPUT_SHAFT_RPM");
-            ConnectPortRef(engine, "MAX_RPM", fluidCoupler, "MAX_RPM");
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", fluidCoupler, "OUTPUT_SHAFT_RPM");
-            ConnectPortRef(coolant, "TEMPERATURE", fluidCoupler, "TEMPERATURE");
+            ConnectPortRef(fluidCoupler, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(fluidCoupler, "HYDRODYNAMIC_BRAKE", dynBrake, "EXT_IN");
+            ConnectPortRef(fluidCoupler, "REVERSER", reverser, "REVERSER");
+            ConnectPortRef(fluidCoupler, "INPUT_SHAFT_RPM", engine, "RPM");
+            ConnectPortRef(fluidCoupler, "MAX_RPM", engine, "MAX_RPM");
+            ConnectPortRef(fluidCoupler, "OUTPUT_SHAFT_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(fluidCoupler, "TEMPERATURE", coolant, "TEMPERATURE");
 
-            ConnectPortRef(coolant, "TEMPERATURE", cooler, "TEMPERATURE");
-            ConnectPortRef(engine, "ENGINE_ON", autoCooler, "IS_POWERED");
-            ConnectPortRef(coolant, "TEMPERATURE", autoCooler, "TEMPERATURE");
+            ConnectPortRef(cooler, "TEMPERATURE", coolant, "TEMPERATURE");
+            ConnectEmptyPortRef(cooler, "TARGET_TEMPERATURE");
+            ConnectPortRef(autoCooler, "IS_POWERED", engine, "ENGINE_ON");
+            ConnectPortRef(autoCooler, "TEMPERATURE", coolant, "TEMPERATURE");
+            ConnectEmptyPortRef(autoCooler, "TARGET_TEMPERATURE");
 
-            ConnectPortRef(compressor, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_0");
-            ConnectPortRef(fluidCoupler, "INPUT_SHAFT_TORQUE", loadTorque, "LOAD_TORQUE_1");
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_0", compressor, "LOAD_TORQUE");
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_1", fluidCoupler, "INPUT_SHAFT_TORQUE");
 
-            ConnectPortRef(engine, "HEAT_OUT", coolant, "HEAT_IN_0");
-            ConnectPortRef(fluidCoupler, "HEAT_OUT", coolant, "HEAT_IN_1");
-            ConnectPortRef(cooler, "HEAT_OUT", coolant, "HEAT_IN_2");
-            ConnectPortRef(autoCooler, "HEAT_OUT", coolant, "HEAT_IN_3");
+            ConnectHeatRef(coolant, 0, engine, "HEAT_OUT");
+            ConnectHeatRef(coolant, 1, fluidCoupler, "HEAT_OUT");
+            ConnectHeatRef(coolant, 2, cooler, "HEAT_OUT");
+            ConnectHeatRef(coolant, 3, autoCooler, "HEAT_OUT");
 
             // Apply defaults.
             ApplyMethodToAll<IDH4Defaults>(s => s.ApplyDH4Defaults());

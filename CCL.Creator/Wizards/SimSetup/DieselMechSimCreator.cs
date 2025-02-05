@@ -8,22 +8,96 @@ using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Wheels;
 using UnityEngine;
 
+using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
+
 namespace CCL.Creator.Wizards.SimSetup
 {
     internal class DieselMechSimCreator : SimCreator
     {
-        public DieselMechSimCreator(GameObject prefabRoot) : base(prefabRoot)
-        {
-        }
+        public DieselMechSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
-        public override string[] SimBasisOptions => new[] { "DM3" };
+        public override string[] SimBasisOptions => new[] { "DM3", "DM1U" };
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
-            // engine + transmission
-            var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("engine");
+            switch (basisIndex)
+            {
+                case 0:
+                    CreateDM3();
+                    break;
+                case 1:
+                    CreateDM1U();
+                    break;
+                default:
+                    throw new System.NotImplementedException();
+            }
+        }
+
+        private void CreateDM3()
+        {
+            // Simulation components.
+            var throttle = CreateOverridableControl(OverridableControlType.Throttle);
+            var reverser = CreateReverserControl();
+            var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
+            var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
+            var retarder = CreateOverridableControl(OverridableControlType.DynamicBrake, "retarder");
+
+            var gearA = CreateSimComponent<ManualTransmissionInputDefinitionProxy>("gearInputA");
+            var gearB = CreateSimComponent<ManualTransmissionInputDefinitionProxy>("gearInputB");
+            var gearAB = CreateSimComponent<ConfigurableAddDefinitionProxy>("gearInputAB");
+            gearAB.aReader = new PortReferenceDefinition(DVPortValueType.CONTROL, "GEAR_A");
+            gearAB.bReader = new PortReferenceDefinition(DVPortValueType.CONTROL, "GEAR_B");
+            gearAB.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.CONTROL, "GEAR");
+
+            var genericHornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");
+            genericHornControl.defaultValue = 0;
+            genericHornControl.smoothTime = 0.2f;
+            var hornControl = CreateSibling<HornControlProxy>(genericHornControl);
+            hornControl.portId = FullPortId(genericHornControl, "EXT_IN");
+            hornControl.neutralAt0 = true;
+            var horn = CreateSimComponent<HornDefinitionProxy>("horn");
+            horn.controlNeutralAt0 = true;
+
+            var waterDetector = CreateWaterDetector();
+
+            var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
+            var oil = CreateResourceContainer(ResourceContainerType.Oil);
+            var sand = CreateResourceContainer(ResourceContainerType.Sand);
+            var sander = CreateSanderControl();
+
+            var driveRpmCalc = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("driveShaftRpmCalculator");
+            driveRpmCalc.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
+            driveRpmCalc.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
+            driveRpmCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "DRIVE_SHAFT_RPM");
+
+            var engine = CreateDieselEngine(true);
+
+            var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
+            loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
+            loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
+            loadTorque.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE_TOTAL");
+            loadTorque.transform.parent = engine.transform;
+
+            var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
+            var airController = CreateCompressorSim(compressor);
+
             var fluidCoupler = CreateSimComponent<HydraulicTransmissionDefinitionProxy>("fluidCoupler");
-            
+            var couplerExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(fluidCoupler);
+            couplerExplosion.explosion = ExplosionPrefab.Hydraulic;
+            couplerExplosion.bodyDamagePercentage = 0.1f;
+            couplerExplosion.windowsBreakingDelay = 0.4f;
+            couplerExplosion.explosionSignalPortId = FullPortId(fluidCoupler, "IS_BROKEN");
+
+            var coolerPassive = CreateSimComponent<PassiveCoolerDefinitionProxy>("fcCoolerPassive");
+            coolerPassive.transform.parent = fluidCoupler.transform;
+            var coolerDirection = CreateSimComponent<DirectionalCoolerDefinitionProxy>("fcCoolerDirectional");
+            coolerDirection.transform.parent = fluidCoupler.transform;
+            var coolant = CreateSimComponent<HeatReservoirDefinitionProxy>("coolant");
+            coolant.transform.parent = fluidCoupler.transform;
+            coolant.inputCount = 4;
+            coolant.OnValidate();
+
             var transmissionA = CreateSimComponent<SmoothTransmissionDefinitionProxy>("transmissionA");
             transmissionA.ApplyDM3BoxADefaults();
             var transmissionB = CreateSimComponent<SmoothTransmissionDefinitionProxy>("transmissionB");
@@ -33,172 +107,305 @@ namespace CCL.Creator.Wizards.SimSetup
             transmissionAB.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_RATIO_B");
             transmissionAB.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
 
-            var driveShaftRpmCalculator = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("driveshaftRpmCalc");
-            driveShaftRpmCalculator.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
-            driveShaftRpmCalculator.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
-            driveShaftRpmCalculator.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "DRIVE_SHAFT_RPM");
+            var gearRatioCalc = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("gearRatioCalculator");
+            gearRatioCalc.aReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "HYDRAULIC_GEAR_RATIO");
+            gearRatioCalc.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
+            gearRatioCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OVERALL_GEAR_RATIO");
 
-            var gearRatioCalculator = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("gearRatioCalc");
-            gearRatioCalculator.aReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
-            gearRatioCalculator.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "HYDRAULIC_GEAR_RATIO");
-            gearRatioCalculator.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OVERALL_GEAR_RATIO");
+            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            poweredAxles.value = 3;
+            poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 
-            // traction
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
-            var tractionFeeders = CreateSibling<TractionPortFeedersProxy>(traction);
-            tractionFeeders.forwardSpeedPortId = FullPortId(traction, "FORWARD_SPEED_EXT_IN");
-            tractionFeeders.wheelRpmPortId = FullPortId(traction, "WHEEL_RPM_EXT_IN");
-            tractionFeeders.wheelSpeedKmhPortId = FullPortId(traction, "WHEEL_SPEED_KMH_EXT_IN");
+            var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(poweredAxles, "NUM");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
+            wheelslip.engineBrakingActivePortId = FullPortId(engine, "RETARDER_BRAKE_EFFECT");
+            var directWheelslip = CreateSibling<DirectDriveMaxWheelslipRpmCalculatorProxy>(traction);
+            directWheelslip.engineRpmMaxPortId = FullPortId(engine, "RPM");
+            directWheelslip.gearRatioPortId = FullPortId(fluidCoupler, "GEAR_RATIO");
 
-            // radiator
-            var coolant = CreateSimComponent<HeatReservoirDefinitionProxy>("coolant");
-            coolant.inputCount = 4;
-            coolant.OnValidate();
-
-            var passiveCool = CreateSibling<PassiveCoolerDefinitionProxy>(coolant, "passiveCool");
-            var directionCool = CreateSibling<DirectionalCoolerDefinitionProxy>(coolant, "directionCool");
-
-            // engine load adder
-            var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorque");
-            loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
-            loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
-            loadTorque.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE_TOTAL");
-
-            // compressor
-            var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
-            var airController = CreateCompressorSim(compressor);
-
-            // resources
-            var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
-            var oil = CreateResourceContainer(ResourceContainerType.Oil);
-            var sand = CreateResourceContainer(ResourceContainerType.Sand);
-
-            // controls
+            // Fusebox and fuse connections.
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
                 new FuseDefinition("ELECTRONICS_MAIN", false),
-                new FuseDefinition("ENGINE_STARTER", false),
+                new FuseDefinition("ENGINE_STARTER", false)
             };
-            engine.engineStarterFuseId = FullPortId(fusebox, "ENGINE_STARTER");
-            
-            var throttle = CreateOverridableControl(OverridableControlType.Throttle);
-            var reverser = CreateReverserControl();
-            var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
-            var brake = CreateOverridableControl(OverridableControlType.TrainBrake);
-            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
-            var retarder = CreateOverridableControl(OverridableControlType.DynamicBrake, "retarder");
 
-            var hornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");
-            hornControl.defaultValue = 0.5f;
-            hornControl.smoothTime = 0.2f;
-            hornControl.saveState = false;
+            horn.powerFuseId = FullFuseId(fusebox, 0);
+            sander.powerFuseId = FullFuseId(fusebox, 0);
+            engine.engineStarterFuseId = FullFuseId(fusebox, 1);
 
-            var hornOvControl = CreateSibling<HornControlProxy>(hornControl);
-            hornOvControl.neutralAt0 = false;
-            hornOvControl.portId = FullPortId(hornControl, "EXT_IN");
-
-            var horn = CreateSibling<HornDefinitionProxy>(hornControl, "horn");
-            horn.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-
-            var sander = CreateSanderControl();
-            sander.powerFuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
-
-            var gearInputA = CreateSimComponent<ManualTransmissionInputDefinitionProxy>("gearInputA");
-            var gearInputB = CreateSimComponent<ManualTransmissionInputDefinitionProxy>("gearInputB");
-            var gearInputAB = CreateSimComponent<ConfigurableAddDefinitionProxy>("gearInputAB");
-            gearInputAB.aReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_A");
-            gearInputAB.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_B");
-            gearInputAB.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "GEAR");
-
-            // wheelslip
-            var axlesNum = CreateSibling<ConstantPortDefinitionProxy>(traction, "poweredAxles");
-            axlesNum.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
-
-            var slipControl = CreateSibling<WheelslipControllerProxy>(traction);
-            slipControl.numberOfPoweredAxlesPortId = FullPortId(axlesNum, axlesNum.port.ID);
-            slipControl.sandCoefPortId = FullPortId(sander, "SAND_COEF");
-            slipControl.engineBrakingActivePortId = FullPortId(engine, "RETARDER_BRAKE_EFFECT");
-
-            // connections
+            // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[]
             {
                 FullPortId(engine, "GENERATED_ENGINE_DAMAGE"),
                 FullPortId(fluidCoupler, "GENERATED_DAMAGE"),
                 FullPortId(transmissionA, "GENERATED_DAMAGE"),
-                FullPortId(transmissionB, "GENERATED_DAMAGE"),
+                FullPortId(transmissionB, "GENERATED_DAMAGE")
+            };
+            _damageController.mechanicalPTPercentualDamagerPortIds = new[]
+            {
+                FullPortId(engine, "GENERATED_ENGINE_PERCENTUAL_DAMAGE")
             };
             _damageController.mechanicalPTHealthStateExternalInPortIds = new[]
             {
                 FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN"),
-                FullPortId(fluidCoupler, "MECHANICAL_PT_HEALTH_EXT_IN"),
+                FullPortId(fluidCoupler, "MECHANICAL_PT_HEALTH_EXT_IN")
             };
             _damageController.mechanicalPTOffExternalInPortIds = new[]
             {
-                FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN"),
+                FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN")
             };
 
+            // Port connections.
             ConnectPorts(fluidCoupler, "OUTPUT_SHAFT_TORQUE", transmissionA, "TORQUE_IN");
             ConnectPorts(transmissionA, "TORQUE_OUT", transmissionB, "TORQUE_IN");
             ConnectPorts(transmissionB, "TORQUE_OUT", traction, "TORQUE_IN");
 
-            ConnectPortRef(engine, "RPM", fluidCoupler, "INPUT_SHAFT_RPM");
-            ConnectPortRef(engine, "MAX_RPM", fluidCoupler, "MAX_RPM");
-            ConnectPortRef(engine, "RPM_NORMALIZED", compressor, "ENGINE_RPM_NORMALIZED");
+            // Port reference connections.
+            ConnectPortRef(gearA, "NUM_OF_GEARS", transmissionA, "NUM_OF_GEARS");
+            ConnectPortRef(gearB, "NUM_OF_GEARS", transmissionB, "NUM_OF_GEARS");
+            ConnectPortRef(gearAB, "GEAR_A", gearA, "GEAR");
+            ConnectPortRef(gearAB, "GEAR_B", gearB, "GEAR");
 
-            ConnectPortRef(transmissionA, "NUM_OF_GEARS", gearInputA, "NUM_OF_GEARS");
-            ConnectPortRef(transmissionB, "NUM_OF_GEARS", gearInputB, "NUM_OF_GEARS");
-            ConnectPortRef(gearInputA, "GEAR", gearInputAB, "GEAR_A");
-            ConnectPortRef(gearInputB, "GEAR", gearInputAB, "GEAR_B");
+            ConnectPortRef(horn, "HORN_CONTROL", genericHornControl, "CONTROL");
 
-            ConnectPortRef(fluidCoupler, "TURBINE_RPM", engine, "DRIVEN_RPM");
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
 
-            ConnectPortRef(hornControl, "CONTROL", horn, "HORN_CONTROL");
+            ConnectPortRef(driveRpmCalc, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(driveRpmCalc, "MECHANICAL_GEAR_RATIO", transmissionAB, "MECHANICAL_GEAR_RATIO");
 
-            ConnectPortRef(fuel, "AMOUNT", engine, "FUEL");
-            ConnectPortRef(fuel, "CONSUME_EXT_IN", engine, "FUEL_CONSUMPTION");
-            ConnectPortRef(oil, "AMOUNT", engine, "OIL");
-            ConnectPortRef(oil, "CONSUME_EXT_IN", engine, "OIL_CONSUMPTION");
-            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
-            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+            ConnectPortRef(engine, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(engine, "RETARDER", retarder, "EXT_IN");
+            ConnectPortRef(engine, "DRIVEN_RPM", fluidCoupler, "TURBINE_RPM");
+            ConnectPortRef(engine, "INTAKE_WATER_CONTENT", waterDetector, "STATE_EXT_IN");
+            ConnectPortRef(engine, "FUEL", fuel, "AMOUNT");
+            ConnectPortRef(engine, "FUEL_CONSUMPTION", fuel, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "OIL", oil, "AMOUNT");
+            ConnectPortRef(engine, "OIL_CONSUMPTION", oil, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_TOTAL");
+            ConnectPortRef(engine, "TEMPERATURE", coolant, "TEMPERATURE");
 
+            ConnectPortRef(compressor, "ENGINE_RPM_NORMALIZED", engine, "RPM_NORMALIZED");
 
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", driveShaftRpmCalculator, "WHEEL_RPM");
-            ConnectPortRef(transmissionAB, "MECHANICAL_GEAR_RATIO", driveShaftRpmCalculator, "MECHANICAL_GEAR_RATIO");
-            ConnectPortRef(throttle, "EXT_IN", engine, "THROTTLE");
-            ConnectPortRef(retarder, "EXT_IN", engine, "RETARDER");
-            
-            
-            ConnectPortRef(loadTorque, "LOAD_TORQUE_TOTAL", engine, "LOAD_TORQUE");
-            ConnectPortRef(coolant, "TEMPERATURE", engine, "TEMPERATURE");
+            ConnectPortRef(fluidCoupler, "THROTTLE", throttle, "EXT_IN");
+            ConnectEmptyPortRef(fluidCoupler, "HYDRODYNAMIC_BRAKE");
+            ConnectPortRef(fluidCoupler, "REVERSER", reverser, "REVERSER");
+            ConnectPortRef(fluidCoupler, "INPUT_SHAFT_RPM", engine, "RPM");
+            ConnectPortRef(fluidCoupler, "MAX_RPM", engine, "MAX_RPM");
+            ConnectPortRef(fluidCoupler, "OUTPUT_SHAFT_RPM", driveRpmCalc, "DRIVE_SHAFT_RPM");
+            ConnectPortRef(fluidCoupler, "TEMPERATURE", coolant, "TEMPERATURE");
 
-            ConnectPortRef(reverser, "REVERSER", fluidCoupler, "REVERSER");
-            ConnectPortRef(driveShaftRpmCalculator, "DRIVE_SHAFT_RPM", fluidCoupler, "OUTPUT_SHAFT_RPM");
-            ConnectPortRef(coolant, "TEMPERATURE", fluidCoupler, "TEMPERATURE");
-            ConnectPortRef(coolant, "TEMPERATURE", passiveCool, "TEMPERATURE");
-            ConnectPortRef(traction, "FORWARD_SPEED_EXT_IN", directionCool, "SPEED");
-            ConnectPortRef(coolant, "TEMPERATURE", directionCool, "TEMPERATURE");
-            
-            ConnectPortRef(compressor, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_0");
-            ConnectPortRef(fluidCoupler, "INPUT_SHAFT_TORQUE", loadTorque, "LOAD_TORQUE_1");
-            ConnectPortRef(engine, "HEAT_OUT", coolant, "HEAT_IN_0");
-            ConnectPortRef(fluidCoupler, "HEAT_OUT", coolant, "HEAT_IN_1");
-            ConnectPortRef(passiveCool, "HEAT_OUT", coolant, "HEAT_IN_2");
-            ConnectPortRef(directionCool, "HEAT_OUT", coolant, "HEAT_IN_3");
-            ConnectPortRef(gearInputA, "GEAR", transmissionA, "GEAR");
-            ConnectPortRef(throttle, "EXT_IN", transmissionA, "THROTTLE");
-            ConnectPortRef(retarder, "EXT_IN", transmissionA, "RETARDER");
-            ConnectPortRef(engine, "RPM", transmissionA, "ENGINE_RPM");
-            ConnectPortRef(gearInputB, "GEAR", transmissionB, "GEAR");
-            ConnectPortRef(throttle, "EXT_IN", transmissionB, "THROTTLE");
-            ConnectPortRef(retarder, "EXT_IN", transmissionB, "RETARDER");
-            ConnectPortRef(engine, "RPM", transmissionB, "ENGINE_RPM");
-            ConnectPortRef(transmissionA, "GEAR_RATIO", transmissionAB, "GEAR_RATIO_A");
-            ConnectPortRef(transmissionB, "GEAR_RATIO", transmissionAB, "GEAR_RATIO_B");
-            ConnectPortRef(fluidCoupler, "GEAR_RATIO", gearRatioCalculator, "HYDRAULIC_GEAR_RATIO");
-            ConnectPortRef(transmissionAB, "MECHANICAL_GEAR_RATIO", gearRatioCalculator, "MECHANICAL_GEAR_RATIO");
+            ConnectPortRef(coolerPassive, "TEMPERATURE", coolant, "TEMPERATURE");
+            ConnectEmptyPortRef(coolerPassive, "TARGET_TEMPERATURE");
+            ConnectPortRef(coolerDirection, "SPEED", traction, "FORWARD_SPEED_EXT_IN");
+            ConnectPortRef(coolerDirection, "TEMPERATURE", coolant, "TEMPERATURE");
+            ConnectEmptyPortRef(coolerDirection, "TARGET_TEMPERATURE");
 
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_0", compressor, "LOAD_TORQUE");
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_1", fluidCoupler, "INPUT_SHAFT_TORQUE");
+
+            ConnectHeatRef(coolant, 0, engine, "HEAT_OUT");
+            ConnectHeatRef(coolant, 1, fluidCoupler, "HEAT_OUT");
+            ConnectHeatRef(coolant, 2, coolerPassive, "HEAT_OUT");
+            ConnectHeatRef(coolant, 3, coolerDirection, "HEAT_OUT");
+
+            ConnectPortRef(transmissionA, "GEAR", gearA, "GEAR");
+            ConnectPortRef(transmissionA, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(transmissionA, "RETARDER", retarder, "EXT_IN");
+            ConnectPortRef(transmissionA, "ENGINE_RPM", engine, "RPM");
+
+            ConnectPortRef(transmissionB, "GEAR", gearB, "GEAR");
+            ConnectPortRef(transmissionB, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(transmissionB, "RETARDER", retarder, "EXT_IN");
+            ConnectPortRef(transmissionB, "ENGINE_RPM", engine, "RPM");
+
+            ConnectPortRef(transmissionAB, "GEAR_RATIO_A", transmissionA, "GEAR_RATIO");
+            ConnectPortRef(transmissionAB, "GEAR_RATIO_B", transmissionB, "GEAR_RATIO");
+
+            ConnectPortRef(gearRatioCalc, "HYDRAULIC_GEAR_RATIO", fluidCoupler, "GEAR_RATIO");
+            ConnectPortRef(gearRatioCalc, "MECHANICAL_GEAR_RATIO", transmissionAB, "MECHANICAL_GEAR_RATIO");
+
+            // Apply defaults.
             ApplyMethodToAll<IDM3Defaults>(s => s.ApplyDM3Defaults());
+
+            // Control blockers.
+            AddControlBlocker(throttle, retarder, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                .blockedControlPortId = FullPortId(throttle, "EXT_IN");
+
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", 20, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", -20, BlockType.BLOCK_ON_BELOW_THRESHOLD)
+                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
+
+            AddControlBlocker(retarder, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                .blockedControlPortId = FullPortId(retarder, "EXT_IN");
+        }
+
+        private void CreateDM1U()
+        {
+            // Simulation components.
+            var throttle = CreateOverridableControl(OverridableControlType.Throttle);
+            var trnBrake = CreateOverridableControl(OverridableControlType.TrainBrake);
+            var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
+            var gearSelect = CreateSimComponent<ManualTransmissionInputDefinitionProxy>("gearSelect");
+            var reverser = CreateReverserControl();
+            
+            var externalHornControl = CreateExternalControl("hornControl");
+            var hornControl = CreateSibling<HornControlProxy>(externalHornControl);
+            hornControl.portId = FullPortId(externalHornControl, "EXT_IN");
+            hornControl.neutralAt0 = true;
+            var horn = CreateSimComponent<HornDefinitionProxy>("horn");
+            horn.controlNeutralAt0 = true;
+
+            var waterDetector = CreateWaterDetector();
+
+            var fuel = CreateResourceContainer(ResourceContainerType.Fuel);
+            var oil = CreateResourceContainer(ResourceContainerType.Oil);
+            var sand = CreateResourceContainer(ResourceContainerType.Sand);
+            var sander = CreateSanderControl();
+
+            var driveRpmCalc = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("driveShaftRpmCalculator");
+            driveRpmCalc.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
+            driveRpmCalc.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
+            driveRpmCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "DRIVE_SHAFT_RPM");
+
+            var engine = CreateDieselEngine(true);
+
+            var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
+            loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
+            loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
+            loadTorque.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE_TOTAL");
+            loadTorque.transform.parent = engine.transform;
+
+            var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
+            var airController = CreateCompressorSim(compressor);
+
+            var fluidCoupler = CreateSimComponent<HydraulicTransmissionDefinitionProxy>("fluidCoupler");
+            var couplerExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(fluidCoupler);
+            couplerExplosion.explosion = ExplosionPrefab.Hydraulic;
+            couplerExplosion.bodyDamagePercentage = 0.1f;
+            couplerExplosion.windowsBreakingDelay = 0.4f;
+            couplerExplosion.explosionSignalPortId = FullPortId(fluidCoupler, "IS_BROKEN");
+
+            var cooler = CreateSimComponent<PassiveCoolerDefinitionProxy>("fcCoolerPassive");
+            cooler.transform.parent = fluidCoupler.transform;
+            var coolant = CreateSimComponent<HeatReservoirDefinitionProxy>("coolant");
+            coolant.transform.parent = fluidCoupler.transform;
+            coolant.inputCount = 3;
+            coolant.OnValidate();
+
+            var transmission = CreateSimComponent<SmoothTransmissionDefinitionProxy>("transmission");
+
+            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            poweredAxles.value = 1;
+            poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
+
+            var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
+            var tractionFeeders = CreateTractionFeeders(traction);
+            var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
+            wheelslip.numberOfPoweredAxlesPortId = FullPortId(poweredAxles, "NUM");
+            wheelslip.sandCoefPortId = FullPortId(sander, "SAND_COEF");
+            wheelslip.engineBrakingActivePortId = FullPortId(engine, "RETARDER_BRAKE_EFFECT");
+            var directWheelslip = CreateSibling<DirectDriveMaxWheelslipRpmCalculatorProxy>(traction);
+            directWheelslip.engineRpmMaxPortId = FullPortId(engine, "RPM");
+            directWheelslip.gearRatioPortId = FullPortId(fluidCoupler, "GEAR_RATIO");
+
+            // Fusebox and fuse connections.
+            var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
+            fusebox.fuses = new[]
+            {
+                new FuseDefinition("ELECTRONICS_MAIN", false),
+                new FuseDefinition("ENGINE_STARTER", false)
+            };
+
+            horn.powerFuseId = FullFuseId(fusebox, 0);
+            sander.powerFuseId = FullFuseId(fusebox, 0);
+            engine.engineStarterFuseId = FullFuseId(fusebox, 1);
+
+            // Damage.
+            _damageController.mechanicalPTDamagerPortIds = new[]
+            {
+                FullPortId(engine, "GENERATED_ENGINE_DAMAGE"),
+                FullPortId(fluidCoupler, "GENERATED_DAMAGE"),
+                FullPortId(transmission, "GENERATED_DAMAGE")
+            };
+            _damageController.mechanicalPTPercentualDamagerPortIds = new[]
+            {
+                FullPortId(engine, "GENERATED_ENGINE_PERCENTUAL_DAMAGE")
+            };
+            _damageController.mechanicalPTHealthStateExternalInPortIds = new[]
+            {
+                FullPortId(engine, "ENGINE_HEALTH_STATE_EXT_IN"),
+                FullPortId(fluidCoupler, "MECHANICAL_PT_HEALTH_EXT_IN")
+            };
+            _damageController.mechanicalPTOffExternalInPortIds = new[]
+            {
+                FullPortId(engine, "COLLISION_ENGINE_OFF_EXT_IN")
+            };
+
+            // Port connections.
+            ConnectPorts(fluidCoupler, "OUTPUT_SHAFT_TORQUE", transmission, "TORQUE_IN");
+            ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
+
+            // Port reference connections.
+            ConnectPortRef(gearSelect, "REVERSER", reverser, "REVERSER");
+            ConnectPortRef(gearSelect, "NUM_OF_GEARS", transmission, "NUM_OF_GEARS");
+
+            ConnectPortRef(horn, "HORN_CONTROL", externalHornControl, "EXT_IN");
+
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
+
+            ConnectPortRef(driveRpmCalc, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(driveRpmCalc, "MECHANICAL_GEAR_RATIO", transmission, "GEAR_RATIO");
+
+            ConnectPortRef(engine, "THROTTLE", throttle, "EXT_IN");
+            ConnectEmptyPortRef(engine, "RETARDER");
+            ConnectPortRef(engine, "DRIVEN_RPM", fluidCoupler, "TURBINE_RPM");
+            ConnectPortRef(engine, "INTAKE_WATER_CONTENT", waterDetector, "STATE_EXT_IN");
+            ConnectPortRef(engine, "FUEL", fuel, "AMOUNT");
+            ConnectPortRef(engine, "FUEL_CONSUMPTION", fuel, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "OIL", oil, "AMOUNT");
+            ConnectPortRef(engine, "OIL_CONSUMPTION", oil, "CONSUME_EXT_IN");
+            ConnectPortRef(engine, "LOAD_TORQUE", loadTorque, "LOAD_TORQUE_TOTAL");
+            ConnectPortRef(engine, "TEMPERATURE", coolant, "TEMPERATURE");
+
+            ConnectPortRef(compressor, "ENGINE_RPM_NORMALIZED", engine, "RPM_NORMALIZED");
+
+            ConnectPortRef(fluidCoupler, "THROTTLE", throttle, "EXT_IN");
+            ConnectEmptyPortRef(fluidCoupler, "HYDRODYNAMIC_BRAKE");
+            ConnectPortRef(fluidCoupler, "REVERSER", gearSelect, "REVERSER_OUT");
+            ConnectPortRef(fluidCoupler, "INPUT_SHAFT_RPM", engine, "RPM");
+            ConnectPortRef(fluidCoupler, "MAX_RPM", engine, "MAX_RPM");
+            ConnectPortRef(fluidCoupler, "OUTPUT_SHAFT_RPM", driveRpmCalc, "DRIVE_SHAFT_RPM");
+            ConnectPortRef(fluidCoupler, "TEMPERATURE", coolant, "TEMPERATURE");
+
+            ConnectPortRef(cooler, "TEMPERATURE", coolant, "TEMPERATURE");
+            ConnectEmptyPortRef(cooler, "TARGET_TEMPERATURE");
+
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_0", compressor, "LOAD_TORQUE");
+            ConnectPortRef(loadTorque, "LOAD_TORQUE_1", fluidCoupler, "INPUT_SHAFT_TORQUE");
+
+            ConnectHeatRef(coolant, 0, engine, "HEAT_OUT");
+            ConnectHeatRef(coolant, 1, fluidCoupler, "HEAT_OUT");
+            ConnectHeatRef(coolant, 2, cooler, "HEAT_OUT");
+
+            ConnectPortRef(transmission, "GEAR", gearSelect, "GEAR");
+            ConnectPortRef(transmission, "THROTTLE", throttle, "EXT_IN");
+            ConnectEmptyPortRef(transmission, "RETARDER");
+            ConnectPortRef(transmission, "ENGINE_RPM", engine, "RPM");
+
+            // Apply defaults.
+            ApplyMethodToAll<IDM1UDefaults>(s => s.ApplyDM1UDefaults());
+
+            // Control blockers.
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", 20, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", -20, BlockType.BLOCK_ON_BELOW_THRESHOLD)
+                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
         }
     }
 }

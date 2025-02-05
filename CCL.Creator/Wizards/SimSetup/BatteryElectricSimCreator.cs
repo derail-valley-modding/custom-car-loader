@@ -49,9 +49,7 @@ namespace CCL.Creator.Wizards.SimSetup
             pwrConsumCalc.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_CONSUMPTION_TOTAL");
             pwrConsumCalc.transform.parent = batteryController.transform;
 
-            var waterDetector = CreateSimComponent<WaterDetectorDefinitionProxy>("waterDetector");
-            var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
-            waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
+            var waterDetector = CreateWaterDetector();
 
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
@@ -113,44 +111,42 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
 
             // Port reference connections.
-            ConnectPortRef(throttle, "EXT_IN", thrtCurv, "IN");
-            ConnectPortRef(genericHornControl, "CONTROL", horn, "HORN_CONTROL");
+            ConnectPortRef(thrtCurv, "IN", throttle, "EXT_IN");
+            ConnectPortRef(horn, "HORN_CONTROL", genericHornControl, "CONTROL");
 
-            ConnectPortRef(batteryCharge, "NORMALIZED", batteryController, "NORMALIZED_CHARGE");
-            ConnectPortRef(batteryCharge, "CONSUME_EXT_IN", batteryController, "CHARGE_CONSUMPTION");
-            ConnectPortRef(pwrConsumCalc, "POWER_CONSUMPTION_TOTAL", batteryController, "POWER");
+            ConnectPortRef(batteryController, "NORMALIZED_CHARGE", batteryCharge, "NORMALIZED");
+            ConnectPortRef(batteryController, "CHARGE_CONSUMPTION", batteryCharge, "CONSUME_EXT_IN");
+            ConnectPortRef(batteryController, "POWER", pwrConsumCalc, "POWER_CONSUMPTION_TOTAL");
 
-            ConnectPortRef(tm, "POWER_IN", pwrConsumCalc, "POWER_CONSUMPTION_0");
-            ConnectPortRef(compressor, "POWER_CONSUMPTION", pwrConsumCalc, "POWER_CONSUMPTION_1");
+            ConnectPortRef(pwrConsumCalc, "POWER_CONSUMPTION_0", tm, "POWER_IN");
+            ConnectPortRef(pwrConsumCalc, "POWER_CONSUMPTION_1", compressor, "POWER_CONSUMPTION");
 
-            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
-            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
 
-            ConnectPortRef(batteryController, "VOLTAGE_NORMALIZED", compressor, "VOLTAGE_NORMALIZED");
+            ConnectPortRef(compressor, "VOLTAGE_NORMALIZED", batteryController, "VOLTAGE_NORMALIZED");
 
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", tmRpm, "WHEEL_RPM");
-            ConnectPortRef(transmission, "GEAR_RATIO", tmRpm, "GEAR_RATIO");
+            ConnectPortRef(tmRpm, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(tmRpm, "GEAR_RATIO", transmission, "GEAR_RATIO");
 
-            ConnectPortRef(thrtCurv, "OUT", voltRegulator, "THROTTLE");
-            ConnectPortRef(batteryController, "VOLTAGE", voltRegulator, "SUPPLY_VOLTAGE");
-            ConnectPortRef(tm, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE", voltRegulator, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE");
+            ConnectPortRef(voltRegulator, "THROTTLE", thrtCurv, "OUT");
+            ConnectPortRef(voltRegulator, "SUPPLY_VOLTAGE", batteryController, "VOLTAGE");
+            ConnectPortRef(voltRegulator, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE", tm, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE");
 
-            ConnectPortRef(throttle, "EXT_IN", tm, "THROTTLE");
-            ConnectPortRef(reverser, "REVERSER", tm, "REVERSER");
+            ConnectPortRef(tm, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(tm, "REVERSER", reverser, "REVERSER");
             ConnectEmptyPortRef(tm, "DYNAMIC_BRAKE");
             ConnectEmptyPortRef(tm, "CONFIGURATION_OVERRIDE");
+            ConnectPortRef(tm, "MOTOR_RPM", tmRpm, "TM_RPM");
+            ConnectPortRef(tm, "APPLIED_VOLTAGE", voltRegulator, "OUTPUT_VOLTAGE");
+            ConnectPortRef(tm, "TM_TEMPERATURE", heat, "TEMPERATURE");
+            ConnectPortRef(tm, "ENVIRONMENT_WATER_STATE", waterDetector, "STATE_EXT_IN");
 
-            ConnectPortRef(tmRpm, "TM_RPM", tm, "MOTOR_RPM");
-            ConnectPortRef(voltRegulator, "OUTPUT_VOLTAGE", tm, "APPLIED_VOLTAGE");
-
-            ConnectPortRef(waterDetector, "STATE_EXT_IN", tm, "ENVIRONMENT_WATER_STATE");
-
-            ConnectPortRef(heat, "TEMPERATURE", tm, "TM_TEMPERATURE");
-            ConnectPortRef(heat, "TEMPERATURE", cooler, "TEMPERATURE");
+            ConnectPortRef(cooler, "TEMPERATURE", heat, "TEMPERATURE");
             ConnectEmptyPortRef(cooler, "TARGET_TEMPERATURE");
 
-            ConnectHeatRef(tm, "HEAT_OUT", heat, 0);
-            ConnectHeatRef(cooler, "HEAT_OUT", heat, 1);
+            ConnectHeatRef(heat, 0, tm, "HEAT_OUT");
+            ConnectHeatRef(heat, 1, cooler, "HEAT_OUT");
 
             // Apply defaults.
             ApplyMethodToAll<IBE2Defaults>(s => s.ApplyBE2Defaults());

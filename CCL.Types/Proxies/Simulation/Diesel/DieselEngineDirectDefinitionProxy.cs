@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDM3Defaults, IDH4Defaults, IDE2Defaults, IDE6Defaults
+    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults, IDH4Defaults,
+        IDM3Defaults, IDM1UDefaults
     {
         [Header("RPM Range")]
         public float rotationalInertia;
@@ -72,131 +73,6 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         #region Defaults
 
-        public void ApplyDM3Defaults()
-        {
-            rotationalInertia = 3.0f;
-            viscousDampingFactor = 20.0f;
-            engineRpmMax = 1000.0f;
-            engineRpmIdle = 300.0f;
-            retarderBrakingTorque = 6500.0f;
-            fuelInjection = 0.5f;
-            oilConsumptionRate = 0.01f;
-            noOilDamagePerSecond = 30.0f;
-            rpmDamagePerSecond = 0.03f;
-            rpmDamageImmunityTime = 2.0f;
-            overheatingThreshold = 110.0f;
-            overheatingDamagePerDegreePerSecond = 0.1f;
-
-            rpmToPowerCurve = new AnimationCurve()
-            {
-                preWrapMode = WrapMode.ClampForever,
-                postWrapMode = WrapMode.ClampForever,
-                keys = new[]
-                {
-                    new Keyframe
-                    {
-                        time = 0.0f,
-                        value = 0.0f,
-                        inTangent = 1999.44836f,
-                        inWeight = 0.0f,
-                        outTangent = 1999.44836f,
-                        outWeight = 0.213289589f,
-                    },
-                    new Keyframe
-                    {
-                        time = 100.0f,
-                        value = 200000.0f,
-                        inTangent = 645.608948f,
-                        inWeight = 0.335520923f,
-                        outTangent = 645.608948f,
-                        outWeight = 0.03213099f,
-                    },
-                    new Keyframe
-                    {
-                        time = 840.0f,
-                        value = 360000.0f,
-                        inTangent = 0.09395475f,
-                        inWeight = 0.07847808f,
-                        outTangent = 0.09395475f,
-                        outWeight = 0.7684883f,
-                    },
-                    new Keyframe
-                    {
-                        time = 950.0f,
-                        value = 234000.0f,
-                        inTangent = -3051.99121f,
-                        inWeight = 0.116008788f,
-                        outTangent = -3051.99121f,
-                        outWeight = 0.179655761f,
-                    },
-                    new Keyframe
-                    {
-                        time = 1000.0f,
-                        value = 10000.0f,
-                        inTangent = -4480.0f,
-                        inWeight = 0.333333343f,
-                        outTangent = -4480.0f,
-                        outWeight = 0.333333343f,
-                    }
-                }
-            };
-        }
-
-        public void ApplyDH4Defaults()
-        {
-            rotationalInertia = 10.0f;
-            viscousDampingFactor = 40.0f;
-            engineRpmMax = 1600.0f;
-            engineRpmIdle = 600.0f;
-
-            retarderBrakingTorque = 100000.0f;
-
-            fuelInjection = 2.0f;
-            oilConsumptionRate = 0.025f;
-
-            noOilDamagePerSecond = 30.0f;
-            rpmDamagePerSecond = 0.01f;
-            rpmDamageImmunityTime = 2.0f;
-            overheatingThreshold = 110.0f;
-            overheatingDamagePerDegreePerSecond = 0.1f;
-
-            rpmToPowerCurve = new AnimationCurve()
-            {
-                preWrapMode = WrapMode.Loop,
-                postWrapMode = WrapMode.Loop,
-                keys = new[]
-{
-                    new Keyframe
-                    {
-                        time = 0.0f,
-                        value = 0.0f,
-                        inTangent = 842.26666f,
-                        outTangent = 842.26666f,
-                        inWeight = 1 / 3f,
-                        outWeight = 0.031815805f,
-                    },
-                    new Keyframe
-                    {
-                        time = 1500.0f,
-                        value = 1000000.0f,
-                        inTangent = 0.000969854f,
-                        outTangent = 0.000969854f,
-                        inWeight = 1 / 3f,
-                        outWeight = 1.0f,
-                    },
-                    new Keyframe
-                    {
-                        time = 1600.0f,
-                        value = 0.0f,
-                        inTangent = -27790.76f,
-                        outTangent = -27790.76f,
-                        inWeight = 0.062794186f,
-                        outWeight = 1 / 3f,
-                    }
-                }
-            };
-        }
-
         public void ApplyDE2Defaults()
         {
             rotationalInertia = 5.0f;
@@ -220,7 +96,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                 preWrapMode = WrapMode.Loop,
                 postWrapMode = WrapMode.Loop,
                 keys = new[]
-    {
+                {
                     new Keyframe
                     {
                         time = 0.0f,
@@ -284,7 +160,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                 preWrapMode = WrapMode.Loop,
                 postWrapMode = WrapMode.Loop,
                 keys = new[]
-{
+                {
                     new Keyframe
                     {
                         time = 0.0f,
@@ -319,6 +195,189 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                         inTangent = -68105.2f,
                         outTangent = -68105.2f,
                         inWeight = 0.035001222f,
+                        outWeight = 1 / 3f,
+                    }
+                }
+            };
+        }
+
+        public void ApplyDH4Defaults()
+        {
+            rotationalInertia = 10.0f;
+            viscousDampingFactor = 40.0f;
+            engineRpmMax = 1600.0f;
+            engineRpmIdle = 600.0f;
+
+            retarderBrakingTorque = 100000.0f;
+
+            fuelInjection = 2.0f;
+            oilConsumptionRate = 0.025f;
+
+            noOilDamagePerSecond = 30.0f;
+            rpmDamagePerSecond = 0.01f;
+            rpmDamageImmunityTime = 2.0f;
+            overheatingThreshold = 110.0f;
+            overheatingDamagePerDegreePerSecond = 0.1f;
+
+            rpmToPowerCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.Loop,
+                postWrapMode = WrapMode.Loop,
+                keys = new[]
+                {
+                    new Keyframe
+                    {
+                        time = 0.0f,
+                        value = 0.0f,
+                        inTangent = 842.26666f,
+                        outTangent = 842.26666f,
+                        inWeight = 1 / 3f,
+                        outWeight = 0.031815805f,
+                    },
+                    new Keyframe
+                    {
+                        time = 1500.0f,
+                        value = 1000000.0f,
+                        inTangent = 0.000969854f,
+                        outTangent = 0.000969854f,
+                        inWeight = 1 / 3f,
+                        outWeight = 1.0f,
+                    },
+                    new Keyframe
+                    {
+                        time = 1600.0f,
+                        value = 0.0f,
+                        inTangent = -27790.76f,
+                        outTangent = -27790.76f,
+                        inWeight = 0.062794186f,
+                        outWeight = 1 / 3f,
+                    }
+                }
+            };
+        }
+
+        public void ApplyDM3Defaults()
+        {
+            rotationalInertia = 3.0f;
+            viscousDampingFactor = 20.0f;
+            engineRpmMax = 1000.0f;
+            engineRpmIdle = 300.0f;
+
+            retarderBrakingTorque = 6500.0f;
+
+            fuelInjection = 0.5f;
+            oilConsumptionRate = 0.01f;
+
+            noOilDamagePerSecond = 30.0f;
+            rpmDamagePerSecond = 0.03f;
+            rpmDamageImmunityTime = 2.0f;
+            overheatingThreshold = 110.0f;
+            overheatingDamagePerDegreePerSecond = 0.1f;
+
+            rpmToPowerCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
+                keys = new[]
+                {
+                    new Keyframe
+                    {
+                        time = 0.0f,
+                        value = 0.0f,
+                        inTangent = 1999.44836f,
+                        inWeight = 0.0f,
+                        outTangent = 1999.44836f,
+                        outWeight = 0.213289589f,
+                    },
+                    new Keyframe
+                    {
+                        time = 100.0f,
+                        value = 200000.0f,
+                        inTangent = 645.608948f,
+                        inWeight = 0.335520923f,
+                        outTangent = 645.608948f,
+                        outWeight = 0.03213099f,
+                    },
+                    new Keyframe
+                    {
+                        time = 840.0f,
+                        value = 360000.0f,
+                        inTangent = 0.09395475f,
+                        inWeight = 0.07847808f,
+                        outTangent = 0.09395475f,
+                        outWeight = 0.7684883f,
+                    },
+                    new Keyframe
+                    {
+                        time = 950.0f,
+                        value = 234000.0f,
+                        inTangent = -3051.99121f,
+                        inWeight = 0.116008788f,
+                        outTangent = -3051.99121f,
+                        outWeight = 0.179655761f,
+                    },
+                    new Keyframe
+                    {
+                        time = 1000.0f,
+                        value = 10000.0f,
+                        inTangent = -4480.0f,
+                        inWeight = 0.333333343f,
+                        outTangent = -4480.0f,
+                        outWeight = 0.333333343f,
+                    }
+                }
+            };
+        }
+
+        public void ApplyDM1UDefaults()
+        {
+            rotationalInertia = 2.0f;
+            viscousDampingFactor = 10.0f;
+            engineRpmMax = 2200.0f;
+            engineRpmIdle = 700.0f;
+
+            retarderBrakingTorque = 6500.0f;
+
+            fuelInjection = 0.1f;
+            oilConsumptionRate = 0.001f;
+
+            noOilDamagePerSecond = 30.0f;
+            rpmDamagePerSecond = 0.006f;
+            rpmDamageImmunityTime = 2.0f;
+            overheatingThreshold = 110.0f;
+            overheatingDamagePerDegreePerSecond = 0.1f;
+
+            rpmToPowerCurve = new AnimationCurve()
+            {
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
+                keys = new[]
+                {
+                    new Keyframe
+                    {
+                        time = 0.0f,
+                        value = 0.0f,
+                        inTangent = 73.12201f,
+                        outTangent = 73.12201f,
+                        inWeight = 0.0f,
+                        outWeight = 0.030582821f,
+                    },
+                    new Keyframe
+                    {
+                        time = 1900.0f,
+                        value = 110000.0f,
+                        inTangent = 0.09395475f,
+                        outTangent = 0.09395475f,
+                        inWeight = 0.07847808f,
+                        outWeight = 0.7684883f,
+                    },
+                    new Keyframe
+                    {
+                        time = 2500.0f,
+                        value = 0.0f,
+                        inTangent = -550 / 3f,
+                        outTangent = -550 / 3f,
+                        inWeight = 1 / 3f,
                         outWeight = 1 / 3f,
                     }
                 }

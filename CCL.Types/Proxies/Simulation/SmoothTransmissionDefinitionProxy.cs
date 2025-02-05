@@ -1,11 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class SmoothTransmissionDefinitionProxy : SimComponentDefinitionProxy
+    public class SmoothTransmissionDefinitionProxy : SimComponentDefinitionProxy, IDM1UDefaults
     {
         public float transitionTime = 1f;
         public float[] gearRatios;
@@ -39,6 +38,8 @@ namespace CCL.Types.Proxies.Simulation
         [RenderMethodButtons]
         public bool renderButtons;
 
+        #region Defaults
+
         public void ApplyDM3BoxADefaults()
         {
             ApplyDM3Defaults(new float[] { 5, 3, 2 });
@@ -70,5 +71,37 @@ namespace CCL.Types.Proxies.Simulation
                 }
             };
         }
+
+        public void ApplyDM1UDefaults()
+        {
+            transitionTime = 1;
+            gearRatios = new[]
+            {
+                0f,
+                15f,
+                10.6f,
+                7.8f,
+                5.8f,
+                4.4f,
+                3.4f
+            };
+            transmissionEfficiency = 1;
+            gearChangeEaseCurve = new AnimationCurve
+            {
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
+                keys = new Keyframe[]
+                {
+                    new Keyframe(0, 0, 2, 2),
+                    new Keyframe(0.528225541f, 0.949414432f, 0.401515067f, 0.401515067f, 0.333333343f, 0.1374266f),
+                    new Keyframe(1, 1, 0, 0, 0.232664958f, 0),
+                }
+            };
+
+            powerShiftRpmThreshold = 500;
+            powerShiftDamage = 10;
+        }
+
+        #endregion
     }
 }
