@@ -231,6 +231,14 @@ namespace CCL.Creator.Wizards.SimSetup
 
             // Apply defaults.
             ApplyMethodToAll<IDM3Defaults>(s => s.ApplyDM3Defaults());
+
+            // Control blockers.
+            AddControlBlocker(throttle, retarder, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", 20, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", -20, BlockType.BLOCK_ON_BELOW_THRESHOLD);
+
+            AddControlBlocker(retarder, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
         }
 
         private void CreateDM1U()
