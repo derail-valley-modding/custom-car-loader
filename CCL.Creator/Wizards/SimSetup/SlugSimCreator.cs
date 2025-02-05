@@ -64,20 +64,20 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPorts(tm, "TORQUE_OUT", transmission, "TORQUE_IN");
             ConnectPorts(transmission, "TORQUE_OUT", traction, "TORQUE_IN");
 
-            ConnectPortRef(sand, "AMOUNT", sander, "SAND");
-            ConnectPortRef(sand, "CONSUME_EXT_IN", sander, "SAND_CONSUMPTION");
+            ConnectPortRef(sander, "SAND", sand, "AMOUNT");
+            ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
 
-            ConnectPortRef(traction, "WHEEL_RPM_EXT_IN", tmRpm, "WHEEL_RPM");
-            ConnectPortRef(transmission, "GEAR_RATIO", tmRpm, "GEAR_RATIO");
+            ConnectPortRef(tmRpm, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
+            ConnectPortRef(tmRpm, "GEAR_RATIO", transmission, "GEAR_RATIO");
 
-            ConnectPortRef(throttle, "EXT_IN", tm, "THROTTLE");
-            ConnectPortRef(reverser, "REVERSER", tm, "REVERSER");
-            ConnectPortRef(dynBrake, "EXT_IN", tm, "DYNAMIC_BRAKE");
+            ConnectPortRef(tm, "THROTTLE", throttle, "EXT_IN");
+            ConnectPortRef(tm, "REVERSER", reverser, "REVERSER");
+            ConnectPortRef(tm, "DYNAMIC_BRAKE", dynBrake, "EXT_IN");
 
-            // tm.CONFIGURATION_OVERRIDE
-            ConnectPortRef(tmRpm, "TM_RPM", tm, "MOTOR_RPM");
-            ConnectPortRef(voltFeed, "APPLIED_VOLTAGE_EXT_IN", tm, "APPLIED_VOLTAGE");
-            // tm.TM_TEMPERATURE
+            ConnectEmptyPortRef(tm, "CONFIGURATION_OVERRIDE");
+            ConnectPortRef(tm, "MOTOR_RPM", tmRpm, "TM_RPM");
+            ConnectPortRef(tm, "APPLIED_VOLTAGE", voltFeed, "APPLIED_VOLTAGE_EXT_IN");
+            ConnectEmptyPortRef(tm, "TM_TEMPERATURE");
 
             ApplyMethodToAll<IDE6Defaults>(s => s.ApplyDE6Defaults());
 
