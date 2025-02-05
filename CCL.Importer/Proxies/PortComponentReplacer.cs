@@ -19,6 +19,7 @@ namespace CCL.Importer.Proxies
             CreateMap<ConstantPortDefinitionProxy, ConfigurablePortDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableAddDefinitionProxy, ConfigurableAddDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableMultiplierDefinitionProxy, ConfigurableMultiplierDefinition>().AutoCacheAndMap();
+            CreateMap<ConfigurableFunctionDefinitionProxy, ConfigurableFunctionDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurablePortsDefinitionProxy, ConfigurablePortsDefinition>().AutoCacheAndMap()
                 .ForMember(d => d.ports, o => o.MapFrom(s => s.Ports.Select(p => p.Port).ToArray()))
                 .ForMember(d => d.startingValues, o => o.MapFrom(s => s.Ports.Select(p => p.StartingValue).ToArray()));

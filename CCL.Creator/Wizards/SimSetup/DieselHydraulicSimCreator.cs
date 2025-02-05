@@ -51,7 +51,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
-            var engine = CreateDieselEngine(out var engineOff, out var engineOn, out var environmentDamage, out var engineExplosion);
+            var engine = CreateDieselEngine(true);
 
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");

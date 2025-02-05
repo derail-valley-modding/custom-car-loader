@@ -7,6 +7,7 @@ using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Wheels;
 using UnityEngine;
+
 using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
 
 namespace CCL.Creator.Wizards.SimSetup
@@ -70,7 +71,7 @@ namespace CCL.Creator.Wizards.SimSetup
             driveRpmCalc.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
             driveRpmCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "DRIVE_SHAFT_RPM");
 
-            var engine = CreateDieselEngine(out var engineOff, out var engineOn, out var environmentDamage, out var engineExplosion);
+            var engine = CreateDieselEngine(true);
 
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
@@ -272,7 +273,7 @@ namespace CCL.Creator.Wizards.SimSetup
             driveRpmCalc.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
             driveRpmCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "DRIVE_SHAFT_RPM");
 
-            var engine = CreateDieselEngine(out var engineOff, out var engineOn, out var environmentDamage, out var engineExplosion);
+            var engine = CreateDieselEngine(true);
 
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
