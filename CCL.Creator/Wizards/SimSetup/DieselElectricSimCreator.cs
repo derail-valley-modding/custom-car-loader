@@ -45,8 +45,8 @@ namespace CCL.Creator.Wizards.SimSetup
             var horn = CreateSimComponent<HornDefinitionProxy>("horn");
             horn.controlNeutralAt0 = true;
 
-            ExternalControlDefinitionProxy bellControl = null!;
-            ElectricBellDefinitionProxy bell = null!;
+            ExternalControlDefinitionProxy? bellControl = null;
+            ElectricBellDefinitionProxy? bell = null;
 
             if (HasBell(basisIndex))
             {
@@ -155,7 +155,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(thrtPowr, "MAX_POWER", engine, "MAX_POWER");
 
             ConnectPortRef(horn, "HORN_CONTROL", genericHornControl, "CONTROL");
-            if (bell != null)
+            if (bell != null && bellControl != null)
             {
                 ConnectPortRef(bell, "CONTROL", bellControl, "EXT_IN");
             }
