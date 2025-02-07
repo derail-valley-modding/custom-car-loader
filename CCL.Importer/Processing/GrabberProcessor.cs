@@ -132,7 +132,7 @@ namespace CCL.Importer.Processing
             Type t;
             FieldInfo fi;
 
-            foreach (TGrabber grabber in prefab.GetComponentsInChildren<TGrabber>())
+            foreach (TGrabber grabber in prefab.GetComponentsInChildren<TGrabber>(true))
             {
                 t = grabber.ScriptToAffect.GetType();
 
@@ -179,7 +179,7 @@ namespace CCL.Importer.Processing
 
         private static void ProcessMaterialGrabberRenderer(GameObject prefab)
         {
-            foreach (var grabber in prefab.GetComponentsInChildren<MaterialGrabberRenderer>())
+            foreach (var grabber in prefab.GetComponentsInChildren<MaterialGrabberRenderer>(true))
             {
                 foreach (var renderer in grabber.RenderersToAffect)
                 {
@@ -216,7 +216,7 @@ namespace CCL.Importer.Processing
 
         private static void ProcessMeshGrabberFilter(GameObject prefab)
         {
-            foreach (var grabber in prefab.GetComponentsInChildren<MeshGrabberFilter>())
+            foreach (var grabber in prefab.GetComponentsInChildren<MeshGrabberFilter>(true))
             {
                 if (grabber.Filter != null)
                 {
@@ -240,7 +240,7 @@ namespace CCL.Importer.Processing
 
         private static void ProcessSoundGrabberSource(GameObject prefab)
         {
-            foreach (var grabber in prefab.GetComponentsInChildren<SoundGrabberSource>())
+            foreach (var grabber in prefab.GetComponentsInChildren<SoundGrabberSource>(true))
             {
                 if (grabber.Source != null)
                 {
