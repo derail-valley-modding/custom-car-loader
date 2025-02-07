@@ -29,6 +29,7 @@ namespace CCL.Importer.Proxies.Headlights
                 .AfterMap(VolumetricLightBeamAfter);
 
             CreateMap<AutomaticHeadlightsControllerProxy, AutomaticHeadlightsController>().AutoCacheAndMap();
+            CreateMap<RearConnectedDualCarAutomaticHeadlightsControllerProxy, RearConnectedDualCarAutomaticHeadlightsController>().AutoCacheAndMap();
 
             CreateMap<CarLightsOptimizerProxy, CarLightsOptimizer>().AutoCacheAndMap()
                 .ForMember(d => d.beamController, o => o.MapFrom(s => Mapper.GetFromCache(s.beamController)))
