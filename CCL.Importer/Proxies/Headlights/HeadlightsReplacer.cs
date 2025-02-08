@@ -51,6 +51,15 @@ namespace CCL.Importer.Proxies.Headlights
                 (HeadlightsMainController.HeadlightSetting)setup.setting,
                 setup.subControllers.Select(subcontroller => (HeadlightsSubControllerBase)Mapper.GetFromCache(subcontroller)).ToArray(),
                 setup.mainOffSetup)).ToArray();
+
+            foreach (var item in proxy.headlightSetupsFront)
+            {
+                Object.Destroy(item);
+            }
+            foreach (var item in proxy.headlightSetupsRear)
+            {
+                Object.Destroy(item);
+            }
         }
 
         private VolumetricBeamControllerBase.VolumetricBeamData MapBeam(VolumetricBeamControllerBaseProxy.VolumetricBeamData data)
