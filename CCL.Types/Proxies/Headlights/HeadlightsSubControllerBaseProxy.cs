@@ -12,8 +12,7 @@ namespace CCL.Types.Proxies.Headlights
         }
 
         public bool isFront;
-        [SerializeField]
-        protected HeadlightMUDependency multipleUnityDependent;
+        public HeadlightMUDependency multipleUnityDependent;
         public HeadlightProxy[] headlights;
         public Light[] lightSources;
     }
