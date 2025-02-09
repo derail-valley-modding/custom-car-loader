@@ -22,7 +22,7 @@ namespace CCL.Importer.Processing
 
         private void FixEmptyPortIds(GameObject prefab)
         {
-            foreach (var component in prefab.GetComponentsInChildren<Component>())
+            foreach (var component in prefab.GetComponentsInChildren<Component>(true))
             {
                 const BindingFlags ALL_INSTANCE = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 

@@ -26,7 +26,7 @@ namespace CCL.Importer
         {
             public void StoreComponentsInChildrenInCache(GameObject prefab);
 
-            public void ConvertFromCache(GameObject prefab);
+            public void ConvertFromCache();
         }
 
         private class CacheConfig<TSource, TDestination> : ICacheConfig
@@ -34,6 +34,7 @@ namespace CCL.Importer
             where TDestination : MonoBehaviour
         {
             private Predicate<TSource>? _shouldMap;
+            private TSource[] _sourceComponents = null!;
 
             public CacheConfig()
             {
@@ -47,7 +48,10 @@ namespace CCL.Importer
 
             public void StoreComponentsInChildrenInCache(GameObject prefab)
             {
-                foreach (var source in prefab.GetComponentsInChildren<TSource>())
+                // Cache the found components to avoid calling this twice.
+                _sourceComponents = prefab.GetComponentsInChildren<TSource>(true);
+
+                foreach (var source in _sourceComponents)
                 {
                     // If the class inherits from another that is also mapped,
                     // skip it so it doesn't get added to the dictionary twice.
@@ -62,9 +66,11 @@ namespace CCL.Importer
                 }
             }
 
-            public void ConvertFromCache(GameObject prefab)
+            public void ConvertFromCache()
             {
-                foreach (MonoBehaviour source in prefab.GetComponentsInChildren<TSource>())
+                // This is only ever called right after the previous one,
+                // so it should NEVER be null.
+                foreach (MonoBehaviour source in _sourceComponents)
                 {
                     if (s_componentMapCache.TryGetValue(source, out MonoBehaviour cached))
                     {
@@ -84,8 +90,7 @@ namespace CCL.Importer
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            ICacheConfig config = new CacheConfig<TSource, TDestination>();
-            s_configCache.Add(config);
+            s_configCache.Add(new CacheConfig<TSource, TDestination>());
         }
 
         /// <summary>
@@ -115,7 +120,7 @@ namespace CCL.Importer
             // Then map all components that were created.
             foreach (var item in s_configCache)
             {
-                item.ConvertFromCache(prefab);
+                item.ConvertFromCache();
             }
         }
 
