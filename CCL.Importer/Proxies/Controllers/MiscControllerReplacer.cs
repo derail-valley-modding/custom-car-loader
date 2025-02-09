@@ -61,6 +61,9 @@ namespace CCL.Importer.Proxies.Controllers
                 .AfterMap(BlowbackParticlePortReaderAfter);
 
             CreateMap<ClapperControllerProxy, ClapperController>().AutoCacheAndMap();
+
+            CreateMap<LightIntensityPortModifierProxy, LightIntensityPortModifier>().AutoCacheAndMap()
+                .ForMember(d => d.cabLightsController, o => o.MapFrom(s => Mapper.GetFromCache(s.cabLightsController)));
         }
 
         private void DeadTractionMotorsControllerAfter(DeadTractionMotorsControllerProxy _, DeadTractionMotorsController controller)

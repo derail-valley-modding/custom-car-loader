@@ -331,6 +331,38 @@ namespace CCL.Creator.Utility
                 }
             };
         }
+
+        public static bool DrawStringArray(string label, ref string[] array, bool expanded)
+        {
+            return DrawStringArray(new GUIContent(label), ref array, expanded);
+        }
+
+        public static bool DrawStringArray(string label, string tooltip, ref string[] array, bool expanded)
+        {
+            return DrawStringArray(new GUIContent(label, tooltip), ref array, expanded);
+        }
+
+        public static bool DrawStringArray(GUIContent label, ref string[] array, bool expanded)
+        {
+            expanded = EditorGUILayout.Foldout(expanded, label);
+
+            if (expanded)
+            {
+                int size = Mathf.Max(0, EditorGUILayout.DelayedIntField("Size", array.Length));
+
+                if (array.Length != size)
+                {
+                    Array.Resize(ref array, size);
+                }
+
+                for (int i = 0; i < size; i++)
+                {
+                    array[i] = EditorGUILayout.TextField($"Item {i}", array[i]);
+                }
+            }
+
+            return expanded;
+        }
     }
 
     internal class GUIColorScope : IDisposable

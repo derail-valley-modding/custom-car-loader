@@ -30,6 +30,8 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var dynamo = CreateSimComponent<ConstantPortDefinitionProxy>("dynamoFlowDummy");
             dynamo.port.ID = "DYNAMO_FLOW_NORMALIZED";
+            dynamo.port.type = DVPortType.READONLY_OUT;
+            dynamo.port.valueType = DVPortValueType.STATE;
             CreateBroadcastConsumer(dynamo, dynamo.port.ID, DVPortForwardConnectionType.COUPLED_FRONT, "DYNAMO_FLOW", 0, false);
 
             var fuseController = CreateSimComponent<FuseControllerDefinitionProxy>("electronicsFuseControllerDummy");

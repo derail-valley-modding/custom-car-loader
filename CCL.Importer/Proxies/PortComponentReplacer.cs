@@ -24,6 +24,8 @@ namespace CCL.Importer.Proxies
                 .ForMember(d => d.ports, o => o.MapFrom(s => s.Ports.Select(p => p.Port).ToArray()))
                 .ForMember(d => d.startingValues, o => o.MapFrom(s => s.Ports.Select(p => p.StartingValue).ToArray()));
             CreateMap<MultiplePortSumDefinitionProxy, MultiplePortSumDefinition>().AutoCacheAndMap();
+            CreateMap<MultiplePortDecoderEncoderDefinitionProxy, MultiplePortDecoderEncoderDefinition>().AutoCacheAndMap();
+            CreateMap<MultiplePortDecoderEncoderDefinitionProxy.FloatArray, MultiplePortDecoderEncoderDefinition.FloatArray>();
 
             CreateMap<IndependentFusesDefinitionProxy, IndependentFusesDefinition>().AutoCacheAndMap();
 
