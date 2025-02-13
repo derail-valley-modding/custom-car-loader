@@ -77,19 +77,19 @@ namespace CCL.Creator.Utility
             return SearchDisksForPath(steamModPath);
         }
 
-        public static T ObjectField<T>(T obj, bool allowSceneObjects, params GUILayoutOption[] options)
+        public static T ObjectField<T>(T? obj, bool allowSceneObjects, params GUILayoutOption[] options)
             where T : UnityEngine.Object
         {
             return (T)EditorGUILayout.ObjectField(obj, typeof(T), allowSceneObjects, options);
         }
 
-        public static T ObjectField<T>(GUIContent label, T obj, bool allowSceneObjects, params GUILayoutOption[] options)
+        public static T ObjectField<T>(GUIContent label, T? obj, bool allowSceneObjects, params GUILayoutOption[] options)
             where T : UnityEngine.Object
         {
             return (T)EditorGUILayout.ObjectField(label, obj, typeof(T), allowSceneObjects, options);
         }
 
-        public static T ObjectField<T>(string label, T obj, bool allowSceneObjects, params GUILayoutOption[] options)
+        public static T ObjectField<T>(string label, T? obj, bool allowSceneObjects, params GUILayoutOption[] options)
             where T : UnityEngine.Object
         {
             return (T)EditorGUILayout.ObjectField(label, obj, typeof(T), allowSceneObjects, options);

@@ -47,6 +47,8 @@ namespace CCL.Importer
             //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id))}\"");
             //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.carTypes.Select(x => x.id))}\"");
             //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.CarKinds.Select(x => x.id))}\"");
+            //Log($"{string.Join("\",\n\"", DV.Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"))}");
+            //Log($"{string.Join("\n", DV.Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car => $"- {car.id}:\n\"{string.Join("\",\n\"", DV.Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo)) }\""))}");
 
             return true;
         }

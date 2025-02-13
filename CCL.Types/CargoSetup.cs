@@ -9,7 +9,7 @@ namespace CCL.Types
     [CreateAssetMenu(menuName = "CCL/Cargo Setup")]
     public class CargoSetup : ScriptableObject, IAssetLoadCallback
     {
-        public CargoEntry[] Entries = new CargoEntry[0];
+        public List<CargoEntry> Entries = new List<CargoEntry>();
 
         [SerializeField, HideInInspector]
         private GameObject[]? _models;
@@ -20,6 +20,7 @@ namespace CCL.Types
 
         [RenderMethodButtons, SerializeField]
         [MethodButton(nameof(SortEntries), "Sort Entries")]
+        [MethodButton("CCL.Creator.Wizards.CargoWizard:ShowWindowForSetup", "Open Wizard")]
         private bool _buttons;
 
         private void OnValidate()
@@ -41,14 +42,14 @@ namespace CCL.Types
 
         public void AfterAssetLoad(AssetBundle bundle)
         {
-            Entries = JSONObject.FromJson(_json, () => new CargoEntry[0]);
+            Entries = JSONObject.FromJson(_json, () => new List<CargoEntry>());
 
             if (_counts == null || _models == null) return;
 
             int index = 0;
             int count;
 
-            for (int i = 0; i < Entries.Length; i++)
+            for (int i = 0; i < Entries.Count; i++)
             {
                 count = _counts[i];
 
@@ -65,7 +66,7 @@ namespace CCL.Types
                 .OrderBy(x => x.CargoId)
                 .OrderBy(x => !IdV2.Cargos.Any(y => y == x.CargoId))
                 .OrderBy(x => string.IsNullOrEmpty(x.CargoId))
-                .ToArray();
+                .ToList();
         }
     }
 
