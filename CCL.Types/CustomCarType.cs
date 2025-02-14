@@ -145,7 +145,7 @@ namespace CCL.Types
 
             if (CargoSetup != null)
             {
-                CargoSetup.AfterAssetLoad(bundle);
+                CargoSetup.AfterImport();
             }
 
             brakes = JSONObject.FromJson<BrakesSetup>(brakesJson) ?? new BrakesSetup();

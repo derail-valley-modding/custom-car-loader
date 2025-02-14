@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CCL.Types
 {
     [CreateAssetMenu(menuName = "CCL/Cargo Setup")]
-    public class CargoSetup : ScriptableObject, IAssetLoadCallback
+    public class CargoSetup : ScriptableObject, ICustomSerialized
     {
         public List<CargoEntry> Entries = new List<CargoEntry>();
 
@@ -25,7 +25,7 @@ namespace CCL.Types
 
         public bool IsEmpty => Entries.Count == 0;
 
-        private void OnValidate()
+        public void OnValidate()
         {
             var models = new List<GameObject>();
             var counts = new List<int>();
@@ -42,7 +42,7 @@ namespace CCL.Types
             _json = JSONObject.ToJson(Entries);
         }
 
-        public void AfterAssetLoad(AssetBundle bundle)
+        public void AfterImport()
         {
             Entries = JSONObject.FromJson(_json, () => new List<CargoEntry>());
 
