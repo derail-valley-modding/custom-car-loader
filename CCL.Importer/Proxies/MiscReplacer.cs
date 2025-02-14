@@ -68,9 +68,13 @@ namespace CCL.Importer.Proxies
 
         private void ResourceExplosionBaseAfter(ResourceExplosionBaseProxy src, ResourceExplosionBase dest)
         {
-            if (Globals.G.Types.TryGetCargo(src.explosionLiquid, out var cargo))
+            if (Utilities.IsVanillaCargo(src.explosionLiquid) && Globals.G.Types.TryGetCargo(src.explosionLiquid, out var cargo))
             {
                 dest.explosionLiquid = cargo.v1;
+            }
+            else
+            {
+                CCLPlugin.Error($"Cargo type '{src.explosionLiquid}' is not a vanilla cargo, this is not supported for ResourceExplosionBase!");
             }
         }
 
