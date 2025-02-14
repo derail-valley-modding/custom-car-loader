@@ -4,42 +4,11 @@ using DV.Damage;
 using DV.Simulation.Brake;
 using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
-using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
-using LocoSim.Definitions;
-using System;
-using UnityEngine;
 
 namespace CCL.Importer.Proxies.Controllers
 {
     internal class MiscControllerReplacer : Profile
     {
-        private static DeadTractionMotorsController? s_de6deadTM;
-        private static GameObject? s_boilerExplosion;
-        private static GameObject? s_electricExplosion;
-        private static GameObject? s_hydraulicExplosion;
-        private static GameObject? s_mechanicalExplosion;
-        private static GameObject? s_tmOverspeedExplosion;
-        private static GameObject? s_fireExplosion;
-
-        private static DeadTractionMotorsController DE6DeadTM => Extensions.GetCached(ref s_de6deadTM,
-            () => QuickAccess.Locomotives.DE6.prefab.GetComponentInChildren<DeadTractionMotorsController>());
-        private static GameObject BoilerExplosion => Extensions.GetCached(ref s_boilerExplosion,
-            () => QuickAccess.Locomotives.S282A.prefab.GetComponentInChildren<BoilerDefinition>()
-                .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
-        private static GameObject ElectricExplosion => Extensions.GetCached(ref s_electricExplosion,
-            () => DE6DeadTM.tmBlowPrefab);
-        private static GameObject HydraulicExplosion => Extensions.GetCached(ref s_hydraulicExplosion,
-            () => QuickAccess.Locomotives.DH4.prefab.GetComponentInChildren<HydraulicTransmissionDefinition>()
-                .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
-        private static GameObject MechanicalExplosion => Extensions.GetCached(ref s_mechanicalExplosion,
-            () => QuickAccess.Locomotives.DM3.prefab.GetComponentInChildren<DieselEngineDirectDefinition>()
-                .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
-        private static GameObject TMOverspeedExplosion => Extensions.GetCached(ref s_tmOverspeedExplosion,
-            () => DE6DeadTM.GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
-        private static GameObject FireExplosion => Extensions.GetCached(ref s_fireExplosion,
-            () => QuickAccess.Locomotives.S282A.prefab.GetComponentInChildren<BlowbackParticlePortReader>().blowbackParticlesPrefab);
-
         public MiscControllerReplacer()
         {
             CreateMap<DamageControllerProxy, DamageController>().AutoCacheAndMap();
@@ -47,7 +16,7 @@ namespace CCL.Importer.Proxies.Controllers
             CreateMap<DeadTractionMotorsControllerProxy, DeadTractionMotorsController>().AutoCacheAndMap()
                 .AfterMap(DeadTractionMotorsControllerAfter);
             CreateMap<ExplosionActivationOnSignalProxy, ExplosionActivationOnSignal>().AutoCacheAndMap()
-                .AfterMap(ExplosionActivationOnSignalAfter);
+                .ForMember(d => d.explosionPrefab, o => o.MapFrom(s => QuickAccess.Explosions.GetExplosionPrefab(s.explosionPrefab)));
             CreateMap<EngineOnReaderProxy, EngineOnReader>().AutoCacheAndMap();
             CreateMap<EnvironmentDamagerProxy, EnvironmentDamager>().AutoCacheAndMap();
 
@@ -58,7 +27,7 @@ namespace CCL.Importer.Proxies.Controllers
 
             CreateMap<WindowsBreakingControllerProxy, WindowsBreakingController>().AutoCacheAndMap();
             CreateMap<BlowbackParticlePortReaderProxy, BlowbackParticlePortReader>().AutoCacheAndMap()
-                .AfterMap(BlowbackParticlePortReaderAfter);
+                .ForMember(d => d.blowbackParticlesPrefab, o => o.MapFrom(s => QuickAccess.Explosions.GetExplosionPrefab(s.blowbackParticlesPrefab)));
 
             CreateMap<ClapperControllerProxy, ClapperController>().AutoCacheAndMap();
 
@@ -68,30 +37,9 @@ namespace CCL.Importer.Proxies.Controllers
 
         private void DeadTractionMotorsControllerAfter(DeadTractionMotorsControllerProxy _, DeadTractionMotorsController controller)
         {
-            controller.firePrefab = DE6DeadTM.firePrefab;
-            controller.sparksPrefab = DE6DeadTM.sparksPrefab;
-            controller.tmBlowPrefab = DE6DeadTM.tmBlowPrefab;
+            controller.firePrefab = QuickAccess.Explosions.DE6DeadTM.firePrefab;
+            controller.sparksPrefab = QuickAccess.Explosions.DE6DeadTM.sparksPrefab;
+            controller.tmBlowPrefab = QuickAccess.Explosions.DE6DeadTM.tmBlowPrefab;
         }
-
-        private void ExplosionActivationOnSignalAfter(ExplosionActivationOnSignalProxy proxy, ExplosionActivationOnSignal explosion)
-        {
-            explosion.explosionPrefab = GetExplosionPrefab(proxy.explosion);
-        }
-
-        private void BlowbackParticlePortReaderAfter(BlowbackParticlePortReaderProxy proxy, BlowbackParticlePortReader reader)
-        {
-            reader.blowbackParticlesPrefab = GetExplosionPrefab(proxy.BlowbackPrefab);
-        }
-
-        private static GameObject GetExplosionPrefab(ExplosionPrefab explosionPrefab) => explosionPrefab switch
-        {
-            ExplosionPrefab.Boiler => BoilerExplosion,
-            ExplosionPrefab.Electric => ElectricExplosion,
-            ExplosionPrefab.Hydraulic => HydraulicExplosion,
-            ExplosionPrefab.Mechanical => MechanicalExplosion,
-            ExplosionPrefab.TMOverspeed => TMOverspeedExplosion,
-            ExplosionPrefab.Fire => FireExplosion,
-            _ => null!
-        };
     }
 }

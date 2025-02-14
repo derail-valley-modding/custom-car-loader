@@ -10,51 +10,42 @@ namespace CCL.Creator.Validators
 
         public override ValidationResult Validate(CustomCarType car)
         {
-            if (car.CargoTypes.IsEmpty)
+            if (car.CargoSetup == null || car.CargoSetup.IsEmpty)
             {
                 return Skip();
             }
 
             var result = Pass();
-            var hashCargo = new HashSet<BaseCargoType>();
             var hashId = new HashSet<string>();
 
-            foreach (var cargo in car.CargoTypes.Entries)
+            for (int i = 0; i < car.CargoSetup.Entries.Count; i++)
             {
+                var cargo = car.CargoSetup.Entries[i];
+
                 if (cargo.AmountPerCar <= 0)
                 {
                     result.Fail("Cannot have 0 or negative cargo amount per car");
                 }
-                if (cargo.CargoType == BaseCargoType.None)
+
+                if (string.IsNullOrEmpty(cargo.CargoId))
                 {
-                    result.Fail("Cannot load cargo of type None");
-                }
-                else if (cargo.IsCustom)
-                {
-                    if (hashId.Contains(cargo.CustomCargoId))
-                    {
-                        result.Warning($"Repeated instance of custom cargo '{cargo.CustomCargoId}'");
-                    }
-                    else
-                    {
-                        hashId.Add(cargo.CustomCargoId);
-                    }
+                    result.Fail("Cargo ID is empty");
                 }
                 else
                 {
-                    if (hashCargo.Contains(cargo.CargoType))
+                    if (hashId.Contains(cargo.CargoId))
                     {
-                        result.Warning($"Repeated instance of cargo '{cargo.CargoType}'");
+                        result.Warning($"Repeated instance of cargo '{cargo.CargoId}'");
                     }
                     else
                     {
-                        hashCargo.Add(cargo.CargoType);
+                        hashId.Add(cargo.CargoId);
                     }
                 }
 
-                if (cargo.ModelVariants != null)
+                if (cargo.Models != null)
                 {
-                    foreach (var model in cargo.ModelVariants)
+                    foreach (var model in cargo.Models)
                     {
                         CheckModelVariant(result, model);
                     }

@@ -188,6 +188,7 @@ namespace CCL.Types
             "Tanks",
             "MilitaryTrucks",
             "MilitarySupplies",
+            // Yes that is wrong.
             "AttackHelicopsters",
             "Missiles",
             "MilitaryCars",

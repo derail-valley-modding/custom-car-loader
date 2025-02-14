@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies;
+﻿using CCL.Types;
+using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -84,7 +85,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var fluidCoupler = CreateSimComponent<HydraulicTransmissionDefinitionProxy>("fluidCoupler");
             var couplerExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(fluidCoupler);
-            couplerExplosion.explosion = ExplosionPrefab.Hydraulic;
+            couplerExplosion.explosionPrefab = ExplosionPrefab.Hydraulic;
             couplerExplosion.bodyDamagePercentage = 0.1f;
             couplerExplosion.windowsBreakingDelay = 0.4f;
             couplerExplosion.explosionSignalPortId = FullPortId(fluidCoupler, "IS_BROKEN");
@@ -286,7 +287,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var fluidCoupler = CreateSimComponent<HydraulicTransmissionDefinitionProxy>("fluidCoupler");
             var couplerExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(fluidCoupler);
-            couplerExplosion.explosion = ExplosionPrefab.Hydraulic;
+            couplerExplosion.explosionPrefab = ExplosionPrefab.Hydraulic;
             couplerExplosion.bodyDamagePercentage = 0.1f;
             couplerExplosion.windowsBreakingDelay = 0.4f;
             couplerExplosion.explosionSignalPortId = FullPortId(fluidCoupler, "IS_BROKEN");

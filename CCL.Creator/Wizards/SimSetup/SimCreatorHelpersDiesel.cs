@@ -24,7 +24,7 @@ namespace CCL.Creator.Wizards.SimSetup
             if (createExplosion)
             {
                 var engineExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(engine);
-                engineExplosion.explosion = ExplosionPrefab.Mechanical;
+                engineExplosion.explosionPrefab = ExplosionPrefab.Mechanical;
                 engineExplosion.bodyDamagePercentage = 0.1f;
                 engineExplosion.explosionSignalPortId = FullPortId(engine, "IS_BROKEN");
             }

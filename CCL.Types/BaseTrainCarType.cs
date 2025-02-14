@@ -141,4 +141,13 @@
         EnvironmentDamageFuel = 201,
         EnvironmentDamageCoal = 202
     }
+
+    public enum DVTrainCarKind
+    {
+        Car,
+        Caboose,
+        Loco,
+        Tender,
+        Slug
+    }
 }

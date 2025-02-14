@@ -16,6 +16,7 @@
         BoxcarMilitary,
         Refrigerator,
         Hopper,
+        HopperCovered,
         Gondola,
         Passenger,
         NuclearFlask

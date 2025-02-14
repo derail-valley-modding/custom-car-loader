@@ -2,7 +2,6 @@
 using CCL.Types.Catalog;
 using DV;
 using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using DVLangHelper.Data;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace CCL.Importer.Types
 
         public DVTrainCarKind KindSelection;
         public TranslationData NameTranslations = new();
-        public LoadableCargo? CargoTypes;
+        public CargoSetup? CargoSetup;
         public GameObject[] ExtraModels = new GameObject[0];
         public CatalogPage? CatalogPage;
         public ExtraTranslations ExtraTranslations;
@@ -30,15 +29,15 @@ namespace CCL.Importer.Types
         {
             get
             {
-                if ((CargoTypes == null) || CargoTypes.IsEmpty) yield break;
+                if ((CargoSetup == null) || CargoSetup.IsEmpty) yield break;
 
-                foreach (var cargoType in CargoTypes.Entries)
+                foreach (var cargo in CargoSetup.Entries)
                 {
-                    if (cargoType.ModelVariants == null) continue;
+                    if (cargo.Models == null) continue;
 
-                    foreach (var variant in cargoType.ModelVariants)
+                    foreach (var model in cargo.Models)
                     {
-                        yield return variant;
+                        yield return model;
                     }
                 }
             }
@@ -48,34 +47,18 @@ namespace CCL.Importer.Types
         {
             Dictionary<string, float> dict = new();
 
-            if (CargoTypes == null || CargoTypes.IsEmpty)
+            if (CargoSetup == null || CargoSetup.IsEmpty)
             {
                 return dict;
             }
 
-            foreach (var item in CargoTypes.Entries)
+            foreach (var item in CargoSetup.Entries)
             {
-                string id;
+                if (!Globals.G.types.TryGetCargo(item.CargoId, out _)) continue;
 
-                if (item.IsCustom)
+                if (!dict.ContainsKey(item.CargoId))
                 {
-                    if (Globals.G.types.TryGetCargo(item.CustomCargoId, out _))
-                    {
-                        id = item.CustomCargoId;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else
-                {
-                    id = ((CargoType)item.CargoType).ToV2().id;
-                }
-
-                if (!dict.ContainsKey(id))
-                {
-                    dict.Add(id, item.AmountPerCar);
+                    dict.Add(item.CargoId, item.AmountPerCar);
                 }
             }
 

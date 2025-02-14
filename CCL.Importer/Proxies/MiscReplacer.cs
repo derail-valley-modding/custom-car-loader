@@ -30,10 +30,12 @@ namespace CCL.Importer.Proxies
             CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
             CreateMap<ExplosionModelHandlerProxy.GameObjectSwapData, ExplosionModelHandler.GameObjectSwapData>();
-            CreateMap<ResourceExplosionBaseProxy, ResourceExplosionBase>().AutoCacheAndMap();
+            CreateMap<ResourceExplosionBaseProxy, ResourceExplosionBase>().AutoCacheAndMap()
+                .ForMember(d => d.explosionPrefab, o => o.MapFrom(s => QuickAccess.Explosions.GetExplosionPrefab(s.explosionPrefab)))
+                .ForMember(d => d.explosionLiquid, o => o.Ignore())
+                .AfterMap(ResourceExplosionBaseAfter);
 
-            CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>()
-                .AutoCacheAndMap()
+            CreateMap<PlayerDistanceGameObjectsDisablerProxy, PlayerDistanceGameObjectsDisabler>().AutoCacheAndMap()
                 .ForMember(d => d.disableSqrDistance, o => o.MapFrom(d => d.disableDistance * d.disableDistance));
             CreateMap<PlayerDistanceMultipleGameObjectsOptimizerProxy, PlayerDistanceMultipleGameObjectsOptimizer>()
                 .AutoCacheAndMap()
@@ -62,6 +64,18 @@ namespace CCL.Importer.Proxies
                 .AfterMap(InvalidTeleportLocationReactionAfter);
 
             CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap();
+        }
+
+        private void ResourceExplosionBaseAfter(ResourceExplosionBaseProxy src, ResourceExplosionBase dest)
+        {
+            if (Utilities.IsVanillaCargo(src.explosionLiquid) && Globals.G.Types.TryGetCargo(src.explosionLiquid, out var cargo))
+            {
+                dest.explosionLiquid = cargo.v1;
+            }
+            else
+            {
+                CCLPlugin.Error($"Cargo type '{src.explosionLiquid}' is not a vanilla cargo, this is not supported for ResourceExplosionBase!");
+            }
         }
 
         private void InteriorNonStandardLayerAfter(InteriorNonStandardLayerProxy src, InteriorNonStandardLayer dest)

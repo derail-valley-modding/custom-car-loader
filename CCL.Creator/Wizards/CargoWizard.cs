@@ -1,25 +1,31 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Utility
+namespace CCL.Creator.Wizards
 {
-    internal class CargoTools : EditorWindow
+    internal class CargoWizard : EditorWindow
     {
-        [MenuItem("CCL/Cargo Tools")]
+        [MenuItem("CCL/Cargo Wizard")]
         public static void ShowWindow()
         {
-            var window = GetWindow<CargoTools>();
+            ShowWindowForSetup(AssetHelper.GetSelectedAsset<CargoSetup>());
+        }
+
+        public static void ShowWindowForSetup(CargoSetup setup)
+        {
+            var window = GetWindow<CargoWizard>();
             window.Show();
-            window.titleContent = new GUIContent("Cargo Tools");
-            window._currentCar = AssetHelper.GetSelectedAsset<CustomCarType>();
+            window.titleContent = new GUIContent("Cargo Wizard");
+            window._setup = setup;
         }
 
         private static GUIContent[] s_modes = new[]
-        {
+{
             new GUIContent("Set Cargo",
                 "Pick cargo automatically"),
             new GUIContent("Set Prefabs",
@@ -27,17 +33,19 @@ namespace CCL.Creator.Utility
         };
 
         private SerializedObject _editor = null!;
-        private CustomCarType _currentCar = null!;
+        private CargoSetup _setup = null!;
 
         private float _scroll = 0.0f;
         [SerializeField]
         private int _mode = -1;
 
-        private void OnAwake()
+        private bool HasSetup => _setup != null;
+
+        private void Awake()
         {
-            if (_currentCar == null)
+            if (_setup == null)
             {
-                _currentCar = AssetHelper.GetSelectedAsset<CustomCarType>();
+                _setup = AssetHelper.GetSelectedAsset<CargoSetup>();
             }
         }
 
@@ -53,21 +61,21 @@ namespace CCL.Creator.Utility
             _scroll = EditorGUILayout.BeginScrollView(new Vector2(0, _scroll)).y;
             EditorGUI.indentLevel++;
 
-            _currentCar = EditorHelpers.ObjectField("Current Car", _currentCar, false);
+            _setup = EditorHelpers.ObjectField("Current Setup", _setup, false);
 
             if (GUILayout.Button("Get selected"))
             {
-                var selected = AssetHelper.GetSelectedAsset<CustomCarType>();
+                var selected = AssetHelper.GetSelectedAsset<CargoSetup>();
 
                 if (selected != null)
                 {
-                    _currentCar = selected;
+                    _setup = selected;
                 }
             }
 
-            if (_currentCar != null)
+            if (_setup != null)
             {
-                EditorGUILayout.LabelField("Cargo Count", _currentCar.CargoTypes.Entries.Count.ToString());
+                EditorGUILayout.LabelField("Entries", _setup.Entries.Count.ToString());
             }
             else
             {
@@ -95,7 +103,7 @@ namespace CCL.Creator.Utility
             EditorGUILayout.EndScrollView();
         }
 
-        private bool RequireNotNull<T>(T obj, string name)
+        private bool RequireNotNull<T>(T? obj, string name)
             where T : class
         {
             if (obj == null)
@@ -109,10 +117,10 @@ namespace CCL.Creator.Utility
 
         private void SaveChanges()
         {
-            AssetHelper.SaveAsset(_currentCar);
+            AssetHelper.SaveAsset(_setup);
         }
 
-        #region SET CARGO
+        #region Set Cargo
 
         private CarCargoSet _carParentType = CarCargoSet.None;
         private float _amount = 1.0f;
@@ -132,14 +140,13 @@ namespace CCL.Creator.Utility
 
             if (_showCargos)
             {
-
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    var cargos = CargoHelper.GetCargosForType(_carParentType);
+                    var cargos = CargoHelper.CarToCargo(_carParentType);
 
                     foreach (var item in cargos)
                     {
-                        EditorGUILayout.LabelField(Enum.GetName(typeof(BaseCargoType), item));
+                        EditorGUILayout.LabelField(item);
                     }
 
                     if (cargos.Length == 0)
@@ -151,6 +158,8 @@ namespace CCL.Creator.Utility
 
             EditorGUILayout.EndScrollView();
             EditorGUILayout.Space();
+
+            GUI.enabled = HasSetup;
 
             if (GUILayout.Button("Add to existing cargo"))
             {
@@ -164,55 +173,57 @@ namespace CCL.Creator.Utility
 
             if (GUILayout.Button("Clear cargo"))
             {
-                if (RequireNotNull(_currentCar, "Current Car"))
+                if (RequireNotNull(_setup, "Current Setup"))
                 {
-                    _currentCar.CargoTypes.Entries.Clear();
-                    Debug.Log($"Cleared cargo from {_currentCar.name}");
+                    _setup.Entries.Clear();
+                    Debug.Log($"Cleared cargo from {_setup.name}");
                     SaveChanges();
                 }
             }
 
             if (GUILayout.Button("Add containers"))
             {
-                if (RequireNotNull(_currentCar, "Current Car"))
+                if (RequireNotNull(_setup, "Current Setup"))
                 {
                     AddCargoToCar(CargoHelper.ContainerCargo);
                 }
             }
+
+            GUI.enabled = true;
         }
 
         private void AddCurrentCargoToCar(bool clear)
         {
-            if (!RequireNotNull(_currentCar, "Current Car"))
+            if (!RequireNotNull(_setup, "Current Setup"))
             {
                 return;
             }
 
             if (clear)
             {
-                _currentCar.CargoTypes.Entries.Clear();
+                _setup.Entries.Clear();
             }
 
-            var cargos = CargoHelper.GetCargosForType(_carParentType);
+            var cargos = CargoHelper.CarToCargo(_carParentType);
             AddCargoToCar(cargos);
         }
 
-        private void AddCargoToCar(BaseCargoType[] cargos)
+        private void AddCargoToCar(string[] ids)
         {
-            // Turn the cargo into loadable cargo entries.
-            List<LoadableCargoEntry> entries = cargos
-                .Select(c => new LoadableCargoEntry() { AmountPerCar = _amount, CargoType = c })
+            // Turn the cargo IDs into cargo entries.
+            List<CargoEntry> entries = ids
+                .Select(c => new CargoEntry() { CargoId = c, AmountPerCar = _amount })
                 .ToList();
 
-            _currentCar.CargoTypes.Entries.AddRange(entries);
+            _setup.Entries.AddRange(entries);
 
-            Debug.Log($"Added {entries.Count} entries: {string.Join(", ", cargos)}");
+            Debug.Log($"Added {entries.Count} entries: {string.Join(", ", ids)}");
             SaveChanges();
         }
 
         #endregion
 
-        #region SET PREFABS
+        #region Set Prefabs
 
         private string _path = "Assets/_CCL_CARS/";
         [SerializeField]
@@ -224,7 +235,15 @@ namespace CCL.Creator.Utility
         private void DrawSetPrefabs()
         {
             _path = EditorGUILayout.TextField(new GUIContent("Asset Folder",
-                "The folder where the prefabs you want to use are. Includes child folders."), _path);
+                "The folder where the prefabs you want to use are\nIncludes child folders"), _path);
+
+            if (GUILayout.Button("Set path to current"))
+            {
+                if (RequireNotNull(_setup, "Current Setup"))
+                {
+                    _path = AssetHelper.GetFolder(_setup);
+                }
+            }
 
             if (GUILayout.Button("Get prefabs"))
             {
@@ -233,7 +252,7 @@ namespace CCL.Creator.Utility
 
             _emptyOnly = EditorGUILayout.Toggle(new GUIContent("Add to empty only",
                 "If true, will only assign prefabs to cargo that does not yet have " +
-                "a prefab assigned to it."), _emptyOnly);
+                "a prefab assigned to it"), _emptyOnly);
 
             EditorGUILayout.Space();
 
@@ -250,11 +269,11 @@ namespace CCL.Creator.Utility
 
             if (GUILayout.Button("Clear all models"))
             {
-                if (RequireNotNull(_currentCar, "Current Car"))
+                if (RequireNotNull(_setup, "Current Setup"))
                 {
-                    foreach (var item in _currentCar.CargoTypes.Entries)
+                    foreach (var item in _setup.Entries)
                     {
-                        item.ModelVariants = new GameObject[0];
+                        item.Models = new GameObject[0];
                     }
                 }
             }
@@ -262,7 +281,7 @@ namespace CCL.Creator.Utility
 
         public void AutoAssign()
         {
-            if (!RequireNotNull(_currentCar, "Current Car"))
+            if (!RequireNotNull(_setup, "Current Setup"))
             {
                 return;
             }
@@ -270,34 +289,24 @@ namespace CCL.Creator.Utility
             List<string> assigned = new List<string>();
             int count = 0;
 
-            foreach (var item in _currentCar.CargoTypes.Entries)
+            foreach (var item in _setup.Entries)
             {
                 // Assign prefabs if the name contains a cargo type.
                 // Containers have some special logic to remove their types,
                 // and only keep the brand name.
                 var prefabs = _prefabs.Where(x => CheckName(x.name, item)).ToArray();
 
-                // Only assign prefabs if the array is empty.
-                if (_emptyOnly && (item.ModelVariants == null || item.ModelVariants.Length == 0))
-                {
-                    item.ModelVariants = prefabs;
+                // Skip when there are no prefabs.
+                // Also skip if the array is not empty when only empty is selected.
+                if (prefabs.Length == 0 || (_emptyOnly && item.Models.Length > 0)) continue;
 
-                    if (prefabs.Length > 0)
-                    {
-                        assigned.Add($"{item.CargoType} ({prefabs.Length})");
-                        count += prefabs.Length;
-                    }
-                    continue;
-                }
-
-                // Add prefabs to the list.
-                var list = item.ModelVariants.ToList();
+                var list = item.Models.ToList();
                 list.AddRange(prefabs);
-                item.ModelVariants = list.ToArray();
+                item.Models = list.ToArray();
 
                 if (prefabs.Length > 0)
                 {
-                    assigned.Add($"{item.CargoType} ({prefabs.Length})");
+                    assigned.Add($"{item.CargoId} ({prefabs.Length})");
                     count += prefabs.Length;
                 }
             }
@@ -306,14 +315,9 @@ namespace CCL.Creator.Utility
             SaveChanges();
         }
 
-        private static bool CheckName(string name, LoadableCargoEntry cargo)
+        private static bool CheckName(string name, CargoEntry cargo)
         {
-            if (cargo.IsCustom)
-            {
-                return name.Contains(cargo.CustomCargoId);
-            }
-
-            return name.Contains(CargoHelper.CleanName(cargo.CargoType));
+            return name.Contains(CargoHelper.CleanName(cargo.CargoId));
         }
 
         #endregion

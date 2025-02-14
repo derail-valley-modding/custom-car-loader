@@ -35,5 +35,7 @@ namespace CCL.Creator.Utility
             EditorUtility.SetDirty(asset);
             AssetDatabase.SaveAssets();
         }
+
+        public static string GetFolder(Object asset) => System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset)).Replace('\\', '/');
     }
 }
