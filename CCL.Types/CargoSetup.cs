@@ -23,6 +23,8 @@ namespace CCL.Types
         [MethodButton("CCL.Creator.Wizards.CargoWizard:ShowWindowForSetup", "Open Wizard")]
         private bool _buttons;
 
+        public bool IsEmpty => Entries.Count == 0;
+
         private void OnValidate()
         {
             var models = new List<GameObject>();

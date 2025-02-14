@@ -61,21 +61,6 @@ namespace CCL.Creator.Wizards
                     LiveryExporters[i].PrepareForExport();
                 }
 
-                // Prep cargo models
-                CarType.CargoTypes ??= new LoadableCargo(); // sanity check
-
-                foreach (var cargoEntry in CarType.CargoTypes.Entries)
-                {
-                    if (cargoEntry.ModelVariants == null) continue;
-                    cargoEntry.ModelPaths = new string[cargoEntry.ModelVariants.Length];
-
-                    for (int i = 0; i < cargoEntry.ModelVariants.Length; i++)
-                    {
-                        cargoEntry.ModelPaths[i] = AssetDatabase.GetAssetPath(cargoEntry.ModelVariants[i]);
-                        AssetImporter.GetAtPath(cargoEntry.ModelPaths[i]).SetAssetBundleNameAndVariant(BundleName, "");
-                    }
-                }
-
                 CarType.ForceValidation();
                 EditorUtility.SetDirty(CarType);
                 EditorHelpers.SaveAndRefresh();
@@ -228,7 +213,7 @@ namespace CCL.Creator.Wizards
 
         public static bool RequiresPassengerJobsMod(CustomCarType carType)
         {
-            if (carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Passengers))
+            if (carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == "Passengers"))
             {
                 return true;
             }
@@ -243,7 +228,7 @@ namespace CCL.Creator.Wizards
 
         public static bool RequiresCustomCargoMod(CustomCarType carType)
         {
-            return carType.CargoTypes.Entries.Any(x => x.CargoType == BaseCargoType.Custom);
+            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId != "Passengers" && !Utilities.IsVanillaCargo(x.CargoId));
         }
 
         public static bool RequiresCustomLicenseMod(CustomCarType carType)

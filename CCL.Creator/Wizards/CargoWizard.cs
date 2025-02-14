@@ -142,11 +142,11 @@ namespace CCL.Creator.Wizards
             {
                 using (new EditorGUI.IndentLevelScope())
                 {
-                    var cargos = CargoHelper.GetCargosForType(_carParentType);
+                    var cargos = CargoHelper.CarToCargo(_carParentType);
 
                     foreach (var item in cargos)
                     {
-                        EditorGUILayout.LabelField(Enum.GetName(typeof(BaseCargoType), item));
+                        EditorGUILayout.LabelField(item);
                     }
 
                     if (cargos.Length == 0)

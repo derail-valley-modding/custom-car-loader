@@ -1,5 +1,9 @@
-﻿using DV;
+﻿using CCL.Types;
+using DV;
+using DV.Simulation.Controllers;
 using DV.ThingTypes;
+using LocoSim.Definitions;
+using UnityEngine;
 
 namespace CCL.Importer
 {
@@ -61,6 +65,50 @@ namespace CCL.Importer
 
             public static TrainCarLivery Flatbed => Extensions.GetCached(ref s_flatbed, () => GetCarLivery("FlatbedEmpty"));
             public static TrainCarLivery Caboose => Extensions.GetCached(ref s_caboose, () => GetCarLivery("CabooseRed"));
+        }
+
+        public static class Explosions
+        {
+            private static DeadTractionMotorsController? s_de6deadTM;
+            private static GameObject? s_boilerExplosion;
+            private static GameObject? s_electricExplosion;
+            private static GameObject? s_hydraulicExplosion;
+            private static GameObject? s_mechanicalExplosion;
+            private static GameObject? s_tmOverspeedExplosion;
+            private static GameObject? s_fireExplosion;
+            private static GameObject? s_dieselLocomotiveExplosion;
+
+            public static DeadTractionMotorsController DE6DeadTM => Extensions.GetCached(ref s_de6deadTM,
+                () => Locomotives.DE6.prefab.GetComponentInChildren<DeadTractionMotorsController>());
+            public static GameObject BoilerExplosion => Extensions.GetCached(ref s_boilerExplosion,
+                () => Locomotives.S282A.prefab.GetComponentInChildren<BoilerDefinition>()
+                    .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+            public static GameObject ElectricExplosion => Extensions.GetCached(ref s_electricExplosion,
+                () => DE6DeadTM.tmBlowPrefab);
+            public static GameObject HydraulicExplosion => Extensions.GetCached(ref s_hydraulicExplosion,
+                () => Locomotives.DH4.prefab.GetComponentInChildren<HydraulicTransmissionDefinition>()
+                    .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+            public static GameObject MechanicalExplosion => Extensions.GetCached(ref s_mechanicalExplosion,
+                () => Locomotives.DM3.prefab.GetComponentInChildren<DieselEngineDirectDefinition>()
+                    .GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+            public static GameObject TMOverspeedExplosion => Extensions.GetCached(ref s_tmOverspeedExplosion,
+                () => DE6DeadTM.GetComponent<ExplosionActivationOnSignal>().explosionPrefab);
+            public static GameObject FireExplosion => Extensions.GetCached(ref s_fireExplosion,
+                () => Locomotives.S282A.prefab.GetComponentInChildren<BlowbackParticlePortReader>().blowbackParticlesPrefab);
+            public static GameObject DieselLocomotiveExplosion => Extensions.GetCached(ref s_dieselLocomotiveExplosion,
+                () => Locomotives.DE2.prefab.GetComponent<ResourceExplosionBase>().explosionPrefab);
+
+            public static GameObject GetExplosionPrefab(ExplosionPrefab explosionPrefab) => explosionPrefab switch
+            {
+                ExplosionPrefab.Boiler => BoilerExplosion,
+                ExplosionPrefab.Electric => ElectricExplosion,
+                ExplosionPrefab.Hydraulic => HydraulicExplosion,
+                ExplosionPrefab.Mechanical => MechanicalExplosion,
+                ExplosionPrefab.TMOverspeed => TMOverspeedExplosion,
+                ExplosionPrefab.Fire => FireExplosion,
+                ExplosionPrefab.DieselLocomotive => DieselLocomotiveExplosion,
+                _ => null!
+            };
         }
     }
 }

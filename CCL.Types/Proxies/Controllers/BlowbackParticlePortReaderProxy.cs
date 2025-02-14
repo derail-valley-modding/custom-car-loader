@@ -7,7 +7,7 @@ namespace CCL.Types.Proxies.Controllers
     public class BlowbackParticlePortReaderProxy : MonoBehaviour, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         public float blowbackAirflowThreshold = 1.5f;
-        public ExplosionPrefab BlowbackPrefab = ExplosionPrefab.Fire;
+        public ExplosionPrefab blowbackParticlesPrefab = ExplosionPrefab.Fire;
         public float particlesLifetime = 4f;
         public Transform spawnAnchor;
         [PortId(null, null, false)]
@@ -42,13 +42,13 @@ namespace CCL.Types.Proxies.Controllers
         public void ApplyS060Defaults()
         {
             blowbackAirflowThreshold = 1.5f;
-            BlowbackPrefab = ExplosionPrefab.Fire;
+            blowbackParticlesPrefab = ExplosionPrefab.Fire;
         }
 
         public void ApplyS282Defaults()
         {
             blowbackAirflowThreshold = 4.5f;
-            BlowbackPrefab = ExplosionPrefab.Fire;
+            blowbackParticlesPrefab = ExplosionPrefab.Fire;
         }
 
         #endregion

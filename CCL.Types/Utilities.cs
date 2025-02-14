@@ -5,6 +5,11 @@ namespace CCL.Types
 {
     public static class Utilities
     {
+        public static bool IsVanillaCargo(string id)
+        {
+            return IdV2.Cargos.Any(x => x == id);
+        }
+
         public static bool IsVanillaLicense(string id)
         {
             return IdV2.GeneralLicenses.Any(x => x == id) || IdV2.JobLicenses.Any(x => x == id);

@@ -8,28 +8,19 @@ using CCL.Types.Catalog;
 
 namespace CCL.Types
 {
-    public enum DVTrainCarKind
-    {
-        Car,
-        Caboose,
-        Loco,
-        Tender,
-        Slug
-    }
-
-    public enum UnusedCarDeletePreventionMode
-    {
-        None = 0,
-        TimeBasedCarVisit = 10,
-        TimeBasedCarVisitPropagatedToFrontCar = 11,
-        TimeBasedCarVisitPropagatedToRearCar = 12,
-        TimeBasedCarVisitPropagatedToFrontAndRearCar = 13,
-        OnlyManualDeletePossible = 20
-    }
-
     [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
     public class CustomCarType : ScriptableObject, IAssetLoadCallback
     {
+        public enum UnusedCarDeletePreventionMode
+        {
+            None = 0,
+            TimeBasedCarVisit = 10,
+            TimeBasedCarVisitPropagatedToFrontCar = 11,
+            TimeBasedCarVisitPropagatedToRearCar = 12,
+            TimeBasedCarVisitPropagatedToFrontAndRearCar = 13,
+            OnlyManualDeletePossible = 20
+        }
+
         public const float ROLLING_RESISTANCE_COEFFICIENT = 0.002f;
         public const float WHEELSLIDE_FRICTION_COEFFICIENT = 0.13f;
         public const float WHEELSLIP_FRICTION_COEFFICIENT = 0.2f;
@@ -64,9 +55,7 @@ namespace CCL.Types
         public bool useDefaultWheelRotation = true;
 
         [Header("Cargo")]
-        [SerializeField, HideInInspector]
-        public string? CargoTypeJson = null;
-        public LoadableCargo CargoTypes;
+        public CargoSetup? CargoSetup;
 
         public BrakesSetup brakes;
         public DamageSetup damage;
@@ -102,7 +91,6 @@ namespace CCL.Types
         public CustomCarType()
         {
             NameTranslations = new TranslationData();
-            CargoTypes = new LoadableCargo();
             brakes = new BrakesSetup();
             damage = new DamageSetup();
         }
@@ -121,7 +109,6 @@ namespace CCL.Types
             }
 
             NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
-            CargoTypeJson = CargoTypes.ToJson();
 
             brakesJson = JSONObject.ToJson(brakes);
             damageJson = JSONObject.ToJson(damage);
@@ -156,17 +143,9 @@ namespace CCL.Types
                 NameTranslations = TranslationData.Default();
             }
 
-            if (!string.IsNullOrEmpty(CargoTypeJson))
+            if (CargoSetup != null)
             {
-                CargoTypes = LoadableCargo.FromJson(CargoTypeJson!);
-                CargoTypes.AfterAssetLoad(bundle);
-            }
-            else
-            {
-                CargoTypes = new LoadableCargo()
-                {
-                    Entries = new List<LoadableCargoEntry>()
-                };
+                CargoSetup.AfterAssetLoad(bundle);
             }
 
             brakes = JSONObject.FromJson<BrakesSetup>(brakesJson) ?? new BrakesSetup();
@@ -195,11 +174,13 @@ namespace CCL.Types
         {
             get
             {
-                foreach (var cargo in CargoTypes.Entries)
+                if (CargoSetup != null)
                 {
-                    if (cargo.ModelVariants != null)
+                    foreach (var cargo in CargoSetup.Entries)
                     {
-                        foreach (var model in cargo.ModelVariants)
+                        if (cargo.Models == null) continue;
+
+                        foreach (var model in cargo.Models)
                         {
                             if (model != null)
                             {

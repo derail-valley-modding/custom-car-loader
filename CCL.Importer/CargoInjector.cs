@@ -10,41 +10,29 @@ namespace CCL.Importer
     {
         public static void InjectLoadableCargos(CCL_CarType carType)
         {
-            CCLPlugin.LogVerbose($"Add cargos for {carType.id} - {carType.CargoTypes?.Entries?.Count}");
-            if (carType.CargoTypes == null || carType.CargoTypes.IsEmpty)
+            CCLPlugin.LogVerbose($"Adding cargos for {carType.id} ({carType.CargoSetup?.Entries.Count})");
+
+            if (carType.CargoSetup == null || carType.CargoSetup.IsEmpty) return;
+
+            foreach (var entry in carType.CargoSetup.Entries)
             {
-                return;
-            }
+                CCLPlugin.LogVerbose($"Cargo '{entry.CargoId}': {entry.AmountPerCar}, {entry.Models?.Length} model(s)");
 
-            foreach (var loadableCargo in carType.CargoTypes.Entries)
-            {
-                CCLPlugin.LogVerbose($"Loadable cargo {carType.id} - {loadableCargo.AmountPerCar} {loadableCargo.CargoType}, {loadableCargo.ModelVariants?.Length} models");
-
-                CargoType_v2 matchCargo;
-
-                if (loadableCargo.IsCustom)
+                if (!Globals.G.Types.TryGetCargo(entry.CargoId, out var matchCargo))
                 {
-                    if (!Globals.G.Types.cargos.TryFind(x => x.id == loadableCargo.CustomCargoId, out matchCargo))
-                    {
-                        CCLPlugin.Error($"Couldn't find custom cargo {loadableCargo.CustomCargoId} for car {carType.id}");
-                        continue;
-                    }
-                }
-                else if (!Globals.G.Types.CargoType_to_v2.TryGetValue((CargoType)loadableCargo.CargoType, out matchCargo))
-                {
-                    CCLPlugin.Error($"Couldn't find v2 cargo type {loadableCargo.CargoType} for car {carType.id}");
+                    CCLPlugin.Error($"Couldn't find  cargo '{entry.CargoId}'");
                     continue;
                 }
 
-                if (loadableCargo.ModelVariants != null)
+                if (entry.Models != null)
                 {
-                    for (int i = 0; i < loadableCargo.ModelVariants.Length; i++)
+                    for (int i = 0; i < entry.Models.Length; i++)
                     {
-                        ModelProcessor.DoBasicProcessing(loadableCargo.ModelVariants[i]);
+                        ModelProcessor.DoBasicProcessing(entry.Models[i]);
                     }
                 }
 
-                var loadableInfo = new CargoType_v2.LoadableInfo(carType, loadableCargo.ModelVariants);
+                var loadableInfo = new CargoType_v2.LoadableInfo(carType, entry.Models);
                 matchCargo.loadableCarTypes = matchCargo.loadableCarTypes.AddToArray(loadableInfo);
             }
         }

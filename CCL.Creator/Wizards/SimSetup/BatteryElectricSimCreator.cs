@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies;
+﻿using CCL.Types;
+using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -67,7 +68,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var tmExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(tm);
             tmExplosion.explosionSignalPortId = FullPortId(tm, "OVERSPEED_EXPLOSION_TRIGGER");
             tmExplosion.bodyDamagePercentage = 0.05f;
-            tmExplosion.explosion = ExplosionPrefab.TMOverspeed;
+            tmExplosion.explosionPrefab = ExplosionPrefab.TMOverspeed;
 
             var cooler = CreateSimComponent<PassiveCoolerDefinitionProxy>("tmPassiveCooler");
             cooler.transform.parent = tm.transform;
