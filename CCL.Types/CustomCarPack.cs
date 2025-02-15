@@ -19,6 +19,10 @@ namespace CCL.Types
         public PaintSubstitutions[] PaintSubstitutions = new PaintSubstitutions[0];
         public ExtraTranslations? ExtraTranslations;
 
+        [RenderMethodButtons, SerializeField]
+        [MethodButton("CCL.Creator.Validators.CarPackValidator:ValidateExport", "Export Car")]
+        private bool _buttons;
+
         private void OnValidate()
         {
             if (ExtraTranslations != null)
