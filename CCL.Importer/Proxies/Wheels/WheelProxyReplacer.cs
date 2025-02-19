@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CCL.Importer.Types;
+using CCL.Importer.Components;
 using CCL.Types.Proxies.Wheels;
 using DV;
 using DV.Wheels;
