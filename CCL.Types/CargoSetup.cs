@@ -12,11 +12,13 @@ namespace CCL.Types
         public List<CargoEntry> Entries = new List<CargoEntry>();
 
         [SerializeField, HideInInspector]
+        private string? _json;
+        [SerializeField, HideInInspector]
+        private Sprite[]? _sprite;
+        [SerializeField, HideInInspector]
         private GameObject[]? _models;
         [SerializeField, HideInInspector]
         private int[]? _counts;
-        [SerializeField, HideInInspector]
-        private string? _json;
 
         [RenderMethodButtons, SerializeField]
         [MethodButton(nameof(SortEntries), "Sort Entries")]
@@ -27,24 +29,35 @@ namespace CCL.Types
 
         private void OnValidate()
         {
+            _json = JSONObject.ToJson(Entries);
+
+            var sprite = new List<Sprite>();
             var models = new List<GameObject>();
             var counts = new List<int>();
 
             foreach (var item in Entries)
             {
+                sprite.Add(item.LoadedIcon);
                 models.AddRange(item.Models);
                 counts.Add(item.Models.Length);
             }
 
+            _sprite = sprite.ToArray();
             _models = models.ToArray();
             _counts = counts.ToArray();
-
-            _json = JSONObject.ToJson(Entries);
         }
 
         public void AfterAssetLoad(AssetBundle bundle)
         {
             Entries = JSONObject.FromJson(_json, () => new List<CargoEntry>());
+
+            if (_sprite != null)
+            {
+                for (int i = 0; i < Entries.Count; i++)
+                {
+                    Entries[i].LoadedIcon = _sprite[i];
+                }
+            }
 
             if (_counts == null || _models == null) return;
 
@@ -78,6 +91,8 @@ namespace CCL.Types
         [CargoField]
         public string CargoId = string.Empty;
         public float AmountPerCar = 1f;
+        [JsonIgnore]
+        public Sprite LoadedIcon = null!;
         [JsonIgnore]
         public GameObject[] Models = new GameObject[0];
     }
