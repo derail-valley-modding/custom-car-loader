@@ -18,6 +18,7 @@ namespace CCL.Types.Proxies.VFX
 
         public List<ParticlePortReader> particlePortReaders = new List<ParticlePortReader>();
         public List<ParticleColorPortReader> particleColorPortReaders = new List<ParticleColorPortReader>();
+        public bool selfInitialization = false;
 
         [SerializeField, HideInInspector]
         private GameObject[] _goPort = new GameObject[0];
@@ -120,47 +121,47 @@ namespace CCL.Types.Proxies.VFX
             public class PropertyChangeDefinition
             {
                 public ParticleProperty propertyType;
-                public AnimationCurve propertyChangeCurve;
+                public AnimationCurve propertyChangeCurve = new AnimationCurve();
             }
 
             [Serializable]
             public class PortParticleUpdateDefinition
             {
                 [PortId(null, null, false)]
-                public string portId;
-                public ValueModifier inputModifier;
-                public List<PropertyChangeDefinition> propertiesToUpdate;
+                public string portId = string.Empty;
+                public ValueModifier inputModifier = new ValueModifier();
+                public List<PropertyChangeDefinition> propertiesToUpdate = new List<PropertyChangeDefinition>();
             }
         }
 
         [Serializable]
         public class ParticleColorPortReader
         {
-            public GameObject particlesParent;
+            public GameObject particlesParent = null!;
             [PortId(null, null, false)]
-            public string portId;
-            public ValueModifier inputModifier;
+            public string portId = string.Empty;
+            public ValueModifier inputModifier = new ValueModifier();
             public ColorPropertyChange changeType;
             public Color startColorMin;
             public Color startColorMax;
-            public AnimationCurve colorLerpCurve;
+            public AnimationCurve colorLerpCurve = new AnimationCurve();
         }
 
         [Serializable, NotProxied]
         public class FakeParticleColorPortReader
         {
-            public string portId;
-            public ValueModifier inputModifier;
+            public string portId = string.Empty;
+            public ValueModifier inputModifier = new ValueModifier();
             public ColorPropertyChange changeType;
-            public float startColorMinR;
-            public float startColorMinG;
-            public float startColorMinB;
-            public float startColorMinA;
-            public float startColorMaxR;
-            public float startColorMaxG;
-            public float startColorMaxB;
-            public float startColorMaxA;
-            public AnimationCurve colorLerpCurve;
+            public float startColorMinR = 0;
+            public float startColorMinG = 0;
+            public float startColorMinB = 0;
+            public float startColorMinA = 0;
+            public float startColorMaxR = 0;
+            public float startColorMaxG = 0;
+            public float startColorMaxB = 0;
+            public float startColorMaxA = 0;
+            public AnimationCurve colorLerpCurve = new AnimationCurve();
 
             // Default constructor for deserialization.
             public FakeParticleColorPortReader() { }
@@ -199,10 +200,10 @@ namespace CCL.Types.Proxies.VFX
         [Serializable]
         public class ValueModifier
         {
-            public float valueMultiplier = 1f;
-            public float valueOffset;
-            public bool absoluteInputValue;
-            public bool absoluteResultValue;
+            public float valueMultiplier = 1;
+            public float valueOffset = 0;
+            public bool absoluteInputValue = false;
+            public bool absoluteResultValue = false;
         }
     }
 }

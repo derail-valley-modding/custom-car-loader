@@ -134,6 +134,8 @@ namespace CCL.Importer.Processing
                 VanillaParticleSystem.SteamerExhaustLargeWave           => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/Blowdown/SteamExhaust Large/GasWave").GetComponent<ParticleSystem>(),
 
+                VanillaParticleSystem.SteamerIndicatorWaterDrip => TrainCarType.LocoSteamHeavy.ToV2().interiorPrefab.transform.Find(
+                    "[particles]/SteamIndicatorWaterDripping").GetComponent<ParticleSystem>(),
 
                 VanillaParticleSystem.SteamerSteamLeaks                 => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/RandomLeaks/SteamLeaks/SteamLeaks").GetComponent<ParticleSystem>(),
