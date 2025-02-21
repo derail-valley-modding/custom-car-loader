@@ -45,7 +45,7 @@ namespace CCL.Importer
             // It should never be null if we get here, but it doesn't hurt to check.
             if (ccl.CargoSetup == null || !ccl.CargoSetup.Entries.TryFind(x => x.CargoId == cargo.id, out var entry)) return null!;
 
-            return entry.LoadedIcon;
+            return entry.OverrideLoadedIcon ? entry.LoadedIcon : cargo.icon;
         }
     }
 }

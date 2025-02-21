@@ -91,6 +91,7 @@ namespace CCL.Types
         [CargoField]
         public string CargoId = string.Empty;
         public float AmountPerCar = 1f;
+        public bool OverrideLoadedIcon = true;
         [JsonIgnore]
         public Sprite LoadedIcon = null!;
         [JsonIgnore]
