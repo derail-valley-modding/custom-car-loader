@@ -3,6 +3,7 @@ using CCL.Importer.Types;
 using DV;
 using DV.ThingTypes;
 using HarmonyLib;
+using UnityEngine;
 
 namespace CCL.Importer
 {
@@ -35,6 +36,16 @@ namespace CCL.Importer
                 var loadableInfo = new CargoType_v2.LoadableInfo(carType, entry.Models);
                 matchCargo.loadableCarTypes = matchCargo.loadableCarTypes.AddToArray(loadableInfo);
             }
+        }
+
+        public static Sprite GetCargoIcon(CargoType_v2 cargo, TrainCarType_v2 car)
+        {
+            if (car is not CCL_CarType ccl) return cargo.icon;
+
+            // It should never be null if we get here, but it doesn't hurt to check.
+            if (ccl.CargoSetup == null || !ccl.CargoSetup.Entries.TryFind(x => x.CargoId == cargo.id, out var entry)) return null!;
+
+            return entry.OverrideLoadedIcon ? entry.LoadedIcon : cargo.icon;
         }
     }
 }
