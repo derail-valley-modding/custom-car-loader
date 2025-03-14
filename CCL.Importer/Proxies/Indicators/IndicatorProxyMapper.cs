@@ -25,6 +25,7 @@ namespace CCL.Importer.Proxies.Indicators
             CreateMap<IndicatorModelChangerProxy, IndicatorModelChanger>().AutoCacheAndMap();
             CreateMap<IndicatorScalerProxy, IndicatorScaler>().AutoCacheAndMap();
             CreateMap<IndicatorSliderProxy, IndicatorSlider>().AutoCacheAndMap();
+            CreateMap<IndicatorShaderValueProxy, IndicatorShaderValue>().AutoCacheAndMap();
 
             CreateMap<LampPortReaderProxy, LampPortReader>().AutoCacheAndMap();
             CreateMap<LampFuseReaderProxy, LampFuseReader>().AutoCacheAndMap();

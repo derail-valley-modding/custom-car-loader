@@ -19,7 +19,7 @@ namespace CCL.Creator.Wizards
     {
         #region Diesel
 
-        [MenuItem("GameObject/CCL/Particles/Diesel Template", false, 10)]
+        [MenuItem("GameObject/CCL/Particles/Diesel Template", false, 0)]
         public static void CreateDieselParticles(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -175,7 +175,7 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(root, "Created Diesel Particles");
         }
 
-        [MenuItem("GameObject/CCL/Particles/Diesel Template", true, 10)]
+        [MenuItem("GameObject/CCL/Particles/Diesel Template", true, 0)]
         public static bool CreateDieselParticlesValidate()
         {
             return Selection.activeGameObject && !Selection.activeGameObject.transform.parent;
@@ -185,7 +185,7 @@ namespace CCL.Creator.Wizards
 
         #region Steam
 
-        [MenuItem("GameObject/CCL/Particles/Steam Template", false, 10)]
+        [MenuItem("GameObject/CCL/Particles/Steam Template", false, 100)]
         public static void CreateSteamParticles(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -738,8 +738,59 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");
         }
 
-        [MenuItem("GameObject/CCL/Particles/Steam Template", true, 10)]
+        [MenuItem("GameObject/CCL/Particles/Steam Template", true, 100)]
         public static bool CreateSteamParticlesValidate()
+        {
+            return Selection.activeGameObject && !Selection.activeGameObject.transform.parent;
+        }
+
+        [MenuItem("GameObject/CCL/Particles/Boiler Water Drip", true, 101)]
+        public static void CreateBoilerWaterDripParticles(MenuCommand command)
+        {
+            var target = (GameObject)command.context;
+
+            var root = new GameObject(CarPartNames.Particles.ROOT);
+            root.transform.parent = target.transform;
+
+            var comp = root.AddComponent<ParticlesPortReadersControllerProxy>();
+
+            var drip = new GameObject("SteamIndicatorWaterDripping").AddComponent<CopyVanillaParticleSystem>();
+            drip.SystemToCopy = VanillaParticleSystem.SteamerIndicatorWaterDrip;
+            drip.transform.parent = comp.transform;
+
+            comp.particlePortReaders = new List<ParticlePortReader>
+            {
+                new ParticlePortReader
+                {
+                    particlesParent = drip.gameObject,
+                    particleUpdaters = new List<ParticlePortReader.PortParticleUpdateDefinition>
+                    {
+                        new ParticlePortReader.PortParticleUpdateDefinition
+                        {
+                            portId = string.Empty,
+                            inputModifier = new ValueModifier(),
+                            propertiesToUpdate = new List<ParticlePortReader.PropertyChangeDefinition>
+                            {
+                                new ParticlePortReader.PropertyChangeDefinition
+                                {
+                                    propertyType = ParticlePortReader.ParticleProperty.ON_OFF,
+                                    propertyChangeCurve = new AnimationCurve(
+                                        new Keyframe(0, 0, 0, 0, 0, 0),
+                                        new Keyframe(0.97f, 0, 0, 0, 1 / 3f, 1 / 3f),
+                                        new Keyframe(0.98f, 0, -0.015855882f, -0.015855882f, 1, 1 / 3f),
+                                        new Keyframe(1, 1, 0, 0, 1 / 3f, 1 / 3f))
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            Undo.RegisterCreatedObjectUndo(root, "Created Boiler Drip Particles");
+        }
+
+        [MenuItem("GameObject/CCL/Particles/Boiler Water Drip", true, 101)]
+        public static bool CreateBoilerWaterDripParticlesValidate()
         {
             return Selection.activeGameObject && !Selection.activeGameObject.transform.parent;
         }

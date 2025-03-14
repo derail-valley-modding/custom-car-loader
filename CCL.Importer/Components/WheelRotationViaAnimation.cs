@@ -1,7 +1,7 @@
 ﻿using DV.Wheels;
 using UnityEngine;
 
-namespace CCL.Importer.Types
+namespace CCL.Importer.Components
 {
     public class WheelRotationViaAnimation : WheelRotationBase
     {

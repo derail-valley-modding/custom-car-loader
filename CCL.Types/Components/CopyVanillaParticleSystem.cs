@@ -32,6 +32,7 @@ namespace CCL.Types.Components
         SteamerExhaustWave,
         SteamerExhaustLargeWispy,
         SteamerExhaustLargeWave,
+        SteamerIndicatorWaterDrip = 180,
         SteamerSteamLeaks = 190,
 
         FireboxFire = 200,
