@@ -14,7 +14,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public float engineRpmIdle;
 
         [Header("Power & Torque")]
-        public AnimationCurve rpmToPowerCurve;
+        public AnimationCurve rpmToPowerCurve = new AnimationCurve();
         public float retarderBrakingTorque;
 
         [Header("Resource Consumption")]
@@ -29,7 +29,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public float overheatingDamagePerDegreePerSecond = 0.1f;
 
         [FuseId]
-        public string engineStarterFuseId;
+        public string engineStarterFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
@@ -42,6 +42,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "COLLISION_ENGINE_OFF_EXT_IN"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "ENGINE_HEALTH_STATE_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.DAMAGE, "GENERATED_ENGINE_DAMAGE"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.DAMAGE, "GENERATED_ENGINE_PERCENTUAL_DAMAGE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "ENGINE_ON"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "RPM_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "IDLE_RPM_NORMALIZED"),
@@ -58,6 +59,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortReferenceDefinition(DVPortValueType.CONTROL, "THROTTLE"),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "RETARDER"),
             new PortReferenceDefinition(DVPortValueType.RPM, "DRIVEN_RPM"),
+            new PortReferenceDefinition(DVPortValueType.STATE, "INTAKE_WATER_CONTENT"),
             new PortReferenceDefinition(DVPortValueType.FUEL, "FUEL"),
             new PortReferenceDefinition(DVPortValueType.FUEL, "FUEL_CONSUMPTION", true),
             new PortReferenceDefinition(DVPortValueType.OIL, "OIL"),
