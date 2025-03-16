@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.HUD
 {
-    [CreateAssetMenu(menuName = "CCL/HUD Layout")]
+    [CreateAssetMenu(menuName = "CCL/HUD Layout", order = MenuOrdering.HUDLayout)]
     public class VanillaHUDLayout : ScriptableObject, ICustomSerialized
     {
         public enum BaseHUD

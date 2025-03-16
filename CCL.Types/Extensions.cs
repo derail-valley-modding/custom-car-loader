@@ -68,5 +68,12 @@ namespace CCL.Types
         {
             return new Vector2(vector.x, vector.z);
         }
+
+        public static void Reset(this Transform transform)
+        {
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            transform.localScale = Vector3.one;
+        }
     }
 }

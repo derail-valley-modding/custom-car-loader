@@ -1,11 +1,6 @@
 ﻿using CCL.Creator.Inspector;
 using CCL.Creator.Utility;
 using CCL.Types.Proxies.Indicators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -16,7 +11,7 @@ namespace CCL.Creator.Wizards
     {
         private static LabelWizard? _instance;
 
-        [MenuItem("GameObject/CCL/Add Label", false, 10)]
+        [MenuItem("GameObject/CCL/Add Label", false, MenuOrdering.Cab.Label)]
         public static void ShowWindow(MenuCommand command)
         {
             _instance = GetWindow<LabelWizard>();
@@ -25,7 +20,7 @@ namespace CCL.Creator.Wizards
             _instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Add Label", true, 10)]
+        [MenuItem("GameObject/CCL/Add Label", true, MenuOrdering.Cab.Label)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;

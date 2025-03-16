@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Catalog
 {
-    [CreateAssetMenu(menuName = "CCL/Vehicle Catalog Page")]
+    [CreateAssetMenu(menuName = "CCL/Vehicle Catalog Page", order = MenuOrdering.Catalog)]
     public class CatalogPage : ScriptableObject, ICustomSerialized
     {
         [Header("Header")]

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+
 using static CCL.Types.Proxies.VFX.ParticlesPortReadersControllerProxy;
 
 namespace CCL.Creator.Wizards
@@ -19,7 +20,7 @@ namespace CCL.Creator.Wizards
     {
         #region Diesel
 
-        [MenuItem("GameObject/CCL/Particles/Diesel Template", false, 0)]
+        [MenuItem("GameObject/CCL/Particles/Diesel Template", false, MenuOrdering.Particles.Diesel)]
         public static void CreateDieselParticles(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -175,7 +176,7 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(root, "Created Diesel Particles");
         }
 
-        [MenuItem("GameObject/CCL/Particles/Diesel Template", true, 0)]
+        [MenuItem("GameObject/CCL/Particles/Diesel Template", true, MenuOrdering.Particles.Diesel)]
         public static bool CreateDieselParticlesValidate()
         {
             return Selection.activeGameObject && !Selection.activeGameObject.transform.parent;
@@ -185,7 +186,7 @@ namespace CCL.Creator.Wizards
 
         #region Steam
 
-        [MenuItem("GameObject/CCL/Particles/Steam Template", false, 100)]
+        [MenuItem("GameObject/CCL/Particles/Steam Template", false, MenuOrdering.Particles.Steam)]
         public static void CreateSteamParticles(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -738,13 +739,13 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(root, "Created Steam Particles");
         }
 
-        [MenuItem("GameObject/CCL/Particles/Steam Template", true, 100)]
+        [MenuItem("GameObject/CCL/Particles/Steam Template", true, MenuOrdering.Particles.Steam)]
         public static bool CreateSteamParticlesValidate()
         {
             return Selection.activeGameObject && !Selection.activeGameObject.transform.parent;
         }
 
-        [MenuItem("GameObject/CCL/Particles/Boiler Water Drip", true, 101)]
+        [MenuItem("GameObject/CCL/Particles/Boiler Water Drip", false, MenuOrdering.Particles.Steam + 1)]
         public static void CreateBoilerWaterDripParticles(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -789,7 +790,7 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(root, "Created Boiler Drip Particles");
         }
 
-        [MenuItem("GameObject/CCL/Particles/Boiler Water Drip", true, 101)]
+        [MenuItem("GameObject/CCL/Particles/Boiler Water Drip", true, MenuOrdering.Particles.Steam + 1)]
         public static bool CreateBoilerWaterDripParticlesValidate()
         {
             return Selection.activeGameObject && !Selection.activeGameObject.transform.parent;

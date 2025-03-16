@@ -28,7 +28,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
         private static SimCreatorWindow? _instance;
 
-        [MenuItem("GameObject/CCL/Create Loco Simulation", false, 10)]
+        [MenuItem("GameObject/CCL/Create Loco Simulation", false, MenuOrdering.Simulation)]
         public static void OnContextMenu(MenuCommand command)
         {
             var selection = (GameObject)command.context;
@@ -39,7 +39,7 @@ namespace CCL.Creator.Wizards.SimSetup
             _instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Create Loco Simulation", true, 10)]
+        [MenuItem("GameObject/CCL/Create Loco Simulation", true, MenuOrdering.Simulation)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;

@@ -8,7 +8,7 @@ using CCL.Types.Catalog;
 
 namespace CCL.Types
 {
-    [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
+    [CreateAssetMenu(menuName = "CCL/Custom Car Type", order = MenuOrdering.CarType)]
     public class CustomCarType : ScriptableObject, IAssetLoadCallback
     {
         public enum UnusedCarDeletePreventionMode

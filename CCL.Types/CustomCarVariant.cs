@@ -5,7 +5,7 @@ using CCL.Types.Json;
 
 namespace CCL.Types
 {
-    [CreateAssetMenu(menuName = "CCL/Car Variant")]
+    [CreateAssetMenu(menuName = "CCL/Car Variant", order = MenuOrdering.CarLivery)]
     public class CustomCarVariant : ScriptableObject
     {
         [Header("Basic Properties")]
