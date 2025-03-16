@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types
 {
-    [CreateAssetMenu(menuName = "CCL/Cargo Setup")]
+    [CreateAssetMenu(menuName = "CCL/Cargo Setup", order = MenuOrdering.CargoSetup)]
     public class CargoSetup : ScriptableObject, IAssetLoadCallback
     {
         public List<CargoEntry> Entries = new List<CargoEntry>();

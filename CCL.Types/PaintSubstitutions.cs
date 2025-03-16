@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types
 {
-    [CreateAssetMenu(menuName = "CCL/Paint Substitutions", order = MenuOrdering.PaintSubstitutions)]
+    [CreateAssetMenu(menuName = "CCL/Paint Substitutions", order = MenuOrdering.PaintSub)]
     public class PaintSubstitutions : ScriptableObject, ICustomSerialized
     {
         [Serializable]

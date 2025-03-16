@@ -6,9 +6,10 @@
         public const int CarType = 1;
         public const int CarLivery = 2;
 
-        public const int HUDLayout = 100;
-        public const int PaintSubstitutions = 101;
-        public const int Catalog = 102;
+        public const int CargoSetup = 100;
+        public const int HUDLayout = 101;
+        public const int PaintSub = 102;
+        public const int Catalog = 103;
 
         public const int ExtraTranslations = 200;
     }
