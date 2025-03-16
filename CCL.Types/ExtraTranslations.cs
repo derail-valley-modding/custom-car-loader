@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types
 {
-    [CreateAssetMenu(menuName = "CCL/Extra Translations")]
+    [CreateAssetMenu(menuName = "CCL/Extra Translations", order = MenuOrdering.ExtraTranslations)]
     public class ExtraTranslations : ScriptableObject, ICustomSerialized
     {
         public string? CSV_Url;

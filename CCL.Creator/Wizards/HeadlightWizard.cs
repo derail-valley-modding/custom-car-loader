@@ -29,7 +29,7 @@ namespace CCL.Creator.Wizards
         private Settings _settingsR = null!;
         private Settings _settingsF = null!;
 
-        [MenuItem("GameObject/CCL/Create Headlights", false, 10)]
+        [MenuItem("GameObject/CCL/Add Headlights", false, MenuOrdering.Body.Headlights)]
         public static void ShowWindow(MenuCommand command)
         {
             s_instance = GetWindow<HeadlightWizard>();
@@ -41,7 +41,7 @@ namespace CCL.Creator.Wizards
             s_instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Create Headlights", true, 10)]
+        [MenuItem("GameObject/CCL/Add Headlights", true, MenuOrdering.Body.Headlights)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;

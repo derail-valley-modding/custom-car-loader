@@ -7,7 +7,7 @@ namespace CCL.Creator.Wizards
 {
     internal class WizardlessWizards
     {
-        [MenuItem("GameObject/CCL/Add Cab", false, 10)]
+        [MenuItem("GameObject/CCL/Add Cab", false, MenuOrdering.Body.Cab)]
         public static void CreateCab(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -39,13 +39,13 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(cab, "Created Cab");
         }
 
-        [MenuItem("GameObject/CCL/Add Cab", true, 10)]
+        [MenuItem("GameObject/CCL/Add Cab", true, MenuOrdering.Body.Cab)]
         public static bool CreateCabValidate()
         {
             return Selection.activeGameObject;
         }
 
-        [MenuItem("GameObject/CCL/Add License Blocker", false, 10)]
+        [MenuItem("GameObject/CCL/Add License Blocker", false, MenuOrdering.Body.LicenseBlocker)]
         public static void CreateLicenseBlocker(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -69,7 +69,7 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(blocker, "Created License Blocker");
         }
 
-        [MenuItem("GameObject/CCL/Add License Blocker", true, 10)]
+        [MenuItem("GameObject/CCL/Add License Blocker", true, MenuOrdering.Body.LicenseBlocker)]
         public static bool CreateLicenseBlockerValidate()
         {
             return Selection.activeGameObject;

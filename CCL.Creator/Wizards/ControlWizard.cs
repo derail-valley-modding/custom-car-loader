@@ -13,7 +13,7 @@ namespace CCL.Creator.Wizards
     {
         private static ControlWizard? _instance;
 
-        [MenuItem("GameObject/CCL/Add Control", false, 10)]
+        [MenuItem("GameObject/CCL/Add Control", false, MenuOrdering.Cab.Control)]
         public static void ShowWindow(MenuCommand command)
         {
             _instance = GetWindow<ControlWizard>();
@@ -22,7 +22,7 @@ namespace CCL.Creator.Wizards
             _instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Add Control", true, 10)]
+        [MenuItem("GameObject/CCL/Add Control", true, MenuOrdering.Cab.Control)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;

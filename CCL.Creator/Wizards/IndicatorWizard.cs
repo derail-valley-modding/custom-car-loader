@@ -1,13 +1,8 @@
 ﻿using CCL.Creator.Inspector;
 using CCL.Creator.Utility;
-using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Indicators;
 using CCL.Types.Proxies.Ports;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +12,7 @@ namespace CCL.Creator.Wizards
     {
         private static IndicatorWizard? _instance;
 
-        [MenuItem("GameObject/CCL/Add Indicator", false, 10)]
+        [MenuItem("GameObject/CCL/Add Indicator", false, MenuOrdering.Cab.Indicator)]
         public static void ShowWindow(MenuCommand command)
         {
             _instance = GetWindow<IndicatorWizard>();
@@ -26,7 +21,7 @@ namespace CCL.Creator.Wizards
             _instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Add Indicator", true, 10)]
+        [MenuItem("GameObject/CCL/Add Indicator", true, MenuOrdering.Cab.Indicator)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;
