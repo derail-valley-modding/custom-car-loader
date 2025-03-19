@@ -9,6 +9,7 @@
         Cab = 3,
         Chuffs = 4,
         Collisions = 5,
+        Compressor = 21,
         Derailment = 6,
         Engine = 7,
         //EnvBiomeSensitive = 8,

@@ -2,7 +2,6 @@
 using DV.Localization;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -203,43 +202,6 @@ namespace CCL.Importer
             {
                 dest = default!;
             }
-        }
-    }
-
-    //[HarmonyPatch(typeof(Enum), nameof(Enum.IsDefined))]
-    //public static class EnumPatch
-    //{
-    //    public static bool Prefix(Type enumType, object value, ref bool __result)
-    //    {
-    //        if ((enumType == typeof(TrainCarType)) && (value is TrainCarType carType))
-    //        {
-    //            __result = CarTypeInjector.IsCustomTypeRegistered(carType);
-    //            if (__result) return false;
-    //        }
-    //        else if ((enumType == typeof(CargoType)) && (value is CargoType cargoType))
-    //        {
-    //            __result = CustomCargoInjector.IsCustomTypeRegistered(cargoType);
-    //            if (__result) return false;
-    //        }
-    //        return true;
-    //    }
-    //}
-
-    public static class EnumExtensions
-    {
-        public static GameObject ToTypePrefab(this BogieType bogie)
-        {
-            return ((TrainCarType)bogie).ToV2().prefab;
-        }
-
-        public static GameObject ToTypePrefab(this BufferType buffer)
-        {
-            return ((TrainCarType)buffer).ToV2().prefab;
-        }
-
-        public static bool IsFront(this CouplerDirection direction)
-        {
-            return direction == CouplerDirection.Front;
         }
     }
 }

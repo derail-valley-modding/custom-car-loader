@@ -31,7 +31,8 @@ namespace CCL.Importer.Proxies.Indicators
             CreateMap<LampFuseReaderProxy, LampFuseReader>().AutoCacheAndMap();
             CreateMap<LampBrakeIssueReaderProxy, LampBrakeLeaksAndHandbrakeStateReader>().AutoCacheAndMap();
             CreateMap<LampControlProxy, LampControl>().AutoCacheAndMap()
-                .ForMember(d => d.lampInd, o => o.MapFrom(s => Mapper.GetFromCache(s.lampInd)));
+                .ForMember(d => d.lampInd, o => o.MapFrom(s => Mapper.GetFromCache(s.lampInd)))
+                .ForMember(d => d.lampAudioMixerGroup, o => o.MapFrom(s => s.audioMixerGroup.ToInstance()));
             CreateMap<LampWheelSlipSlideReaderProxy, LampWheelSlipSlideReader>().AutoCacheAndMap();
 
             CreateMap<LabelLocalizer, Localize>();
