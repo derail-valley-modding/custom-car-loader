@@ -24,7 +24,7 @@ namespace CCL.Types.HUD
         }
 
         [Tooltip("The HUD layout this car should use")]
-        public BaseHUD HUDType;
+        public BaseHUD HUDType = BaseHUD.DE6;
         public CustomHUDLayout CustomHUDSettings = new CustomHUDLayout();
 
         [SerializeField, HideInInspector]

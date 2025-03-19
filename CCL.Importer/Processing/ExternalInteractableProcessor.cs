@@ -124,6 +124,9 @@ namespace CCL.Importer.Processing
                     case DUMMY_HANDBRAKE_MICROSHUNTER:
                         Replace(interactables.transform, current, _microshunterHandbrake);
                         break;
+                    case DUMMY_HANDBRAKE_DM1U:
+                        Replace(interactables.transform, current, _dm1uHandbrake);
+                        break;
                     default:
                         break;
                 }
