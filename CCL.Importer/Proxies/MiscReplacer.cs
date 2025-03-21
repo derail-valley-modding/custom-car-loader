@@ -24,10 +24,10 @@ namespace CCL.Importer.Proxies
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap()
-                .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)))
-                .Include<InternalExternalSnapshotSwitcherDoorsAndWindowsProxy, InternalExternalSnapshotSwitcherDoorsAndWindows>();
+                .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)));
             CreateMap<InternalExternalSnapshotSwitcherDoorsAndWindowsProxy, InternalExternalSnapshotSwitcherDoorsAndWindows>()
-                .AutoCacheAndMap();
+                .AutoCacheAndMap()
+                .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)));
             CreateMap<CameraTriggerProxy, CameraTrigger>().AutoCacheAndMap();
 
             CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
