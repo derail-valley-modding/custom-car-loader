@@ -4,7 +4,7 @@ namespace CCL.Types.Proxies
 {
     public class InternalExternalSnapshotSwitcherProxy : MonoBehaviour
     {
-        public BoxCollider box = null!;
+        public CameraTriggerProxy trigger = null!;
     }
 
     public class InternalExternalSnapshotSwitcherDoorsAndWindowsProxy : InternalExternalSnapshotSwitcherProxy { }

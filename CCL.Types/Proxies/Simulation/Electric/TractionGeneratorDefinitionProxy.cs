@@ -25,13 +25,15 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public float dynamicBrakeGoalRpmNormalized = 0.5f;
 
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.CONTROL, "THROTTLE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.AMPS, "EXTERNAL_CURRENT_LIMIT_EXT_IN"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "EXTERNAL_CURRENT_LIMIT_ACTIVE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "OVERCURRENT_POWER_FUSE_OFF"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "EXCITATION"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_IN"),
@@ -45,9 +47,10 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortReferenceDefinition(DVPortValueType.CONTROL, "DYNAMIC_BRAKE", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "RPM", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "RPM_NORMALIZED", false),
-            new PortReferenceDefinition(DVPortValueType.STATE, "CURRENT_DROP_REQUEST", false),
             new PortReferenceDefinition(DVPortValueType.AMPS, "TOTAL_AMPS", false),
-            new PortReferenceDefinition(DVPortValueType.OHMS, "EFFECTIVE_RESISTANCE", false)
+            new PortReferenceDefinition(DVPortValueType.OHMS, "EFFECTIVE_RESISTANCE", false),
+            new PortReferenceDefinition(DVPortValueType.OHMS, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE", false),
+            new PortReferenceDefinition(DVPortValueType.AMPS, "TRANSITION_CURRENT_LIMIT", false)
         };
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
