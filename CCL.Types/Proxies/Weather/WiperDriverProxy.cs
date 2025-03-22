@@ -2,10 +2,10 @@
 
 namespace CCL.Types.Proxies.Weather
 {
-    public class WiperDriverProxy : MonoBehaviour
+    public abstract class WiperDriverProxy : MonoBehaviour
     {
-        public WiperDriverProxy master;
-        public WiperProxy wiper;
+        public WiperDriverProxy master = null!;
+        public WiperProxy wiper = null!;
         public float speed;
         public float timeBetweenWipes;
     }
