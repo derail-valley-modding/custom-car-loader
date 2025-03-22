@@ -66,6 +66,8 @@ namespace CCL.Importer.Proxies
                 .ForMember(d => d.blocker, o => o.MapFrom(s => Mapper.GetFromCache(s.blocker)))
                 .AfterMap(InvalidTeleportLocationReactionAfter);
 
+            CreateMap<HJAFDrivenAnimationProxy, HJAFDrivenAnimation>().AutoCacheAndMap();
+
             CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap();
         }
 
