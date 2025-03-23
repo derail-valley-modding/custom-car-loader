@@ -112,6 +112,8 @@ namespace CCL.Importer.Processing
             AddController<InteractablePortFeedersController, InteractablePortFeeder>(prefab);
             AddController<IndicatorPortReadersController, IndicatorPortReader>(prefab);
             AddController<InteractableFuseFeedersController, InteractableFuseFeeder>(prefab);
+            AddController<LampPortReadersController, LampPortReader>(prefab);
+            AddController<LampFuseReadersController, LampFuseReader>(prefab);
             AddController<AnimatorPortReadersController, AnimatorPortReader>(prefab);
             AddController<GenericPortReadersController, AGenericPortReader>(prefab);
             AddController<PositionSyncProviderController, PositionSyncProvider>(prefab);
