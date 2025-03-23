@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
@@ -13,56 +15,71 @@ namespace CCL.Types.Proxies.Weather
 
         private void OnDrawGizmos()
         {
-            if (wiper == null) return;
+            // No rotating transform, cannot wipe.
+            if (rotationaryTransforms.Length < 1 || rotationaryTransforms[0] == null) return;
 
-            var pos = transform.position;
-            var end = wiper.transform.position;
-            var dif = end - pos;
-            var rot = Quaternion.AngleAxis(maxAngle / Segments, transform.forward);
+            foreach (var transform in rotationaryTransforms)
+            {
+                DrawRotatingTransform(transform, maxAngle);
+            }
 
-            Vector3? difS = null;
-            Vector3? difE = null;
-            if (wiper.start != null) difS = wiper.start.position - end;
-            if (wiper.end != null) difE = wiper.end.position - end;
+            // No wiper, no cleaning area.
+            if (wiper == null || wiper.start == null || wiper.end == null) return;
+
+            DrawWipeArea(rotationaryTransforms[0], stationaryTransform, wiper, maxAngle);
+        }
+
+        private static void DrawRotatingTransform(Transform t, float angle)
+        {
+            if (t == null) return;
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawLine(pos, end);
 
-            if (difS.HasValue && difE.HasValue)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawLine(end + difS.Value, end + difE.Value);
-            }
+            var pos = t.position;
+            var end = pos + Quaternion.AngleAxis(angle / -2.0f, t.forward) * (t.up * -0.5f);
+            var dif = end - pos;
+            var rot = Quaternion.AngleAxis(angle / Segments, t.forward);
+
+            Gizmos.DrawLine(pos, end);
 
             for (int i = 0; i < Segments; i++)
             {
-                var temp = pos + (dif = rot * dif);
-                Gizmos.color = Color.blue;
-                Gizmos.DrawLine(end, temp);
-
-                if (difS.HasValue)
-                {
-                    Gizmos.color = Color.cyan;
-                    Gizmos.DrawLine(end + difS.Value, temp + difS.Value);
-                }
-
-                if (difE.HasValue)
-                {
-                    Gizmos.color = Color.cyan;
-                    Gizmos.DrawLine(end + difE.Value, temp + difE.Value);
-                }
-
-                end = temp;
+                Gizmos.DrawLine(end, end = pos + (dif = rot * dif));
             }
 
-            Gizmos.color = Color.blue;
             Gizmos.DrawLine(pos, end);
+        }
 
-            if (difS.HasValue && difE.HasValue)
+        private static void DrawWipeArea(Transform rotationary, Transform? stationary, WiperProxy wiper, float maxAngle)
+        {
+            var isStationary = stationary != null && stationary.GetComponentsInChildren<WiperProxy>().Any(x => x == wiper);
+            var pos = rotationary.position;
+            var end = stationary != null ? stationary.position : pos + Quaternion.AngleAxis(maxAngle / -2.0f, rotationary.forward) * (rotationary.up * -0.5f);
+            var dif = end - pos;
+            var rot = Quaternion.AngleAxis(maxAngle / Segments, rotationary.forward);
+
+            var posS = wiper.start.position;
+            var posE = wiper.end.position;
+            var difS = posS - end;
+            var difE = posE - end;
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(posS, posE);
+
+            for (int i = 0; i < Segments; i++)
             {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawLine(end + difS.Value, end + difE.Value);
+                if (!isStationary)
+                {
+                    difS = rot * difS;
+                    difE = rot * difE;
+                }
+
+                end = pos + (dif = rot * dif);
+                Gizmos.DrawLine(posS, posS = end + difS);
+                Gizmos.DrawLine(posE, posE = end + difE);
             }
+
+            Gizmos.DrawLine(posS, posE);
         }
     }
 }
