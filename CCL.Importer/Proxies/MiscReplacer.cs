@@ -2,6 +2,7 @@
 using CCL.Types;
 using CCL.Types.Proxies;
 using DV;
+using DV.Hacks;
 using DV.Interaction;
 using DV.RemoteControls;
 using DV.Simulation.Cars;
@@ -67,6 +68,8 @@ namespace CCL.Importer.Proxies
                 .AfterMap(InvalidTeleportLocationReactionAfter);
 
             CreateMap<HJAFDrivenAnimationProxy, HJAFDrivenAnimation>().AutoCacheAndMap();
+
+            CreateMap<DE6KnifeSwitchFuseHUDHackFixProxy, DE6KnifeSwitchFuseHUDHackFix>().AutoCacheAndMap();
 
             CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap();
         }
