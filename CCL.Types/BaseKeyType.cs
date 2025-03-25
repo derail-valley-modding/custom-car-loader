@@ -103,6 +103,8 @@
         InventoryClose = 711,
         InventorySlot10 = 712,
         InventorySlot11 = 713,
+        InventoryQuickMoveModifier = 714,
+        InventoryQuickEquipModifier = 715,
         FlipMultiplePagesModifier = 800,
         PreviousPage = 801,
         NextPage = 802,

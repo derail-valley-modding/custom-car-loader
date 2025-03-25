@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using CCL.Importer.Components.Headlights;
 using CCL.Importer.Components.Indicators;
+using CCL.Importer.Components.Simulation;
 using CCL.Types.Components;
 using CCL.Types.Components.Headlights;
 using CCL.Types.Components.Indicators;
+using CCL.Types.Components.Simulation;
 
 namespace CCL.Importer.Components
 {
@@ -14,6 +16,7 @@ namespace CCL.Importer.Components
             MapCoupling();
             MapHeadlights();
             MapIndicators();
+            MapSimulation();
         }
 
         private void MapCoupling()
@@ -33,6 +36,11 @@ namespace CCL.Importer.Components
         private void MapIndicators()
         {
             CreateMap<IndicatorShaderCustomValue, IndicatorShaderCustomValueInternal>().AutoCacheAndMap();
+        }
+
+        private void MapSimulation()
+        {
+            CreateMap<TickingOutputDefinition, TickingOutputDefinitionInternal>().AutoCacheAndMap();
         }
     }
 }
