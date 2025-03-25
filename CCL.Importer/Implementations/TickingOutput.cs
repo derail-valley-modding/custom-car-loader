@@ -1,11 +1,14 @@
 ﻿using CCL.Importer.Components.Simulation;
 using LocoSim.Implementations;
+using System;
+using UnityEngine;
 
 namespace CCL.Importer.Implementations
 {
     internal class TickingOutput : SimComponent
     {
         public readonly float TickingTime;
+        public readonly float AbsoluteValueDifference;
         public readonly FuseReference? PowerFuseRef;
         public readonly PortReference Input;
         public readonly Port OutReadOut;
@@ -16,6 +19,7 @@ namespace CCL.Importer.Implementations
         public TickingOutput(TickingOutputDefinitionInternal def) : base(def.ID)
         {
             TickingTime = def.TickingTime;
+            AbsoluteValueDifference = def.AbsoluteValueDifference;
 
             if (!string.IsNullOrEmpty(def.PowerFuseId))
             {
@@ -31,9 +35,16 @@ namespace CCL.Importer.Implementations
 
         public override void Tick(float delta)
         {
-            float input = ProcessValuePower(Input.Value);
+            float input = Input.Value;
 
-            if (TickingTime == 0)
+            if (Math.Abs(input) < AbsoluteValueDifference)
+            {
+                input = 0;
+            }
+
+            input = ProcessValuePower(input);
+
+            if (TickingTime <= 0)
             {
                 OutReadOut.Value = input;
                 return;

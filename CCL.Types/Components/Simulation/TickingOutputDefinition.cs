@@ -1,13 +1,12 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
     public class TickingOutputDefinition : SimComponentDefinitionProxy, IHasFuseIdFields
     {
-        [Header("0 is treated as instant change"), Min(0)]
         public float TickingTime = 1.0f;
+        public float AbsoluteValueDifference = -1.0f;
         [FuseId]
         public string PowerFuseId = string.Empty;
 
