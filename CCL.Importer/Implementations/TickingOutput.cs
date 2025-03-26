@@ -1,7 +1,6 @@
 ﻿using CCL.Importer.Components.Simulation;
 using LocoSim.Implementations;
 using System;
-using UnityEngine;
 
 namespace CCL.Importer.Implementations
 {
@@ -36,7 +35,7 @@ namespace CCL.Importer.Implementations
         public override void Tick(float delta)
         {
             float input = Input.Value;
-            bool thresh = Math.Abs(input) < AbsoluteValueThreshold;
+            bool thresh = Math.Abs(input) >= AbsoluteValueThreshold;
             input = ProcessValuePower(input);
 
             if (TickingTime <= 0)

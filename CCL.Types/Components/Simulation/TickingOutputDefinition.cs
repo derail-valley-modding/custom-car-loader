@@ -1,12 +1,18 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
     public class TickingOutputDefinition : SimComponentDefinitionProxy, IHasFuseIdFields
     {
+        [Tooltip("How often the value updates")]
         public float TickingTime = 1.0f;
+        [Tooltip("The minimum absolute value required to start ticking\n" +
+            "Use a negative value for always active")]
         public float AbsoluteValueThreshold = -1.0f;
+
+        [Header("Optional")]
         [FuseId]
         public string PowerFuseId = string.Empty;
 

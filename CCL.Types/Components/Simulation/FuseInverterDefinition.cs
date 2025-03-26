@@ -10,9 +10,9 @@ namespace CCL.Types.Components.Simulation
         [Serializable]
         public class FusePair
         {
-            [FuseId]
+            [FuseId, Tooltip("The original fuse")]
             public string SourceFuseId = string.Empty;
-            [FuseId]
+            [FuseId, Tooltip("The fuse that will hold the inverted value")]
             public string InvertedFuseId = string.Empty;
         }
 
