@@ -8,7 +8,7 @@ namespace CCL.Importer.Implementations
     internal class TickingOutput : SimComponent
     {
         public readonly float TickingTime;
-        public readonly float AbsoluteValueDifference;
+        public readonly float AbsoluteValueThreshold;
         public readonly FuseReference? PowerFuseRef;
         public readonly PortReference Input;
         public readonly Port OutReadOut;
@@ -19,7 +19,7 @@ namespace CCL.Importer.Implementations
         public TickingOutput(TickingOutputDefinitionInternal def) : base(def.ID)
         {
             TickingTime = def.TickingTime;
-            AbsoluteValueDifference = def.AbsoluteValueDifference;
+            AbsoluteValueThreshold = def.AbsoluteValueThreshold;
 
             if (!string.IsNullOrEmpty(def.PowerFuseId))
             {
@@ -36,17 +36,12 @@ namespace CCL.Importer.Implementations
         public override void Tick(float delta)
         {
             float input = Input.Value;
-
-            if (Math.Abs(input) < AbsoluteValueDifference)
-            {
-                input = 0;
-            }
-
+            bool thresh = Math.Abs(input) < AbsoluteValueThreshold;
             input = ProcessValuePower(input);
 
             if (TickingTime <= 0)
             {
-                OutReadOut.Value = input;
+                OutReadOut.Value = thresh ? input : 0;
                 return;
             }
 
@@ -56,8 +51,8 @@ namespace CCL.Importer.Implementations
             if (_time < TickingTime) return;
 
             _time -= TickingTime;
-            OutReadOut.Value = input;
-            TickReadOut.Value = ProcessValuePower(1);
+            OutReadOut.Value = thresh ? input : 0;
+            TickReadOut.Value = ProcessValuePower(thresh ? 1 : 0);
         }
 
         private float ProcessValuePower(float value)

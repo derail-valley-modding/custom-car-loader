@@ -7,7 +7,7 @@ namespace CCL.Importer.Components.Simulation
     internal class TickingOutputDefinitionInternal : SimComponentDefinition
     {
         public float TickingTime = 1.0f;
-        public float AbsoluteValueDifference = -1.0f;
+        public float AbsoluteValueThreshold = -1.0f;
         public string PowerFuseId = string.Empty;
 
         public readonly PortReferenceDefinition Input = new(PortValueType.GENERIC, "INPUT");

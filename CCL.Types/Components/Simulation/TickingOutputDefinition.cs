@@ -6,7 +6,7 @@ namespace CCL.Types.Components.Simulation
     public class TickingOutputDefinition : SimComponentDefinitionProxy, IHasFuseIdFields
     {
         public float TickingTime = 1.0f;
-        public float AbsoluteValueDifference = -1.0f;
+        public float AbsoluteValueThreshold = -1.0f;
         [FuseId]
         public string PowerFuseId = string.Empty;
 
