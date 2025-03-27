@@ -6,7 +6,6 @@ using CCL.Types.Components;
 using CCL.Types.Components.Headlights;
 using CCL.Types.Components.Indicators;
 using CCL.Types.Components.Simulation;
-using System;
 
 namespace CCL.Importer.Components
 {
@@ -18,6 +17,8 @@ namespace CCL.Importer.Components
             MapHeadlights();
             MapIndicators();
             MapSimulation();
+
+            CreateMap<ControlNameTMPDisplay, ControlNameTMPDisplayInternal>().AutoCacheAndMap();
         }
 
         private void MapCoupling()
@@ -37,6 +38,7 @@ namespace CCL.Importer.Components
         private void MapIndicators()
         {
             CreateMap<IndicatorShaderCustomValue, IndicatorShaderCustomValueInternal>().AutoCacheAndMap();
+            CreateMap<IndicatorTMP, IndicatorTMPInternal>().AutoCacheAndMap();
         }
 
         private void MapSimulation()
@@ -44,6 +46,7 @@ namespace CCL.Importer.Components
             CreateMap<TickingOutputDefinition, TickingOutputDefinitionInternal>().AutoCacheAndMap();
             CreateMap<FuseInverterDefinition, FuseInverterDefinitionInternal>().AutoCacheAndMap()
                 .AfterMap(FuseInverterAfter);
+            CreateMap<CombinedThrottleDynamicBrakeDefinition, CombinedThrottleDynamicBrakeDefinitionInternal>().AutoCacheAndMap();
         }
 
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)
