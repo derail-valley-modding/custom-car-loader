@@ -33,6 +33,7 @@ namespace CCL.Importer.Proxies.Indicators
                 .ForMember(d => d.lampInd, o => o.MapFrom(s => Mapper.GetFromCache(s.lampInd)))
                 .ForMember(d => d.lampAudioMixerGroup, o => o.MapFrom(s => s.audioMixerGroup.ToInstance()));
             CreateMap<LampWheelSlipSlideReaderProxy, LampWheelSlipSlideReader>().AutoCacheAndMap();
+            CreateMap<LampControllerTemperatureMUProxy, LampControllerTemperatureMU>().AutoCacheAndMap();
 
             CreateMap<LabelLocalizer, Localize>();
         }
