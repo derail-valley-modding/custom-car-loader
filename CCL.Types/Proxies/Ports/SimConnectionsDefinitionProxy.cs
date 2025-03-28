@@ -8,17 +8,14 @@ namespace CCL.Types.Proxies.Ports
 {
     public class SimConnectionsDefinitionProxy : MonoBehaviour, ICustomSerialized
     {
-        public List<SimComponentDefinitionProxy> executionOrder;
-
-        public List<PortConnectionProxy> connections;
-
-        [SerializeField, HideInInspector]
-        private string connectionsJson;
-
-        public List<PortReferenceConnectionProxy> portReferenceConnections;
+        public List<SimComponentDefinitionProxy> executionOrder = new List<SimComponentDefinitionProxy>();
+        public List<PortConnectionProxy> connections = new List<PortConnectionProxy>();
+        public List<PortReferenceConnectionProxy> portReferenceConnections = new List<PortReferenceConnectionProxy>();
 
         [SerializeField, HideInInspector]
-        private string portReferenceConnectionsJson;
+        private string? connectionsJson;
+        [SerializeField, HideInInspector]
+        private string? portReferenceConnectionsJson;
 
         public void OnValidate()
         {
@@ -32,7 +29,6 @@ namespace CCL.Types.Proxies.Ports
             portReferenceConnections = JSONObject.FromJson(portReferenceConnectionsJson, () => new List<PortReferenceConnectionProxy>());
         }
 
-        
         public void PopulateComponents()
         {
             executionOrder ??= new List<SimComponentDefinitionProxy>();
@@ -45,6 +41,14 @@ namespace CCL.Types.Proxies.Ports
                     executionOrder.Add(component);
                 }
             }
+        }
+
+        public void AutoSort()
+        {
+            executionOrder ??= new List<SimComponentDefinitionProxy>();
+            var allComponents = transform.root.GetComponentsInChildren<SimComponentDefinitionProxy>();
+
+            executionOrder = executionOrder.OrderBy(x => Array.IndexOf(allComponents, x)).ToList();
         }
 
         public void DestroyConnectionsToComponent(SimComponentDefinitionProxy component)
@@ -137,19 +141,17 @@ namespace CCL.Types.Proxies.Ports
     public class PortConnectionProxy
     {
         [PortId(DVPortType.OUT)]
-        public string fullPortIdOut;
-
+        public string fullPortIdOut = string.Empty;
         [PortId(DVPortType.IN)]
-        public string fullPortIdIn;
+        public string fullPortIdIn = string.Empty;
     }
 
     [Serializable]
     public class PortReferenceConnectionProxy
     {
         [PortReferenceId]
-        public string portReferenceId;
-
+        public string portReferenceId = string.Empty;
         [PortId]
-        public string portId;
+        public string portId = string.Empty;
     }
 }

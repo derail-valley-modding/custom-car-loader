@@ -4,7 +4,7 @@ using UnityEditor;
 
 namespace CCL.Creator.Inspector
 {
-    [CustomEditor(typeof(SimComponentDefinitionProxy), true)]
+    [CustomEditor(typeof(SimComponentDefinitionProxy), true), CanEditMultipleObjects]
     internal class SimComponentDefinitionProxyEditor : Editor
     {
         public override void OnInspectorGUI()

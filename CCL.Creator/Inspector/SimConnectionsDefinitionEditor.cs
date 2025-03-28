@@ -14,6 +14,9 @@ namespace CCL.Creator.Inspector
         private SerializedProperty _connections = null!;
         private SerializedProperty _refConnections = null!;
         private ReorderableList _orderList = null!;
+        private ReorderableList _connectionList = null!;
+        private ReorderableList _refConnectionList = null!;
+        private bool _reorderMode = false;
 
         private void OnEnable()
         {
@@ -28,6 +31,24 @@ namespace CCL.Creator.Inspector
                 var element = _orderList.serializedProperty.GetArrayElementAtIndex(index);
                 EditorGUI.ObjectField(rect, element, GUIContent.none);
             };
+
+            _connectionList = EditorHelpers.CreateReorderableList(serializedObject, _connections,
+                true, true, true, "Port Connections");
+
+            _connectionList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                var element = _connectionList.serializedProperty.GetArrayElementAtIndex(index);
+                EditorGUI.LabelField(rect, element.FindPropertyRelative(nameof(PortConnectionProxy.fullPortIdOut)).stringValue);
+            };
+
+            _refConnectionList = EditorHelpers.CreateReorderableList(serializedObject, _refConnections,
+                true, true, true, "Port Reference Connections");
+
+            _refConnectionList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                var element = _refConnectionList.serializedProperty.GetArrayElementAtIndex(index);
+                EditorGUI.LabelField(rect, element.FindPropertyRelative(nameof(PortReferenceConnectionProxy.portReferenceId)).stringValue);
+            };
         }
 
         public override void OnInspectorGUI()
@@ -41,6 +62,11 @@ namespace CCL.Creator.Inspector
                 _proxy.PopulateComponents();
                 AssetHelper.SaveAsset(_proxy);
             }
+            if (GUILayout.Button("Auto Sort From Hierarchy"))
+            {
+                _proxy.AutoSort();
+                AssetHelper.SaveAsset(_proxy);
+            }
             if (GUILayout.Button("Connection Wizard"))
             {
                 SimulationEditorWindow.ShowWindow(_proxy);
@@ -48,8 +74,19 @@ namespace CCL.Creator.Inspector
 
             EditorGUILayout.Space();
             _orderList.DoLayoutList();
-            EditorGUILayout.PropertyField(_connections);
-            EditorGUILayout.PropertyField(_refConnections);
+
+            _reorderMode = EditorGUILayout.Toggle("Reorder Mode", _reorderMode);
+
+            if (_reorderMode)
+            {
+                _connectionList.DoLayoutList();
+                _refConnectionList.DoLayoutList();
+            }
+            else
+            {
+                EditorGUILayout.PropertyField(_connections);
+                EditorGUILayout.PropertyField(_refConnections);
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
