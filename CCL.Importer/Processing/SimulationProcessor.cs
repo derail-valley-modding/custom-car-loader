@@ -123,7 +123,7 @@ namespace CCL.Importer.Processing
             AddController<OilingPointsPortController, OilingPointPortFeederReader>(prefab);
             AddController<ControlsBlockController, ControlBlocker>(prefab);
 
-            AddController<CoupledAttachmentManager, CoupledAttachmentTag>(prefab);
+            AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
 
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
         }

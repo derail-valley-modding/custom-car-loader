@@ -98,8 +98,8 @@ namespace CCL.Importer.Components
 
         private bool TryAcquireTarget(TrainCar other, string tag)
         {
-            if (other.TryGetComponent(out CoupledAttachmentManager manager) &&
-                manager.TryGetTag(tag, out var comp))
+            if (other.TryGetComponent(out CoupledAttachmentController controller) &&
+                controller.TryGetTag(tag, out var comp))
             {
                 _target = comp.transform;
                 MovedObject.localScale = _scale;
