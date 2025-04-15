@@ -355,9 +355,12 @@ namespace CCL.Creator.Utility
                     Array.Resize(ref array, size);
                 }
 
-                for (int i = 0; i < size; i++)
+                using (new EditorGUI.IndentLevelScope())
                 {
-                    array[i] = EditorGUILayout.TextField($"Item {i}", array[i]);
+                    for (int i = 0; i < size; i++)
+                    {
+                        array[i] = EditorGUILayout.TextField($"Item {i}", array[i]);
+                    }
                 }
             }
 
