@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Components.Simulation;
 using LocoSim.Implementations;
+using UnityEngine;
 
 namespace CCL.Importer.Implementations
 {
@@ -28,6 +29,7 @@ namespace CCL.Importer.Implementations
             DynBrakeIn.ValueUpdatedInternally += DynBrakeUpdated;
             CombinedIn.ValueUpdatedInternally += CombinedUpdated;
             SelectorIn.ValueUpdatedInternally += SelectorUpdated;
+            CurrentMode.ValueUpdatedInternally += ModeUpdated;
 
             _mode = 0;
         }
@@ -111,6 +113,20 @@ namespace CCL.Importer.Implementations
             }
 
             CurrentMode.Value = _mode;
+        }
+
+        private void ModeUpdated(float value)
+        {
+            int mode = Mathf.RoundToInt(Mathf.Clamp(value, -1, 1));
+
+            if (mode == _mode) return;
+
+            _mode = mode;
+
+            if (!UseToggleMode)
+            {
+                SelectorIn.Value = _mode + 1.0f / 2.0f;
+            }
         }
     }
 }
