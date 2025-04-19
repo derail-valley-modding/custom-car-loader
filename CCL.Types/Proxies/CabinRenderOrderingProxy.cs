@@ -1,6 +1,7 @@
 ﻿using CCL.Types.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -23,7 +24,7 @@ namespace CCL.Types.Proxies
 
         public void OnValidate()
         {
-            _json = JSONObject.ToJson(ordering);
+            _json = JSONObject.ToJson(ordering.Where(x => x.group != null).ToList());
         }
 
         public void AfterImport()
