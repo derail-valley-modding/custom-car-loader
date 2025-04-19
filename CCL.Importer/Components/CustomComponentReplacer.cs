@@ -52,6 +52,7 @@ namespace CCL.Importer.Components
             CreateMap<FuseInverterDefinition, FuseInverterDefinitionInternal>().AutoCacheAndMap()
                 .AfterMap(FuseInverterAfter);
             CreateMap<CombinedThrottleDynamicBrakeDefinition, CombinedThrottleDynamicBrakeDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<TimeReaderDefinition, TimeReaderDefinitionInternal>().AutoCacheAndMap();
         }
 
         private void MapMultipleUnit()
