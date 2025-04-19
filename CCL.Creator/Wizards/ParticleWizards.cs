@@ -245,10 +245,10 @@ namespace CCL.Creator.Wizards
             cylCockDrip.transform.parent = comp.transform;
             var dripL = new GameObject("CylCockWaterDrip L").AddComponent<CopyVanillaParticleSystem>();
             dripL.transform.parent = cylCockDrip.transform;
-            dripL.SystemToCopy = VanillaParticleSystem.SteamerCylCockWaterDripParticles;
+            dripL.SystemToCopy = VanillaParticleSystem.SteamerCylCockWaterDrip;
             var dripR = new GameObject("CylCockWaterDrip R").AddComponent<CopyVanillaParticleSystem>();
             dripR.transform.parent = cylCockDrip.transform;
-            dripR.SystemToCopy = VanillaParticleSystem.SteamerCylCockWaterDripParticles;
+            dripR.SystemToCopy = VanillaParticleSystem.SteamerCylCockWaterDrip;
 
             var cylCockSteam = new GameObject("CylCockSteam").AddComponent<CylinderCockParticlePortReaderProxy>();
             cylCockSteam.transform.parent = comp.transform;
