@@ -41,10 +41,13 @@
 		<Reference Include="DVLangHelper.Data" />
 		<Reference Include="DVLangHelper.Runtime" />
 		<Reference Include="DV.BrakeSystem" />
+		<Reference Include="DV.CabControls.Spec" />
 		<Reference Include="DV.Common" />
 		<Reference Include="DV.Interaction" />
+		<Reference Include="DV.LayeredAudio" />
 		<Reference Include="DV.Localization" />
 		<Reference Include="DV.NAudio" />
+		<Reference Include="DV.RailTrack" />
 		<Reference Include="DV.Simulation" />
 		<Reference Include="DV.ThingTypes" />
 		<Reference Include="DV.UI" />

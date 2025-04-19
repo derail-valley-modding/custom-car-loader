@@ -559,9 +559,9 @@ namespace CCL.Importer
 
             if (tech.Description.Entries.Length > 0)
             {
-                var desc = Paths.GetLocalizeSequence(slot, Paths.TechItems.TechnologyDesc);
-                desc.gameObject.SetActive(true);
-                desc.sequence = tech.Description.ToSequence();
+                //var desc = Paths.GetLocalizeSequence(slot, Paths.TechItems.TechnologyDesc);
+                //desc.gameObject.SetActive(true);
+                //desc.sequence = tech.Description.ToSequence();
             }
 
             var type = Paths.GetLocalize(slot, Paths.TechItems.TechnologyType);
@@ -871,7 +871,7 @@ namespace CCL.Importer
 
             public static LocalizedNumber GetLocalizedNumber(Transform root, string path) => root.Find(path).GetComponent<LocalizedNumber>();
 
-            public static LocalizeSequence GetLocalizeSequence(Transform root, string path) => root.Find(path).GetComponent<LocalizeSequence>();
+            //public static LocalizeSequence GetLocalizeSequence(Transform root, string path) => root.Find(path).GetComponent<LocalizeSequence>();
 
             public static Image GetImage(Transform root, string path) => root.Find(path).GetComponent<Image>();
         }

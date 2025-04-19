@@ -92,7 +92,7 @@ namespace CCL.Importer
         public static void RefreshChildren<T>(this ARefreshableChildrenController<T> controller)
             where T : MonoBehaviour
         {
-            controller.entries = controller.gameObject.GetComponentsInChildren<T>(true);
+            controller.entries = controller.gameObject.GetComponentsInChildren<T>(true).ToList();
         }
 
         public static bool EqualsOneOf<T>(this T compare, params T[] values)

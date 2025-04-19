@@ -10,6 +10,7 @@ using DV.Util;
 using LocoSim.Definitions;
 using LocoSim.DVExtensions.Test;
 using System.ComponentModel.Composition;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Importer.Processing
@@ -41,11 +42,12 @@ namespace CCL.Importer.Processing
 
             // Add Control Override components
             var baseOverrider = livery.prefab.GetComponentInChildren<BaseControlsOverrider>(true);
-            if ((livery.prefab.GetComponentsInChildren<OverridableBaseControl>().Length > 0) && !baseOverrider)
+            var controls = livery.prefab.GetComponentsInChildren<OverridableBaseControl>();
+            if (controls.Length > 0 && !baseOverrider)
             {
                 baseOverrider = livery.prefab.AddComponent<BaseControlsOverrider>();
             }
-            baseOverrider?.OnValidate();
+            baseOverrider?.AddControls(controls);
 
             // If we have something that gets referenced through the simConnections decoupling mechanism - these are generally things
             // that make ports exist.
@@ -137,7 +139,7 @@ namespace CCL.Importer.Processing
             if (entries.Length > 0)
             {
                 var controller = prefab.AddComponent<TController>();
-                controller.entries = entries;
+                controller.entries = entries.ToList();
             }
         }
 
