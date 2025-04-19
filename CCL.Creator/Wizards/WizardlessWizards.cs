@@ -62,8 +62,6 @@ namespace CCL.Creator.Wizards
 
             var box = tp.AddComponent<BoxCollider>();
             var reaction = tp.AddComponent<InvalidTeleportLocationReactionProxy>();
-            reaction.waitBeforeSpawn = 0.5f;
-            reaction.drawAttentionPointLine = true;
             reaction.blocker = comp;
 
             Undo.RegisterCreatedObjectUndo(blocker, "Created License Blocker");
