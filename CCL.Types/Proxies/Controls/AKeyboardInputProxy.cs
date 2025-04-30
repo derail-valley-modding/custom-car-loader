@@ -21,12 +21,6 @@ namespace CCL.Types.Proxies.Controls
         public BaseKeyType scrollDownKey = BaseKeyType.Empty;
     }
     
-    public class NotchedPortKeyboardInputProxy : AKeyboardInputProxy
-    {
-        public BaseKeyType positiveApplyKey = BaseKeyType.Empty;
-        public BaseKeyType negativeApplyKey = BaseKeyType.Empty;
-    }
-    
     public class PhysicsForceKeyboardInputProxy : AKeyboardInputProxy
     {
         public BaseKeyType positiveApplyKey = BaseKeyType.Empty;

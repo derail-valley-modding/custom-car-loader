@@ -11,7 +11,6 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<ButtonUseKeyboardInputProxy, ButtonUseKeyboardInput>().AutoCacheAndMap();
             CreateMap<FireboxKeyboardInputProxy, FireboxKeyboardInput>().AutoCacheAndMap();
             CreateMap<MouseScrollKeyboardInputProxy, MouseScrollKeyboardInput>().AutoCacheAndMap();
-            //CreateMap<NotchedPortKeyboardInputProxy, NotchedPortKeyboardInput>().AutoCacheAndMap();
             CreateMap<PhysicsForceKeyboardInputProxy, PhysicsForceKeyboardInput>().AutoCacheAndMap();
             CreateMap<PhysicsTorqueKeyboardInputProxy, PhysicsTorqueKeyboardInput>().AutoCacheAndMap();
             CreateMap<ToggleSwitchUseKeyboardInputProxy, ToggleSwitchUseKeyboardInput>().AutoCacheAndMap();

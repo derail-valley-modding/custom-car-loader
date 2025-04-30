@@ -13,7 +13,7 @@ namespace CCL.Importer.Patches
         private static void StartPostfix(StationLocoSpawner __instance)
         {
             CCLPlugin.Log($"Finding loco spawn groups to inject into '{__instance.name}'");
-            //CCLPlugin.LogVerbose($"Track length: {__instance.locoSpawnTrack.logicTrack.length}m");
+            CCLPlugin.LogVerbose($"Track length: {RailTrackRegistry.RailTrackToLogicTrack[__instance.locoSpawnTrack].length}m");
 
             // Get the groups from the liveries.
             foreach (var car in CarManager.CustomCarTypes)

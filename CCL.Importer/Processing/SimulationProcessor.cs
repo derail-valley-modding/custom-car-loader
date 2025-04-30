@@ -2,13 +2,19 @@
 using CCL.Types.Components;
 using DV.Damage;
 using DV.HUD;
+using DV.MultipleUnit;
+using DV.Rain;
+using DV.RemoteControls;
+using DV.Simulation.Brake;
 using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
 using DV.Simulation.Fuses;
 using DV.Simulation.Ports;
 using DV.Util;
+using DV.Wheels;
 using LocoSim.Definitions;
 using LocoSim.DVExtensions.Test;
+using LocoSim.Implementations.Wheels;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
@@ -47,7 +53,11 @@ namespace CCL.Importer.Processing
             {
                 baseOverrider = livery.prefab.AddComponent<BaseControlsOverrider>();
             }
-            baseOverrider?.AddControls(controls);
+
+            if (baseOverrider)
+            {
+                SetupControls(baseOverrider, livery.prefab);
+            }
 
             // If we have something that gets referenced through the simConnections decoupling mechanism - these are generally things
             // that make ports exist.
@@ -55,7 +65,7 @@ namespace CCL.Importer.Processing
 
             if (!simConnections && (livery.prefab.GetComponentsInChildren<SimComponentDefinition>(true).Length > 0))
             {
-                AttachSimConnectionsToPrefab(livery.prefab);
+                simConnections = AttachSimConnectionsToPrefab(livery.prefab);
             }
 
             var broadcastController = SetupBroadcastPortsIfNeeded(livery.prefab);
@@ -70,12 +80,14 @@ namespace CCL.Importer.Processing
             if (needsSimController)
             {
                 simController = livery.prefab.AddComponent<SimController>();
-                simController.OnValidate();
+                simController.connectionsDefinition = simConnections;
             }
 
-            // For debug.
             if (simController)
             {
+                SetupSimController(simController, livery.prefab);
+
+                // For debug.
                 var data = livery.prefab.GetComponentInChildren<SimDataDisplaySimController>(true);
 
                 if (data)
@@ -90,6 +102,11 @@ namespace CCL.Importer.Processing
             if (needsDamageController)
             {
                 AttachDummyDamageController(livery.prefab);
+            }
+
+            if (livery.prefab.TryGetComponent<MultipleUnitModule>(out var mum))
+            {
+                mum.controlsOverrider = baseOverrider;
             }
         }
 
@@ -171,6 +188,50 @@ namespace CCL.Importer.Processing
             }
 
             return null;
+        }
+
+        private void SetupControls(BaseControlsOverrider controls, GameObject prefab)
+        {
+            controls.throttle = prefab.GetComponent<ThrottleControl>();
+            controls.brake = prefab.GetComponent<BrakeControl>();
+            controls.brakeCutout = prefab.GetComponent<BrakeCutoutControl>();
+            controls.independentBrake = prefab.GetComponent<IndependentBrakeControl>();
+            controls.dynamicBrake = prefab.GetComponent<DynamicBrakeControl>();
+            controls.reverser = prefab.GetComponent<ReverserControl>();
+            controls.sander = prefab.GetComponent<SanderControl>();
+            controls.horn = prefab.GetComponent<HornControl>();
+            controls.headlightsFront = prefab.GetComponent<HeadlightsControlFront>();
+            controls.headlightsRear = prefab.GetComponent<HeadlightsControlRear>();
+            controls.starter = prefab.GetComponent<StarterControl>();
+            controls.powerOff = prefab.GetComponent<PowerOffControl>();
+            controls.dynamo = prefab.GetComponent<DynamoControl>();
+            controls.airPump = prefab.GetComponent<AirPumpControl>();
+            controls.cabLight = prefab.GetComponent<CabLightControl>();
+            controls.indCabLight = prefab.GetComponent<IndCabLightControl>();
+            controls.wipers = prefab.GetComponent<WipersControl>();
+        }
+
+        private void SetupSimController(SimController simController, GameObject prefab)
+        {
+            simController.poweredWheels = prefab.GetComponentInChildren<PoweredWheelsManager>();
+            simController.controlsOverrider = prefab.GetComponentInChildren<BaseControlsOverrider>();
+            simController.portsOverrider = prefab.GetComponentInChildren<BasePortsOverrider>();
+            simController.broadcastPortController = prefab.GetComponentInChildren<BroadcastPortController>();
+            simController.controlsBlocker = prefab.GetComponentInChildren<ControlsBlockController>();
+            simController.headlightsController = prefab.GetComponentInChildren<HeadlightsMainController>();
+            simController.cabLightsController = prefab.GetComponentInChildren<CabLightsController>();
+            simController.wipersController = prefab.GetComponentInChildren<WipersSimControlInput>();
+            simController.particlesController = prefab.GetComponentInChildren<ParticlesPortReadersController>();
+            simController.tractionPortsFeeder = prefab.GetComponentInChildren<TractionPortsFeeder>();
+            simController.drivingForce = prefab.GetComponentInChildren<DrivingForce>();
+            simController.gearShiftingController = prefab.GetComponentInChildren<ManualGearShiftingController>();
+            simController.wheelslipController = prefab.GetComponentInChildren<WheelslipController>();
+            simController.compressor = prefab.GetComponentInChildren<CompressorSimController>();
+            simController.coalPile = prefab.GetComponentInChildren<CoalPileSimController>();
+            simController.firebox = prefab.GetComponentInChildren<FireboxSimController>();
+            simController.remoteController = prefab.GetComponentInChildren<RemoteControllerModule>();
+            simController.environmentDamageController = prefab.GetComponentInChildren<EnvironmentDamageController>();
+            simController.OnValidate();
         }
     }
 }

@@ -9,11 +9,11 @@ namespace CCL.Types.Proxies.Customization
         [Serializable]
         public class RendererMaterialReplacement
         {
-            public Renderer Renderer;
+            public Renderer Renderer = null!;
             public int MaterialIndex;
         }
 
-        public Material OriginalMaterial;
+        public Material OriginalMaterial = null!;
         public RendererMaterialReplacement[] Replacements = new RendererMaterialReplacement[0];
 
         [SerializeField, HideInInspector]
@@ -23,12 +23,24 @@ namespace CCL.Types.Proxies.Customization
 
         [RenderMethodButtons]
         [MethodButton(nameof(AddAllChildRenderers), "Add all child renderers")]
+        [MethodButton(nameof(AddAllChildRenderersWithMaterial), "Add all child renderers with material")]
         public bool buttonRender;
 
         private void AddAllChildRenderers()
         {
-            Replacements = Replacements.Concat(GetComponentsInChildren<Renderer>().Select(x =>
-                new RendererMaterialReplacement { Renderer = x, MaterialIndex = 0} )).ToArray();
+            Replacements = Replacements.Concat(GetComponentsInChildren<Renderer>()
+                .Select(x => new RendererMaterialReplacement { Renderer = x, MaterialIndex = 0 }))
+                .ToArray();
+        }
+
+        private void AddAllChildRenderersWithMaterial()
+        {
+            if (OriginalMaterial == null) return;
+
+            Replacements = Replacements.Concat(GetComponentsInChildren<Renderer>()
+                .Where(x => x.sharedMaterials.Contains(OriginalMaterial))
+                .Select(x => new RendererMaterialReplacement { Renderer = x, MaterialIndex = Array.IndexOf(x.sharedMaterials, OriginalMaterial) }))
+                .ToArray();
         }
 
         public void OnValidate()
