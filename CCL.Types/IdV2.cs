@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CCL.Types
+﻿namespace CCL.Types
 {
     public static class IdV2
     {

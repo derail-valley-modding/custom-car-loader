@@ -304,7 +304,14 @@ namespace CCL.Types.Json
             return Create(val, -2, false, false).ToObject<T>();
         }
 
-		public JSONObject() { }
+		/// <remarks>Returns a new instance of <see cref="{T}"/> in case <paramref name="val"/> is <see langword="null"/> or empty.</remarks>
+		public static void FromJson<T>(string val, ref T result)
+			where T : class, new()
+        {
+            result = string.IsNullOrWhiteSpace(val) ? new T() : Create(val, -2, false, false).ToObject<T>();
+        }
+
+        public JSONObject() { }
 		#region PARSE
 		public JSONObject(string str, int maxDepth = -2, bool storeExcessLevels = false, bool strict = false)
 		{   //create a new JSONObject from a string (this will also create any children, and parse the whole string)

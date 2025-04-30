@@ -8,6 +8,7 @@ namespace CCL.Importer.Proxies.Controls
     {
         public KeyboardInputReplacer()
         {
+            CreateMap<AnalogSetValueJoystickInputProxy, AnalogSetValueJoystickInput>().AutoCacheAndMap();
             CreateMap<ButtonUseKeyboardInputProxy, ButtonUseKeyboardInput>().AutoCacheAndMap();
             CreateMap<FireboxKeyboardInputProxy, FireboxKeyboardInput>().AutoCacheAndMap();
             CreateMap<MouseScrollKeyboardInputProxy, MouseScrollKeyboardInput>().AutoCacheAndMap();
@@ -15,6 +16,8 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<PhysicsTorqueKeyboardInputProxy, PhysicsTorqueKeyboardInput>().AutoCacheAndMap();
             CreateMap<ToggleSwitchUseKeyboardInputProxy, ToggleSwitchUseKeyboardInput>().AutoCacheAndMap();
             CreateMap<ToggleValueKeyboardInputProxy, ToggleValueKeyboardInput>().AutoCacheAndMap();
+
+            CreateMap<AKeyboardInputProxy.ActionReference, AKeyboardInput.ActionReference>();
         }
     }
 }
