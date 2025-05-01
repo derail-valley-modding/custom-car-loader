@@ -2,6 +2,8 @@
 using DV.ThingTypes;
 using HarmonyLib;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace CCL.Importer.Patches
@@ -13,7 +15,7 @@ namespace CCL.Importer.Patches
         private static void StartPostfix(StationLocoSpawner __instance)
         {
             CCLPlugin.Log($"Finding loco spawn groups to inject into '{__instance.name}'");
-            CCLPlugin.LogVerbose($"Track length: {RailTrackRegistry.RailTrackToLogicTrack[__instance.locoSpawnTrack].length}m");
+            PrintSpawnerInfo(__instance);
 
             // Get the groups from the liveries.
             foreach (var car in CarManager.CustomCarTypes)
@@ -102,6 +104,18 @@ namespace CCL.Importer.Patches
             }
 
             return new ListTrainCarTypeWrapper(variants);
+        }
+
+        private static void PrintSpawnerInfo(StationLocoSpawner spawner)
+        {
+            var length = (float)RailTrackRegistry.RailTrackToLogicTrack[spawner.locoSpawnTrack].length;
+            var sb = new StringBuilder("Additional info:\n");
+            sb.AppendLine($"Length (usable/total): {Mathf.FloorToInt(length) - 3}m/{length:F4}m");
+
+            var groups = spawner.locoTypeGroupsToSpawn.Select(x => string.Join(", ", x.liveries.Select(l => l.id)));
+            sb.AppendLine($"Default spawns:\n    [{string.Join("],\n    [", groups)}]");
+
+            CCLPlugin.LogVerbose(sb.ToString());
         }
     }
 }
