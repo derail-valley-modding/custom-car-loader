@@ -4,7 +4,7 @@
     {
         // ============
         // Last update:
-        // B99.3
+        // B99.4
         // ============
 
         public static readonly string[] CarKinds =
@@ -229,7 +229,6 @@
         public static readonly string[] JobLicenses =
         {
             "Basic",
-            "Fragile",
             "Hazmat1",
             "Hazmat2",
             "Hazmat3",
@@ -240,7 +239,8 @@
             "Shunting",
             "LogisticalHaul",
             "TrainLength1",
-            "TrainLength2"
+            "TrainLength2",
+            "Fragile"
         };
 
         // Not really an ID but oh well.

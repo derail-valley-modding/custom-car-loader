@@ -1,7 +1,9 @@
 ﻿using CCL.Importer.Components;
 using CCL.Types.Components;
+using DV.CabControls;
 using DV.Damage;
 using DV.HUD;
+using DV.KeyboardInput;
 using DV.MultipleUnit;
 using DV.Rain;
 using DV.RemoteControls;
@@ -130,9 +132,10 @@ namespace CCL.Importer.Processing
 
         private static void AddAdditionalControllers(GameObject prefab)
         {
+            AddController<InteractablesKeyboardControl, AKeyboardInput>(prefab);
             AddController<InteractablePortFeedersController, InteractablePortFeeder>(prefab);
-            AddController<IndicatorPortReadersController, IndicatorPortReader>(prefab);
             AddController<InteractableFuseFeedersController, InteractableFuseFeeder>(prefab);
+            AddController<IndicatorPortReadersController, IndicatorPortReader>(prefab);
             AddController<LampPortReadersController, LampPortReader>(prefab);
             AddController<LampFuseReadersController, LampFuseReader>(prefab);
             AddController<AnimatorPortReadersController, AnimatorPortReader>(prefab);
@@ -155,7 +158,7 @@ namespace CCL.Importer.Processing
 
             if (entries.Length > 0)
             {
-                var controller = prefab.AddComponent<TController>();
+                var controller = prefab.GetOrAddComponent<TController>();
                 controller.entries = entries.ToList();
             }
         }

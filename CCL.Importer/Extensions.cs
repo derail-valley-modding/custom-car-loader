@@ -19,6 +19,16 @@ namespace CCL.Importer
             return type.canDamageEnvironment;
         }
 
+        public static T GetOrAddComponent<T>(this GameObject go) where T : Component
+        {
+            if (go.TryGetComponent(out T comp))
+            {
+                return comp;
+            }
+
+            return go.AddComponent<T>();
+        }
+
         public static IEnumerable<T> GetComponentsByInterface<T>(this GameObject gameObject)
             where T : class
         {

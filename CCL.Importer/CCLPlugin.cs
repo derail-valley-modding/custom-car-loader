@@ -1,9 +1,10 @@
-﻿using UnityModManagerNet;
-using HarmonyLib;
-using System.Reflection;
+﻿using DV.Utils;
 using DVLangHelper.Runtime;
+using HarmonyLib;
+using System.Collections.Generic;
 using System.Linq;
-using DV.Utils;
+using System.Reflection;
+using UnityModManagerNet;
 
 namespace CCL.Importer
 {
@@ -65,18 +66,33 @@ namespace CCL.Importer
             Instance.Logger.Warning(message);
         }
 
-        private static void InfoDump()
+        private static void InfoDump(bool dump = false)
         {
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id))}\"");
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id))}\"");
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.jobLicenses.OrderBy(x => x.v1).Select(x => x.id))}\"");
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.garages.OrderBy(x => x.v1).Select(x => x.id))}\"");
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.resources.OrderBy(x => x.v1).Select(x => x.id))}\"");
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id))}\"");
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.carTypes.Select(x => x.id))}\"");
-            //Log($"\"{string.Join("\",\n\"", DV.Globals.G.Types.CarKinds.Select(x => x.id))}\"");
-            //Log($"{string.Join("\",\n\"", DV.Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"))}");
-            //Log($"{string.Join("\n", DV.Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car => $"- {car.id}:\n\"{string.Join("\",\n\"", DV.Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo)) }\""))}");
+            if (!dump) return;
+
+            Write("Cargo IDs", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
+            Write("General Licence IDs", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Job License IDs", DV.Globals.G.Types.jobLicenses.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Garage IDs", DV.Globals.G.Types.garages.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Resource IDs", DV.Globals.G.Types.resources.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Livery IDs", DV.Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Car Type IDs", DV.Globals.G.Types.carTypes.Select(x => x.id));
+            Write("Car Kind IDs", DV.Globals.G.Types.CarKinds.Select(x => x.id));
+            WriteNoDetail("Cargo to Car",
+                DV.Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"));
+            WriteNoDetail("Car to Cargo",
+                DV.Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car =>
+                    $"{car.id}:\n\"{string.Join("\",    \n\"", DV.Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo))}\""));
+
+            static void Write(string title, IEnumerable<string> values)
+            {
+                Log($"{title}:\n\"{string.Join("\",\n\"", values)}\"");
+            }
+
+            static void WriteNoDetail(string title, IEnumerable<string> values)
+            {
+                Log($"{title}:\n{string.Join("\n", values)}");
+            }
         }
     }
 }

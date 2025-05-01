@@ -35,6 +35,11 @@ namespace CCL.Types.Proxies.Simulation
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "LAMP_STATE")
         };
 
+        public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
+        {
+            inputReader
+        };
+
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId)
