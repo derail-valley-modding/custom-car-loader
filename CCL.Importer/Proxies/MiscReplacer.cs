@@ -76,7 +76,8 @@ namespace CCL.Importer.Proxies
 
             CreateMap<DE6KnifeSwitchFuseHUDHackFixProxy, DE6KnifeSwitchFuseHUDHackFix>().AutoCacheAndMap();
 
-            CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap();
+            CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap()
+                .ForMember(d => d.portIdsToPlot, o => o.MapFrom(s => s.portIdsToPlot.Concat(s.portReferenceIdsToPlot)));
         }
 
         private void ResourceExplosionBaseAfter(ResourceExplosionBaseProxy src, ResourceExplosionBase dest)

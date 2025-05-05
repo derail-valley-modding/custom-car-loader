@@ -1,11 +1,12 @@
 ﻿using CCL.Types.Json;
 using CCL.Types.Proxies.Ports;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Customization
 {
-    public class TrainCarCustomizationProxy : MonoBehaviour, ICustomSerialized
+    public class TrainCarCustomizationProxy : MonoBehaviour, ICustomSerialized, IHasFuseIdFields
     {
         public enum STDSimPort : byte
         {
@@ -21,16 +22,21 @@ namespace CCL.Types.Proxies.Customization
         {
             public STDSimPort port;
             [PortId(null, null, false)]
-            public string name;
+            public string name = string.Empty;
             public bool readOnly;
         }
 
         [FuseId]
-        public string electronicsFuseID;
+        public string electronicsFuseID = string.Empty;
         public STDPortDefinition[] Ports = new STDPortDefinition[0];
 
         [SerializeField, HideInInspector]
         private string? _json;
+
+        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(electronicsFuseID), electronicsFuseID)
+        };
 
         public void OnValidate()
         {

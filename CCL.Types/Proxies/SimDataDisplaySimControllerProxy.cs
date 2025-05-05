@@ -8,9 +8,9 @@ namespace CCL.Types.Proxies
     {
         public int dataQueueSize = 4000;
         public int sampleTickRate = 5;
-        public bool recordData = true;
-        public bool displayGraph = true;
         [PortId(null, null, false)]
-        public List<string> portIdsToPlot;
+        public List<string> portIdsToPlot = new List<string>();
+        [PortReferenceId]
+        public List<string> portReferenceIdsToPlot = new List<string>();
     }
 }

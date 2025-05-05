@@ -14,7 +14,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public float engineRpmIdle;
 
         [Header("Power & Torque")]
-        public AnimationCurve rpmToPowerCurve = new AnimationCurve();
+        // Null :pensive:
+        public AnimationCurve rpmToPowerCurve = null!;
         public float retarderBrakingTorque;
 
         [Header("Resource Consumption")]
