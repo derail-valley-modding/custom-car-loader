@@ -88,6 +88,8 @@ namespace CCL.Importer.Components
 
             public void Draw(Rect bounds)
             {
+                //GUI.color = GetColourForPortValueType();
+
                 // If there's no difference to draw yet, draw a single line with the correct length.
                 if (Min == Max)
                 {
@@ -115,7 +117,7 @@ namespace CCL.Importer.Components
                     var dif = current.y - prev.Value.y;
                     if (dif * dif > 4.0f)
                     {
-                        GUIHelper.DrawLine(prev.Value, current, 1.0f);
+                        GUIHelper.DrawLine(prev.Value, current, 1);
                     }
 
                     prev = current;
@@ -136,6 +138,57 @@ namespace CCL.Importer.Components
             {
                 Min = Mathf.Min(0, Port.Value);
                 Max = Mathf.Max(0, Port.Value);
+            }
+
+            public Color GetColourForPortValueType()
+            {
+                switch (Port.valueType)
+                {
+                    case LocoSim.Definitions.PortValueType.GENERIC:
+                        return new Color(0.90f, 0.90f, 0.90f);
+                    case LocoSim.Definitions.PortValueType.CONTROL:
+                        return new Color(0.80f, 0.80f, 0.80f);
+                    case LocoSim.Definitions.PortValueType.STATE:
+                        return new Color(0.55f, 1.00f, 0.85f);
+                    case LocoSim.Definitions.PortValueType.DAMAGE:
+                        return new Color(1.00f, 0.35f, 0.90f);
+                    case LocoSim.Definitions.PortValueType.POWER:
+                        return new Color(0.80f, 0.20f, 0.90f);
+                    case LocoSim.Definitions.PortValueType.TORQUE:
+                        return new Color(0.45f, 0.90f, 1.00f);
+                    case LocoSim.Definitions.PortValueType.FORCE:
+                        return new Color(0.45f, 1.00f, 0.90f);
+                    case LocoSim.Definitions.PortValueType.TEMPERATURE:
+                        return new Color(1.00f, 0.40f, 0.40f);
+                    case LocoSim.Definitions.PortValueType.RPM:
+                        return new Color(0.70f, 0.70f, 0.70f);
+                    case LocoSim.Definitions.PortValueType.AMPS:
+                        return new Color(1.00f, 1.00f, 0.20f);
+                    case LocoSim.Definitions.PortValueType.VOLTS:
+                        return new Color(0.20f, 1.00f, 0.90f);
+                    case LocoSim.Definitions.PortValueType.HEAT_RATE:
+                        return new Color(1.00f, 0.80f, 0.20f);
+                    case LocoSim.Definitions.PortValueType.PRESSURE:
+                        return new Color(0.50f, 1.00f, 0.60f);
+                    case LocoSim.Definitions.PortValueType.MASS_RATE:
+                        return new Color(0.60f, 1.00f, 0.70f);
+                    case LocoSim.Definitions.PortValueType.OHMS:
+                        return new Color(0.30f, 0.80f, 1.00f);
+                    case LocoSim.Definitions.PortValueType.FUEL:
+                        return new Color(0.85f, 0.55f, 0.20f);
+                    case LocoSim.Definitions.PortValueType.OIL:
+                        return new Color(0.20f, 0.55f, 0.85f);
+                    case LocoSim.Definitions.PortValueType.SAND:
+                        return new Color(0.95f, 0.90f, 0.30f);
+                    case LocoSim.Definitions.PortValueType.WATER:
+                        return new Color(0.45f, 0.75f, 1.00f);
+                    case LocoSim.Definitions.PortValueType.COAL:
+                        return new Color(0.50f, 0.50f, 0.50f);
+                    case LocoSim.Definitions.PortValueType.ELECTRIC_CHARGE:
+                        return new Color(0.50f, 1.00f, 1.00f);
+                    default:
+                        return Color.white;
+                }
             }
         }
 
@@ -266,9 +319,10 @@ namespace CCL.Importer.Components
             _scroll = GUI.BeginScrollView(scrollArea, _scroll, new Rect(0f, 40f, BoxWidth, _ports.Count * BoxTotalHeight), false, true);
             GUILayout.BeginVertical();
 
-            int count = _ports.Count;
             PortData port;
-            for (int i = 0; i < count && !((i + 1) * BoxTotalHeight > ScrollHeight + _scroll.y); i++)
+            int count = _ports.Count;
+
+            for (int i = 0; i < count && ((i + 0.75f) * BoxTotalHeight <= ScrollHeight + _scroll.y); i++)
             {
                 if ((i + 1) * BoxTotalHeight < _scroll.y) continue;
 
@@ -308,7 +362,7 @@ namespace CCL.Importer.Components
                 return Color.white;
             }
 
-            return Color.HSVToRGB(count * 0.31f, 0.55f, 1.00f);
+            return Color.HSVToRGB((count * 0.31f) % 1.00f, 0.55f, 1.00f);
         }
 
         private void ResetData()
