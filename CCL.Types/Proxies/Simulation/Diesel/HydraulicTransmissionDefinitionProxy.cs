@@ -14,7 +14,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public bool hasFreewheel;
         public float outputTorqueLimit;
 
-        public HydraulicConfigDefinition[] configs;
+        public HydraulicConfigDefinition[] configs = new HydraulicConfigDefinition[0];
         [SerializeField, HideInInspector]
         private string? _configJson;
 
