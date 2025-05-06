@@ -6,7 +6,9 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDH4Defaults, IDM3Defaults, IDM1UDefaults
+    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
+        IDH4Defaults, IDM3Defaults, IDM1UDefaults,
+        IRecommendedDebugPorts
     {
         [Header("Torque Transmission")]
         public bool hasFreewheel;
@@ -60,6 +62,17 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortReferenceDefinition(DVPortValueType.RPM, "MAX_RPM"),
             new PortReferenceDefinition(DVPortValueType.RPM, "OUTPUT_SHAFT_RPM"),
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TEMPERATURE"),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "SPEED_RATIO",
+            "ACTIVE_CONFIGURATION",
+            "EFFICIENCY",
+            "TURBINE_RPM_NORMALIZED",
+            "HYDRODYNAMIC_BRAKE_EFFECT",
+            "INPUT_SHAFT_TORQUE",
+            "OUTPUT_SHAFT_TORQUE"
         };
 
         public void OnValidate()

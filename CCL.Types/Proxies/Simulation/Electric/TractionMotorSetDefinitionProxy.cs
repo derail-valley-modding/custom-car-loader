@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
-    public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized, IDE2Defaults, IDE6Defaults, IBE2Defaults
+    public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized,
+        IDE2Defaults, IDE6Defaults, IBE2Defaults,
+        IRecommendedDebugPorts, IRecommendedDebugPortReferences
     {
         [Header("Motor")]
         public float maxMotorRpm;
@@ -92,6 +94,21 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "POWER_IN",
+            "POWER_OUT",
+            "TORQUE_OUT",
+            "AMPS_PER_TM",
+            "MOTOR_VOLTS",
+            "ACTIVE_CONFIGURATION"
+        };
+
+        public IEnumerable<string> GetDebugPortReferences() => new[]
+        {
+            "MOTOR_RPM"
         };
 
         [Serializable]

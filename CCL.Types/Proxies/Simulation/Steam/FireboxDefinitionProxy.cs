@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
-    public class FireboxDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults
+    public class FireboxDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
+        IRecommendedDebugPorts
     {
         [Header("Capacity")]
         public float maxCoalCapacity = 80f;
@@ -45,6 +46,14 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortReferenceDefinition(DVPortValueType.PRESSURE, "BOILER_PRESSURE", false),
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "BOILER_TEMPERATURE", false),
             new PortReferenceDefinition(DVPortValueType.STATE, "BOILER_BROKEN_STATE", false)
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "COAL_LEVEL",
+            "HEAT",
+            "SMOKE_DENSITY",
+            "COMBUSTION_RATE_NORMALIZED"
         };
 
         #region Defaults

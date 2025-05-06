@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
-    public class BoilerDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults
+    public class BoilerDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
+        IRecommendedDebugPorts
     {
         [Header("Dimensions")]
         public float diameter;
@@ -67,6 +68,14 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortReferenceDefinition(DVPortValueType.MASS_RATE, "STEAM_CONSUMPTION", false),
             new PortReferenceDefinition(DVPortValueType.WATER, "WATER", false),
             new PortReferenceDefinition(DVPortValueType.WATER, "WATER_CONSUMPTION", true)
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "BLOWDOWN_FLOW_NORMALIZED",
+            "PRESSURE",
+            "WATER_LEVEL_NORMALIZED",
+            "SAFETY_VALVE_NORMALIZED"
         };
 
         private static AnimationCurve ExplosionCurve => new AnimationCurve(

@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults, IDH4Defaults,
-        IDM3Defaults, IDM1UDefaults
+    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields,
+        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults,
+        IRecommendedDebugPorts, IRecommendedDebugPortReferences
     {
         [Header("RPM Range")]
         public float rotationalInertia;
@@ -72,6 +73,16 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(engineStarterFuseId), engineStarterFuseId),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "RPM"
+        };
+
+        public IEnumerable<string> GetDebugPortReferences() => new[]
+        {
+            "FUEL_CONSUMPTION"
         };
 
         #region Defaults

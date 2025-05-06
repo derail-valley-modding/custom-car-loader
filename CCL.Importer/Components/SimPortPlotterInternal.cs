@@ -293,7 +293,7 @@ namespace CCL.Importer.Components
                 port.Draw(box);
                 GUI.color = Color.white;
                 GUI.BeginClip(box);
-                GUI.Label(new Rect(10f, 0f, BoxWidth, LabelHeight), $"{port.Port.id}: {port.Last:F3}");
+                GUI.Label(new Rect(10f, 0f, BoxWidth, LabelHeight), $"{port.Id}: {port.Last:F3}");
                 GUI.EndClip();
             }
 
