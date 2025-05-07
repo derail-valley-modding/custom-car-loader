@@ -257,10 +257,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
             [Header("Max torque multiplier, applies at 0 speed ratio.")]
             public float stallTorqueMultiplier;
-
             [Header("Speed ratio where torque multiplier drops to 1.")]
             public float couplingSpeedRatio;
-
             [Header("Maximum achieved thermal efficiency. Must be >= couplingSpeedRatio and <= 1.")]
             [Range(0f, 1f)]
             public float maxEfficiency;

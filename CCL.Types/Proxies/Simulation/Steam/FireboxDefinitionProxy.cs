@@ -24,6 +24,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COAL_CAPACITY"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COAL_LEVEL"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COAL_LEVEL_NORMALIZED"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "COAL_CONTROL_EXT_IN"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.COAL, "COAL_ENV_DAMAGE_METER"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "IGNITION_EXT_IN"),

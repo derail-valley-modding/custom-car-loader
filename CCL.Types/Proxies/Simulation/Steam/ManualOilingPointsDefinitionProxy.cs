@@ -49,7 +49,8 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.DAMAGE, "MECHANICAL_DAMAGE"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "MECHANICAL_PT_HEALTH_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "LOWEST_OIL_LEVEL_NORMALIZED"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "LOWEST_OIL_LEVEL_AUDIO")
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "LOWEST_OIL_LEVEL_AUDIO"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "SPECIAL_REQUEST")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]

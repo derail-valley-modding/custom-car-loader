@@ -88,6 +88,12 @@ namespace CCL.Creator.Inspector
                 EditorGUILayout.PropertyField(_refConnections);
             }
 
+            if (GUILayout.Button("Auto Sort Connections"))
+            {
+                _proxy.AutoSortConnections();
+                AssetHelper.SaveAsset(_proxy);
+            }
+
             serializedObject.ApplyModifiedProperties();
         }
     }

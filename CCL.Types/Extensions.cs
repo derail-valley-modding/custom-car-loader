@@ -89,5 +89,19 @@ namespace CCL.Types
 
             return result != null;
         }
+
+        public static int FirstIndexMatch<TItem>(this IEnumerable<TItem> items, Predicate<TItem> condition)
+        {
+            int index = 0;
+
+            foreach (var item in items)
+            {
+                if (condition(item)) return index;
+
+                index++;
+            }
+
+            return -1;
+        }
     }
 }

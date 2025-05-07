@@ -28,7 +28,7 @@ namespace CCL.Creator.Wizards.SimSetup
             CreateBroadcastProvider(water, "AMOUNT", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_AMOUNT");
             CreateBroadcastConsumer(water, "CONSUME_EXT_IN", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_CONSUME", 0, true);
 
-            var dynamo = CreateSimComponent<ConstantPortDefinitionProxy>("dynamoFlowDummy");
+            var dynamo = CreateSimComponent<ConfigurablePortDefinitionProxy>("dynamoFlowDummy");
             dynamo.port.ID = "DYNAMO_FLOW_NORMALIZED";
             dynamo.port.type = DVPortType.READONLY_OUT;
             dynamo.port.valueType = DVPortValueType.STATE;

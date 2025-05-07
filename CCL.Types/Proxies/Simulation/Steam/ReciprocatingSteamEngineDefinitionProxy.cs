@@ -36,7 +36,6 @@ namespace CCL.Types.Proxies.Simulation.Steam
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CRANK_ROTATION"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CYLINDERS_INLET_VALVE_OPEN"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "DUMPED_FLOW"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "MAX_FLOW"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "INTAKE_FLOW"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "INTAKE_FLOW_NORMALIZED"),

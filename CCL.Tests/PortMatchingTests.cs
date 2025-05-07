@@ -27,7 +27,9 @@ namespace CCL.Tests
 
         private static readonly Type[] RequireManualCheckTypes = new[]
         {
-            typeof(Types.Proxies.Resources.ResourceContainerProxy)
+            typeof(ConfigurablePortDefinitionProxy),
+            typeof(MultiplePortDecoderEncoderDefinitionProxy),
+            typeof(Types.Proxies.Resources.ResourceContainerProxy),
         };
 
         public static IEnumerable<object[]> SimComponentTypeMaps
@@ -133,17 +135,17 @@ namespace CCL.Tests
 
                 if (matched == null)
                 {
-                    fail.Add($"'{map.SourceType.Name}' is missing port [{port.ID}]");
+                    fail.Add($"{map.SourceType.Name} is missing port [{port.ID}]");
                 }
                 else
                 {
                     if ((int)matched.type != (int)port.type)
                     {
-                        fail.Add($"'{map.SourceType.Name}' port type mismatch [{port.type}/{matched.type}]");
+                        fail.Add($"{map.SourceType.Name} port type mismatch [{port.type}/{matched.type}]");
                     }
                     if ((int)matched.valueType != (int)port.valueType)
                     {
-                        fail.Add($"'{map.SourceType.Name}' port value type mismatch [{port.valueType}/{matched.valueType}]");
+                        fail.Add($"{map.SourceType.Name} port value type mismatch [{port.valueType}/{matched.valueType}]");
                     }
                 }
             }
@@ -154,7 +156,7 @@ namespace CCL.Tests
 
                 if (matched == null)
                 {
-                    fail.Add($"'{map.SourceType.Name}' has extra port [{port.ID}]");
+                    fail.Add($"{map.SourceType.Name} has extra port [{port.ID}]");
                 }
             }
         }
@@ -168,13 +170,13 @@ namespace CCL.Tests
 
                 if (matched == null)
                 {
-                    fail.Add($"'{map.SourceType.Name}' is missing port reference [{port.ID}]");
+                    fail.Add($"{map.SourceType.Name} is missing port reference [{port.ID}]");
                 }
                 else
                 {
                     if ((int)matched.valueType != (int)port.valueType)
                     {
-                        fail.Add($"'{map.SourceType.Name}' port reference value type mismatch [{port.valueType}/{matched.valueType}]");
+                        fail.Add($"{map.SourceType.Name} port reference value type mismatch [{port.valueType}/{matched.valueType}]");
                     }
                 }
             }
@@ -185,7 +187,7 @@ namespace CCL.Tests
 
                 if (matched == null)
                 {
-                    fail.Add($"'{map.SourceType.Name}' has extra port reference [{port.ID}]");
+                    fail.Add($"{map.SourceType.Name} has extra port reference [{port.ID}]");
                 }
             }
         }

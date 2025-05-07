@@ -17,7 +17,7 @@ namespace CCL.Types.Proxies.Customization
             Temperature
         }
 
-        [Serializable]
+        [Serializable, NotProxied]
         public class STDPortDefinition
         {
             public STDSimPort port;

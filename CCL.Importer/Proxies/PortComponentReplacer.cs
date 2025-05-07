@@ -16,7 +16,7 @@ namespace CCL.Importer.Proxies
             CreateMap<CCL.Types.Proxies.Ports.PortReferenceDefinition, LocoSim.Definitions.PortReferenceDefinition>();
             CreateMap<CCL.Types.Proxies.Ports.FuseDefinition, LocoSim.Definitions.FuseDefinition>();
 
-            CreateMap<ConstantPortDefinitionProxy, ConfigurablePortDefinition>().AutoCacheAndMap();
+            CreateMap<ConfigurablePortDefinitionProxy, ConfigurablePortDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableAddDefinitionProxy, ConfigurableAddDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableMultiplierDefinitionProxy, ConfigurableMultiplierDefinition>().AutoCacheAndMap();
             CreateMap<ConfigurableFunctionDefinitionProxy, ConfigurableFunctionDefinition>().AutoCacheAndMap();
@@ -35,8 +35,9 @@ namespace CCL.Importer.Proxies
             CreateMap<AnimatorPortReaderProxy, AnimatorPortReader>().AutoCacheAndMap();
             CreateMap<RotatorPortReaderProxy, RotatorPortReader>().AutoCacheAndMap();
             CreateMap<RotatorPortReaderProxy.RotationData, RotatorPortReader.RotationData>();
-
             CreateMap<ResourceMassPortReaderProxy, ResourceMassPortReader>().AutoCacheAndMap();
+
+            CreateMap<WaterDetectorPortFeederProxy, WaterDetectorPortFeeder>().AutoCacheAndMap();
         }
     }
 }

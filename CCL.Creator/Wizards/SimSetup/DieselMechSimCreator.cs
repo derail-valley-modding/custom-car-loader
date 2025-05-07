@@ -113,7 +113,7 @@ namespace CCL.Creator.Wizards.SimSetup
             gearRatioCalc.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
             gearRatioCalc.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OVERALL_GEAR_RATIO");
 
-            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            var poweredAxles = CreateSimComponent<ConfigurablePortDefinitionProxy>("poweredAxles");
             poweredAxles.value = 3;
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 
@@ -301,7 +301,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var transmission = CreateSimComponent<SmoothTransmissionDefinitionProxy>("transmission");
 
-            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            var poweredAxles = CreateSimComponent<ConfigurablePortDefinitionProxy>("poweredAxles");
             poweredAxles.value = 1;
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 

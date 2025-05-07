@@ -9,7 +9,7 @@ namespace CCL.Types.Proxies
 {
     public class CabinRenderOrderingProxy : MonoBehaviour, ICustomSerialized
     {
-        [Serializable]
+        [Serializable, NotProxied]
         public class OrderingRenderer
         {
             public SortingGroup group = null!;

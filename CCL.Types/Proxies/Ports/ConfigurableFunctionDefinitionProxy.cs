@@ -1,6 +1,5 @@
 ﻿using CCL.Types.Json;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
@@ -15,7 +14,7 @@ namespace CCL.Types.Proxies.Ports
         }
 
         public FunctionType type;
-        public PortReferenceDefinition[] readers;
+        public PortReferenceDefinition[] readers = new PortReferenceDefinition[0];
         public PortDefinition outReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUT");
 
         [SerializeField, HideInInspector]

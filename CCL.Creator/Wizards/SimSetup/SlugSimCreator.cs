@@ -32,7 +32,7 @@ namespace CCL.Creator.Wizards.SimSetup
             tmRpm.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "TM_RPM");
             tmRpm.transform.parent = tm.transform;
 
-            var voltFeed = CreateSibling<ConstantPortDefinitionProxy>(tm, "slugVoltageFeed");
+            var voltFeed = CreateSibling<ConfigurablePortDefinitionProxy>(tm, "slugVoltageFeed");
             voltFeed.port = new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, "APPLIED_VOLTAGE_EXT_IN");
             var slug = CreateSibling<SlugModuleProxy>(tm);
             slug.appliedVoltagePortId = FullPortId(voltFeed, voltFeed.port.ID);

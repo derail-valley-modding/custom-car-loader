@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Ports
 {
     public class MultiplePortSumDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IRecommendedDebugPorts
     {
-        public PortReferenceDefinition[] inputs;
+        public PortReferenceDefinition[] inputs = new PortReferenceDefinition[0];
 
         public PortDefinition output = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUT");
 

@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Headlights
 {
+    [NotProxied]
     public class HeadlightSetup : MonoBehaviour
     {
         public enum HeadlightSetting
