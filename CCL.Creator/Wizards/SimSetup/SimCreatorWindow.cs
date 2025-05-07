@@ -1,10 +1,10 @@
 ﻿using CCL.Creator.Utility;
-using CCL.Types;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
+using CCL.Types.Proxies.Wheels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -257,6 +257,8 @@ namespace CCL.Creator.Wizards.SimSetup
 
             control.saveState = type switch
             {
+                OverridableControlType.HeadlightsFront => true,
+                OverridableControlType.HeadlightsRear => true,
                 OverridableControlType.TrainBrakeCutout => true,
                 _ => false,
             };
@@ -381,6 +383,89 @@ namespace CCL.Creator.Wizards.SimSetup
             return tractionFeeders;
         }
 
+        protected LampLogicDefinitionProxy CreateLamp(string id, DVPortValueType readerValueType, string readerId,
+            float offMin, float offMax, float onMin, float onMax, float blinkMin, float blinkMax, bool audioDrop = false, bool audioRaise = false)
+        {
+            var lamp = CreateLampBasic(id, readerValueType, readerId, offMin, offMax, audioDrop, audioRaise);
+
+            AddOnRangeToLamp(lamp, onMin, onMax);
+            AddBlinkRangeToLamp(lamp, blinkMin, blinkMax);
+
+            return lamp;
+        }
+
+        protected LampLogicDefinitionProxy CreateLampOnOnly(string id, DVPortValueType readerValueType, string readerId,
+            float offMin, float offMax, float onMin, float onMax, bool audioDrop = false, bool audioRaise = false)
+        {
+            var lamp = CreateLampBasic(id, readerValueType, readerId, offMin, offMax, audioDrop, audioRaise);
+
+            AddOnRangeToLamp(lamp, onMin, onMax);
+
+            return lamp;
+        }
+
+        protected LampLogicDefinitionProxy CreateLampBlinkOnly(string id, DVPortValueType readerValueType, string readerId,
+            float offMin, float offMax, float blinkMin, float blinkMax, bool audioDrop = false, bool audioRaise = false)
+        {
+            var lamp = CreateLampBasic(id, readerValueType, readerId, offMin, offMax, audioDrop, audioRaise);
+
+            AddBlinkRangeToLamp(lamp, blinkMin, blinkMax);
+
+            return lamp;
+        }
+
+        protected LampLogicDefinitionProxy CreateLampDecreasingWarning(string id, DVPortValueType readerValueType, string readerId,
+            float max, float onTransition, float blinkTransition, float min)
+        {
+            return CreateLamp(id, readerValueType, readerId, onTransition, max, blinkTransition, onTransition, min, blinkTransition, true, false);
+        }
+
+        protected LampLogicDefinitionProxy CreateLampIncreasingWarning(string id, DVPortValueType readerValueType, string readerId,
+            float min, float onTransition, float blinkTransition, float max)
+        {
+            return CreateLamp(id, readerValueType, readerId, min, onTransition, onTransition, blinkTransition, blinkTransition, max, false, true);
+        }
+
+        private LampLogicDefinitionProxy CreateLampBasic(string id, DVPortValueType readerValueType, string readerId,
+            float min, float max, bool audioDrop, bool audioRaise)
+        {
+            var lamp = CreateSimComponent<LampLogicDefinitionProxy>(id);
+
+            lamp.inputReader = new PortReferenceDefinition(readerValueType, readerId);
+
+            lamp.offRangeMin = min;
+            lamp.offRangeMax = max;
+
+            lamp.playAudioOnValueDrop = audioDrop;
+            lamp.playAudioOnValueRaise = audioRaise;
+
+            return lamp;
+        }
+
+        private void AddOnRangeToLamp(LampLogicDefinitionProxy lamp, float min, float max)
+        {
+            lamp.onRangeUsed = true;
+            lamp.onRangeMin = min;
+            lamp.onRangeMax = max;
+        }
+
+        private void AddBlinkRangeToLamp(LampLogicDefinitionProxy lamp, float min, float max)
+        {
+            lamp.blinkRangeUsed = true;
+            lamp.blinkRangeMin = min;
+            lamp.blinkRangeMax = max;
+        }
+
+        protected WheelSlideTrainsetObserverProxy AddWheelSlideObserver()
+        {
+            if (!_root.TryGetComponent(out WheelSlideTrainsetObserverProxy wheelslide))
+            {
+                wheelslide = _root.AddComponent<WheelSlideTrainsetObserverProxy>();
+            }
+
+            return wheelslide;
+        }
+
         protected string FullPortId(SimComponentDefinitionProxy component, string portId) => $"{component.ID}.{portId}";
         protected string FullFuseId(IndependentFusesDefinitionProxy fusebox, int index) => $"{fusebox.ID}.{fusebox.fuses[index].id}";
         protected string HeatPortId(HeatReservoirDefinitionProxy heat, int index) => $"{heat.ID}.HEAT_IN_{index}";
@@ -426,6 +511,15 @@ namespace CCL.Creator.Wizards.SimSetup
             _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
             {
                 portReferenceId = HeatPortId(refComp, index),
+                portId = FullPortId(portComp, portId)
+            });
+        }
+
+        protected void ConnectLampRef(LampLogicDefinitionProxy refComp, SimComponentDefinitionProxy portComp, string portId)
+        {
+            _connectionDef.portReferenceConnections.Add(new PortReferenceConnectionProxy()
+            {
+                portReferenceId = FullPortId(refComp, refComp.inputReader.ID),
                 portId = FullPortId(portComp, portId)
             });
         }
