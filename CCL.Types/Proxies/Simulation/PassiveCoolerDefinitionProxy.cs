@@ -47,7 +47,7 @@ namespace CCL.Types.Proxies.Simulation
 
         public void ApplyBE2Defaults()
         {
-            coolingRate = 6.0f;
+            coolingRate = 5.0f;
         }
 
         #endregion

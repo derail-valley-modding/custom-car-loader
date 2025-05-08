@@ -14,9 +14,6 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class DieselElectricSimCreator : SimCreator
     {
-        // TODO:
-        // Headlights
-
         public DieselElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "DE2", "DE6" };
@@ -120,8 +117,8 @@ namespace CCL.Creator.Wizards.SimSetup
             var cabLamp = CreateLampBasicControl("cabLightLamp", 0.4f);
             var bellLamp = bell != null ? CreateLampBasicControl("cabLightLamp") : null;
             var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, "INPUT", 1f, 0.25f, 0.125f, 0f);
-            var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.FUEL, "INPUT", 1f, 0.4f, 0.2f, 0f);
-            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.FUEL, "INPUT", 1f, 0.1f, 0.05f, 0f);
+            var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, "INPUT", 1f, 0.4f, 0.2f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, "INPUT", 1f, 0.1f, 0.05f, 0f);
             var lightsRLamp = CreateLampHeadlightControl("headlightsRLamp");
             var lightsFLamp = CreateLampHeadlightControl("headlightsFLamp");
             var sanderLamp = CreateLampBasicControl("sanderLamp");
@@ -294,9 +291,9 @@ namespace CCL.Creator.Wizards.SimSetup
             switch (index)
             {
                 case 1:
-                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 940, float.PositiveInfinity);
+                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 940);
                 default:
-                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 1200, float.PositiveInfinity);
+                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 1200);
             }
         }
 

@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 {
     public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields,
         IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults,
-        IRecommendedDebugPorts, IRecommendedDebugPortReferences
+        IRecommendedDebugPorts
     {
         [Header("RPM Range")]
         public float rotationalInertia;
@@ -78,12 +78,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         public IEnumerable<string> GetDebugPorts() => new[]
         {
-            "RPM"
-        };
-
-        public IEnumerable<string> GetDebugPortReferences() => new[]
-        {
-            "FUEL_CONSUMPTION"
+            "RPM",
+            "FUEL_CONSUMPTION_NORMALIZED"
         };
 
         #region Defaults

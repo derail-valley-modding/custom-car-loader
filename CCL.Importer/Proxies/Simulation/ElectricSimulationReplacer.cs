@@ -19,7 +19,6 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<BatteryDefinitionProxy, BatteryDefinition>().AutoCacheAndMap();
             CreateMap<VoltageRegulatorDefinitionProxy, VoltageRegulatorDefinition>().AutoCacheAndMap();
             CreateMap<ElectricCompressorDefinitionProxy, ElectricCompressorDefinition>().AutoCacheAndMap();
-            CreateMap<PowerFunctionDefinitionProxy, PowerFunctionDefinition>().AutoCacheAndMap();
 
             CreateMap<ElectricBellDefinitionProxy, ElectricBellDefinition>().AutoCacheAndMap();
         }

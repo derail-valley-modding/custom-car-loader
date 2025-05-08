@@ -26,6 +26,7 @@ namespace CCL.Importer.Proxies
             CreateMap<MultiplePortSumDefinitionProxy, MultiplePortSumDefinition>().AutoCacheAndMap();
             CreateMap<MultiplePortDecoderEncoderDefinitionProxy, MultiplePortDecoderEncoderDefinition>().AutoCacheAndMap();
             CreateMap<MultiplePortDecoderEncoderDefinitionProxy.FloatArray, MultiplePortDecoderEncoderDefinition.FloatArray>();
+            CreateMap<PowerFunctionDefinitionProxy, PowerFunctionDefinition>().AutoCacheAndMap();
 
             CreateMap<IndependentFusesDefinitionProxy, IndependentFusesDefinition>().AutoCacheAndMap();
 

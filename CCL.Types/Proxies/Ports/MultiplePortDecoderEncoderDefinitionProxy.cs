@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
-    public class MultiplePortDecoderEncoderDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
+    public class MultiplePortDecoderEncoderDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
+        IS060Defaults, IS282Defaults, IBE2Defaults
     {
         [Serializable]
         public class FloatArray
@@ -105,6 +106,16 @@ namespace CCL.Types.Proxies.Ports
             });
         }
 
+        private void SetupPortsForHeadlightControl()
+        {
+            inputPorts = new[]
+            {
+                new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "FRONT_HEADLIGHTS_EXT_IN"),
+                new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "REAR_HEADLIGHTS_EXT_IN")
+            };
+            outputPort = new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "HEADLIGHTS_EXT_IN");
+        }
+
         private static FloatArray[] FromMulti(float[,] array)
         {
             int length = array.GetLength(1);
@@ -180,5 +191,34 @@ namespace CCL.Types.Proxies.Ports
                 values[i] = array;
             }
         }
+
+        #region Defaults
+
+        public void ApplyS060Defaults()
+        {
+            SetupForSingleHeadlightControl();
+            SetupPortsForHeadlightControl();
+        }
+
+        public void ApplyS282Defaults()
+        {
+            SetupForSingleHeadlightControl();
+            SetupPortsForHeadlightControl();
+        }
+
+        public void ApplyBE2Defaults()
+        {
+            values = FromMulti(new[,]
+            {
+                { 0, 0, 0 / 3f },
+                { 1, 0, 1 / 3f },
+                { 0, 1, 2 / 3f },
+                { 1, 1, 3 / 3f },
+            });
+
+            SetupPortsForHeadlightControl();
+        }
+
+        #endregion
     }
 }

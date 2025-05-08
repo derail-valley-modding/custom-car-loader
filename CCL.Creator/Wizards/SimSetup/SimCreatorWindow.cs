@@ -324,6 +324,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             idOverride ??= type switch
             {
+                OverridableControlType.TrainBrake => "brake",
                 OverridableControlType.HeadlightsFront => "headlightsControlFront",
                 OverridableControlType.HeadlightsRear => "headlightsControlRear",
                 OverridableControlType.TrainBrakeCutout => "brakeCutout",
@@ -336,6 +337,7 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 OverridableControlType.HeadlightsFront => true,
                 OverridableControlType.HeadlightsRear => true,
+                OverridableControlType.CabLight => true,
                 OverridableControlType.IndCabLight => true,
                 OverridableControlType.TrainBrakeCutout => true,
                 _ => false,
@@ -481,7 +483,7 @@ namespace CCL.Creator.Wizards.SimSetup
         }
 
         protected LampLogicDefinitionProxy CreateLampIncreasingWarning(string id, DVPortValueType readerValueType, string readerId,
-            float min, float onTransition, float blinkTransition, float max, bool audio = false)
+            float min, float onTransition, float blinkTransition, float max = float.PositiveInfinity, bool audio = false)
         {
             return CreateLamp(id, readerValueType, readerId, min, onTransition, onTransition, blinkTransition, blinkTransition, max, false, audio);
         }

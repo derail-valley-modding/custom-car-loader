@@ -24,6 +24,7 @@
         HeadlightsRear = DVControlType.HeadlightsRear,
         StarterControl = DVControlType.StarterControl,
         DynamicBrake = DVControlType.DynamicBrake,
+        CabLight = DVControlType.CabLight,
         Wipers = DVControlType.Wipers,
         //FuelCutoff = DVControlType.FuelCutoff,
         IndCabLight = DVControlType.IndCabLight,

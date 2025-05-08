@@ -17,7 +17,7 @@ namespace CCL.Importer.Components
         private const float ScrollHeight = 620.0f;
         // Box size.
         private const float BoxWidth = 800.0f;
-        private const float BoxHeight = 150.0f;
+        private const float BoxHeight = 130.0f;
         private const float BoxSpacing = 20.0f;
         private const float BoxTotalHeight = BoxHeight + BoxSpacing;
         // Label size.
@@ -94,6 +94,7 @@ namespace CCL.Importer.Components
                 if (Min == Max)
                 {
                     GUIHelper.DrawLine(ToPosition(0, bounds.height), ToPosition(Offset * Values.Count, bounds.height), 1.0f);
+                    return;
                 }
 
                 Vector2? prev = null;
@@ -125,11 +126,13 @@ namespace CCL.Importer.Components
 
                 float GetMapped(float value)
                 {
-                    return Extensions.Mapf(Max, Min, 0, bounds.height, value);
+                    // Slight offset from 0-height to keep within the box outlines.
+                    return Extensions.Mapf(Max, Min, 1, bounds.height - 2, value);
                 }
 
                 Vector2 ToPosition(float x, float y)
                 {
+                    // Offsets to the box's origin.
                     return new Vector2(x + bounds.xMin, y + bounds.yMin);
                 }
             }
@@ -202,7 +205,7 @@ namespace CCL.Importer.Components
         private bool _record = false;
         private bool _display = true;
         private GUIStyle _style = null!;
-        private Rect _windowRect = new Rect(10f, 0f, WindowWidth, WindowHeight);
+        private Rect _windowRect = new(10f, 0f, WindowWidth, WindowHeight);
         private Vector2 _scroll;
 
         private void Start()
@@ -322,7 +325,7 @@ namespace CCL.Importer.Components
             PortData port;
             int count = _ports.Count;
 
-            for (int i = 0; i < count && ((i + 0.75f) * BoxTotalHeight <= ScrollHeight + _scroll.y); i++)
+            for (int i = 0; i < count && ((i + 1.0f) * BoxTotalHeight <= ScrollHeight + _scroll.y); i++)
             {
                 if ((i + 1) * BoxTotalHeight < _scroll.y) continue;
 
