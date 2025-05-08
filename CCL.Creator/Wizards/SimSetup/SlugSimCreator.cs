@@ -22,8 +22,8 @@ namespace CCL.Creator.Wizards.SimSetup
             var reverser = CreateReverserControl();
             var dynBrake = CreateOverridableControl(OverridableControlType.DynamicBrake);
 
-            var lightsF = CreateOverridableControl(OverridableControlType.HeadlightsFront);
-            var lightsR = CreateOverridableControl(OverridableControlType.HeadlightsRear);
+            var lightsR = CreateOverridableControl(OverridableControlType.HeadlightsRear, defaultValue: 0.4f);
+            var lightsF = CreateOverridableControl(OverridableControlType.HeadlightsFront, defaultValue: 0.4f);
 
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
@@ -59,9 +59,9 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, "INPUT", 1f, 0.1f, 0.05f, 0f);
-            var lightsFlamp = CreateLampOnOnly("headlightsFLamp", DVPortValueType.CONTROL, "INPUT", 0.4f, 0.55f, 0f, 1f);
-            var lightsRlamp = CreateLampOnOnly("headlightsRLamp", DVPortValueType.CONTROL, "INPUT", 0.4f, 0.55f, 0f, 1f);
-            var sanderLamp = CreateLampOnOnly("sanderLamp", DVPortValueType.CONTROL, "INPUT", 0, 0.001f, 0.001f, float.PositiveInfinity);
+            var lightsRLamp = CreateLampHeadlightControl("headlightsRLamp");
+            var lightsFLamp = CreateLampHeadlightControl("headlightsFLamp");
+            var sanderLamp = CreateLampBasicControl("sanderLamp");
             var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, "INPUT", 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
             var ampLamp = CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 1200, float.PositiveInfinity);
 
@@ -71,8 +71,8 @@ namespace CCL.Creator.Wizards.SimSetup
             tm.powerFuseId = FullFuseId(fusebox, 0);
             slug.powerFuseId = FullFuseId(fusebox, 0);
             sandLamp.powerFuseId = FullFuseId(fusebox, 0);
-            lightsFlamp.powerFuseId = FullFuseId(fusebox, 0);
-            lightsRlamp.powerFuseId = FullFuseId(fusebox, 0);
+            lightsRLamp.powerFuseId = FullFuseId(fusebox, 0);
+            lightsFLamp.powerFuseId = FullFuseId(fusebox, 0);
             sanderLamp.powerFuseId = FullFuseId(fusebox, 0);
             tmOffLamp.powerFuseId = FullFuseId(fusebox, 0);
             ampLamp.powerFuseId = FullFuseId(fusebox, 0);
@@ -99,8 +99,8 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(tm, "ENVIRONMENT_WATER_STATE", waterDetector, "STATE_EXT_IN");
 
             ConnectLampRef(sandLamp, sand, "NORMALIZED");
-            ConnectLampRef(lightsFlamp, lightsF, "EXT_IN");
-            ConnectLampRef(lightsRlamp, lightsR, "EXT_IN");
+            ConnectLampRef(lightsFLamp, lightsF, "EXT_IN");
+            ConnectLampRef(lightsRLamp, lightsR, "EXT_IN");
             ConnectLampRef(sanderLamp, sander, "CONTROL_EXT_IN");
             ConnectLampRef(tmOffLamp, tm, "TMS_STATE");
             ConnectLampRef(ampLamp, tm, "AMPS_PER_TM");

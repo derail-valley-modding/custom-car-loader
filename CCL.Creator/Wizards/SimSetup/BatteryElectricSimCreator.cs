@@ -1,6 +1,4 @@
-﻿using CCL.Types;
-using CCL.Types.Proxies;
-using CCL.Types.Proxies.Controllers;
+﻿using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
@@ -63,19 +61,13 @@ namespace CCL.Creator.Wizards.SimSetup
             var voltRegulator = CreateSimComponent<VoltageRegulatorDefinitionProxy>("voltageRegulator");
 
             var tm = CreateSimComponent<TractionMotorSetDefinitionProxy>("tm");
-            var deadTMs = CreateSibling<DeadTractionMotorsControllerProxy>(tm);
-            deadTMs.overheatFuseOffPortId = FullPortId(tm, "OVERHEAT_POWER_FUSE_OFF");
-            var tmExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(tm);
-            tmExplosion.explosionSignalPortId = FullPortId(tm, "OVERSPEED_EXPLOSION_TRIGGER");
-            tmExplosion.bodyDamagePercentage = 0.05f;
-            tmExplosion.explosionPrefab = ExplosionPrefab.TMOverspeed;
+            CreateTMsExtras(tm, out var deadTMs, out var tmExplosion);
 
             var cooler = CreateSimComponent<PassiveCoolerDefinitionProxy>("tmPassiveCooler");
-            cooler.transform.parent = tm.transform;
             var heat = CreateSimComponent<HeatReservoirDefinitionProxy>("tmHeat");
-            heat.transform.parent = tm.transform;
             heat.inputCount = 2;
             heat.OnValidate();
+            ReparentComponents(tm, cooler, heat);
 
             var compressor = CreateSimComponent<ElectricCompressorDefinitionProxy>("compressor");
             var airController = CreateCompressorSim(compressor);

@@ -34,6 +34,8 @@ namespace CCL.Types
         {
             return Enum.IsDefined(typeof(T), enumValue);
         }
+        public static string ToCamelCase(this string str) =>
+            !string.IsNullOrEmpty(str) && str.Length > 1 ? char.ToLowerInvariant(str[0]) + str.Substring(1) : str.ToLowerInvariant();
 
         public static T AddComponentCopy<T>(this GameObject go, T component) where T : Component
         {

@@ -19,14 +19,17 @@ namespace CCL.Importer.Proxies.Controls
             CachedBlocker(CreateMap<OverridableControlProxy, IndependentBrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.IndBrake));
             //CreateMap<OverridableControlProxy, HandbrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Handbrake);
             CachedBlocker(CreateMap<OverridableControlProxy, SanderControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Sander));
-            //CreateMap<OverridableControlProxy, HornControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Horn);
             CreateMap<HornControlProxy, HornControl>().AutoCacheAndMap().ForMember(d => d.controlBlocker, o => o.MapFrom(s => s.controlBlocker));
             CachedBlocker(CreateMap<OverridableControlProxy, HeadlightsControlFront>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsFront));
             CachedBlocker(CreateMap<OverridableControlProxy, HeadlightsControlRear>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.HeadlightsRear));
+            CachedBlocker(CreateMap<OverridableControlProxy, StarterControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.StarterControl));
             CachedBlocker(CreateMap<OverridableControlProxy, DynamicBrakeControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.DynamicBrake));
-            CachedBlocker(CreateMap<OverridableControlProxy, BrakeCutoutControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.TrainBrakeCutout));
-            //CreateMap<OverridableControlProxy, PowerOffControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.FuelCutoff);
+            CachedBlocker(CreateMap<OverridableControlProxy, WipersControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Wipers));
             CreateMap<PowerOffControlProxy, PowerOffControl>().AutoCacheAndMap().ForMember(d => d.controlBlocker, o => o.MapFrom(s => s.controlBlocker));
+            CachedBlocker(CreateMap<OverridableControlProxy, IndCabLightControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.IndCabLight));
+            CachedBlocker(CreateMap<OverridableControlProxy, DynamoControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.Dynamo));
+            CachedBlocker(CreateMap<OverridableControlProxy, AirPumpControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.AirPump));
+            CachedBlocker(CreateMap<OverridableControlProxy, BrakeCutoutControl>().AutoCacheAndMap(s => s.ControlType == OverridableControlType.TrainBrakeCutout));
 
             CreateMap<InteriorControlsManagerProxy, InteriorControlsManager>().AutoCacheAndMap();
             CreateMap<BaseControlsOverriderProxy, BaseControlsOverrider>().AutoCacheAndMap();

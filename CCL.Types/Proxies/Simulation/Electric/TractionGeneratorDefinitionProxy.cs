@@ -24,7 +24,6 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
         [Header("Dynamic Brake")]
         public float dynamicBrakeGoalRpmNormalized = 0.5f;
-
         [FuseId]
         public string powerFuseId = string.Empty;
 
@@ -107,7 +106,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             excitationGainMaxSpeed = 0.2f;
             excitationDropMaxSpeed = 1.0f;
 
-            dynamicBrakeGoalRpmNormalized = 0.4578947f;
+            dynamicBrakeGoalRpmNormalized = 435.0f/950.0f;
         }
 
         #endregion

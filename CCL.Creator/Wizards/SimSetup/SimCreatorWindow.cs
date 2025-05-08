@@ -1,4 +1,5 @@
 ﻿using CCL.Creator.Utility;
+using CCL.Types;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
@@ -204,6 +205,26 @@ namespace CCL.Creator.Wizards.SimSetup
             }
         }
 
+        protected void ReparentComponents(MonoBehaviour parent, params MonoBehaviour[] children)
+        {
+            foreach (var child in children)
+            {
+                child.transform.parent = parent.transform;
+            }
+        }
+
+        protected WheelSlideTrainsetObserverProxy AddWheelSlideObserver()
+        {
+            if (!_root.TryGetComponent(out WheelSlideTrainsetObserverProxy wheelslide))
+            {
+                wheelslide = _root.AddComponent<WheelSlideTrainsetObserverProxy>();
+            }
+
+            return wheelslide;
+        }
+
+        #region Generic Components
+
         protected TScript CreateSimComponent<TScript>(string id) 
             where TScript : SimComponentDefinitionProxy
         {
@@ -230,69 +251,16 @@ namespace CCL.Creator.Wizards.SimSetup
             return existing.gameObject.AddComponent<TScript>();
         }
 
+        #endregion
+
+        #region One-off Components
+
         protected ResourceContainerProxy CreateResourceContainer(ResourceContainerType type, string? idOverride = null)
         {
             idOverride ??= Enum.GetName(typeof(ResourceContainerType), type).ToLower();
             var container = CreateSimComponent<ResourceContainerProxy>(idOverride);
             container.type = type;
             return container;
-        }
-
-        protected CoalPileSimControllerProxy CreateCoalPile(ResourceContainerProxy coal)
-        {
-            var pile = CreateSibling<CoalPileSimControllerProxy>(coal);
-            pile.coalAvailablePortId = FullPortId(coal, "AMOUNT");
-            pile.coalCapacityPortId = FullPortId(coal, "CAPACITY");
-            pile.coalConsumePortId = FullPortId(coal, "CONSUME_EXT_IN");
-            return pile;
-        }
-
-        protected ExternalControlDefinitionProxy CreateOverridableControl(OverridableControlType type, string? idOverride = null)
-        {
-            idOverride ??= Enum.GetName(typeof(OverridableControlType), type).ToLower();
-            var control = CreateSimComponent<ExternalControlDefinitionProxy>(idOverride);
-            var overrider = CreateSibling<OverridableControlProxy>(control);
-            overrider.ControlType = type;
-            overrider.portId = $"{idOverride}.EXT_IN";
-
-            control.saveState = type switch
-            {
-                OverridableControlType.HeadlightsFront => true,
-                OverridableControlType.HeadlightsRear => true,
-                OverridableControlType.TrainBrakeCutout => true,
-                _ => false,
-            };
-
-            return control;
-        }
-
-        protected ExternalControlDefinitionProxy CreateExternalControl(string id, bool saveState = false, float defaultValue = 0)
-        {
-            var control = CreateSimComponent<ExternalControlDefinitionProxy>(id);
-            control.saveState = saveState;
-            control.defaultValue = defaultValue;
-            return control;
-        }
-
-        protected ReverserDefinitionProxy CreateReverserControl(string? idOverride = null, bool isAnalog = false)
-        {
-            idOverride ??= "reverser";
-            var control = CreateSimComponent<ReverserDefinitionProxy>(idOverride);
-            control.isAnalog = isAnalog;
-            var overrider = CreateSibling<OverridableControlProxy>(control);
-            overrider.ControlType = OverridableControlType.Reverser;
-            overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
-            return control;
-        }
-
-        protected SanderDefinitionProxy CreateSanderControl(string? idOverride = null)
-        {
-            idOverride ??= "sander";
-            var control = CreateSimComponent<SanderDefinitionProxy>(idOverride);
-            var overrider = CreateSibling<OverridableControlProxy>(control);
-            overrider.ControlType = OverridableControlType.Sander;
-            overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
-            return control;
         }
 
         protected WaterDetectorDefinitionProxy CreateWaterDetector(string? idOverride = null)
@@ -302,42 +270,6 @@ namespace CCL.Creator.Wizards.SimSetup
             var waterPortFeeder = CreateSibling<WaterDetectorPortFeederProxy>(waterDetector);
             waterPortFeeder.statePortId = FullPortId(waterDetector, "STATE_EXT_IN");
             return waterDetector;
-        }
-
-        protected ControlBlockerProxy AddControlBlocker(ExternalControlDefinitionProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
-            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
-        {
-            return AddControlBlocker(control.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
-        }
-
-        protected ControlBlockerProxy AddControlBlocker(ReverserDefinitionProxy reverser, SimComponentDefinitionProxy blocking, string port, float threshold,
-            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
-        {
-            return AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
-        }
-
-        protected ControlBlockerProxy AddControlBlocker(OverridableControlProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
-            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
-        {
-            control.OnValidate();
-
-            if (control.controlBlocker == null)
-            {
-                control.controlBlocker = control.gameObject.AddComponent<ControlBlockerProxy>();
-            }
-
-            var blockers = control.controlBlocker.blockers.ToList();
-
-            blockers.Add(new ControlBlockerProxy.BlockerDefinition
-            {
-                blockerPortId = FullPortId(blocking, port),
-                thresholdValue = threshold,
-                blockType = blockerType,
-            });
-
-            control.controlBlocker.blockers = blockers.ToArray();
-
-            return control.controlBlocker;
         }
 
         protected CompressorSimControllerProxy CreateCompressorSim(SimComponentDefinitionProxy compressor)
@@ -383,6 +315,134 @@ namespace CCL.Creator.Wizards.SimSetup
             return tractionFeeders;
         }
 
+        #endregion
+
+        #region Controls
+
+        protected ExternalControlDefinitionProxy CreateOverridableControl(OverridableControlType type, string? idOverride = null,
+            float defaultValue = 0)
+        {
+            idOverride ??= type switch
+            {
+                OverridableControlType.HeadlightsFront => "headlightsControlFront",
+                OverridableControlType.HeadlightsRear => "headlightsControlRear",
+                OverridableControlType.TrainBrakeCutout => "brakeCutout",
+                _ => Enum.GetName(typeof(OverridableControlType), type).ToCamelCase(),
+            };
+
+            var control = CreateSimComponent<ExternalControlDefinitionProxy>(idOverride);
+            control.defaultValue = defaultValue;
+            control.saveState = type switch
+            {
+                OverridableControlType.HeadlightsFront => true,
+                OverridableControlType.HeadlightsRear => true,
+                OverridableControlType.IndCabLight => true,
+                OverridableControlType.TrainBrakeCutout => true,
+                _ => false,
+            };
+
+            var overrider = CreateSibling<OverridableControlProxy>(control);
+            overrider.ControlType = type;
+            overrider.portId = $"{idOverride}.EXT_IN";
+
+            return control;
+        }
+
+        protected ExternalControlDefinitionProxy CreateExternalControl(string id, bool saveState = false, float defaultValue = 0)
+        {
+            var control = CreateSimComponent<ExternalControlDefinitionProxy>(id);
+            control.saveState = saveState;
+            control.defaultValue = defaultValue;
+            return control;
+        }
+
+        protected ReverserDefinitionProxy CreateReverserControl(string? idOverride = null, bool isAnalog = false)
+        {
+            idOverride ??= "reverser";
+            var control = CreateSimComponent<ReverserDefinitionProxy>(idOverride);
+            control.isAnalog = isAnalog;
+            var overrider = CreateSibling<OverridableControlProxy>(control);
+            overrider.ControlType = OverridableControlType.Reverser;
+            overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
+            return control;
+        }
+
+        protected SanderDefinitionProxy CreateSanderControl(string? idOverride = null)
+        {
+            idOverride ??= "sander";
+            var control = CreateSimComponent<SanderDefinitionProxy>(idOverride);
+            var overrider = CreateSibling<OverridableControlProxy>(control);
+            overrider.ControlType = OverridableControlType.Sander;
+            overrider.portId = $"{idOverride}.CONTROL_EXT_IN";
+            return control;
+        }
+
+        #endregion
+
+        #region Control Blockers
+
+        protected ControlBlockerProxy AddControlBlocker(ExternalControlDefinitionProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+        {
+            return AddControlBlocker(control.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
+        }
+
+        protected ControlBlockerProxy AddControlBlocker(ReverserDefinitionProxy reverser, SimComponentDefinitionProxy blocking, string port, float threshold,
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+        {
+            return AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
+        }
+
+        protected ControlBlockerProxy AddControlBlocker(OverridableControlProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+        {
+            control.OnValidate();
+
+            if (control.controlBlocker == null)
+            {
+                control.controlBlocker = control.gameObject.AddComponent<ControlBlockerProxy>();
+            }
+
+            var blockers = control.controlBlocker.blockers.ToList();
+
+            blockers.Add(new ControlBlockerProxy.BlockerDefinition
+            {
+                blockerPortId = FullPortId(blocking, port),
+                thresholdValue = threshold,
+                blockType = blockerType,
+            });
+
+            control.controlBlocker.blockers = blockers.ToArray();
+
+            return control.controlBlocker;
+        }
+
+        protected ControlBlockerProxy AddEmptyControlBlocker(ExternalControlDefinitionProxy control)
+        {
+            return AddEmptyControlBlocker(control.GetComponent<OverridableControlProxy>());
+        }
+
+        protected ControlBlockerProxy AddEmptyControlBlocker(SanderDefinitionProxy control)
+        {
+            return AddEmptyControlBlocker(control.GetComponent<OverridableControlProxy>());
+        }
+
+        protected ControlBlockerProxy AddEmptyControlBlocker(OverridableControlProxy control)
+        {
+            control.OnValidate();
+
+            if (control.controlBlocker == null)
+            {
+                control.controlBlocker = control.gameObject.AddComponent<ControlBlockerProxy>();
+            }
+
+            return control.controlBlocker;
+        }
+
+        #endregion
+
+        #region Lamps
+
         protected LampLogicDefinitionProxy CreateLamp(string id, DVPortValueType readerValueType, string readerId,
             float offMin, float offMax, float onMin, float onMax, float blinkMin, float blinkMax, bool audioDrop = false, bool audioRaise = false)
         {
@@ -421,9 +481,19 @@ namespace CCL.Creator.Wizards.SimSetup
         }
 
         protected LampLogicDefinitionProxy CreateLampIncreasingWarning(string id, DVPortValueType readerValueType, string readerId,
-            float min, float onTransition, float blinkTransition, float max)
+            float min, float onTransition, float blinkTransition, float max, bool audio = false)
         {
-            return CreateLamp(id, readerValueType, readerId, min, onTransition, onTransition, blinkTransition, blinkTransition, max, false, true);
+            return CreateLamp(id, readerValueType, readerId, min, onTransition, onTransition, blinkTransition, blinkTransition, max, false, audio);
+        }
+
+        protected LampLogicDefinitionProxy CreateLampBasicControl(string id, float transition = 0.001f, bool limit1 = false)
+        {
+            return CreateLampOnOnly(id, DVPortValueType.CONTROL, "INPUT", 0, transition, transition, limit1 ? 1 : float.PositiveInfinity);
+        }
+
+        protected LampLogicDefinitionProxy CreateLampHeadlightControl(string id, float offMin = 0.4f, float offMax = 0.55f)
+        {
+            return CreateLampOnOnly(id, DVPortValueType.CONTROL, "INPUT", offMin, offMax, 0, 1);
         }
 
         private LampLogicDefinitionProxy CreateLampBasic(string id, DVPortValueType readerValueType, string readerId,
@@ -456,19 +526,13 @@ namespace CCL.Creator.Wizards.SimSetup
             lamp.blinkRangeMax = max;
         }
 
-        protected WheelSlideTrainsetObserverProxy AddWheelSlideObserver()
-        {
-            if (!_root.TryGetComponent(out WheelSlideTrainsetObserverProxy wheelslide))
-            {
-                wheelslide = _root.AddComponent<WheelSlideTrainsetObserverProxy>();
-            }
-
-            return wheelslide;
-        }
+        #endregion
 
         protected string FullPortId(SimComponentDefinitionProxy component, string portId) => $"{component.ID}.{portId}";
         protected string FullFuseId(IndependentFusesDefinitionProxy fusebox, int index) => $"{fusebox.ID}.{fusebox.fuses[index].id}";
         protected string HeatPortId(HeatReservoirDefinitionProxy heat, int index) => $"{heat.ID}.HEAT_IN_{index}";
+
+        #region Connections
 
         protected void ConnectPorts(string fullSourceId, string fullDestId)
         {
@@ -534,6 +598,8 @@ namespace CCL.Creator.Wizards.SimSetup
                 portReferenceId = FullPortId(refComp, refId)
             });
         }
+
+        #endregion
 
         public abstract void CreateSimForBasisImpl(int basisIndex);
     }
