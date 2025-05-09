@@ -11,7 +11,7 @@ namespace CCL.Types.Proxies.Indicators
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(portId), portId),
+            new PortIdField(this, nameof(portId), portId, DVPortType.READONLY_OUT, DVPortValueType.STATE),
         };
     }
 }

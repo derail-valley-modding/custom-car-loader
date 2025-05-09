@@ -1,9 +1,11 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Types.Proxies;
+using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [NotExposed]
     public class SimPortPlotter : MonoBehaviour
     {
         public int TickRate = 5;

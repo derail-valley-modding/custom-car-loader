@@ -1,6 +1,6 @@
-﻿using CCL.Importer;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CCL.Importer;
 using CCL.Types.Proxies.Ports;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,5 @@
-﻿using LocoSim.Implementations;
+﻿using LocoSim.Attributes;
+using LocoSim.Implementations;
 using UnityEngine;
 
 namespace CCL.Importer.Components.MultipleUnit
@@ -6,6 +7,7 @@ namespace CCL.Importer.Components.MultipleUnit
     public class MultipleUnitCombinedThrottleDynamicBrakeModeInternal :
         MultipleUnitExtraControlInternal<MultipleUnitCombinedThrottleDynamicBrakeModeInternal>
     {
+        [PortId()]
         public string ModePortId = string.Empty;
 
         private Port _modePort = null!;
