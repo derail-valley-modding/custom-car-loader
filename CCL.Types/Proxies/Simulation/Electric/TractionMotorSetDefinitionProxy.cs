@@ -223,8 +223,8 @@ namespace CCL.Types.Proxies.Simulation.Electric
             maxAmpsPerTm = 1500.0f;
             numberOfTractionMotors = 6;
 
-            dynamicBrakePeakForceRpm = 700.0f;
-            dynamicBrakeGridResistance = 0.15f;
+            dynamicBrakePeakForceRpm = 800.0f;
+            dynamicBrakeGridResistance = 0.65f;
             dynamicBrakeMaxCurrent = 700.0f;
             dynamicBrakeCoolerSmoothTime = 2.0f;
 

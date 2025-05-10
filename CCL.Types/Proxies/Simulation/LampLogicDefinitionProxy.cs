@@ -44,5 +44,7 @@ namespace CCL.Types.Proxies.Simulation
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId)
         };
+
+        public string GetFullReaderPortRefId() => GetFullPortId(inputReader.ID);
     }
 }
