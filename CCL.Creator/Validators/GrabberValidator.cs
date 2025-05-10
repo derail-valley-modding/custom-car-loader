@@ -1,6 +1,5 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
-using System.Linq;
 
 namespace CCL.Creator.Validators
 {
