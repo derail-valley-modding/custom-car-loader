@@ -142,7 +142,7 @@ namespace CCL.Creator.Wizards
 
                 case Settings.ReaderType.Port:
                     var portReader = holder.AddComponent<LampPortReaderProxy>();
-                    portReader.portId = settings.SourcePortId;
+                    portReader.lampStatePortId = settings.SourcePortId;
                     break;
 
                 case Settings.ReaderType.BrakeIssues:
