@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
+using UnityEngine;
 
 namespace CCL.Creator.Validators
 {
@@ -12,12 +13,12 @@ namespace CCL.Creator.Validators
         {
             var result = base.Validate(car);
 
-            foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<IVanillaResourceGrabber>())
+            foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<IVanillaResourceGrabber>(true))
             {
                 CheckGenericGrabber(grabber, result);
             }
 
-            foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<MaterialGrabberRenderer>())
+            foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<MaterialGrabberRenderer>(true))
             {
                 CheckMaterialGrabberRenderer(grabber, result);
             }
@@ -29,12 +30,12 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
 
-            foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<IVanillaResourceGrabber>())
+            foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<IVanillaResourceGrabber>(true))
             {
                 CheckGenericGrabber(grabber, result);
             }
 
-            foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<MaterialGrabberRenderer>())
+            foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<MaterialGrabberRenderer>(true))
             {
                 CheckMaterialGrabberRenderer(grabber, result);
             }
@@ -49,7 +50,7 @@ namespace CCL.Creator.Validators
                 if (!grabber.GetNames().Contains(item.ReplacementName))
                 {
                     result.Fail($"{grabber.GetType().Name} in {grabber.gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).",
-                        grabber is UnityEngine.Object obj ? obj : null);
+                        grabber is Object obj ? obj : null);
                 }
             }
         }

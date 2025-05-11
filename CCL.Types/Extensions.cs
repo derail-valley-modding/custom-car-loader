@@ -6,13 +6,13 @@ namespace CCL.Types
 {
     public static class Extensions
     {
-        public static List<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> prefabs)
+        public static List<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> prefabs, bool includeInactive = false)
         {
             var list = new List<T>();
 
             foreach (var prefab in prefabs)
             {
-                list.AddRange(prefab.gameObject.GetComponentsInChildren<T>());
+                list.AddRange(prefab.gameObject.GetComponentsInChildren<T>(includeInactive));
             }
 
             return list;
