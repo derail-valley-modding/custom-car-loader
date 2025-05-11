@@ -58,12 +58,12 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("PROVIDER_POWER", false, 0)
             };
 
-            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, "INPUT", 1f, 0.1f, 0.05f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.1f, 0.05f, 0f);
             var lightsRLamp = CreateLampHeadlightControl("headlightsRLamp");
             var lightsFLamp = CreateLampHeadlightControl("headlightsFLamp");
             var sanderLamp = CreateLampBasicControl("sanderLamp");
-            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, "INPUT", 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
-            var ampLamp = CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 1200, float.PositiveInfinity);
+            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
+            var ampLamp = CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, 0, 600, 1200, float.PositiveInfinity);
 
             var waterDetector = CreateWaterDetector();
 

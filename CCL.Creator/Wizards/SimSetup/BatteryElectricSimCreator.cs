@@ -95,14 +95,14 @@ namespace CCL.Creator.Wizards.SimSetup
             };
 
             var cabLamp = CreateLampBasicControl("cabLightLamp", 0.2f);
-            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, "INPUT", 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
-            var batLamp = CreateLampDecreasingWarning("batteryLamp", DVPortValueType.ELECTRIC_CHARGE, "INPUT", 1f, 0.25f, 0.05f, 0f);
-            var tmHeatLamp = CreateLampIncreasingWarning("tmOverheatLamp", DVPortValueType.AMPS, "INPUT", 0, 90, 105, audio: true);
+            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
+            var batLamp = CreateLampDecreasingWarning("batteryLamp", DVPortValueType.ELECTRIC_CHARGE, 1f, 0.25f, 0.05f, 0f);
+            var tmHeatLamp = CreateLampIncreasingWarning("tmOverheatLamp", DVPortValueType.AMPS, 0, 90, 105, audio: true);
             var sanderLamp = CreateLampBasicControl("sanderLamp");
-            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, "INPUT", 1f, 0.1f, 0.05f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.1f, 0.05f, 0f);
             var lightsRLamp = CreateLampBasicControl("headlightsFLamp", 0.01f);
             var lightsFLamp = CreateLampBasicControl("headlightsRLamp", 0.01f);
-            var ampLamp = CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 400, 700);
+            var ampLamp = CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, 0, 400, 700);
 
             horn.powerFuseId = FullFuseId(fusebox, 0);
             batteryController.powerFuseId = FullFuseId(fusebox, 0);

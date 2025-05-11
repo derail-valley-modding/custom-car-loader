@@ -116,14 +116,14 @@ namespace CCL.Creator.Wizards.SimSetup
             var gaugesLamp = CreateLampBasicControl("gaugesLamp", 0.4f);
             var cabLamp = CreateLampBasicControl("cabLightLamp", 0.4f);
             var bellLamp = bell != null ? CreateLampBasicControl("cabLightLamp") : null;
-            var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, "INPUT", 1f, 0.25f, 0.125f, 0f);
-            var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, "INPUT", 1f, 0.4f, 0.2f, 0f);
-            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, "INPUT", 1f, 0.1f, 0.05f, 0f);
+            var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, 1f, 0.25f, 0.125f, 0f);
+            var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, 1f, 0.4f, 0.2f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.1f, 0.05f, 0f);
             var lightsRLamp = CreateLampHeadlightControl("headlightsRLamp");
             var lightsFLamp = CreateLampHeadlightControl("headlightsFLamp");
             var sanderLamp = CreateLampBasicControl("sanderLamp");
-            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, "INPUT", 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
-            var rpmLamp = CreateLampOnOnly("engineRPMLamp", DVPortValueType.RPM, "INPUT", 0, 1, 1, float.PositiveInfinity, false, true);
+            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
+            var rpmLamp = CreateLampOnOnly("engineRPMLamp", DVPortValueType.RPM, 0, 1, 1, float.PositiveInfinity, false, true);
             var ampLamp = CreateAmpLamp(basisIndex);
 
             horn.powerFuseId = FullFuseId(fusebox, 0);
@@ -262,21 +262,19 @@ namespace CCL.Creator.Wizards.SimSetup
             }
 
             // Control blockers.
-            var blocker = AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-            blocker.blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
+            AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
 
             if (dynBrake != null)
             {
                 AddControlBlocker(reverser, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
 
-                blocker = AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-                blocker.blockedControlPortId = FullPortId(throttle, "EXT_IN");
-                blocker.resetToZeroOnBlock = true;
+                AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD, true)
+                    .blockedControlPortId = FullPortId(throttle, "EXT_IN");
 
-                AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-                blocker = AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD);
-                blocker.blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
-                blocker.resetToZeroOnBlock = true;
+                AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD, true);
+                AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD, true)
+                    .blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
             }
 
             AddEmptyControlBlocker(trnBrake);
@@ -291,9 +289,9 @@ namespace CCL.Creator.Wizards.SimSetup
             switch (index)
             {
                 case 1:
-                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 940);
+                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, 0, 600, 940);
                 default:
-                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, "INPUT", 0, 600, 1200);
+                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, 0, 600, 1200);
             }
         }
 

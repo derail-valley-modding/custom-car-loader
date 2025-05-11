@@ -384,19 +384,19 @@ namespace CCL.Creator.Wizards.SimSetup
         #region Control Blockers
 
         protected ControlBlockerProxy AddControlBlocker(ExternalControlDefinitionProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
-            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType, bool resetOnBlock = false)
         {
-            return AddControlBlocker(control.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
+            return AddControlBlocker(control.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType, resetOnBlock);
         }
 
         protected ControlBlockerProxy AddControlBlocker(ReverserDefinitionProxy reverser, SimComponentDefinitionProxy blocking, string port, float threshold,
-            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType, bool resetOnBlock = false)
         {
-            return AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType);
+            return AddControlBlocker(reverser.GetComponent<OverridableControlProxy>(), blocking, port, threshold, blockerType, resetOnBlock);
         }
 
         protected ControlBlockerProxy AddControlBlocker(OverridableControlProxy control, SimComponentDefinitionProxy blocking, string port, float threshold,
-            ControlBlockerProxy.BlockerDefinition.BlockType blockerType)
+            ControlBlockerProxy.BlockerDefinition.BlockType blockerType, bool resetOnBlock = false)
         {
             control.OnValidate();
 
@@ -415,6 +415,7 @@ namespace CCL.Creator.Wizards.SimSetup
             });
 
             control.controlBlocker.blockers = blockers.ToArray();
+            control.controlBlocker.resetToZeroOnBlock = resetOnBlock;
 
             return control.controlBlocker;
         }
@@ -445,10 +446,11 @@ namespace CCL.Creator.Wizards.SimSetup
 
         #region Lamps
 
-        protected LampLogicDefinitionProxy CreateLamp(string id, DVPortValueType readerValueType, string readerId,
-            float offMin, float offMax, float onMin, float onMax, float blinkMin, float blinkMax, bool audioDrop = false, bool audioRaise = false)
+        protected LampLogicDefinitionProxy CreateLamp(string id, DVPortValueType readerValueType,
+            float offMin, float offMax, float onMin, float onMax, float blinkMin, float blinkMax,
+            bool audioDrop = false, bool audioRaise = false)
         {
-            var lamp = CreateLampBasic(id, readerValueType, readerId, offMin, offMax, audioDrop, audioRaise);
+            var lamp = CreateLampBasic(id, readerValueType, offMin, offMax, audioDrop, audioRaise);
 
             AddOnRangeToLamp(lamp, onMin, onMax);
             AddBlinkRangeToLamp(lamp, blinkMin, blinkMax);
@@ -456,54 +458,54 @@ namespace CCL.Creator.Wizards.SimSetup
             return lamp;
         }
 
-        protected LampLogicDefinitionProxy CreateLampOnOnly(string id, DVPortValueType readerValueType, string readerId,
+        protected LampLogicDefinitionProxy CreateLampOnOnly(string id, DVPortValueType readerValueType,
             float offMin, float offMax, float onMin, float onMax, bool audioDrop = false, bool audioRaise = false)
         {
-            var lamp = CreateLampBasic(id, readerValueType, readerId, offMin, offMax, audioDrop, audioRaise);
+            var lamp = CreateLampBasic(id, readerValueType, offMin, offMax, audioDrop, audioRaise);
 
             AddOnRangeToLamp(lamp, onMin, onMax);
 
             return lamp;
         }
 
-        protected LampLogicDefinitionProxy CreateLampBlinkOnly(string id, DVPortValueType readerValueType, string readerId,
+        protected LampLogicDefinitionProxy CreateLampBlinkOnly(string id, DVPortValueType readerValueType,
             float offMin, float offMax, float blinkMin, float blinkMax, bool audioDrop = false, bool audioRaise = false)
         {
-            var lamp = CreateLampBasic(id, readerValueType, readerId, offMin, offMax, audioDrop, audioRaise);
+            var lamp = CreateLampBasic(id, readerValueType, offMin, offMax, audioDrop, audioRaise);
 
             AddBlinkRangeToLamp(lamp, blinkMin, blinkMax);
 
             return lamp;
         }
 
-        protected LampLogicDefinitionProxy CreateLampDecreasingWarning(string id, DVPortValueType readerValueType, string readerId,
-            float max, float onTransition, float blinkTransition, float min)
+        protected LampLogicDefinitionProxy CreateLampDecreasingWarning(string id, DVPortValueType readerValueType,
+            float max, float onTransition, float blinkTransition, float min, bool audio = true)
         {
-            return CreateLamp(id, readerValueType, readerId, onTransition, max, blinkTransition, onTransition, min, blinkTransition, true, false);
+            return CreateLamp(id, readerValueType, onTransition, max, blinkTransition, onTransition, min, blinkTransition, audio, false);
         }
 
-        protected LampLogicDefinitionProxy CreateLampIncreasingWarning(string id, DVPortValueType readerValueType, string readerId,
+        protected LampLogicDefinitionProxy CreateLampIncreasingWarning(string id, DVPortValueType readerValueType,
             float min, float onTransition, float blinkTransition, float max = float.PositiveInfinity, bool audio = false)
         {
-            return CreateLamp(id, readerValueType, readerId, min, onTransition, onTransition, blinkTransition, blinkTransition, max, false, audio);
+            return CreateLamp(id, readerValueType, min, onTransition, onTransition, blinkTransition, blinkTransition, max, false, audio);
         }
 
         protected LampLogicDefinitionProxy CreateLampBasicControl(string id, float transition = 0.001f, bool limit1 = false)
         {
-            return CreateLampOnOnly(id, DVPortValueType.CONTROL, "INPUT", 0, transition, transition, limit1 ? 1 : float.PositiveInfinity);
+            return CreateLampOnOnly(id, DVPortValueType.CONTROL, 0, transition, transition, limit1 ? 1 : float.PositiveInfinity);
         }
 
         protected LampLogicDefinitionProxy CreateLampHeadlightControl(string id, float offMin = 0.4f, float offMax = 0.55f)
         {
-            return CreateLampOnOnly(id, DVPortValueType.CONTROL, "INPUT", offMin, offMax, 0, 1);
+            return CreateLampOnOnly(id, DVPortValueType.CONTROL, offMin, offMax, 0, 1);
         }
 
-        private LampLogicDefinitionProxy CreateLampBasic(string id, DVPortValueType readerValueType, string readerId,
+        private LampLogicDefinitionProxy CreateLampBasic(string id, DVPortValueType readerValueType,
             float min, float max, bool audioDrop, bool audioRaise)
         {
             var lamp = CreateSimComponent<LampLogicDefinitionProxy>(id);
 
-            lamp.inputReader = new PortReferenceDefinition(readerValueType, readerId);
+            lamp.inputReader = new PortReferenceDefinition(readerValueType, "INPUT");
 
             lamp.offRangeMin = min;
             lamp.offRangeMax = max;
