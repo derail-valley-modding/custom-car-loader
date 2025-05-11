@@ -328,6 +328,8 @@ namespace CCL.Creator.Wizards.SimSetup
                 OverridableControlType.HeadlightsFront => "headlightsControlFront",
                 OverridableControlType.HeadlightsRear => "headlightsControlRear",
                 OverridableControlType.TrainBrakeCutout => "brakeCutout",
+                OverridableControlType.Dynamo => "dynamoControl",
+                OverridableControlType.AirPump => "compressorControl",
                 _ => Enum.GetName(typeof(OverridableControlType), type).ToCamelCase(),
             };
 
@@ -340,6 +342,8 @@ namespace CCL.Creator.Wizards.SimSetup
                 OverridableControlType.CabLight => true,
                 OverridableControlType.IndCabLight => true,
                 OverridableControlType.TrainBrakeCutout => true,
+                OverridableControlType.Dynamo => true,
+                OverridableControlType.AirPump => true,
                 _ => false,
             };
 
