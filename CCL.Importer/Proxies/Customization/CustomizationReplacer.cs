@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CCL.Types.Proxies.Customization;
 using DV.Customization;
+using DV.Customization.Gadgets;
 using DV.Customization.Paint;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace CCL.Importer.Proxies.Customization
 
             CreateMap<CustomizationPlacementMeshesProxy, CustomizationPlacementMeshes>().AutoCacheAndMap();
             CreateMap<LocoWindowMeshProxy, LocoWindowMesh>().AutoCacheAndMap();
+            CreateMap<DrillingDisablerProxy, DrillingDisabler>().AutoCacheAndMap();
         }
 
         private void TrainCarPaintAfter(TrainCarPaintProxy proxy, TrainCarPaint paint)

@@ -124,35 +124,27 @@ namespace CCL.Importer.Processing
         {
             if (colliderRoot.TryFind(CarPartNames.Colliders.COLLISION, out var t))
             {
-                SetLayerAllChildren(t, DVLayer.Train_Big_Collider);
+                t.SetLayersNonRecursive(DVLayer.Train_Big_Collider);
             }
 
             if (colliderRoot.TryFind(CarPartNames.Colliders.WALKABLE, out t))
             {
-                SetLayerAllChildren(t, DVLayer.Train_Walkable);
+                t.SetLayersNonRecursive(DVLayer.Train_Walkable);
             }
 
             if (colliderRoot.TryFind(CarPartNames.Colliders.ITEMS, out t))
             {
-                SetLayerAllChildren(t, DVLayer.Train_Interior);
+                t.SetLayersNonRecursive(DVLayer.Train_Interior);
             }
 
             if (colliderRoot.TryFind(CarPartNames.Colliders.CAMERA_DAMPENING, out t))
             {
-                SetLayerAllChildren(t, DVLayer.Camera_Dampening);
+                t.SetLayersNonRecursive(DVLayer.Camera_Dampening);
             }
 
             if (colliderRoot.TryFind(CarPartNames.Colliders.BOGIES, out t))
             {
-                SetLayerAllChildren(t, DVLayer.Train_Big_Collider);
-            }
-        }
-
-        private void SetLayerAllChildren(Transform transform, DVLayer layer)
-        {
-            foreach (var item in transform.GetComponentsInChildren<Transform>())
-            {
-                item.gameObject.SetLayer(layer);
+                t.SetLayersNonRecursive(DVLayer.Train_Big_Collider);
             }
         }
     }
