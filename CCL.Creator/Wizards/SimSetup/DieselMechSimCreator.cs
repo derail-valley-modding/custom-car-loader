@@ -7,7 +7,6 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Wheels;
-using System.Drawing.Drawing2D;
 using UnityEngine;
 
 using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
