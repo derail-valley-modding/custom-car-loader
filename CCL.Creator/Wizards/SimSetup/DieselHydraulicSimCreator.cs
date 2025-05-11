@@ -108,7 +108,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var cabLamp = CreateLampBasicControl("cabLightLamp", 0.3f);
             var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, 1f, 0.25f, 0.05f, 0f);
             var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, 1f, 0.5f, 0.25f, 0f);
-            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.15f, 0.25f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.5f, 0.25f, 0f);
             var lightsFLamp = CreateLampHeadlightControl("headlightsFLamp");
             var lightsRLamp = CreateLampHeadlightControl("headlightsRLamp");
             var sanderLamp = CreateLampBasicControl("sanderLamp");

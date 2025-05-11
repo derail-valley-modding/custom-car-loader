@@ -7,6 +7,7 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Wheels;
+using System.Drawing.Drawing2D;
 using UnityEngine;
 
 using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
@@ -59,6 +60,9 @@ namespace CCL.Creator.Wizards.SimSetup
             hornControl.neutralAt0 = true;
             var horn = CreateSimComponent<HornDefinitionProxy>("horn");
             horn.controlNeutralAt0 = true;
+
+            var dashLight = CreateExternalControl("dashLightControl", true, 0);
+            var cabLight = CreateOverridableControl(OverridableControlType.IndCabLight);
 
             var waterDetector = CreateWaterDetector();
 
@@ -135,9 +139,24 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ENGINE_STARTER", false)
             };
 
+            var dashLamp = CreateLampBasicControl("dashLamp", 0.5f);
+            var sanderLamp = CreateLampBasicControl("sanderLamp");
+            var tempLamp = CreateLampIncreasingWarning("oilTempLamp", DVPortValueType.TEMPERATURE, 0, 90, 105, audio: true);
+            var rpmLamp = CreateLampOnOnly("engineRPMLamp", DVPortValueType.RPM, 0, 1, 1, float.PositiveInfinity, false, true);
+            var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, 1f, 0.25f, 0.05f, 0f);
+            var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, 1f, 0.5f, 0.25f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.125f, 0.1f, 0f);
+
             horn.powerFuseId = FullFuseId(fusebox, 0);
             sander.powerFuseId = FullFuseId(fusebox, 0);
             engine.engineStarterFuseId = FullFuseId(fusebox, 1);
+            dashLamp.powerFuseId = FullFuseId(fusebox, 0);
+            sanderLamp.powerFuseId = FullFuseId(fusebox, 0);
+            tempLamp.powerFuseId = FullFuseId(fusebox, 0);
+            rpmLamp.powerFuseId = FullFuseId(fusebox, 0);
+            fuelLamp.powerFuseId = FullFuseId(fusebox, 0);
+            oilLamp.powerFuseId = FullFuseId(fusebox, 0);
+            sandLamp.powerFuseId = FullFuseId(fusebox, 0);
 
             // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[]
@@ -231,18 +250,26 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(gearRatioCalc, "HYDRAULIC_GEAR_RATIO", fluidCoupler, "GEAR_RATIO");
             ConnectPortRef(gearRatioCalc, "MECHANICAL_GEAR_RATIO", transmissionAB, "MECHANICAL_GEAR_RATIO");
 
+            ConnectLampRef(dashLamp, dashLight, "EXT_IN");
+            ConnectLampRef(sanderLamp, sander, "CONTROL_EXT_IN");
+            ConnectLampRef(tempLamp, coolant, "TEMPERATURE");
+            ConnectLampRef(rpmLamp, engine, "RPM_NORMALIZED");
+            ConnectLampRef(fuelLamp, fuel, "NORMALIZED");
+            ConnectLampRef(oilLamp, oil, "NORMALIZED");
+            ConnectLampRef(sandLamp, sand, "NORMALIZED");
+
             // Apply defaults.
             ApplyMethodToAll<IDM3Defaults>(s => s.ApplyDM3Defaults());
 
             // Control blockers.
-            AddControlBlocker(throttle, retarder, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+            AddControlBlocker(throttle, retarder, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD, true)
                 .blockedControlPortId = FullPortId(throttle, "EXT_IN");
 
             AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", 20, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
             AddControlBlocker(reverser, traction, "WHEEL_RPM_EXT_IN", -20, BlockType.BLOCK_ON_BELOW_THRESHOLD)
                 .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
 
-            AddControlBlocker(retarder, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+            AddControlBlocker(retarder, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD, true)
                 .blockedControlPortId = FullPortId(retarder, "EXT_IN");
         }
 
@@ -261,6 +288,13 @@ namespace CCL.Creator.Wizards.SimSetup
             hornControl.neutralAt0 = true;
             var horn = CreateSimComponent<HornDefinitionProxy>("horn");
             horn.controlNeutralAt0 = true;
+
+            var lightsF = CreateOverridableControl(OverridableControlType.HeadlightsFront);
+            var lightsR = CreateOverridableControl(OverridableControlType.HeadlightsRear);
+            var cabLightsDecoder = CreateSimComponent<MultiplePortDecoderEncoderDefinitionProxy>("cabLightControlDecoder");
+            var cabLightsControl = CreateSibling<OverridableControlProxy>(cabLightsDecoder);
+            cabLightsControl.portId = FullPortId(cabLightsDecoder, "CAB_LIGHT_CONTROL_EXT_IN");
+            cabLightsControl.ControlType = OverridableControlType.CabLight;
 
             var waterDetector = CreateWaterDetector();
 
@@ -323,9 +357,24 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ENGINE_STARTER", false)
             };
 
+            var dashLamp = CreateLampBasicControl("dashLamp", 0.5f);
+            var sanderLamp = CreateLampBasicControl("sanderLamp");
+            var tempLamp = CreateLampIncreasingWarning("oilTempLamp", DVPortValueType.TEMPERATURE, 0, 90, 105, audio: true);
+            var rpmLamp = CreateLampOnOnly("engineRPMLamp", DVPortValueType.RPM, 0, 1, 1, float.PositiveInfinity, false, true);
+            var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, 1f, 0.25f, 0.125f, 0f);
+            var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, 1f, 0.25f, 0.125f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.5f, 0.25f, 0f);
+
             horn.powerFuseId = FullFuseId(fusebox, 0);
             sander.powerFuseId = FullFuseId(fusebox, 0);
             engine.engineStarterFuseId = FullFuseId(fusebox, 1);
+            dashLamp.powerFuseId = FullFuseId(fusebox, 0);
+            sanderLamp.powerFuseId = FullFuseId(fusebox, 0);
+            tempLamp.powerFuseId = FullFuseId(fusebox, 0);
+            rpmLamp.powerFuseId = FullFuseId(fusebox, 0);
+            fuelLamp.powerFuseId = FullFuseId(fusebox, 0);
+            oilLamp.powerFuseId = FullFuseId(fusebox, 0);
+            sandLamp.powerFuseId = FullFuseId(fusebox, 0);
 
             // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[]
@@ -399,6 +448,14 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(transmission, "THROTTLE", throttle, "EXT_IN");
             ConnectEmptyPortRef(transmission, "RETARDER");
             ConnectPortRef(transmission, "ENGINE_RPM", engine, "RPM");
+            
+            ConnectLampRef(dashLamp, cabLightsDecoder, "DASH_LIGHT_CONTROL");
+            ConnectLampRef(sanderLamp, sander, "CONTROL_EXT_IN");
+            ConnectLampRef(tempLamp, coolant, "TEMPERATURE");
+            ConnectLampRef(rpmLamp, engine, "RPM_NORMALIZED");
+            ConnectLampRef(fuelLamp, fuel, "NORMALIZED");
+            ConnectLampRef(oilLamp, oil, "NORMALIZED");
+            ConnectLampRef(sandLamp, sand, "NORMALIZED");
 
             // Apply defaults.
             ApplyMethodToAll<IDM1UDefaults>(s => s.ApplyDM1UDefaults());

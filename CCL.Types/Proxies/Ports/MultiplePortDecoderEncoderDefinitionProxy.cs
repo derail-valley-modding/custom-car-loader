@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Ports
 {
     public class MultiplePortDecoderEncoderDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
-        IS060Defaults, IS282Defaults, IBE2Defaults
+        IDM1UDefaults, IS060Defaults, IS282Defaults, IBE2Defaults
     {
         [Serializable]
         public class FloatArray
@@ -46,7 +46,7 @@ namespace CCL.Types.Proxies.Ports
 
         [SerializeField, RenderMethodButtons]
         [MethodButton(nameof(ResizeArrays), "Resize Arrays", "Resizes arrays to have the required length to match the ports")]
-        [MethodButton(nameof(SetupForSingleHeadlightControl), "Setup For Single Headlight Control")]
+        [MethodButton(nameof(SetupForSteamerSingleHeadlightControl), "Setup For Single Steamer Headlight Control")]
         private bool _renderButton;
 
         [SerializeField, HideInInspector]
@@ -77,7 +77,7 @@ namespace CCL.Types.Proxies.Ports
             }
         }
 
-        private void SetupForSingleHeadlightControl()
+        private void SetupForSteamerSingleHeadlightControl()
         {
             values = FromMulti(new[,]
             {
@@ -194,15 +194,30 @@ namespace CCL.Types.Proxies.Ports
 
         #region Defaults
 
+        public void ApplyDM1UDefaults()
+        {
+            values = FromMulti(new[,]
+            {
+                { 0, 0, 0 },
+                { 1, 0, 0.5f },
+                { 1, 1, 1 },
+            });
+
+            SetupPortsForHeadlightControl();
+            inputPorts[0].ID = "DASH_LIGHT_CONTROL";
+            inputPorts[1].ID = "CAB_LIGHT_CONTROL";
+            outputPort.ID = "CAB_LIGHT_CONTROL_EXT_IN";
+        }
+
         public void ApplyS060Defaults()
         {
-            SetupForSingleHeadlightControl();
+            SetupForSteamerSingleHeadlightControl();
             SetupPortsForHeadlightControl();
         }
 
         public void ApplyS282Defaults()
         {
-            SetupForSingleHeadlightControl();
+            SetupForSteamerSingleHeadlightControl();
             SetupPortsForHeadlightControl();
         }
 
