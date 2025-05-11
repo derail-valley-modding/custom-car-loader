@@ -19,6 +19,7 @@ namespace CCL.Importer.Processing
         {
             private Dictionary<string, T>? _cachedResources = null;
             private Func<IEnumerable<string>> _nameGetter;
+            private Func<T, string>? _discriminator;
 
             public Dictionary<string, T> Cache
             {
@@ -33,9 +34,10 @@ namespace CCL.Importer.Processing
                 }
             }
 
-            public CachedResource(Func<IEnumerable<string>> nameGetter)
+            public CachedResource(Func<IEnumerable<string>> nameGetter, Func<T, string>? discriminator = null)
             {
                 _nameGetter = nameGetter;
+                _discriminator = discriminator;
             }
 
             public void BuildCache()
@@ -51,10 +53,38 @@ namespace CCL.Importer.Processing
                 //_cachedResources = Resources.FindObjectsOfTypeAll<T>().ToDictionary(k => k.name, v => v);
 
                 // Cache all resources of a type for easy access.
-                _cachedResources = Resources.FindObjectsOfTypeAll<T>()
-                    .Where(x  => x != null)
-                    .GroupBy(x => x.name, StringComparer.Ordinal)
-                    .ToDictionary(k => k.Key, v => v.First());
+                var groups = Resources.FindObjectsOfTypeAll<T>()
+                    .Where(x => x != null)
+                    .GroupBy(x => x.name, StringComparer.Ordinal);
+
+                _cachedResources = new Dictionary<string, T>();
+                
+                foreach (var group in groups)
+                {
+                    // If the group has only 1 member or there's no further discriminator,
+                    // add the first item to the cache.
+                    if (group.Count() == 1 || _discriminator == null)
+                    {
+                        _cachedResources.Add(group.Key, group.First());
+                        continue;
+                    }
+
+                    var organised = group.GroupBy(x => _discriminator(x), StringComparer.Ordinal);
+
+                    foreach (var newGroup in organised)
+                    {
+                        // If there is no discriminator key, just add with the original name,
+                        // else
+                        if (string.IsNullOrEmpty(newGroup.Key))
+                        {
+                            _cachedResources.Add(group.Key, group.First());
+                        }
+                        else
+                        {
+                            _cachedResources.Add($"{group.Key} ({newGroup.Key})", group.First());
+                        }
+                    }
+                }
 
                 // Hash set for quick checking if everything is here.
                 var hashes = _cachedResources.Keys.ToHashSet();
@@ -62,7 +92,7 @@ namespace CCL.Importer.Processing
                 sw.Stop();
 
                 CCLPlugin.Log($"{typeof(T).Name} cache created with {_cachedResources.Count} items [{sw.Elapsed.TotalSeconds:F4}s]");
-                List<string> missing = new List<string>();
+                List<string> missing = new();
 
                 foreach (var item in _nameGetter())
                 {
@@ -95,9 +125,9 @@ namespace CCL.Importer.Processing
             }
         }
 
-        private static CachedResource<AudioClip> s_soundCache = new CachedResource<AudioClip>(() => SoundGrabber.SoundNames);
-        private static CachedResource<Material> s_materialCache = new CachedResource<Material>(() => MaterialGrabber.MaterialNames);
-        private static CachedResource<Mesh> s_meshCache = new CachedResource<Mesh>(() => MeshGrabber.MeshNames);
+        private static CachedResource<AudioClip> s_soundCache = new(() => SoundGrabber.SoundNames);
+        private static CachedResource<Material> s_materialCache = new(() => MaterialGrabber.MaterialNames, MaterialDiscriminator);
+        private static CachedResource<Mesh> s_meshCache = new(() => MeshGrabber.MeshNames, MeshDiscriminator);
 
         public override void ExecuteStep(ModelProcessor context)
         {
@@ -272,5 +302,9 @@ namespace CCL.Importer.Processing
             //s_materialCache.PrintCache("\",\n\"");
             //s_meshCache.PrintCache("\",\n\"");
         }
+
+        private static string MaterialDiscriminator(Material mat) => mat.HasProperty("_MainTex") ? mat.mainTexture.name : string.Empty;
+
+        private static string MeshDiscriminator(Mesh mesh) => mesh.vertexCount.ToString();
     }
 }
