@@ -17,6 +17,16 @@ namespace CCL.Types.Proxies.Controls
             new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)
         };
 
+        private void Reset()
+        {
+            var externalControl = GetComponent<ExternalControlDefinitionProxy>();
+
+            if (externalControl != null)
+            {
+                portId = externalControl.GetFullPortId("EXT_IN");
+            }
+        }
+
         public void OnValidate()
         {
             if (controlBlocker == null)

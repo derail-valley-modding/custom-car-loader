@@ -114,6 +114,7 @@
         {
             public const string HANDBRAKE_SMALL = "HandbrakeSmall";
             public const string BRAKE_CYL_RELEASE = "BrakeCylinderRelease";
+            public const string HANDBRAKE_HOPPER = "HandbrakeLargeEU";
             public const string HANDBRAKE_S060 = "Back/Handbrake";
             public const string HANDBRAKE_S282 = "HandbrakeEU3-TenderOverride";
             public const string HANDBRAKE_DE2 = "Handbrake";
@@ -124,6 +125,7 @@
 
             public const string DUMMY_HANDBRAKE_SMALL = "[brake small]";
             public const string DUMMY_BRAKE_RELEASE = "[brake release]";
+            public const string DUMMY_HANDBRAKE_LARGE = "[brake large]";
             public const string DUMMY_HANDBRAKE_S060 = "[brake s060]";
             public const string DUMMY_HANDBRAKE_S282 = "[brake s282]";
             public const string DUMMY_HANDBRAKE_DE2 = "[brake de2]";

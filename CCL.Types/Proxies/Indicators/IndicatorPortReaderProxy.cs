@@ -7,14 +7,13 @@ namespace CCL.Types.Proxies.Indicators
     public class IndicatorPortReaderProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(null, null, false)]
-        public string portId;
+        public string portId = string.Empty;
 
         [Header("Optional")]
         [PortId(null, null, false)]
-        public string indicatorRangeScalerPortId;
-
+        public string indicatorRangeScalerPortId = string.Empty;
         [FuseId]
-        public string fuseId;
+        public string fuseId = string.Empty;
 
         [Header("Value modifiers")]
         public float valueMultiplier = 1f;

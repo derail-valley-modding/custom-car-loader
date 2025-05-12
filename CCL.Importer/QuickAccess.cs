@@ -62,9 +62,11 @@ namespace CCL.Importer
         {
             private static TrainCarLivery? s_flatbed;
             private static TrainCarLivery? s_caboose;
+            private static TrainCarLivery? s_hopper;
 
             public static TrainCarLivery Flatbed => Extensions.GetCached(ref s_flatbed, () => GetCarLivery("FlatbedEmpty"));
             public static TrainCarLivery Caboose => Extensions.GetCached(ref s_caboose, () => GetCarLivery("CabooseRed"));
+            public static TrainCarLivery Hopper => Extensions.GetCached(ref s_hopper, () => GetCarLivery("HopperBrown"));
         }
 
         public static class Explosions
