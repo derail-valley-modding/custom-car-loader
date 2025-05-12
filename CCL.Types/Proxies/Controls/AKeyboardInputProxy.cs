@@ -15,9 +15,12 @@ namespace CCL.Types.Proxies.Controls
 
             public ActionReference() { }
 
-            public ActionReference(string name)
+            public ActionReference(string name) : this(name, false) { }
+
+            public ActionReference(string name, bool flip)
             {
                 this.name = name;
+                this.flip = flip;
             }
         }
 

@@ -53,8 +53,7 @@ namespace CCL.Creator.Wizards
             ButtonUse,
             ButtonSetFromAxis,
             ToggleValue,
-            ToggleSwitch,
-            BinaryDecode
+            ToggleSwitch
         }
 
         private class KeyMap
@@ -148,16 +147,30 @@ namespace CCL.Creator.Wizards
 
         private static ControlControlsWizard s_window = null!;
 
+        private SerializedObject _serializedWindow = null!;
         private GameObject _target = null!;
+        [SerializeField]
         private bool _autoAddToggle = true;
+        [SerializeField]
+        private ControlType _controlType;
+        [SerializeField]
+        private InputType _inputType;
+        [SerializeField]
+        private bool _flip;
 
         [MenuItem("GameObject/CCL/Setup Control Controls", false, MenuOrdering.Cab.Control)]
         public static void ShowWindow(MenuCommand command)
         {
+            var prev = s_window;
             s_window = GetWindow<ControlControlsWizard>();
             s_window._target = (GameObject)command.context;
             s_window.titleContent = new GUIContent("CCL - Control Controls Wizard");
             s_window.Show();
+
+            if (s_window != prev)
+            {
+                s_window._serializedWindow = new SerializedObject(s_window);
+            }
         }
 
         [MenuItem("GameObject/CCL/Setup Control Controls", true, MenuOrdering.Cab.Control)]
@@ -167,20 +180,45 @@ namespace CCL.Creator.Wizards
             return go && go.GetComponent<ControlSpecProxy>();
         }
 
-        private static void AddInput(GameObject go, ControlType control, InputType input, bool autoToggle)
+        private void OnGUI()
         {
+            EditorGUILayout.BeginVertical("box");
+            EditorStyles.label.wordWrap = true;
+
+            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_inputType)));
+            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_controlType)));
+            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_autoAddToggle)));
+            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_flip)));
+
+            _serializedWindow.ApplyModifiedProperties();
+
+            EditorGUILayout.Space();
+
+            if (GUILayout.Button("Create"))
+            {
+                AddInput(_target, _controlType, _inputType, _autoAddToggle, _flip);
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private static void AddInput(GameObject go, ControlType control, InputType input, bool autoToggle, bool flip)
+        {
+            // If the control is missing from the dictionary, can't do anything else.
             if (!s_typeToKeyMap.TryGetValue(control, out var map))
             {
                 Debug.LogError($"Could not find mapping for control type {control}");
                 return;
             }
+
+            // Pick a control type.
             switch (input)
             {
                 case InputType.MouseScroll:
                     var mouse = go.AddComponent<MouseScrollKeyboardInputProxy>();
                     mouse.scrollUpKey = map.Up;
                     mouse.scrollDownKey = map.Down;
-                    mouse.scrollAction = new ActionReference(map.Incremental);
+                    mouse.scrollAction = new ActionReference(map.Incremental, flip);
                     break;
                 case InputType.ButtonUse:
                     if (!map.HasToggle)
@@ -190,12 +228,12 @@ namespace CCL.Creator.Wizards
                     }
                     var buttonUse = go.AddComponent<ButtonUseKeyboardInputProxy>();
                     buttonUse.useKey = map.Up;
-                    buttonUse.useAction = new ActionReference(map.Toggle);
+                    buttonUse.useAction = new ActionReference(map.Toggle, flip);
                     break;
                 case InputType.ButtonSetFromAxis:
                     var buttonSet = go.AddComponent<ButtonSetValueFromAxisInputProxy>();
                     buttonSet.useKey = map.Up;
-                    buttonSet.useAction = new ActionReference(map.Incremental);
+                    buttonSet.useAction = new ActionReference(map.Incremental, flip);
                     break;
                 case InputType.ToggleValue:
                     if (!map.HasToggle)
@@ -205,7 +243,7 @@ namespace CCL.Creator.Wizards
                     }
                     var toggleV = go.AddComponent<ToggleValueKeyboardInputProxy>();
                     toggleV.toggleKey = map.Up;
-                    toggleV.useAction = new ActionReference(map.Toggle);
+                    toggleV.useAction = new ActionReference(map.Toggle, flip);
                     break;
                 case InputType.ToggleSwitch:
                     if (!map.HasToggle)
@@ -215,11 +253,7 @@ namespace CCL.Creator.Wizards
                     }
                     var toggleS = go.AddComponent<ToggleSwitchUseKeyboardInputProxy>();
                     toggleS.useKey = map.Up;
-                    toggleS.useAction = new ActionReference(map.Toggle);
-                    break;
-                case InputType.BinaryDecode:
-                    var binary = go.AddComponent<BinaryDecodeValueInputProxy>();
-                    binary.action = new ActionReference(map.Incremental);
+                    toggleS.useAction = new ActionReference(map.Toggle, flip);
                     break;
                 default:
                     Debug.LogError($"Unknown input type {input}");
