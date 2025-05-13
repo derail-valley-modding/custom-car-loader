@@ -148,7 +148,8 @@ namespace CCL.Creator.Wizards
         private static ControlControlsWizard s_window = null!;
 
         private SerializedObject _serializedWindow = null!;
-        private GameObject _target = null!;
+        [SerializeField]
+        private ControlSpecProxy _controlSpec = null!;
         [SerializeField]
         private bool _autoAddToggle = true;
         [SerializeField]
@@ -163,7 +164,7 @@ namespace CCL.Creator.Wizards
         {
             var prev = s_window;
             s_window = GetWindow<ControlControlsWizard>();
-            s_window._target = (GameObject)command.context;
+            s_window._controlSpec = ((GameObject)command.context).GetComponent<ControlSpecProxy>();
             s_window.titleContent = new GUIContent("CCL - Control Controls Wizard");
             s_window.Show();
 
@@ -171,6 +172,9 @@ namespace CCL.Creator.Wizards
             {
                 s_window._serializedWindow = new SerializedObject(s_window);
             }
+
+            s_window._serializedWindow.Update();
+            s_window.Repaint();
         }
 
         [MenuItem("GameObject/CCL/Setup Control Controls", true, MenuOrdering.Cab.Control)]
@@ -182,9 +186,20 @@ namespace CCL.Creator.Wizards
 
         private void OnGUI()
         {
+            if (s_window == null)
+            {
+                s_window = GetWindow<ControlControlsWizard>();
+            }
+
+            if (s_window._serializedWindow == null)
+            {
+                s_window._serializedWindow = new SerializedObject(s_window);
+            }
+
             EditorGUILayout.BeginVertical("box");
             EditorStyles.label.wordWrap = true;
 
+            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_controlSpec)));
             EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_inputType)));
             EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_controlType)));
             EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_autoAddToggle)));
@@ -194,9 +209,12 @@ namespace CCL.Creator.Wizards
 
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Create"))
+            using (new EditorGUI.DisabledGroupScope(!_controlSpec))
             {
-                AddInput(_target, _controlType, _inputType, _autoAddToggle, _flip);
+                if (GUILayout.Button("Create"))
+                {
+                    AddInput(_controlSpec.gameObject, _controlType, _inputType, _autoAddToggle, _flip);
+                }
             }
 
             EditorGUILayout.EndVertical();
@@ -278,7 +296,11 @@ namespace CCL.Creator.Wizards
                 };
             }
 
-            if (autoToggle && map.HasToggle && input != InputType.ToggleValue && input != InputType.ToggleSwitch)
+            if (autoToggle &&
+                map.HasToggle &&
+                input != InputType.ToggleValue &&
+                input != InputType.ToggleSwitch &&
+                input != InputType.ButtonUse)
             {
                 var toggle = go.AddComponent<ToggleValueKeyboardInputProxy>();
                 toggle.toggleKey = 0;
