@@ -6,6 +6,7 @@ using DV.Simulation.Brake;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
+
 using static CCL.Types.CarPartNames.FuelPorts;
 using static CCL.Types.CarPartNames.Interactables;
 
@@ -36,7 +37,7 @@ namespace CCL.Importer.Processing
             _flatbedBrakeRelease = flatbedInteractables.transform.Find(BRAKE_CYL_RELEASE).gameObject;
 
             _hopperHandbrake = QuickAccess.Wagons.Hopper.externalInteractablesPrefab
-                .transform.Find(HANDBRAKE_SMALL).gameObject;
+                .transform.Find(HANDBRAKE_HOPPER).gameObject;
 
             _s060Handbrake = QuickAccess.Locomotives.S060.interiorPrefab
                 .transform.Find(HANDBRAKE_S060).gameObject;

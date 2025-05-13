@@ -20,6 +20,7 @@ namespace CCL.Creator.Wizards
             DynamicBrake,
             BrakeCutout,
             Handbrake,
+            BrakeRelease,
             
             GearboxA,
             GearboxB,
@@ -39,6 +40,9 @@ namespace CCL.Creator.Wizards
             Damper,
             FireboxDoor,
             CylinderCocks,
+            Compressor,
+            Dynamo,
+            Lubricator,
 
             Starter,
             FuelCutoff,
@@ -98,6 +102,8 @@ namespace CCL.Creator.Wizards
                 "BrakeCutoutIncremental", "BrakeCutoutAbsolute", "BrakeCutoutToggle") },
             { ControlType.Handbrake, new KeyMap(BaseKeyType.IncreaseHandbrake, BaseKeyType.DecreaseHandbrake,
                 "HandbrakeIncremental", "HandbrakeAbsolute", "HandbrakeToggle") },
+            { ControlType.BrakeRelease, new KeyMap(BaseKeyType.ReleaseCyl, 0,
+                "ReleaseCyl", string.Empty, "ReleaseCyl") },
 
             { ControlType.GearboxA, new KeyMap(BaseKeyType.IncreaseGearA, BaseKeyType.DecreaseGearA,
                 "GearAIncrement", "GearAAbsolute") },
@@ -132,11 +138,17 @@ namespace CCL.Creator.Wizards
                 "FiredoorIncremental", "FiredoorAbsolute", "FiredoorToggle") },
             { ControlType.CylinderCocks, new KeyMap(BaseKeyType.DecreaseCylCock, BaseKeyType.IncreaseCylCock,
                 "CylCockIncremental", "CylCockAbsolute", "CylCockToggle") },
+            { ControlType.Compressor, new KeyMap(BaseKeyType.AirPump, 0,
+                "AirPump", string.Empty, "AirPump") },
+            { ControlType.Dynamo, new KeyMap(BaseKeyType.Dynamo, 0,
+                "Dynamo", string.Empty, "Dynamo") },
+            { ControlType.Lubricator, new KeyMap(BaseKeyType.Lubricator, 0,
+                "Lubricator", string.Empty, "Lubricator") },
 
             { ControlType.Starter, new KeyMap(BaseKeyType.Starter, 0,
-                "Starter") },
+                "Starter", string.Empty, "Starter") },
             { ControlType.FuelCutoff, new KeyMap(BaseKeyType.FuelCutoff, 0,
-                "FuelCutoff") },
+                "FuelCutoff", string.Empty, "FuelCutoff") },
             { ControlType.StarterFuse, new KeyMap(BaseKeyType.StarterFuse, 0,
                 string.Empty, string.Empty, "StarterFuse") },
             { ControlType.TractionMotorFuse, new KeyMap(BaseKeyType.TractionMotorFuse, 0,
@@ -296,16 +308,20 @@ namespace CCL.Creator.Wizards
                 };
             }
 
-            if (autoToggle &&
-                map.HasToggle &&
-                input != InputType.ToggleValue &&
-                input != InputType.ToggleSwitch &&
-                input != InputType.ButtonUse)
+            if (autoToggle && map.HasToggle && !IsToggleInput(input))
             {
                 var toggle = go.AddComponent<ToggleValueKeyboardInputProxy>();
                 toggle.toggleKey = 0;
                 toggle.useAction = new ActionReference(map.Toggle);
             }
         }
+
+        private static bool IsToggleInput(InputType input) => input switch
+        {
+            InputType.ButtonUse => true,
+            InputType.ToggleValue => true,
+            InputType.ToggleSwitch => true,
+            _ => false,
+        };
     }
 }
