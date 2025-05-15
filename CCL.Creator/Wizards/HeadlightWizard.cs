@@ -1,6 +1,7 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types.Components;
 using CCL.Types.Proxies.Headlights;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +14,17 @@ namespace CCL.Creator.Wizards
         {
             public string[] WhiteNames = new string[0];
             public string[] RedNames = new string[0];
+
+            public static Settings Copy(Settings other)
+            {
+                string[] white = new string[other.WhiteNames.Length];
+                string[] red = new string[other.RedNames.Length];
+
+                Array.Copy(other.WhiteNames, white, white.Length);
+                Array.Copy(other.RedNames, red, red.Length);
+
+                return new Settings { WhiteNames = white, RedNames = red };
+            }
         }
 
         private enum LightType
@@ -58,8 +70,7 @@ namespace CCL.Creator.Wizards
 
             if (GUILayout.Button("Copy Front Lights To Rear"))
             {
-                _settingsR.WhiteNames = _settingsF.WhiteNames;
-                _settingsR.RedNames = _settingsF.RedNames;
+                _settingsR = Settings.Copy(_settingsF);
             }
 
             EditorHelpers.DrawHeader("Rear Lights");

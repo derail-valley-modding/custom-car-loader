@@ -34,7 +34,6 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<SlugsPowerProviderModuleProxy, SlugsPowerProviderModule>().AutoCacheAndMap();
 
             CreateMap<FuseControllerDefinitionProxy, FuseControllerDefinition>().AutoCacheAndMap();
-            CreateMap<LocoFuseBoxReferenceProxy, LocoFuseBoxReference>().AutoCacheAndMap();
 
             CreateMap<SmoothedOutputDefinitionProxy, SmoothedOutputDefinition>().AutoCacheAndMap();
             CreateMap<WaterDetectorDefinitionProxy, WaterDetectorDefinition>().AutoCacheAndMap();

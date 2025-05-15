@@ -35,6 +35,7 @@ namespace CCL.Creator.Wizards
                 Port,
                 Fuse,
                 BrakeIssues,
+                Wheelslip
             }
 
             public GameObject TargetObject = null!;
@@ -44,16 +45,14 @@ namespace CCL.Creator.Wizards
 
             public DVPortValueType PortFilter;
             [PortId]
-            public string SourcePortId;
-
+            public string SourcePortId = string.Empty;
             [FuseId]
-            public string SourceFuseId;
-
+            public string SourceFuseId = string.Empty;
             [FuseId]
-            public string FuseId;
+            public string FuseId = string.Empty;
         }
 
-        private Settings _settings;
+        private Settings _settings = null!;
 
         private void Refresh(GameObject target)
         {
@@ -149,6 +148,11 @@ namespace CCL.Creator.Wizards
                 case Settings.ReaderType.BrakeIssues:
                     var brakeReader = holder.AddComponent<LampBrakeIssueReaderProxy>();
                     brakeReader.lampPowerFuseId = settings.FuseId;
+                    break;
+
+                case Settings.ReaderType.Wheelslip:
+                    var wheelSlipReader = holder.AddComponent<LampWheelSlipSlideReaderProxy>();
+                    wheelSlipReader.fuseId = settings.FuseId;
                     break;
             }
 

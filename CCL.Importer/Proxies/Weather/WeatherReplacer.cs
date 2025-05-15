@@ -31,6 +31,7 @@ namespace CCL.Importer.Proxies.Weather
             CreateMap<WiperProxy, Wiper>().AutoCacheAndMap()
                 .ForMember(d => d.windows, o => o.MapFrom(s => Mapper.GetFromCache(s.windows)));
             CreateMap<WiperDriverProxy, WiperDriver>()
+                .ForMember(d => d.master, o => o.MapFrom(s => Mapper.GetFromCache(s.master)))
                 .ForMember(d => d.wiper, o => o.MapFrom(s => Mapper.GetFromCache(s.wiper)))
                 .IncludeAllDerived();
             CreateMap<RotaryWiperDriverProxy, RotaryWiperDriver>().AutoCacheAndMap();

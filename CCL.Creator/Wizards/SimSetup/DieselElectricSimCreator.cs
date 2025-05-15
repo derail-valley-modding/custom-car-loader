@@ -62,16 +62,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
-            var engine = CreateSimComponent<DieselEngineDirectDefinitionProxy>("de");
-            var engineOff = CreateSibling<PowerOffControlProxy>(engine);
-            engineOff.portId = FullPortId(engine, "EMERGENCY_ENGINE_OFF_EXT_IN");
-            var engineOn = CreateSibling<EngineOnReaderProxy>(engine);
-            engineOn.portId = FullPortId(engine, "ENGINE_ON");
-            var environmentDamage = CreateSibling<EnvironmentDamagerProxy>(engine);
-            environmentDamage.damagerPortId = FullPortId(engine, "FUEL_ENV_DAMAGE_METER");
-            environmentDamage.environmentDamageResource = BaseResourceType.EnvironmentDamageFuel;
-
-            engine = CreateDieselEngine(false);
+            var engine = CreateDieselEngine(false);
 
             var loadTorque = CreateSimComponent<ConfigurableAddDefinitionProxy>("loadTorqueCalculator");
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
@@ -166,7 +157,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(engine, "THROTTLE", tractionGen, "THROTTLE");
             ConnectEmptyPortRef(engine, "RETARDER");
             ConnectEmptyPortRef(engine, "DRIVEN_RPM");
-            ConnectPortRef(engine, "INTAKE_WATER_CONTENT", waterDetector, "STATE_EXTERNAL_IN");
+            ConnectPortRef(engine, "INTAKE_WATER_CONTENT", waterDetector, "STATE_EXT_IN");
             ConnectPortRef(engine, "FUEL", fuel, "AMOUNT");
             ConnectPortRef(engine, "FUEL_CONSUMPTION", fuel, "CONSUME_EXT_IN");
             ConnectPortRef(engine, "OIL", oil, "AMOUNT");
@@ -216,7 +207,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectEmptyPortRef(tm, "ENVIRONMENT_WATER_STATE");
 
             ConnectPortRef(cooler, "TEMPERATURE", heat, "TEMPERATURE");
-            ConnectEmptyPortRef(compressor, "TARGET_TEMPERATURE");
+            ConnectEmptyPortRef(cooler, "TARGET_TEMPERATURE");
 
             ConnectHeatRef(heat, 0, tm, "HEAT_OUT");
             ConnectHeatRef(heat, 1, cooler, "HEAT_OUT");

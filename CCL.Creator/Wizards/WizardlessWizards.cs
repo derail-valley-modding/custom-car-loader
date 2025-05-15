@@ -17,7 +17,7 @@ namespace CCL.Creator.Wizards
 
             var comp = cab.AddComponent<CabTeleportDestinationProxy>();
 
-            var indicator = new GameObject("teleport_indicator");
+            var indicator = new GameObject("Collider");
             indicator.transform.parent = cab.transform;
 
             var box = indicator.AddComponent<BoxCollider>();
@@ -30,7 +30,7 @@ namespace CCL.Creator.Wizards
             
             var glow = highlight.AddComponent<TeleportHoverGlowProxy>();
 
-            var roomscale = new GameObject("roomscale position");
+            var roomscale = new GameObject("RoomscalePosition");
             roomscale.transform.parent = cab.transform;
 
             comp.hoverGlow = glow;
