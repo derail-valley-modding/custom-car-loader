@@ -33,7 +33,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.AMPS, "EXTERNAL_CURRENT_LIMIT_EXT_IN"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "EXTERNAL_CURRENT_LIMIT_ACTIVE"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "EXTERNAL_CURRENT_LIMIT_ACTIVE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "OVERCURRENT_POWER_FUSE_OFF"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "EXCITATION"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_IN"),

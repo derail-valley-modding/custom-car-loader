@@ -5,6 +5,7 @@ namespace CCL.Types.Proxies.Audio
 {
     public class LayeredAudioProxy : MonoBehaviour
     {
+        public float masterVolume = 1.0f;
         public Type type;
         public bool linearPitchLerp = true;
         public float minPitch = 1f;

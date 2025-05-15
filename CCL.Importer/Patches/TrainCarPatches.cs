@@ -6,32 +6,6 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(TrainCar))]
     public static class TrainCarPatches
     {
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(TrainCar.LoadInterior))]
-        public static void LoadInterior(TrainCar __instance)
-        {
-            if (!__instance.loadedInterior) return;
-
-            if (!__instance.loadedInterior.activeSelf)
-            {
-                __instance.loadedInterior.gameObject.SetActive(true);
-                CCLPlugin.LogVerbose($"Activating interior on {__instance.loadedInterior.gameObject.name}");
-            }
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(TrainCar.LoadExternalInteractables))]
-        public static void LoadExternalInteractables(TrainCar __instance)
-        {
-            if (!__instance.loadedExternalInteractables) return;
-
-            if (!__instance.loadedExternalInteractables.activeSelf)
-            {
-                __instance.loadedExternalInteractables.gameObject.SetActive(true);
-                CCLPlugin.LogVerbose($"Activating interior on {__instance.loadedExternalInteractables.gameObject.name}");
-            }
-        }
-
         [HarmonyPrefix]
         [HarmonyPatch(nameof(TrainCar.SetupRigidbody))]
         public static void SetupCOMOverride(TrainCar __instance)
