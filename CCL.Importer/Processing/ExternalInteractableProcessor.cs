@@ -36,7 +36,7 @@ namespace CCL.Importer.Processing
             _flatbedHandbrake = flatbedInteractables.transform.Find(HANDBRAKE_SMALL).gameObject;
             _flatbedBrakeRelease = flatbedInteractables.transform.Find(BRAKE_CYL_RELEASE).gameObject;
 
-            _hopperHandbrake = QuickAccess.Wagons.Hopper.externalInteractablesPrefab
+            _hopperHandbrake = QuickAccess.Wagons.HopperBrown.externalInteractablesPrefab
                 .transform.Find(HANDBRAKE_HOPPER).gameObject;
 
             _s060Handbrake = QuickAccess.Locomotives.S060.interiorPrefab

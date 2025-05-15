@@ -10,6 +10,7 @@
         public const int HUDLayout = 101;
         public const int PaintSub = 102;
         public const int Catalog = 103;
+        public const int ProcMats = 104;
 
         public const int ExtraTranslations = 200;
     }

@@ -119,6 +119,7 @@ namespace CCL.Importer.Processing
             GrabberProcessor.ProcessGrabbersOnPrefab(prefab);
             ShaderProcessor.ReplaceShaderGrabbers(prefab);
             ObjectInstancerProcessor.ProcessAll(prefab);
+            MaterialProcessor.ProcessAll(prefab);
             Mapper.ProcessConfigs(prefab);
             Mapper.ClearComponentCache();
         }
