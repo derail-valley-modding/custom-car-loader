@@ -40,7 +40,7 @@ namespace CCL.Types.Proxies.Ports
         public bool matchClosestOutputValue;
         public FloatArray[] values = Array.Empty<FloatArray>();
         public PortDefinition[] inputPorts = Array.Empty<PortDefinition>();
-        public PortDefinition outputPort;
+        public PortDefinition outputPort = new PortDefinition();
         public bool saveState;
 
         [SerializeField, RenderMethodButtons]

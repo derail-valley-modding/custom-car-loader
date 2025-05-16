@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace CCL.Types
+﻿namespace CCL.Types
 {
     public static class IdV2
     {
         // ============
         // Last update:
-        // B99.3
+        // B99.4
         // ============
 
         public static readonly string[] CarKinds =
@@ -231,7 +229,6 @@ namespace CCL.Types
         public static readonly string[] JobLicenses =
         {
             "Basic",
-            "Fragile",
             "Hazmat1",
             "Hazmat2",
             "Hazmat3",
@@ -242,7 +239,8 @@ namespace CCL.Types
             "Shunting",
             "LogisticalHaul",
             "TrainLength1",
-            "TrainLength2"
+            "TrainLength2",
+            "Fragile"
         };
 
         // Not really an ID but oh well.

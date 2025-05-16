@@ -79,7 +79,7 @@ namespace CCL.Creator.Wizards.SimSetup
             coolant.inputCount = 4;
             coolant.OnValidate();
 
-            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            var poweredAxles = CreateSimComponent<ConfigurablePortDefinitionProxy>("poweredAxles");
             poweredAxles.value = 4;
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 

@@ -51,6 +51,19 @@ namespace CCL.Types.Proxies.Ports
             executionOrder = executionOrder.OrderBy(x => Array.IndexOf(allComponents, x)).ToList();
         }
 
+        public void AutoSortConnections()
+        {
+            executionOrder ??= new List<SimComponentDefinitionProxy>();
+            connections ??= new List<PortConnectionProxy>();
+            portReferenceConnections ??= new List<PortReferenceConnectionProxy>();
+
+            //connections.OrderBy(x => x.fullPortIdOut);
+            //portReferenceConnections.OrderBy(x => x.portReferenceId);
+
+            connections.OrderBy(c => executionOrder.FirstIndexMatch(e => e.ID == c.fullPortIdOut.Split('.')[0]));
+            portReferenceConnections.OrderBy(c => executionOrder.FirstIndexMatch(e => e.ID == c.portReferenceId.Split('.')[0]));
+        }
+
         public void DestroyConnectionsToComponent(SimComponentDefinitionProxy component)
         {
             string compId = component.ID;

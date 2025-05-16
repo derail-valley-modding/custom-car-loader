@@ -19,6 +19,16 @@ namespace CCL.Importer
             return type.canDamageEnvironment;
         }
 
+        public static T GetOrAddComponent<T>(this GameObject go) where T : Component
+        {
+            if (go.TryGetComponent(out T comp))
+            {
+                return comp;
+            }
+
+            return go.AddComponent<T>();
+        }
+
         public static IEnumerable<T> GetComponentsByInterface<T>(this GameObject gameObject)
             where T : class
         {
@@ -92,7 +102,7 @@ namespace CCL.Importer
         public static void RefreshChildren<T>(this ARefreshableChildrenController<T> controller)
             where T : MonoBehaviour
         {
-            controller.entries = controller.gameObject.GetComponentsInChildren<T>(true);
+            controller.entries = controller.gameObject.GetComponentsInChildren<T>(true).ToList();
         }
 
         public static bool EqualsOneOf<T>(this T compare, params T[] values)

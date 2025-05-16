@@ -1,7 +1,6 @@
 ﻿using DV.ThingTypes;
 using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace CCL.Importer.Patches
@@ -9,18 +8,20 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(DVObjectModel))]
     internal class ObjectModelPatches
     {
-        static MethodBase TargetMethod()
+        private static MethodBase TargetMethod()
         {
-            return AccessTools.Method(typeof(DVObjectModel), "RecalculateMapping", generics: new[] { typeof(TrainCarType), typeof(TrainCarLivery) });
+            return typeof(DVObjectModel).GetMethod("RecalculateMapping", BindingFlags.Instance | BindingFlags.NonPublic)
+                .MakeGenericMethod(typeof(TrainCarType), typeof(TrainCarLivery));
         }
 
-        [HarmonyPrefix]
-        [HarmonyPatch]
-        static bool RecalculateCarMapping(ref Dictionary<TrainCarType, TrainCarLivery> mapping, List<TrainCarLivery> source)
+        [HarmonyPrefix, HarmonyPatch]
+        private static bool RecalculateCarMapping(ref Dictionary<TrainCarType, TrainCarLivery> mapping, List<TrainCarLivery> source)
         {
             mapping = new Dictionary<TrainCarType, TrainCarLivery>();
-            foreach (var livery in source.Where(l => l.v1 != TrainCarType.NotSet))
+            foreach (var livery in source)
             {
+                if (livery.v1 == TrainCarType.NotSet) continue;
+
                 mapping.Add(livery.v1, livery);
             }
             return false;

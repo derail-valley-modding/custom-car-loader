@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults, IDH4Defaults,
-        IDM3Defaults, IDM1UDefaults
+    public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields,
+        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults,
+        IRecommendedDebugPorts, IRecommendedDebugPortReferences
     {
         [Header("RPM Range")]
         public float rotationalInertia;
@@ -14,7 +15,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public float engineRpmIdle;
 
         [Header("Power & Torque")]
-        public AnimationCurve rpmToPowerCurve = new AnimationCurve();
+        // Null :pensive:
+        public AnimationCurve rpmToPowerCurve = null!;
         public float retarderBrakingTorque;
 
         [Header("Resource Consumption")]
@@ -46,6 +48,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "ENGINE_ON"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "RPM_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "IDLE_RPM_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "IDLE_POWER"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "MAX_POWER_RPM_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "MAX_POWER"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "MAX_RPM"),
@@ -71,6 +74,16 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(engineStarterFuseId), engineStarterFuseId),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "RPM"
+        };
+
+        public IEnumerable<string> GetDebugPortReferences() => new[]
+        {
+            "FUEL_CONSUMPTION"
         };
 
         #region Defaults

@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
-    public class SteamExhaustDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults
+    public class SteamExhaustDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
+        IRecommendedDebugPorts
     {
         public float passiveExhaust = 0.6f;
         public float entrainmentRatio = 1.65f;
@@ -32,6 +33,11 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortReferenceDefinition(DVPortValueType.CONTROL, "BLOWER_CONTROL", false),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "WHISTLE_CONTROL", false),
             new PortReferenceDefinition(DVPortValueType.CONTROL, "DAMPER_CONTROL", false)
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "TOTAL_FLOW_NORMALIZED"
         };
 
         #region Defaults

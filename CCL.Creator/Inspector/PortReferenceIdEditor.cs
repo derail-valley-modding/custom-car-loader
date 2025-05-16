@@ -34,20 +34,23 @@ namespace CCL.Creator.Inspector
 
             int selected = options.FindIndex(p => p.ID == currentValue);
 
-            if (selected < 0 && !string.IsNullOrEmpty(currentValue))
+            using (new GUIColorScope())
             {
-                options.Add(new PortReferenceOption(currentValue));
-                selected = options.Count - 1;
-                GUI.color = EditorHelpers.Colors.DELETE_ACTION;
-            }
+                if (selected < 0 && !string.IsNullOrEmpty(currentValue))
+                {
+                    options.Add(new PortReferenceOption(currentValue));
+                    selected = options.Count - 1;
+                    GUI.color = EditorHelpers.Colors.DELETE_ACTION;
+                }
 
-            GUIContent[] optionNames = options.Select(p => new GUIContent(p.Description)).ToArray();
+                GUIContent[] optionNames = options.Select(p => new GUIContent(p.Description)).ToArray();
 
-            int newIndex = EditorGUI.Popup(position, label, Math.Max(selected, 0), optionNames);
+                int newIndex = EditorGUI.Popup(position, label, Math.Max(selected, 0), optionNames);
 
-            if (newIndex != selected)
-            {
-                property.stringValue = options[newIndex].ID;
+                if (newIndex != selected)
+                {
+                    property.stringValue = options[newIndex].ID;
+                }
             }
 
             EditorGUI.EndProperty();

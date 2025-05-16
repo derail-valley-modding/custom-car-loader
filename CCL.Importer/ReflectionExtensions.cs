@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LocoSim.Implementations;
+using System.Reflection;
 
 namespace CCL.Importer
 {
-    internal class ReflectionExtensions
+    internal static class ReflectionExtensions
     {
+        private const BindingFlags AllInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        public static Port GetPort(this PortReference portRef)
+        {
+            var t = typeof(PortReference);
+            var f = t.GetField("port", AllInstance);
+            return (Port)f.GetValue(portRef);
+        }
     }
 }

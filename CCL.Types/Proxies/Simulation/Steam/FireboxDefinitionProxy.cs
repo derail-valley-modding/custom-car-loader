@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
-    public class FireboxDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults
+    public class FireboxDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
+        IRecommendedDebugPorts
     {
         [Header("Capacity")]
         public float maxCoalCapacity = 80f;
@@ -23,6 +24,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COAL_CAPACITY"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COAL_LEVEL"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.COAL, "COAL_LEVEL_NORMALIZED"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "COAL_CONTROL_EXT_IN"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.COAL, "COAL_ENV_DAMAGE_METER"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, "IGNITION_EXT_IN"),
@@ -45,6 +47,14 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortReferenceDefinition(DVPortValueType.PRESSURE, "BOILER_PRESSURE", false),
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "BOILER_TEMPERATURE", false),
             new PortReferenceDefinition(DVPortValueType.STATE, "BOILER_BROKEN_STATE", false)
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "COAL_LEVEL",
+            "HEAT",
+            "SMOKE_DENSITY",
+            "COMBUSTION_RATE_NORMALIZED"
         };
 
         #region Defaults

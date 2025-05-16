@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Ports
     public class WaterDetectorPortFeederProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(null, null, true)]
-        public string statePortId;
+        public string statePortId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

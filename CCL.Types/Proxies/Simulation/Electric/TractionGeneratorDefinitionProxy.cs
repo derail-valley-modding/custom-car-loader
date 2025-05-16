@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
-    public class TractionGeneratorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults
+    public class TractionGeneratorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults,
+        IRecommendedDebugPorts
     {
         [Header("Generator")]
         public float maxVoltage = 1000f;
@@ -56,6 +57,14 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "THROTTLE",
+            "EXCITATION",
+            "VOLTAGE",
+            "POWER_IN"
         };
 
         [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]

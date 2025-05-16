@@ -46,7 +46,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var reverser = CreateReverserControl(isAnalog: true);
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
 
-            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            var poweredAxles = CreateSimComponent<ConfigurablePortDefinitionProxy>("poweredAxles");
             poweredAxles.value = PoweredAxleCount(basisIndex);
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 

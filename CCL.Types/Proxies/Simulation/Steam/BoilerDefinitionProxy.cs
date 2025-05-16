@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
-    public class BoilerDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults
+    public class BoilerDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
+        IRecommendedDebugPorts
     {
         [Header("Dimensions")]
         public float diameter;
@@ -47,7 +48,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "WATER_LEVEL_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.WATER, "WATER_MASS"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUTLET_STEAM_QUALITY"),
-            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "WATER_INSTANT_REMOVAL_EXT_IN"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.WATER, "WATER_CHANGE_REQUESTED_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "SAFETY_VALVE_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TEMPERATURE, "CROWN_SHEET_TEMPERATURE_NORMALIZED"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "BODY_HEALTH_EXT_IN"),
@@ -67,6 +68,14 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortReferenceDefinition(DVPortValueType.MASS_RATE, "STEAM_CONSUMPTION", false),
             new PortReferenceDefinition(DVPortValueType.WATER, "WATER", false),
             new PortReferenceDefinition(DVPortValueType.WATER, "WATER_CONSUMPTION", true)
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "BLOWDOWN_FLOW_NORMALIZED",
+            "PRESSURE",
+            "WATER_LEVEL_NORMALIZED",
+            "SAFETY_VALVE_NORMALIZED"
         };
 
         private static AnimationCurve ExplosionCurve => new AnimationCurve(

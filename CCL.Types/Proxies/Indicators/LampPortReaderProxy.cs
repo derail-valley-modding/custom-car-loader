@@ -4,47 +4,14 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
-    public class LampPortReaderProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
+    public class LampPortReaderProxy : MonoBehaviour, IHasPortIdFields
     {
-        [PortId]
-        public string portId;
-
-        [FuseId]
-        [Header("Optional")]
-        public string fuseId;
-
-        [Header("Behaviour setup")]
-        public float offRangeMin;
-
-        public float offRangeMax;
-
-        [Space]
-        public bool onRangeUsed;
-
-        public float onRangeMin;
-
-        public float onRangeMax;
-
-        [Space]
-        public bool blinkRangeUsed;
-
-        public float blinkRangeMin;
-
-        public float blinkRangeMax;
-
-        [Space]
-        public bool playAudioOnValueDrop;
-
-        public bool playAudioOnValueRaise;
+        [PortId(DVPortType.READONLY_OUT, DVPortValueType.STATE, false)]
+        public string portId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(portId), portId),
-        };
-
-        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
-        {
-            new FuseIdField(this, nameof(fuseId), fuseId),
         };
     }
 }

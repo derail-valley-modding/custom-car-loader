@@ -6,13 +6,15 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
-    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IDH4Defaults, IDM3Defaults, IDM1UDefaults
+    public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
+        IDH4Defaults, IDM3Defaults, IDM1UDefaults,
+        IRecommendedDebugPorts
     {
         [Header("Torque Transmission")]
         public bool hasFreewheel;
         public float outputTorqueLimit;
 
-        public HydraulicConfigDefinition[] configs;
+        public HydraulicConfigDefinition[] configs = new HydraulicConfigDefinition[0];
         [SerializeField, HideInInspector]
         private string? _configJson;
 
@@ -60,6 +62,17 @@ namespace CCL.Types.Proxies.Simulation.Diesel
             new PortReferenceDefinition(DVPortValueType.RPM, "MAX_RPM"),
             new PortReferenceDefinition(DVPortValueType.RPM, "OUTPUT_SHAFT_RPM"),
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TEMPERATURE"),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "SPEED_RATIO",
+            "ACTIVE_CONFIGURATION",
+            "EFFICIENCY",
+            "TURBINE_RPM_NORMALIZED",
+            "HYDRODYNAMIC_BRAKE_EFFECT",
+            "INPUT_SHAFT_TORQUE",
+            "OUTPUT_SHAFT_TORQUE"
         };
 
         public void OnValidate()
@@ -244,10 +257,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
             [Header("Max torque multiplier, applies at 0 speed ratio.")]
             public float stallTorqueMultiplier;
-
             [Header("Speed ratio where torque multiplier drops to 1.")]
             public float couplingSpeedRatio;
-
             [Header("Maximum achieved thermal efficiency. Must be >= couplingSpeedRatio and <= 1.")]
             [Range(0f, 1f)]
             public float maxEfficiency;

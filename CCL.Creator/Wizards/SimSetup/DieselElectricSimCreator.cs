@@ -230,19 +230,21 @@ namespace CCL.Creator.Wizards.SimSetup
             }
 
             // Control blockers.
-            AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
-                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
+            var blocker = AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+            blocker.blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
 
             if (dynBrake != null)
             {
                 AddControlBlocker(reverser, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
 
-                AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
-                    .blockedControlPortId = FullPortId(throttle, "EXT_IN");
+                blocker = AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
+                blocker.blockedControlPortId = FullPortId(throttle, "EXT_IN");
+                blocker.resetToZeroOnBlock = true;
 
                 AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-                AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD)
-                    .blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
+                blocker = AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD);
+                blocker.blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
+                blocker.resetToZeroOnBlock = true;
             }
         }
 

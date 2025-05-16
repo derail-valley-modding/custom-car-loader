@@ -9,6 +9,7 @@ namespace CCL.Importer.Components.MultipleUnit
         where T : MultipleUnitExtraControlInternal<T>
     {
         private MultipleUnitModule _module = null!;
+        private bool _updating = false;
 
         public override void Init(TrainCar car, SimulationFlow simFlow)
         {
@@ -26,27 +27,25 @@ namespace CCL.Importer.Components.MultipleUnit
 
         public void ValueChanged()
         {
-            switch (_module.Mode)
-            {
-                case MultipleUnitModule.MultipleUnitMode.CABLE:
-                    PropagateThroughCable(true);
-                    PropagateThroughCable(false);
-                    break;
-                case MultipleUnitModule.MultipleUnitMode.RADIO:
-                    if (_module.RemoteChannel.Transmitter != this)
-                    {
-                        return;
-                    }
+            if (_updating) return;
 
-                    foreach (var device in _module.RemoteChannel.devices)
-                    {
-                        TrySetValue(device);
-                    }
-                    break;
-                default:
-                    Debug.LogError($"Unexpected mode: {_module.Mode}! Ignoring");
-                    break;
+            _updating = true;
+
+            if (_module.UseCable)
+            {
+                PropagateThroughCable(true);
+                PropagateThroughCable(false);
             }
+
+            if (_module.UseWireless && _module.RemoteChannel.Transmitter == this)
+            {
+                foreach (var device in _module.RemoteChannel.devices)
+                {
+                    TrySetValue(device);
+                }
+            }
+
+            _updating = false;
         }
 
         private void PropagateThroughCable(bool direction)
