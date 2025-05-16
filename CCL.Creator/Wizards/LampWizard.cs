@@ -35,7 +35,8 @@ namespace CCL.Creator.Wizards
                 Port,
                 Fuse,
                 BrakeIssues,
-                Wheelslip
+                Wheelslip,
+                TemperatureMU
             }
 
             public GameObject TargetObject = null!;
@@ -153,6 +154,11 @@ namespace CCL.Creator.Wizards
                 case Settings.ReaderType.Wheelslip:
                     var wheelSlipReader = holder.AddComponent<LampWheelSlipSlideReaderProxy>();
                     wheelSlipReader.fuseId = settings.FuseId;
+                    break;
+
+                case Settings.ReaderType.TemperatureMU:
+                    var temperatureReader = holder.AddComponent<LampControllerTemperatureMUProxy>();
+                    temperatureReader.fuseId = settings.FuseId;
                     break;
             }
 

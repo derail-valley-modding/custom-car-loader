@@ -4,15 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
-    public class LampWheelSlipSlideReaderProxy : MonoBehaviour, IHasFuseIdFields
+    public class LampControllerTemperatureMUProxy : MonoBehaviour, IHasFuseIdFields
     {
-        public enum WheelslipDetectionMode
-        {
-            Individual,
-            MultipleUnit
-        }
-
-        public WheelslipDetectionMode wheelslipDetectionMode;
         [FuseId]
         public string fuseId = string.Empty;
 

@@ -119,6 +119,7 @@ namespace CCL.Importer.Processing
             AddController<PositionSyncProviderController, PositionSyncProvider>(prefab);
             AddController<PositionSyncConsumerController, PositionSyncConsumer>(prefab);
             AddController<OilingPointsPortController, OilingPointPortFeederReader>(prefab);
+            AddController<ControlsBlockController, ControlBlocker>(prefab);
 
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
         }
