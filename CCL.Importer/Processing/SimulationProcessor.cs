@@ -1,4 +1,6 @@
-﻿using DV.Damage;
+﻿using CCL.Importer.Components;
+using CCL.Types.Components;
+using DV.Damage;
 using DV.HUD;
 using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
@@ -120,6 +122,8 @@ namespace CCL.Importer.Processing
             AddController<PositionSyncConsumerController, PositionSyncConsumer>(prefab);
             AddController<OilingPointsPortController, OilingPointPortFeederReader>(prefab);
             AddController<ControlsBlockController, ControlBlocker>(prefab);
+
+            AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
 
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
         }

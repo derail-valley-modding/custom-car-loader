@@ -20,6 +20,7 @@ namespace CCL.Importer.Components
 
             CreateMap<ControlNameTMPDisplay, ControlNameTMPDisplayInternal>().AutoCacheAndMap();
             CreateMap<HideObjectsOnCargoLoad, HideObjectsOnCargoLoadInternal>().AutoCacheAndMap();
+            CreateMap<CoupledAttachment, CoupledAttachmentInternal>().AutoCacheAndMap();
         }
 
         private void MapCoupling()

@@ -14,17 +14,12 @@ namespace CCL.Creator.Inspector
 
             switch (particles.SystemToCopy)
             {
-                case VanillaParticleSystem.DieselExhaustSmoke1:
-                case VanillaParticleSystem.DieselExhaustSmoke2:
-                case VanillaParticleSystem.DieselHighTempSmoke:
-                case VanillaParticleSystem.DieselDamageSmoke:
                 case VanillaParticleSystem.SteamerSteamSmoke:
                 case VanillaParticleSystem.SteamerSteamSmokeThick:
                 case VanillaParticleSystem.SteamerEmberClusters:
                 case VanillaParticleSystem.SteamerEmberSparks:
                     Gizmos.DrawLine(Vector3.zero, Vector3.up);
                     break;
-                case VanillaParticleSystem.SteamerCylCockWaterDripParticles:
                     Gizmos.DrawLine(Vector3.zero, Vector3.down);
                     break;
                 default:

@@ -29,12 +29,6 @@ namespace CCL.Importer.Processing
             copiedObject.name = CarPartNames.Couplers.COUPLER_REAR;
             var rearCouplerPosition = buffers.RearRigPosition + CarPartOffset.COUPLER_REAR;
             copiedObject.transform.localPosition = rearCouplerPosition;
-
-            foreach (var item in context.Car.prefab.GetComponentsInChildren<AttachToCoupled>())
-            {
-                item.gameObject.AddComponent<AttachToCoupledInternal>().Copy(item);
-                Object.Destroy(item);
-            }
         }
     }
 }

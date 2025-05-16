@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CCL.Creator.Inspector
 {
-    [CustomEditor(typeof(VanillaResourceGrabber<>), true)]
+    [CustomEditor(typeof(VanillaResourceGrabber<>), true), CanEditMultipleObjects]
     internal class VanillaResourceGrabberEditor : Editor
     {
         private struct AllowedFieldInfo
@@ -26,7 +26,6 @@ namespace CCL.Creator.Inspector
         }
 
         // Keep these global to kinda mimic Unity behaviour.
-        private static bool s_showArray;
         private static bool s_showFields;
 
         private IVanillaResourceGrabber _grabber = null!;
@@ -47,9 +46,9 @@ namespace CCL.Creator.Inspector
 
             List<AllowedFieldInfo> fields = GetFieldInfosForScript(_grabber);
 
-            s_showArray = EditorGUILayout.Foldout(s_showArray, "Replacements");
+            _replacements.isExpanded = EditorGUILayout.Foldout(_replacements.isExpanded, "Replacements");
 
-            if (s_showArray)
+            if (_replacements.isExpanded)
             {
                 using (new EditorGUI.IndentLevelScope())
                 {
