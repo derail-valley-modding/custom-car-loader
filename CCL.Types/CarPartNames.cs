@@ -163,5 +163,6 @@
 
         public const string CENTER_OF_MASS = "[center of mass]";
         public const string LICENSE_BLOCKER = "LocoLicenseBlocker";
+        public const string GRABPASS_HACK = "[grabpass hack]";
     }
 }

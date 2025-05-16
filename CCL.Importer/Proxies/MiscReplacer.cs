@@ -8,6 +8,7 @@ using DV.RemoteControls;
 using DV.Simulation.Cars;
 using DV.ThingTypes.TransitionHelpers;
 using LocoSim.DVExtensions.Test;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies
@@ -54,6 +55,10 @@ namespace CCL.Importer.Proxies
                 .AfterMap(TeleportHoverGlowAfter);
             CreateMap<GrabberRaycastPassThroughProxy, GrabberRaycastPassThrough>().AutoCacheAndMap();
             CreateMap<HighlightTagProxy, HighlightTagProxy>().AutoCacheAndMap();
+            CreateMap<CabinRenderOrderingProxy, CabinRenderOrdering>().AutoCacheAndMap()
+                .ForMember(d => d.triggerNullable, o => o.MapFrom(s => Mapper.GetFromCache(s.triggerNullable)))
+                .ForMember(d => d.ordering, o => o.MapFrom(s => s.ordering.Select(
+                    x => new CabinRenderOrdering.OrderingRenderer(x.group, x.initialOrder, x.whenInside))));
 
             CreateMap<MultipleUnitStateObserverProxy, MultipleUnitStateObserver>().AutoCacheAndMap();
             CreateMap<RemoteControllerModuleProxy, RemoteControllerModule>().AutoCacheAndMap();

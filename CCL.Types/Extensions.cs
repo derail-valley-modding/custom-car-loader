@@ -82,5 +82,12 @@ namespace CCL.Types
             target.localRotation = source.localRotation;
             target.localScale = source.localScale;
         }
+
+        public static bool TryFind(this Transform transform, string n, out Transform result)
+        {
+            result = transform.Find(n);
+
+            return result != null;
+        }
     }
 }

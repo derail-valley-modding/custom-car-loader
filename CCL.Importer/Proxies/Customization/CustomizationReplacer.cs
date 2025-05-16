@@ -23,6 +23,7 @@ namespace CCL.Importer.Proxies.Customization
                     new TrainCarCustomization.STDPortDefinition((STDSimPort)x.port, x.name, x.readOnly))));
 
             CreateMap<CustomizationPlacementMeshesProxy, CustomizationPlacementMeshes>().AutoCacheAndMap();
+            CreateMap<LocoWindowMeshProxy, LocoWindowMesh>().AutoCacheAndMap();
         }
 
         private void TrainCarPaintAfter(TrainCarPaintProxy proxy, TrainCarPaint paint)

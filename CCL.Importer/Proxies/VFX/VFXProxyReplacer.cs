@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CCL.Types;
 using CCL.Types.Proxies.VFX;
 using DV.Simulation.Controllers;
 using DV.VFX;
@@ -10,6 +11,10 @@ namespace CCL.Importer.Proxies.VFX
 {
     internal class VFXProxyReplacer : Profile
     {
+        private static GameObject? s_grabPassHack;
+        private static GameObject GrabPassHack => Extensions.GetCached(ref s_grabPassHack,
+            () => QuickAccess.Locomotives.DE6.prefab.transform.Find(CarPartNames.GRABPASS_HACK).gameObject);
+
         public VFXProxyReplacer()
         {
             CreateMap<ParticlesPortReadersControllerProxy, ParticlesPortReadersController>().AutoCacheAndMap()
@@ -36,6 +41,10 @@ namespace CCL.Importer.Proxies.VFX
 
             CreateMap<LightShadowQualityProxy, LightShadowQuality>().AutoCacheAndMap();
             CreateMap<LightShadowQualityProxy.LightShadowQualitySettings, LightShadowQuality.LightShadowQualitySettings>();
+
+            CreateMap<WindowDropletsGrabPassProxy, WindowDropletsGrabPass>().AutoCacheAndMap()
+                .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)))
+                .AfterMap(WindowDropletsGrabPassAfter);
         }
 
         private void ParticlesPortReadersControllerAfter(ParticlesPortReadersControllerProxy _, ParticlesPortReadersController comp)
@@ -80,6 +89,11 @@ namespace CCL.Importer.Proxies.VFX
             }
 
             dampening.systems = systems.ToArray();
+        }
+
+        private void WindowDropletsGrabPassAfter(WindowDropletsGrabPassProxy proxy, WindowDropletsGrabPass pass)
+        {
+            pass.grabPassHackRenderer = Object.Instantiate(GrabPassHack, pass.transform);
         }
     }
 }
