@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Indicators;
+﻿using CCL.Types;
+using CCL.Types.Proxies.Indicators;
 using DV.Localization;
 using System.ComponentModel.Composition;
 using UnityEngine;
@@ -42,25 +43,23 @@ namespace CCL.Importer.Processing
                         // create new holder for text and model
                         var holder = new GameObject($"{labelProxy.gameObject.name}_text");
                         holder.transform.SetParent(labelProxy.transform.parent, false);
-                        holder.transform.localPosition = labelProxy.transform.localPosition;
-                        holder.transform.localRotation = labelProxy.transform.localRotation;
+                        holder.transform.CopyLocal(labelProxy.transform);
 
                         // reparent original text obj to holder
                         labelProxy.transform.SetParent(holder.transform, false);
-                        labelProxy.transform.localPosition = Vector3.zero;
-                        labelProxy.transform.localRotation = Quaternion.identity;
+                        labelProxy.transform.Reset();
 
                         if (labelProxy.ModelType.HasFlag(LabelModelType.Offset))
                         {
                             GameObject toCopy = useDefaultText ? _offsetLabelComplete : _offsetLabelModel;
-                            var instantiated = UnityEngine.Object.Instantiate(toCopy, holder.transform, false);
+                            var instantiated = Object.Instantiate(toCopy, holder.transform, false);
                             instantiated.transform.localPosition = Vector3.zero;
                             instantiated.transform.localRotation = _labelModelRotation;
                         }
                         else if (labelProxy.ModelType.HasFlag(LabelModelType.Flush))
                         {
                             GameObject toCopy = useDefaultText ? _flushLabelComplete : _flushLabelModel;
-                            var instantiated = UnityEngine.Object.Instantiate(toCopy, holder.transform, false);
+                            var instantiated = Object.Instantiate(toCopy, holder.transform, false);
                             instantiated.transform.localPosition = Vector3.zero;
                             instantiated.transform.localRotation = _labelModelRotation;
                         }
