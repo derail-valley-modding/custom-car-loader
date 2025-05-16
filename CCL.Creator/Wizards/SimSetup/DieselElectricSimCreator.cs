@@ -125,6 +125,7 @@ namespace CCL.Creator.Wizards.SimSetup
             tractionGen.powerFuseId = FullFuseId(fusebox, 2);
             tm.powerFuseId = FullFuseId(fusebox, 2);
             deadTMs.tmFuseId = FullFuseId(fusebox, 2);
+            slugPowerProv.powerFuseId = FullFuseId(fusebox, 2);
 
             // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_DAMAGE") };

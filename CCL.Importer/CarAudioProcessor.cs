@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
+using CCL.Types.Components;
 using DV.Damage;
 using DV.ModularAudioCar;
 using DV.Simulation.Controllers;
@@ -45,13 +46,16 @@ namespace CCL.Importer
 
                 var newAudioFab = ModelProcessor.CreateModifiablePrefab(pool.defaultAudioPrefab);
                 var modularAudio = newAudioFab.GetComponent<CarModularAudio>();
+                var simAudioFab = carType.SimAudioPrefab;
 
-                if (carType.SimAudioPrefab)
+                VehicleAudioController? controller = null;
+
+                if (simAudioFab != null)
                 {
-                    var simAudioFab = carType.SimAudioPrefab;
+                    controller = simAudioFab.GetComponent<VehicleAudioController>();
 
                     simAudioFab.transform.SetParent(newAudioFab.transform, false);
-                    simAudioFab.SetActive(true);
+                    simAudioFab.gameObject.SetActive(true);
 
                     // setup optional rain
                     var rainLocation = simAudioFab.transform.Find(CarPartNames.Audio.RAIN_DUMMY_TRANSFORM);
@@ -68,7 +72,7 @@ namespace CCL.Importer
                     }
 
                     // setup sim module
-                    var simAudio = simAudioFab.AddComponent<SimAudioModule>();
+                    var simAudio = simAudioFab.gameObject.AddComponent<SimAudioModule>();
                     simAudioFab.GetComponent<LayeredAudioSimReadersController>().OnValidate();
                     simAudioFab.GetComponent<AudioClipSimReadersController>().OnValidate();
 
@@ -93,8 +97,8 @@ namespace CCL.Importer
                     var wheelsFront = newWheelsAudio.transform.Find(CarPartNames.Audio.WHEELS_FRONT);
                     var wheelsRear = newWheelsAudio.transform.Find(CarPartNames.Audio.WHEELS_REAR);
 
-                    wheelsFront.position = frontBogie.transform.position;
-                    wheelsRear.position = rearBogie.transform.position;
+                    wheelsFront.position = WheelsAudio1Transform(controller, out var t) ? t.position : frontBogie.transform.position;
+                    wheelsRear.position = WheelsAudio2Transform(controller, out t) ? t.position : rearBogie.transform.position;
 
                     // Set up slip audio
                     var pwm = carFab.GetComponentInChildren<PoweredWheelsManager>();
@@ -128,10 +132,68 @@ namespace CCL.Importer
 
                     brakesModule.brakeCylinderExhaustAudio = cylinder.GetComponent<LayeredAudio>();
                     brakesModule.airflowAudio = airflow.GetComponent<LayeredAudio>();
+
+                    if (BrakeCylinderTransform(controller, out var t))
+                    {
+                        brakesModule.brakeCylinderExhaustAudio.layers[0].source.transform.position = t.position;
+                    }
+
+                    if (BrakeAirflowTransform(controller, out t))
+                    {
+                        brakesModule.airflowAudio.layers[0].source.transform.position = t.position;
+                    }
                 }
 
                 carType.audioPrefab = newAudioFab;
             }
+        }
+
+        private static bool WheelsAudio1Transform(VehicleAudioController? simAudioFab, out Transform t)
+        {
+            if (simAudioFab == null || simAudioFab.CustomWheelAudioPosition1 == null)
+            {
+                t = null!;
+                return false;
+            }
+
+            t = simAudioFab.CustomWheelAudioPosition1;
+            return true;
+        }
+
+        private static bool WheelsAudio2Transform(VehicleAudioController? simAudioFab, out Transform t)
+        {
+            if (simAudioFab == null || simAudioFab.CustomWheelAudioPosition2 == null)
+            {
+                t = null!;
+                return false;
+            }
+
+            t = simAudioFab.CustomWheelAudioPosition2;
+            return true;
+        }
+
+        private static bool BrakeCylinderTransform(VehicleAudioController? simAudioFab, out Transform t)
+        {
+            if (simAudioFab == null || simAudioFab.BrakeCylinderExhaustPosition == null)
+            {
+                t = null!;
+                return false;
+            }
+
+            t = simAudioFab.BrakeCylinderExhaustPosition;
+            return true;
+        }
+
+        private static bool BrakeAirflowTransform(VehicleAudioController? simAudioFab, out Transform t)
+        {
+            if (simAudioFab == null || simAudioFab.BrakeAirflowPosition == null)
+            {
+                t = null!;
+                return false;
+            }
+
+            t = simAudioFab.BrakeAirflowPosition;
+            return true;
         }
 
         private static Transform GetCorrespondingWheelslipLayers(Transform wheelLoc, Transform layersFront, Transform layersRear)

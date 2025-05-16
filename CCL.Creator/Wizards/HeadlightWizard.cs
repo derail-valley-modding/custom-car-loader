@@ -40,6 +40,7 @@ namespace CCL.Creator.Wizards
 
         private Settings _settingsR = null!;
         private Settings _settingsF = null!;
+        private float _scroll = 0;
 
         [MenuItem("GameObject/CCL/Add Headlights", false, MenuOrdering.Body.Headlights)]
         public static void ShowWindow(MenuCommand command)
@@ -61,7 +62,7 @@ namespace CCL.Creator.Wizards
 
         private void OnGUI()
         {
-            EditorGUILayout.BeginVertical("box");
+            _scroll = EditorGUILayout.BeginScrollView(new Vector2(0, _scroll)).y;
             EditorStyles.label.wordWrap = true;
 
             EditorHelpers.DrawHeader("Front Lights");
@@ -85,7 +86,7 @@ namespace CCL.Creator.Wizards
                 return;
             }
 
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndScrollView();
         }
 
         private void CreateTemplate()
