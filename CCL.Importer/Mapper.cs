@@ -14,6 +14,7 @@ namespace CCL.Importer
     {
         private static readonly List<ICacheConfig> s_configCache = new();
         private static readonly Dictionary<MonoBehaviour, MonoBehaviour> s_componentMapCache = new();
+        private static readonly HashSet<MonoBehaviour> s_mapped = new();
         // Mapper needs to be declared after the caches, or it will cause reflection problems,
         // as the config will try to access the caches.
         private static readonly MapperConfiguration _config = new(Configure);
@@ -72,11 +73,11 @@ namespace CCL.Importer
                 // so it should NEVER be null.
                 foreach (MonoBehaviour source in _sourceComponents)
                 {
-                    if (s_componentMapCache.TryGetValue(source, out MonoBehaviour cached))
-                    {
-                        M.Map(source, cached);
-                        UnityEngine.Object.Destroy(source);
-                    }
+                    if (!s_componentMapCache.TryGetValue(source, out MonoBehaviour cached) || s_mapped.Contains(cached)) continue;
+
+                    M.Map(source, cached);
+                    UnityEngine.Object.Destroy(source);
+                    s_mapped.Add(cached);
                 }
             }
         }
@@ -231,6 +232,7 @@ namespace CCL.Importer
         public static void ClearComponentCache()
         {
             s_componentMapCache.Clear();
+            s_mapped.Clear();
         }
 
         private class LiveriesConverter : IValueConverter<List<CustomCarVariant>, List<TrainCarLivery>>

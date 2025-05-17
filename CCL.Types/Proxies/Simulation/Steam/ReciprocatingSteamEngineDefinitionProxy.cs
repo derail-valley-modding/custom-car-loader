@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
-    public class ReciprocatingSteamEngineDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults
+    public class ReciprocatingSteamEngineDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
+        IRecommendedDebugPorts, IRecommendedDebugPortReferences
     {
         public int numCylinders = 2;
         public float cylinderBore = 0.533f;
@@ -35,7 +36,6 @@ namespace CCL.Types.Proxies.Simulation.Steam
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CRANK_ROTATION"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "CYLINDERS_INLET_VALVE_OPEN"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "DUMPED_FLOW"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "MAX_FLOW"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "INTAKE_FLOW"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.MASS_RATE, "INTAKE_FLOW_NORMALIZED"),
@@ -66,6 +66,17 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortReferenceDefinition(DVPortValueType.GENERIC, "INTAKE_QUALITY", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "CRANK_RPM", false),
             new PortReferenceDefinition(DVPortValueType.OIL, "LUBRICATION_NORMALIZED", false)
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "STEAM_CHEST_PRESSURE",
+            "TORQUE_OUT"
+        };
+
+        public IEnumerable<string> GetDebugPortReferences() => new[]
+        {
+            "CRANK_RPM"
         };
 
         #region Defaults

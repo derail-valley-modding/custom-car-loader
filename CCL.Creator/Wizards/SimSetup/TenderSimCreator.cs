@@ -1,4 +1,5 @@
 ﻿using CCL.Types.Proxies;
+using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
@@ -8,9 +9,6 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class TenderSimCreator : SimCreator
     {
-        // TODO:
-        // Headlights
-
         public TenderSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "S282B" };
@@ -28,7 +26,12 @@ namespace CCL.Creator.Wizards.SimSetup
             CreateBroadcastProvider(water, "AMOUNT", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_AMOUNT");
             CreateBroadcastConsumer(water, "CONSUME_EXT_IN", DVPortForwardConnectionType.COUPLED_FRONT, "TENDER_WATER_CONSUME", 0, true);
 
-            var dynamo = CreateSimComponent<ConstantPortDefinitionProxy>("dynamoFlowDummy");
+            var lightsF = CreateOverridableControl(OverridableControlType.HeadlightsFront);
+            CreateBroadcastConsumer(lightsF, "EXT_IN", DVPortForwardConnectionType.COUPLED_FRONT, "HEADLIGHTS_FRONT", 0.4f, false);
+            var lightsR = CreateOverridableControl(OverridableControlType.HeadlightsRear);
+            CreateBroadcastConsumer(lightsR, "EXT_IN", DVPortForwardConnectionType.COUPLED_FRONT, "HEADLIGHTS_REAR", 0.4f, false);
+
+            var dynamo = CreateSimComponent<ConfigurablePortDefinitionProxy>("dynamoFlowDummy");
             dynamo.port.ID = "DYNAMO_FLOW_NORMALIZED";
             dynamo.port.type = DVPortType.READONLY_OUT;
             dynamo.port.valueType = DVPortValueType.STATE;

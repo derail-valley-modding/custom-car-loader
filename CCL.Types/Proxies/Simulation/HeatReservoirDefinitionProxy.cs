@@ -7,7 +7,8 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Simulation
 {
     public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
-        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults
+        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults,
+        IRecommendedDebugPorts
     {
         public float heatCapacity = 1f;
         public float overheatingTemperatureThreshold = 120f;
@@ -16,7 +17,7 @@ namespace CCL.Types.Proxies.Simulation
         [Delayed]
         public int inputCount = 1;
         [HideInInspector]
-        public PortReferenceDefinition[] inputs;
+        public PortReferenceDefinition[] inputs = new PortReferenceDefinition[0];
         [SerializeField, HideInInspector]
         private string? _inputsJson;
 
@@ -26,6 +27,11 @@ namespace CCL.Types.Proxies.Simulation
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => inputs ?? base.ExposedPortReferences;
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "TEMPERATURE"
+        };
 
         public void OnValidate()
         {

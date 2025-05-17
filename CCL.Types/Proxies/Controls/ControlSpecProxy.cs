@@ -27,10 +27,15 @@ namespace CCL.Types.Proxies.Controls
         {
             _json = JSONObject.ToJson(handPosesOverride);
 
-            if (nonVrStaticInteractionArea != null && nonVrStaticInteractionArea.gameObject.activeInHierarchy)
+            if (nonVrStaticInteractionArea != null)
             {
-                Debug.LogWarning("nonVrStaticInteractionArea gameObject must be disabled in prefabs! Forcing disable on nonVrStaticInteractionArea gameObject", this);
-                nonVrStaticInteractionArea.gameObject.SetActive(false);
+                if (nonVrStaticInteractionArea.gameObject.activeInHierarchy)
+                {
+                    Debug.LogWarning("nonVrStaticInteractionArea gameObject must be disabled in prefabs! Forcing disable on nonVrStaticInteractionArea gameObject", this);
+                    nonVrStaticInteractionArea.gameObject.SetActive(false);
+                }
+
+                nonVrStaticInteractionArea.OnValidate();
             }
         }
     }

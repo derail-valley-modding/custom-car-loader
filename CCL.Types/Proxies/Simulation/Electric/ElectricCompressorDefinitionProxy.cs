@@ -12,7 +12,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public float smoothTime = 0.3f;
 
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
@@ -39,10 +39,10 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
         public void ApplyBE2Defaults()
         {
-            maxPower = 30000.0f;
-            maxBarLiterProductionRate = 50.0f;
-            activationPressureThreshold = 7.0f;
-            mainReservoirVolume = 50.0f;
+            maxPower = 10000.0f;
+            maxBarLiterProductionRate = 15.0f;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 500.0f;
             smoothTime = 0.3f;
         }
 

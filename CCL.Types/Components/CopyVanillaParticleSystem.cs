@@ -25,7 +25,7 @@ namespace CCL.Types.Components
         SteamerSteamSmokeThick,
         SteamerEmberClusters,
         SteamerEmberSparks,
-        SteamerCylCockWaterDripParticles = 120,
+        SteamerCylCockWaterDrip = 120,
         SteamerExhaustSmallWispy = 150,
         SteamerExhaustSmallWave,
         SteamerExhaustWispy,

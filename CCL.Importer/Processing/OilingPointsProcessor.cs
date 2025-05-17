@@ -11,9 +11,16 @@ namespace CCL.Importer.Processing
     [RequiresStep(typeof(ProxyScriptProcessor))]
     internal class OilingPointsProcessor : ModelProcessorStep
     {
-        private static GameObject? s_oilingPoint;
-        private static GameObject OilingPoint = Extensions.GetCached(ref s_oilingPoint, () =>
+        private static GameObject? s_oilingPointCupOnly;
+        private static GameObject? s_oilingPointCupPipe;
+        private static GameObject? s_oilingPointCupWall;
+
+        private static GameObject OilingPointCupOnly => Extensions.GetCached(ref s_oilingPointCupOnly, () =>
             QuickAccess.Locomotives.S282A.externalInteractablesPrefab.transform.Find("ManualOilingPoints/OilingPoint0").gameObject);
+        private static GameObject OilingPointCupPipe => Extensions.GetCached(ref s_oilingPointCupPipe, () =>
+            QuickAccess.Locomotives.S282A.externalInteractablesPrefab.transform.Find("ManualOilingPoints/OilingPoint1").gameObject);
+        private static GameObject OilingPointCupWall => Extensions.GetCached(ref s_oilingPointCupWall, () =>
+            QuickAccess.Locomotives.S060.externalInteractablesPrefab.transform.Find("ManualOilingPoints/OilingPoint1").gameObject);
 
         public override void ExecuteStep(ModelProcessor context)
         {
@@ -34,7 +41,7 @@ namespace CCL.Importer.Processing
             for (int i = 0; i < oilingPoints.Length; i++)
             {
                 var dummy = oilingPoints[i].transform;
-                var point = Object.Instantiate(OilingPoint, dummy.parent);
+                var point = Object.Instantiate(GetObjectFromModel(oilingPoints[i].CupModel), dummy.parent);
 
                 point.transform.localPosition = dummy.localPosition;
                 point.transform.localRotation = dummy.localRotation;
@@ -52,5 +59,13 @@ namespace CCL.Importer.Processing
                 Object.Destroy(dummy.gameObject);
             }
         }
+
+        private static GameObject GetObjectFromModel(ManualOilingPoint.Model model) => model switch
+        {
+            ManualOilingPoint.Model.CupOnly => OilingPointCupOnly,
+            ManualOilingPoint.Model.CupAndPipe => OilingPointCupPipe,
+            ManualOilingPoint.Model.CupWallAndPipe => OilingPointCupWall,
+            _ => throw new System.ArgumentOutOfRangeException(nameof(model)),
+        };
     }
 }

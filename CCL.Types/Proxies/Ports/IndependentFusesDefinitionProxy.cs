@@ -6,10 +6,10 @@ namespace CCL.Types.Proxies.Ports
 {
     public class IndependentFusesDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
-        public FuseDefinition[] fuses;
+        public FuseDefinition[] fuses = new FuseDefinition[0];
 
         [SerializeField, HideInInspector]
-        private string fusesJson;
+        private string fusesJson = string.Empty;
 
         public bool saveState = true;
 

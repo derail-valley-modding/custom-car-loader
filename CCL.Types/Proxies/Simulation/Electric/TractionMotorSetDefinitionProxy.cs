@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
-    public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized, IDE2Defaults, IDE6Defaults, IBE2Defaults
+    public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized,
+        IDE2Defaults, IDE6Defaults, IBE2Defaults,
+        IRecommendedDebugPorts, IRecommendedDebugPortReferences
     {
         [Header("Motor")]
         public float maxMotorRpm;
@@ -16,6 +18,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public float externalResistance = 0.01f;
         public float ampsSmoothTime = 0.5f;
         public float ampsSmoothMaxSpeed = 1000f;
+        public float maxAmpsPerTm = 1000f;
         public int numberOfTractionMotors = 2;
 
         [Header("Dynamic Brake")]
@@ -44,7 +47,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public PoweredWheelsManagerProxy poweredWheelsManager = null!;
 
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         [SerializeField, HideInInspector]
         private string? _configs;
@@ -55,8 +58,8 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OHMS, "EFFECTIVE_RESISTANCE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OHMS, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "TOTAL_AMPS"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "TOTAL_AMPS_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "AMPS_PER_TM"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "MAX_AMPS_PER_TM"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "RPM_NORMALIZED"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "HEALTH_STATE_EXT_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "WORKING_TRACTION_MOTORS"),
@@ -92,6 +95,21 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "POWER_IN",
+            "POWER_OUT",
+            "TORQUE_OUT",
+            "AMPS_PER_TM",
+            "MOTOR_VOLTS",
+            "ACTIVE_CONFIGURATION"
+        };
+
+        public IEnumerable<string> GetDebugPortReferences() => new[]
+        {
+            "MOTOR_RPM"
         };
 
         [Serializable]
@@ -142,6 +160,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             externalResistance = 0.01f;
             ampsSmoothTime = 0.5f;
             ampsSmoothMaxSpeed = 5000.0f;
+            maxAmpsPerTm = 1000.0f;
             numberOfTractionMotors = 2;
 
             dynamicBrakePeakForceRpm = 1300.0f;
@@ -201,10 +220,11 @@ namespace CCL.Types.Proxies.Simulation.Electric
             externalResistance = 0.015f;
             ampsSmoothTime = 0.5f;
             ampsSmoothMaxSpeed = 5000.0f;
+            maxAmpsPerTm = 1500.0f;
             numberOfTractionMotors = 6;
 
-            dynamicBrakePeakForceRpm = 700.0f;
-            dynamicBrakeGridResistance = 0.15f;
+            dynamicBrakePeakForceRpm = 800.0f;
+            dynamicBrakeGridResistance = 0.65f;
             dynamicBrakeMaxCurrent = 700.0f;
             dynamicBrakeCoolerSmoothTime = 2.0f;
 
@@ -342,11 +362,12 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public void ApplyBE2Defaults()
         {
             maxMotorRpm = 1700.0f;
-            motorResistance = 0.015f;
-            motorTorqueFactor = 0.03f;
-            externalResistance = 0.01f;
+            motorResistance = 0.003f;
+            motorTorqueFactor = 0.005f;
+            externalResistance = 0.025f;
             ampsSmoothTime = 0.5f;
             ampsSmoothMaxSpeed = 1000.0f;
+            maxAmpsPerTm = 900.0f;
             numberOfTractionMotors = 2;
 
             dynamicBrakePeakForceRpm = 1300.0f;
@@ -385,181 +406,181 @@ namespace CCL.Types.Proxies.Simulation.Electric
                         thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
                     }
                 },
-                new ElectricalConfigurationDefinition()
-                {
-                    excitationMultiplier = 0.86f,
-                    motorGroups = new[]
-                    {
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 0 }
-                        },
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 1 }
-                        }
-                    },
-                    forwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    },
-                    backwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    }
-                },
-                new ElectricalConfigurationDefinition()
-                {
-                    excitationMultiplier = 0.7396f,
-                    motorGroups = new[]
-                    {
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 0 }
-                        },
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 1 }
-                        }
-                    },
-                    forwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    },
-                    backwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    }
-                },
-                new ElectricalConfigurationDefinition()
-                {
-                    excitationMultiplier = 0.636056f,
-                    motorGroups = new[]
-                    {
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 0 }
-                        },
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 1 }
-                        }
-                    },
-                    forwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    },
-                    backwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    }
-                },
-                new ElectricalConfigurationDefinition()
-                {
-                    excitationMultiplier = 0.5470082f,
-                    motorGroups = new[]
-                    {
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 0 }
-                        },
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 1 }
-                        }
-                    },
-                    forwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    },
-                    backwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    }
-                },
-                new ElectricalConfigurationDefinition()
-                {
-                    excitationMultiplier = 0.470427f,
-                    motorGroups = new[]
-                    {
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 0 }
-                        },
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 1 }
-                        }
-                    },
-                    forwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    },
-                    backwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    }
-                },
-                new ElectricalConfigurationDefinition()
-                {
-                    excitationMultiplier = 0.4045672f,
-                    motorGroups = new[]
-                    {
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 0 }
-                        },
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 1 }
-                        }
-                    },
-                    forwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    },
-                    backwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    }
-                },
-                new ElectricalConfigurationDefinition()
-                {
-                    excitationMultiplier = 0.3479278f,
-                    motorGroups = new[]
-                    {
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 0 }
-                        },
-                        new MotorGroupDefinition()
-                        {
-                            motorIndexes = new[] { 1 }
-                        }
-                    },
-                    forwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    },
-                    backwardTransition = new TransitionDefinition()
-                    {
-                        thresholdValue = 0.0f,
-                        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
-                    }
-                }
+                //new ElectricalConfigurationDefinition()
+                //{
+                //    excitationMultiplier = 0.86f,
+                //    motorGroups = new[]
+                //    {
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 0 }
+                //        },
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 1 }
+                //        }
+                //    },
+                //    forwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    },
+                //    backwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    }
+                //},
+                //new ElectricalConfigurationDefinition()
+                //{
+                //    excitationMultiplier = 0.7396f,
+                //    motorGroups = new[]
+                //    {
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 0 }
+                //        },
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 1 }
+                //        }
+                //    },
+                //    forwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    },
+                //    backwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    }
+                //},
+                //new ElectricalConfigurationDefinition()
+                //{
+                //    excitationMultiplier = 0.636056f,
+                //    motorGroups = new[]
+                //    {
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 0 }
+                //        },
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 1 }
+                //        }
+                //    },
+                //    forwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    },
+                //    backwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    }
+                //},
+                //new ElectricalConfigurationDefinition()
+                //{
+                //    excitationMultiplier = 0.5470082f,
+                //    motorGroups = new[]
+                //    {
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 0 }
+                //        },
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 1 }
+                //        }
+                //    },
+                //    forwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    },
+                //    backwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    }
+                //},
+                //new ElectricalConfigurationDefinition()
+                //{
+                //    excitationMultiplier = 0.470427f,
+                //    motorGroups = new[]
+                //    {
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 0 }
+                //        },
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 1 }
+                //        }
+                //    },
+                //    forwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    },
+                //    backwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    }
+                //},
+                //new ElectricalConfigurationDefinition()
+                //{
+                //    excitationMultiplier = 0.4045672f,
+                //    motorGroups = new[]
+                //    {
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 0 }
+                //        },
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 1 }
+                //        }
+                //    },
+                //    forwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    },
+                //    backwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    }
+                //},
+                //new ElectricalConfigurationDefinition()
+                //{
+                //    excitationMultiplier = 0.3479278f,
+                //    motorGroups = new[]
+                //    {
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 0 }
+                //        },
+                //        new MotorGroupDefinition()
+                //        {
+                //            motorIndexes = new[] { 1 }
+                //        }
+                //    },
+                //    forwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    },
+                //    backwardTransition = new TransitionDefinition()
+                //    {
+                //        thresholdValue = 0.0f,
+                //        thresholdType = TransitionDefinition.ThresholdType.TRANSITION_WHEN_BELOW_THRESHOLD
+                //    }
+                //}
             };
 
             overheatingTemperatureThreshold = 120.0f;

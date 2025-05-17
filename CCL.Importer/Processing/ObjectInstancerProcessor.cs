@@ -113,7 +113,7 @@ namespace CCL.Importer.Processing
                     "LocoS282A_Particles/SteamSmoke/SmokeEmbers/EmberSparks").GetComponent<ParticleSystem>(),
 
 
-                VanillaParticleSystem.SteamerCylCockWaterDripParticles  => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
+                VanillaParticleSystem.SteamerCylCockWaterDrip  => TrainCarType.LocoSteamHeavy.ToV2().prefab.transform.Find(
                     "LocoS282A_Particles/CylCockWaterDrip/CylCockWaterDrip L/CylCockWaterDripParticles").GetComponent<ParticleSystem>(),
 
 

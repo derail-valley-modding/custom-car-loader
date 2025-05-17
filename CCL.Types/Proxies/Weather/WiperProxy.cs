@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Weather
     public class WiperProxy : MonoBehaviour
     {
         public List<WindowProxy> windows = new List<WindowProxy>();
-        public Transform start;
-        public Transform end;
+        public Transform start = null!;
+        public Transform end = null!;
     }
 }

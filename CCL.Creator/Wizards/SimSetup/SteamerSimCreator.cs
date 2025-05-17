@@ -30,7 +30,17 @@ namespace CCL.Creator.Wizards.SimSetup
             var brakeCut = CreateOverridableControl(OverridableControlType.TrainBrakeCutout);
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
 
-            // Lights.
+            var headlights = CreateSimComponent<MultiplePortDecoderEncoderDefinitionProxy>("headlightDecoder");
+            var lightsF = CreateSibling<OverridableControlProxy>(headlights);
+            var lightsR = CreateSibling<OverridableControlProxy>(headlights);
+            lightsF.ControlType = OverridableControlType.HeadlightsFront;
+            lightsR.ControlType = OverridableControlType.HeadlightsRear;
+
+            if (HasTender(basisIndex))
+            {
+                CreateBroadcastProvider(headlights, "FRONT_HEADLIGHTS_EXT_IN", DVPortForwardConnectionType.COUPLED_REAR, "HEADLIGHTS_FRONT");
+                CreateBroadcastProvider(headlights, "REAR_HEADLIGHTS_EXT_IN", DVPortForwardConnectionType.COUPLED_REAR, "HEADLIGHTS_REAR");
+            }
 
             var blower = CreateExternalControl("blower");
             var whistle = CreateExternalControl("whistle");
@@ -46,7 +56,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var reverser = CreateReverserControl(isAnalog: true);
             var throttle = CreateOverridableControl(OverridableControlType.Throttle);
 
-            var poweredAxles = CreateSimComponent<ConstantPortDefinitionProxy>("poweredAxles");
+            var poweredAxles = CreateSimComponent<ConfigurablePortDefinitionProxy>("poweredAxles");
             poweredAxles.value = PoweredAxleCount(basisIndex);
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 
@@ -98,12 +108,12 @@ namespace CCL.Creator.Wizards.SimSetup
             var boilerMass = CreateSibling<ResourceMassPortReaderProxy>(boiler);
             boilerMass.resourceMassPortId = FullPortId(boiler, "WATER_MASS");
 
-            var compressorControl = CreateExternalControl("compressorControl", true);
+            var compressorControl = CreateOverridableControl(OverridableControlType.AirPump);
             var compressor = CreateSimComponent<SteamCompressorDefinitionProxy>("compressor");
             var airController = CreateCompressorSim(compressor);
             airController.mainResPressureNormalizedPortId = FullPortId(compressor, "MAIN_RES_PRESSURE_NORMALIZED");
 
-            var dynamoControl = CreateExternalControl("dynamoControl", true);
+            var dynamoControl = CreateOverridableControl(OverridableControlType.Dynamo);
             var dynamo = CreateSimComponent<DynamoDefinitionProxy>("dynamo");
 
             var fuseController = CreateSimComponent<FuseControllerDefinitionProxy>("electronicsFuseController");
@@ -179,7 +189,10 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("ELECTRONICS_MAIN", false)
             };
 
-            fuseController.fuseId = FullPortId(fusebox, "ELECTRONICS_MAIN");
+            var oilGearLamp = CreateLampDecreasingWarning("oilGearsLamp", DVPortValueType.OIL, 1, 0.5f, 0.001f, 0, false);
+            var oilingPointsLamp = CreateLampDecreasingWarning("oilingPointsLamp", DVPortValueType.STATE, 1, 0.05f, 0.001f, 0, false);
+
+            fuseController.fuseId = FullFuseId(fusebox, 0);
 
             switch (basisIndex)
             {
@@ -259,14 +272,13 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(boiler, "BLOWDOWN", blowdown, "EXT_IN");
             ConnectPortRef(boiler, "HEAT", firebox, "HEAT");
             ConnectPortRef(boiler, "FIREBOX_TEMPERATURE", firebox, "TEMPERATURE");
-            switch (basisIndex)
+            if (HasFeedwaterHeater(basisIndex))
             {
-                case 1:
-                    ConnectPortRef(boiler, "FEEDWATER_TEMPERATURE", steamEngine, "EXHAUST_TEMPERATURE");
-                    break;
-                default:
-                    ConnectEmptyPortRef(boiler, "FEEDWATER_TEMPERATURE");
-                    break;
+                ConnectPortRef(boiler, "FEEDWATER_TEMPERATURE", steamEngine, "EXHAUST_TEMPERATURE");
+            }
+            else
+            {
+                ConnectEmptyPortRef(boiler, "FEEDWATER_TEMPERATURE");
             }
             ConnectPortRef(boiler, "STEAM_CONSUMPTION", steamCalc, "OUT");
             ConnectPortRef(boiler, "WATER", water, "AMOUNT");
@@ -302,6 +314,9 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(exhaust, "WHISTLE_CONTROL", whistle, "EXT_IN");
             ConnectPortRef(exhaust, "DAMPER_CONTROL", damper, "EXT_IN");
 
+            ConnectLampRef(oilGearLamp, lubricator, "LUBRICATION_NORMALIZED");
+            ConnectLampRef(oilingPointsLamp, oilingPoints, "LOWEST_OIL_LEVEL_NORMALIZED");
+
             // Apply defaults.
             switch (basisIndex)
             {
@@ -331,24 +346,29 @@ namespace CCL.Creator.Wizards.SimSetup
 
         private static bool HasTender(int basis)
         {
-            switch (basis)
+            return basis switch
             {
-                case 1:
-                    return true;
-                default:
-                    return false;
-            }
+                1 => true,
+                _ => false,
+            };
         }
 
         private static bool HasSuperheater(int basis)
         {
-            switch (basis)
+            return basis switch
             {
-                case 1:
-                    return true;
-                default:
-                    return false;
-            }
+                1 => true,
+                _ => false,
+            };
+        }
+
+        private static bool HasFeedwaterHeater(int basis)
+        {
+            return basis switch
+            {
+                1 => true,
+                _ => false,
+            };
         }
     }
 }

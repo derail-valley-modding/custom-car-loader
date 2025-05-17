@@ -1,7 +1,6 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
-using DV.CabControls.Spec;
 using DV.JObjectExtstensions;
 using Newtonsoft.Json.Linq;
 using System;
@@ -72,7 +71,7 @@ namespace CCL.Importer
             if (loadedCount > 0)
             {
                 CCLPlugin.LogVerbose($"Loaded {loadedCount} cars from {mod.Path}");
-                CarTypeInjector.ForceObjectModelUpdate();
+                DV.Globals.G.Types.RecalculateCaches();
             }
         }
 
@@ -171,6 +170,8 @@ namespace CCL.Importer
 
                 // Load paints.
                 PaintLoader.LoadSubstitutions(serializedCar.PaintSubstitutions);
+                // Generate procedural materials.
+                ProceduralMaterialGenerator.Generate(serializedCar.ProceduralMaterials);
 
                 CCLPlugin.Log($"Successfully loaded car type {carId}");
 

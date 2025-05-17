@@ -1,13 +1,8 @@
 ﻿using CCL.Creator.Inspector;
 using CCL.Creator.Utility;
-using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Indicators;
 using CCL.Types.Proxies.Ports;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +12,7 @@ namespace CCL.Creator.Wizards
     {
         private static LampWizard? _instance;
 
-        [MenuItem("GameObject/CCL/Add Lamp", false, 10)]
+        [MenuItem("GameObject/CCL/Add Lamp", false, MenuOrdering.Cab.Lamp)]
         public static void ShowWindow(MenuCommand command)
         {
             _instance = GetWindow<LampWizard>();
@@ -26,7 +21,7 @@ namespace CCL.Creator.Wizards
             _instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Add Lamp", true, 10)]
+        [MenuItem("GameObject/CCL/Add Lamp", true, MenuOrdering.Cab.Lamp)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;
@@ -40,6 +35,8 @@ namespace CCL.Creator.Wizards
                 Port,
                 Fuse,
                 BrakeIssues,
+                Wheelslip,
+                TemperatureMU
             }
 
             public GameObject TargetObject = null!;
@@ -49,16 +46,14 @@ namespace CCL.Creator.Wizards
 
             public DVPortValueType PortFilter;
             [PortId]
-            public string SourcePortId;
-
+            public string SourcePortId = string.Empty;
             [FuseId]
-            public string SourceFuseId;
-
+            public string SourceFuseId = string.Empty;
             [FuseId]
-            public string FuseId;
+            public string FuseId = string.Empty;
         }
 
-        private Settings _settings;
+        private Settings _settings = null!;
 
         private void Refresh(GameObject target)
         {
@@ -147,13 +142,22 @@ namespace CCL.Creator.Wizards
 
                 case Settings.ReaderType.Port:
                     var portReader = holder.AddComponent<LampPortReaderProxy>();
-                    portReader.portId = settings.SourcePortId;
-                    portReader.fuseId = settings.FuseId;
+                    portReader.lampStatePortId = settings.SourcePortId;
                     break;
 
                 case Settings.ReaderType.BrakeIssues:
                     var brakeReader = holder.AddComponent<LampBrakeIssueReaderProxy>();
                     brakeReader.lampPowerFuseId = settings.FuseId;
+                    break;
+
+                case Settings.ReaderType.Wheelslip:
+                    var wheelSlipReader = holder.AddComponent<LampWheelSlipSlideReaderProxy>();
+                    wheelSlipReader.fuseId = settings.FuseId;
+                    break;
+
+                case Settings.ReaderType.TemperatureMU:
+                    var temperatureReader = holder.AddComponent<LampControllerTemperatureMUProxy>();
+                    temperatureReader.fuseId = settings.FuseId;
                     break;
             }
 

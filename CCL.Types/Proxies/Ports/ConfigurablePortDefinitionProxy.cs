@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
-    public class ConstantPortDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
+    public class ConfigurablePortDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
         public float value;
         public PortDefinition port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, string.Empty);

@@ -37,7 +37,14 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortExists(components, connection.portId) || !CheckPortReferenceExists(components, connection.portReferenceId))
                 {
-                    result.Warning($"Invalid ref connection \"{connection.portId}\"->\"{connection.portReferenceId}\"", connectionDef);
+                    if (string.IsNullOrEmpty(connection.portId))
+                    {
+                        result.Warning($"Empty ref connection \"{connection.portReferenceId}\"", connectionDef);
+                    }
+                    else
+                    {
+                        result.Warning($"Invalid ref connection \"{connection.portReferenceId}\"->\"{connection.portId}\"", connectionDef);
+                    }
                 }
             }
 

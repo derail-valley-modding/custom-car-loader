@@ -7,8 +7,7 @@ namespace CCL.Importer
 {
     public static class CarTypeInjector
     {
-        public static readonly Dictionary<string, CCL_CarVariant> IdToLiveryMap =
-            new Dictionary<string, CCL_CarVariant>();
+        public static readonly Dictionary<string, CCL_CarVariant> IdToLiveryMap = new();
 
         public static void SetupTypeLinks(CCL_CarType carType)
         {
@@ -51,16 +50,6 @@ namespace CCL.Importer
             CargoInjector.InjectLoadableCargos(carType);
 
             return true;
-        }
-
-        public static void ForceObjectModelUpdate()
-        {
-            Globals.G.Types.RecalculateCaches();
-
-            //foreach (var spawner in Resources.FindObjectsOfTypeAll<CommsRadioCarSpawner>())
-            //{
-            //    spawner.UpdateCarLiveriesToSpawn(true);
-            //}
         }
     }
 }

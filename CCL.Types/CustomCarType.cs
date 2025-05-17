@@ -8,7 +8,7 @@ using CCL.Types.Catalog;
 
 namespace CCL.Types
 {
-    [CreateAssetMenu(menuName = "CCL/Custom Car Type")]
+    [CreateAssetMenu(menuName = "CCL/Custom Car Type", order = MenuOrdering.CarType)]
     public class CustomCarType : ScriptableObject, IAssetLoadCallback
     {
         public enum UnusedCarDeletePreventionMode
@@ -82,6 +82,9 @@ namespace CCL.Types
 
         [Header("Paints - optional")]
         public PaintSubstitutions[] PaintSubstitutions = new PaintSubstitutions[0];
+
+        [Header("Procedural Material Generator - optional")]
+        public ProceduralMaterialDefinitions? ProceduralMaterials;
 
         [SerializeField, HideInInspector]
         private string? brakesJson;
@@ -167,6 +170,11 @@ namespace CCL.Types
             foreach (var item in PaintSubstitutions)
             {
                 item.AfterImport();
+            }
+
+            if (ProceduralMaterials != null)
+            {
+                ProceduralMaterials.AfterImport();
             }
         }
 

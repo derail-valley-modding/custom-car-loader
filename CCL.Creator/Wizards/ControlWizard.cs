@@ -1,5 +1,6 @@
 ﻿using CCL.Creator.Inspector;
 using CCL.Creator.Utility;
+using CCL.Types;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using System;
@@ -12,7 +13,7 @@ namespace CCL.Creator.Wizards
     {
         private static ControlWizard? _instance;
 
-        [MenuItem("GameObject/CCL/Add Control", false, 10)]
+        [MenuItem("GameObject/CCL/Add Control", false, MenuOrdering.Cab.Control)]
         public static void ShowWindow(MenuCommand command)
         {
             _instance = GetWindow<ControlWizard>();
@@ -21,7 +22,7 @@ namespace CCL.Creator.Wizards
             _instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Add Control", true, 10)]
+        [MenuItem("GameObject/CCL/Add Control", true, MenuOrdering.Cab.Control)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;
@@ -36,15 +37,16 @@ namespace CCL.Creator.Wizards
 
             public bool AddStaticInteractionArea = true;
             public bool IsFuseControl = false;
+            public bool AutomaticReparenting = false;
 
             [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)]
-            public string ControlledPortId;
+            public string ControlledPortId = string.Empty;
 
             [FuseId]
-            public string ControlledFuseId;
+            public string ControlledFuseId = string.Empty;
         }
 
-        private Settings _settings;
+        private Settings _settings = null!;
 
         private void Refresh(GameObject target)
         {
@@ -88,6 +90,8 @@ namespace CCL.Creator.Wizards
                     filter);
             }
 
+            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AutomaticReparenting)));
+
             serialized.ApplyModifiedProperties();
             EditorGUILayout.Space(18);
 
@@ -117,8 +121,8 @@ namespace CCL.Creator.Wizards
 
         private static void CreateControl(Settings settings)
         {
+            var parent = settings.TargetObject.transform.parent;
             var holder = new GameObject(settings.ControlName);
-            holder.transform.SetParent(settings.TargetObject.transform, false);
 
             // Control Spec
             var newControl = new GameObject($"C_{settings.ControlName}");
@@ -151,6 +155,18 @@ namespace CCL.Creator.Wizards
                 var collider = interactionArea.AddComponent<SphereCollider>();
                 collider.radius = 0.03f;
                 collider.isTrigger = true;
+            }
+
+            if (parent != null && settings.AutomaticReparenting)
+            {
+                holder.transform.SetParent(parent, false);
+                Utilities.CopyTransform(settings.TargetObject.transform, holder.transform);
+                settings.TargetObject.transform.SetParent(newControl.transform);
+                settings.TargetObject.transform.Reset();
+            }
+            else
+            {
+                holder.transform.SetParent(settings.TargetObject.transform, false);
             }
 
             EditorUtility.SetDirty(settings.TargetObject);

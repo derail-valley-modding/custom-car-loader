@@ -54,4 +54,9 @@ namespace CCL.Types
     {
         public CarKindFieldAttribute() : base(IdV2.CarKinds, false) { }
     }
+
+    public class ControlActionFieldAttribute : StringAndSelectorFieldAttribute
+    {
+        public ControlActionFieldAttribute() : base(ControlActions.Names, false) { }
+    }
 }

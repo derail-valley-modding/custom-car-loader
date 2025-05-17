@@ -1,32 +1,52 @@
-﻿using CCL.Types.Proxies.Ports;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CCL.Importer;
+using CCL.Types.Proxies.Ports;
+using CCL.Types.Proxies;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 using UnityEngine;
-using CCL.Importer;
-using CCL.Types.Proxies;
 
 namespace CCL.Tests
 {
     [TestClass]
     public class ProxyMappingTests
     {
-        [TestMethod]
-        public void AllProxyComponentsHaveMappings()
+        public static IEnumerable<object[]> ScriptTypes
         {
-            const string proxyNamespace = "CCL.Types.Proxies";
-            var scriptTypes = Assembly.GetAssembly(typeof(SimComponentDefinitionProxy)).GetTypes()
-                .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t) && t.Namespace.StartsWith(proxyNamespace))
-                .ToList();
+            get
+            {
+                const string proxyNamespace = "CCL.Types.Proxies";
 
-            var typeMaps = Mapper.M.ConfigurationProvider.GetAllTypeMaps();
+                var scriptTypes = Assembly.GetAssembly(typeof(SimComponentDefinitionProxy)).GetTypes()
+                    .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t) && t.Namespace.StartsWith(proxyNamespace));
+
+                var typeMaps = Mapper.M.ConfigurationProvider.GetAllTypeMaps();
+
+                return scriptTypes.Select(t => new object[] { t, typeMaps });
+            }
+        }
+
+        public static string GetTestName(MethodInfo _, object[] testArgs)
+        {
+            var scriptType = (Type)testArgs[0];
+            return $"{scriptType.Name} has mapping";
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(ScriptTypes), DynamicDataDisplayName = nameof(GetTestName))]
+        public void AllProxyComponentsHaveMappings(Type scriptType, AutoMapper.TypeMap[] typeMaps)
+        {
+            //const string proxyNamespace = "CCL.Types.Proxies";
+            //var scriptTypes = Assembly.GetAssembly(typeof(SimComponentDefinitionProxy)).GetTypes()
+            //    .Where(t => typeof(MonoBehaviour).IsAssignableFrom(t) && t.Namespace.StartsWith(proxyNamespace))
+            //    .ToList();
+
+            //var typeMaps = Mapper.M.ConfigurationProvider.GetAllTypeMaps();
             var failures = new List<string>();
 
-            CheckMappingExists(scriptTypes, typeMaps, failures);
+            CheckMappingExists(new[] { scriptType }, typeMaps, failures);
 
             if (failures.Count > 0)
             {

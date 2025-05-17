@@ -29,6 +29,10 @@ namespace CCL.Creator.Wizards.SimSetup
                 engineExplosion.explosionSignalPortId = FullPortId(engine, "IS_BROKEN");
             }
 
+            var starter = CreateSibling<OverridableControlProxy>(engine);
+            starter.ControlType = OverridableControlType.StarterControl;
+            starter.portId = FullPortId(engine, "IGNITION_EXT_IN");
+
             return engine;
         }
     }

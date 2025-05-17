@@ -50,6 +50,7 @@ namespace CCL.Creator.Wizards
         public void Export()
         {
             int liveryCount = LiveryExporters.Length;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
 
             try
             {
@@ -81,7 +82,8 @@ namespace CCL.Creator.Wizards
                 Debug.Log($"assets: {builds}");
 
                 BuildPipeline.BuildAssetBundles(ExportFolderPath, trainCarBundleBuild.ToArray(), BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
-                Debug.Log($"[{DateTime.Now:HH:mm:ss}] Finished AssetBundle build for car: {CarType.id}.");
+                sw.Stop();
+                Debug.Log($"[{DateTime.Now:HH:mm:ss}] Finished AssetBundle build for car: {CarType.id} ({sw.Elapsed.TotalSeconds:F2}s).");
 
                 // Create car.json file.
                 if (Progress("Writing car properties...", 0.80f)) return;
@@ -90,6 +92,7 @@ namespace CCL.Creator.Wizards
             }
             catch (Exception ex)
             {
+                sw.Stop();
                 EditorUtility.DisplayDialog("Export Error",
                     "An exception occurred while exporting your car. Details:\n\n" + ex.Message,
                     "Close Window");

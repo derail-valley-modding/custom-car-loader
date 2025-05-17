@@ -29,8 +29,6 @@ namespace CCL.Types.Proxies.Controls
         public GameObject damper = null!;
         public GameObject blowdown = null!;
         public GameObject coalDump = null!;
-        public GameObject dynamo = null!;
-        public GameObject airPump = null!;
         public GameObject lubricator = null!;
         public GameObject bell = null!;
     }

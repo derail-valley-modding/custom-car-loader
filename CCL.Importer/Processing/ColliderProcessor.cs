@@ -59,11 +59,7 @@ namespace CCL.Importer.Processing
                     CCLPlugin.LogVerbose("Reusing walkable colliders as item colliders");
                     GameObject newItemsObj = Object.Instantiate(walkable.gameObject, colliderRoot);
                     newItemsObj.name = CarPartNames.Colliders.ITEMS;
-                    newItemsObj.SetLayersRecursive(DVLayer.Interactable);
                 }
-
-                // set layer
-                walkable.gameObject.SetLayersRecursive(DVLayer.Train_Walkable);
 
                 // automagic bounding box from walkable
                 var boundingColliders = collision.GetComponentsInChildren<BoxCollider>();
@@ -120,6 +116,36 @@ namespace CCL.Importer.Processing
             baseBogieColliderRoot = basePrefab.transform.Find($"{CarPartNames.Colliders.ROOT}/{CarPartNames.Colliders.BOGIES}");
             var c2 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().Last();
             BaseBogieColliders = new[] { c1, c2 };
+
+            FixLayers(colliderRoot);
+        }
+
+        private void FixLayers(Transform colliderRoot)
+        {
+            if (colliderRoot.TryFind(CarPartNames.Colliders.COLLISION, out var t))
+            {
+                t.SetLayersNonRecursive(DVLayer.Train_Big_Collider);
+            }
+
+            if (colliderRoot.TryFind(CarPartNames.Colliders.WALKABLE, out t))
+            {
+                t.SetLayersNonRecursive(DVLayer.Train_Walkable);
+            }
+
+            if (colliderRoot.TryFind(CarPartNames.Colliders.ITEMS, out t))
+            {
+                t.SetLayersNonRecursive(DVLayer.Train_Interior);
+            }
+
+            if (colliderRoot.TryFind(CarPartNames.Colliders.CAMERA_DAMPENING, out t))
+            {
+                t.SetLayersNonRecursive(DVLayer.Camera_Dampening);
+            }
+
+            if (colliderRoot.TryFind(CarPartNames.Colliders.BOGIES, out t))
+            {
+                t.SetLayersNonRecursive(DVLayer.Train_Big_Collider);
+            }
         }
     }
 }

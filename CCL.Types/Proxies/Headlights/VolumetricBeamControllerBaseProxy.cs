@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Headlights
 {
+    [NotProxied]
     public class VolumetricBeamControllerBaseProxy : MonoBehaviour
     {
         [Serializable]

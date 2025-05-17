@@ -9,8 +9,6 @@ namespace CCL.Creator.Inspector
     [CustomEditor(typeof(MaterialGrabberRenderer))]
     internal class MaterialGrabberRendererEditor : Editor
     {
-        private static bool s_showArray;
-
         private MaterialGrabberRenderer _grabber = null!;
         private SerializedProperty _renderers = null!;
         private SerializedProperty _indices = null!;
@@ -35,9 +33,9 @@ namespace CCL.Creator.Inspector
 
             EditorGUILayout.Space();
 
-            s_showArray = EditorGUILayout.Foldout(s_showArray, "Replacements");
+            _indices.isExpanded = EditorGUILayout.Foldout(_indices.isExpanded, "Replacements");
 
-            if (s_showArray)
+            if (_indices.isExpanded)
             {
                 int maxLength = int.MaxValue;
 

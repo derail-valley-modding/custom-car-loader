@@ -6,6 +6,7 @@ using DV.Simulation.Brake;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
+
 using static CCL.Types.CarPartNames.FuelPorts;
 using static CCL.Types.CarPartNames.Interactables;
 
@@ -17,6 +18,7 @@ namespace CCL.Importer.Processing
     {
         private static readonly GameObject _flatbedHandbrake;
         private static readonly GameObject _flatbedBrakeRelease;
+        private static readonly GameObject _hopperHandbrake;
         private static readonly GameObject _s060Handbrake;
         private static readonly GameObject _s282Handbrake;
         private static readonly GameObject _de2Handbrake;
@@ -33,6 +35,9 @@ namespace CCL.Importer.Processing
             var flatbedInteractables = QuickAccess.Wagons.Flatbed.externalInteractablesPrefab;
             _flatbedHandbrake = flatbedInteractables.transform.Find(HANDBRAKE_SMALL).gameObject;
             _flatbedBrakeRelease = flatbedInteractables.transform.Find(BRAKE_CYL_RELEASE).gameObject;
+
+            _hopperHandbrake = QuickAccess.Wagons.HopperBrown.externalInteractablesPrefab
+                .transform.Find(HANDBRAKE_HOPPER).gameObject;
 
             _s060Handbrake = QuickAccess.Locomotives.S060.interiorPrefab
                 .transform.Find(HANDBRAKE_S060).gameObject;
@@ -67,7 +72,7 @@ namespace CCL.Importer.Processing
                 brakeFeeders.RefreshChildren();
 
                 // Car has no handbrakes, delete controller.
-                if (brakeFeeders.entries.Length == 0)
+                if (brakeFeeders.entries.Count == 0)
                 {
                     Object.Destroy(brakeFeeders);
                 }
@@ -106,6 +111,9 @@ namespace CCL.Importer.Processing
                     case DUMMY_BRAKE_RELEASE:
                         Replace(interactables.transform, current, _flatbedBrakeRelease);
                         break;
+                    case DUMMY_HANDBRAKE_LARGE:
+                        Replace(interactables.transform, current, _hopperHandbrake);
+                        break;
                     case DUMMY_HANDBRAKE_S060:
                         Replace(interactables.transform, current, _s060Handbrake);
                         break;
@@ -123,6 +131,9 @@ namespace CCL.Importer.Processing
                         break;
                     case DUMMY_HANDBRAKE_MICROSHUNTER:
                         Replace(interactables.transform, current, _microshunterHandbrake);
+                        break;
+                    case DUMMY_HANDBRAKE_DM1U:
+                        Replace(interactables.transform, current, _dm1uHandbrake);
                         break;
                     default:
                         break;
@@ -170,7 +181,7 @@ namespace CCL.Importer.Processing
 
             if (children.Length > 0)
             {
-                prefab.AddComponent<DoorsAndWindowsController>().entries = children;
+                prefab.AddComponent<DoorsAndWindowsController>().entries = children.ToList();
             }
         }
     }

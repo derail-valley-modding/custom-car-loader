@@ -54,5 +54,10 @@ namespace CCL.Types
 
             normal = new Vector3(nflat.x, nHeight, nflat.y);
         }
+
+        public static float DistanceSqr(Vector2 a, Vector2 b)
+        {
+            return (b - a).sqrMagnitude;
+        }
     }
 }

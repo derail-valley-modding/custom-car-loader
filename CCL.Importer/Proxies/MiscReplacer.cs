@@ -2,11 +2,13 @@
 using CCL.Types;
 using CCL.Types.Proxies;
 using DV;
+using DV.Hacks;
 using DV.Interaction;
 using DV.RemoteControls;
 using DV.Simulation.Cars;
 using DV.ThingTypes.TransitionHelpers;
 using LocoSim.DVExtensions.Test;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Importer.Proxies
@@ -23,9 +25,12 @@ namespace CCL.Importer.Proxies
         {
             CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
-                .AutoCacheAndMap();
+                .AutoCacheAndMap()
+                .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)));
             CreateMap<InternalExternalSnapshotSwitcherDoorsAndWindowsProxy, InternalExternalSnapshotSwitcherDoorsAndWindows>()
-                .AutoCacheAndMap();
+                .AutoCacheAndMap()
+                .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)));
+            CreateMap<CameraTriggerProxy, CameraTrigger>().AutoCacheAndMap();
 
             CreateMap<ExplosionModelHandlerProxy, ExplosionModelHandler>().AutoCacheAndMap();
             CreateMap<ExplosionModelHandlerProxy.MaterialSwapData, ExplosionModelHandler.MaterialSwapData>();
@@ -50,6 +55,10 @@ namespace CCL.Importer.Proxies
                 .AfterMap(TeleportHoverGlowAfter);
             CreateMap<GrabberRaycastPassThroughProxy, GrabberRaycastPassThrough>().AutoCacheAndMap();
             CreateMap<HighlightTagProxy, HighlightTagProxy>().AutoCacheAndMap();
+            CreateMap<CabinRenderOrderingProxy, CabinRenderOrdering>().AutoCacheAndMap()
+                .ForMember(d => d.triggerNullable, o => o.MapFrom(s => Mapper.GetFromCache(s.triggerNullable)))
+                .ForMember(d => d.ordering, o => o.MapFrom(s => s.ordering.Select(
+                    x => new CabinRenderOrdering.OrderingRenderer(x.group, x.initialOrder, x.whenInside))));
 
             CreateMap<MultipleUnitStateObserverProxy, MultipleUnitStateObserver>().AutoCacheAndMap();
             CreateMap<RemoteControllerModuleProxy, RemoteControllerModule>().AutoCacheAndMap();
@@ -63,7 +72,12 @@ namespace CCL.Importer.Proxies
                 .ForMember(d => d.blocker, o => o.MapFrom(s => Mapper.GetFromCache(s.blocker)))
                 .AfterMap(InvalidTeleportLocationReactionAfter);
 
-            CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap();
+            CreateMap<HJAFDrivenAnimationProxy, HJAFDrivenAnimation>().AutoCacheAndMap();
+
+            CreateMap<DE6KnifeSwitchFuseHUDHackFixProxy, DE6KnifeSwitchFuseHUDHackFix>().AutoCacheAndMap();
+
+            CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap()
+                .ForMember(d => d.portIdsToPlot, o => o.MapFrom(s => s.portIdsToPlot.Concat(s.portReferenceIdsToPlot)));
         }
 
         private void ResourceExplosionBaseAfter(ResourceExplosionBaseProxy src, ResourceExplosionBase dest)

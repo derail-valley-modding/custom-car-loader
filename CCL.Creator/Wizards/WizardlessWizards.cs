@@ -7,7 +7,7 @@ namespace CCL.Creator.Wizards
 {
     internal class WizardlessWizards
     {
-        [MenuItem("GameObject/CCL/Add Cab", false, 10)]
+        [MenuItem("GameObject/CCL/Add Cab", false, MenuOrdering.Body.Cab)]
         public static void CreateCab(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -17,7 +17,7 @@ namespace CCL.Creator.Wizards
 
             var comp = cab.AddComponent<CabTeleportDestinationProxy>();
 
-            var indicator = new GameObject("teleport_indicator");
+            var indicator = new GameObject("Collider");
             indicator.transform.parent = cab.transform;
 
             var box = indicator.AddComponent<BoxCollider>();
@@ -30,7 +30,7 @@ namespace CCL.Creator.Wizards
             
             var glow = highlight.AddComponent<TeleportHoverGlowProxy>();
 
-            var roomscale = new GameObject("roomscale position");
+            var roomscale = new GameObject("RoomscalePosition");
             roomscale.transform.parent = cab.transform;
 
             comp.hoverGlow = glow;
@@ -39,13 +39,13 @@ namespace CCL.Creator.Wizards
             Undo.RegisterCreatedObjectUndo(cab, "Created Cab");
         }
 
-        [MenuItem("GameObject/CCL/Add Cab", true, 10)]
+        [MenuItem("GameObject/CCL/Add Cab", true, MenuOrdering.Body.Cab)]
         public static bool CreateCabValidate()
         {
             return Selection.activeGameObject;
         }
 
-        [MenuItem("GameObject/CCL/Add License Blocker", false, 10)]
+        [MenuItem("GameObject/CCL/Add License Blocker", false, MenuOrdering.Body.LicenseBlocker)]
         public static void CreateLicenseBlocker(MenuCommand command)
         {
             var target = (GameObject)command.context;
@@ -62,14 +62,12 @@ namespace CCL.Creator.Wizards
 
             var box = tp.AddComponent<BoxCollider>();
             var reaction = tp.AddComponent<InvalidTeleportLocationReactionProxy>();
-            reaction.waitBeforeSpawn = 0.5f;
-            reaction.drawAttentionPointLine = true;
             reaction.blocker = comp;
 
             Undo.RegisterCreatedObjectUndo(blocker, "Created License Blocker");
         }
 
-        [MenuItem("GameObject/CCL/Add License Blocker", true, 10)]
+        [MenuItem("GameObject/CCL/Add License Blocker", true, MenuOrdering.Body.LicenseBlocker)]
         public static bool CreateLicenseBlockerValidate()
         {
             return Selection.activeGameObject;

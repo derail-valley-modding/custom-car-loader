@@ -22,22 +22,26 @@ namespace CCL.Creator.Wizards.SimSetup
             var reverser = CreateReverserControl();
             var dynBrake = CreateOverridableControl(OverridableControlType.DynamicBrake);
 
+            var lightsR = CreateOverridableControl(OverridableControlType.HeadlightsRear, defaultValue: 0.4f);
+            var lightsF = CreateOverridableControl(OverridableControlType.HeadlightsFront, defaultValue: 0.4f);
+
             var sand = CreateResourceContainer(ResourceContainerType.Sand);
             var sander = CreateSanderControl();
 
             var tm = CreateSimComponent<TractionMotorSetDefinitionProxy>("tm");
-            var tmRpm = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("tmRpmCalculator");
-            tmRpm.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
-            tmRpm.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_RATIO");
-            tmRpm.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "TM_RPM");
-            tmRpm.transform.parent = tm.transform;
 
-            var voltFeed = CreateSibling<ConstantPortDefinitionProxy>(tm, "slugVoltageFeed");
+            var voltFeed = CreateSibling<ConfigurablePortDefinitionProxy>(tm, "slugVoltageFeed");
             voltFeed.port = new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, "APPLIED_VOLTAGE_EXT_IN");
             var slug = CreateSibling<SlugModuleProxy>(tm);
             slug.appliedVoltagePortId = FullPortId(voltFeed, voltFeed.port.ID);
             slug.effectiveResistancePortId = FullPortId(tm, "EFFECTIVE_RESISTANCE");
             slug.totalAmpsPortId = FullPortId(tm, "TOTAL_AMPS");
+
+            var tmRpm = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("tmRpmCalculator");
+            tmRpm.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
+            tmRpm.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_RATIO");
+            tmRpm.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.RPM, "TM_RPM");
+            tmRpm.transform.parent = tm.transform;
 
             var transmission = CreateSimComponent<TransmissionFixedGearDefinitionProxy>("transmission");
 
@@ -51,12 +55,27 @@ namespace CCL.Creator.Wizards.SimSetup
             var fusebox = CreateSimComponent<IndependentFusesDefinitionProxy>("fusebox");
             fusebox.fuses = new[]
             {
-                new FuseDefinition("PROVIDER_POWER", true)
+                new FuseDefinition("PROVIDER_POWER", false, 0)
             };
+
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.1f, 0.05f, 0f);
+            var lightsRLamp = CreateLampHeadlightControl("headlightsRLamp");
+            var lightsFLamp = CreateLampHeadlightControl("headlightsFLamp");
+            var sanderLamp = CreateLampBasicControl("sanderLamp");
+            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
+            var ampLamp = CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, 0, 600, 1200, float.PositiveInfinity);
+
+            var waterDetector = CreateWaterDetector();
 
             sander.powerFuseId = FullFuseId(fusebox, 0);
             tm.powerFuseId = FullFuseId(fusebox, 0);
             slug.powerFuseId = FullFuseId(fusebox, 0);
+            sandLamp.powerFuseId = FullFuseId(fusebox, 0);
+            lightsRLamp.powerFuseId = FullFuseId(fusebox, 0);
+            lightsFLamp.powerFuseId = FullFuseId(fusebox, 0);
+            sanderLamp.powerFuseId = FullFuseId(fusebox, 0);
+            tmOffLamp.powerFuseId = FullFuseId(fusebox, 0);
+            ampLamp.powerFuseId = FullFuseId(fusebox, 0);
 
             _damageController.electricalPTDamagerPortIds = new[] { FullPortId(tm, "GENERATED_DAMAGE") };
             _damageController.electricalPTHealthStateExternalInPortIds = new[] { FullPortId(tm, "HEALTH_STATE_EXT_IN") };
@@ -73,11 +92,20 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(tm, "THROTTLE", throttle, "EXT_IN");
             ConnectPortRef(tm, "REVERSER", reverser, "REVERSER");
             ConnectPortRef(tm, "DYNAMIC_BRAKE", dynBrake, "EXT_IN");
-
             ConnectEmptyPortRef(tm, "CONFIGURATION_OVERRIDE");
             ConnectPortRef(tm, "MOTOR_RPM", tmRpm, "TM_RPM");
             ConnectPortRef(tm, "APPLIED_VOLTAGE", voltFeed, "APPLIED_VOLTAGE_EXT_IN");
             ConnectEmptyPortRef(tm, "TM_TEMPERATURE");
+            ConnectPortRef(tm, "ENVIRONMENT_WATER_STATE", waterDetector, "STATE_EXT_IN");
+
+            ConnectLampRef(sandLamp, sand, "NORMALIZED");
+            ConnectLampRef(lightsFLamp, lightsF, "EXT_IN");
+            ConnectLampRef(lightsRLamp, lightsR, "EXT_IN");
+            ConnectLampRef(sanderLamp, sander, "CONTROL_EXT_IN");
+            ConnectLampRef(tmOffLamp, tm, "TMS_STATE");
+            ConnectLampRef(ampLamp, tm, "AMPS_PER_TM");
+
+            AddWheelSlideObserver();
 
             ApplyMethodToAll<IDE6Defaults>(s => s.ApplyDE6Defaults());
 

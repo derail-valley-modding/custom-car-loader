@@ -13,9 +13,9 @@ namespace CCL.Types.Proxies.Controllers
         public ExplosionPrefab explosionPrefab;
         public float explosionParticlesDuration = 4f;
         public float windowsBreakingDelay = 0.5f;
-        public Transform explosionAnchor;
+        public Transform explosionAnchor = null!;
         [PortId(null, null, true)]
-        public string explosionSignalPortId;
+        public string explosionSignalPortId = string.Empty;
         public bool explodeTrainCar;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]

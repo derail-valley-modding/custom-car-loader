@@ -14,7 +14,7 @@ namespace CCL.Types.Proxies.Indicators
 
         public WheelslipDetectionMode wheelslipDetectionMode;
         [FuseId]
-        public string fuseId;
+        public string fuseId = string.Empty;
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {

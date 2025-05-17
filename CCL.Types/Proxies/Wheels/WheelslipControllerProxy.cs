@@ -9,17 +9,14 @@ namespace CCL.Types.Proxies.Wheels
     {
         public bool preventWheelslip;
 
-        public AnimationCurve wheelslipToAdhesionDrop;
+        public AnimationCurve wheelslipToAdhesionDrop = null!;
         public float maxWheelslipRpm = 600f;
-
         [PortId(DVPortValueType.GENERIC, false)]
-        public string numberOfPoweredAxlesPortId;
-
+        public string numberOfPoweredAxlesPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string sandCoefPortId;
-
+        public string sandCoefPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string engineBrakingActivePortId;
+        public string engineBrakingActivePortId = string.Empty;
 
         [RenderMethodButtons]
         [MethodButton(nameof(SetCurveToDefault), "Set curve to default")]

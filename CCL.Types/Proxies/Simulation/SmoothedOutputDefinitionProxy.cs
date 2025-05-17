@@ -9,7 +9,7 @@ namespace CCL.Types.Proxies.Simulation
         [Header("0 is treated as instant change")]
         public float smoothTime = 1f;
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
 {

@@ -1,6 +1,7 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types.Components;
 using CCL.Types.Proxies.Headlights;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +14,17 @@ namespace CCL.Creator.Wizards
         {
             public string[] WhiteNames = new string[0];
             public string[] RedNames = new string[0];
+
+            public static Settings Copy(Settings other)
+            {
+                string[] white = new string[other.WhiteNames.Length];
+                string[] red = new string[other.RedNames.Length];
+
+                Array.Copy(other.WhiteNames, white, white.Length);
+                Array.Copy(other.RedNames, red, red.Length);
+
+                return new Settings { WhiteNames = white, RedNames = red };
+            }
         }
 
         private enum LightType
@@ -28,8 +40,9 @@ namespace CCL.Creator.Wizards
 
         private Settings _settingsR = null!;
         private Settings _settingsF = null!;
+        private float _scroll = 0;
 
-        [MenuItem("GameObject/CCL/Create Headlights", false, 10)]
+        [MenuItem("GameObject/CCL/Add Headlights", false, MenuOrdering.Body.Headlights)]
         public static void ShowWindow(MenuCommand command)
         {
             s_instance = GetWindow<HeadlightWizard>();
@@ -41,7 +54,7 @@ namespace CCL.Creator.Wizards
             s_instance.Show();
         }
 
-        [MenuItem("GameObject/CCL/Create Headlights", true, 10)]
+        [MenuItem("GameObject/CCL/Add Headlights", true, MenuOrdering.Body.Headlights)]
         public static bool OnContextMenuValidate()
         {
             return Selection.activeGameObject;
@@ -49,7 +62,7 @@ namespace CCL.Creator.Wizards
 
         private void OnGUI()
         {
-            EditorGUILayout.BeginVertical("box");
+            _scroll = EditorGUILayout.BeginScrollView(new Vector2(0, _scroll)).y;
             EditorStyles.label.wordWrap = true;
 
             EditorHelpers.DrawHeader("Front Lights");
@@ -58,8 +71,7 @@ namespace CCL.Creator.Wizards
 
             if (GUILayout.Button("Copy Front Lights To Rear"))
             {
-                _settingsR.WhiteNames = _settingsF.WhiteNames;
-                _settingsR.RedNames = _settingsF.RedNames;
+                _settingsR = Settings.Copy(_settingsF);
             }
 
             EditorHelpers.DrawHeader("Rear Lights");
@@ -74,7 +86,7 @@ namespace CCL.Creator.Wizards
                 return;
             }
 
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndScrollView();
         }
 
         private void CreateTemplate()

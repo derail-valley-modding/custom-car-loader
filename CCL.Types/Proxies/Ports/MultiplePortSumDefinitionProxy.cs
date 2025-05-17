@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
-    public class MultiplePortSumDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
+    public class MultiplePortSumDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IRecommendedDebugPorts
     {
-        public PortReferenceDefinition[] inputs;
+        public PortReferenceDefinition[] inputs = new PortReferenceDefinition[0];
 
         public PortDefinition output = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUT");
 
@@ -30,5 +30,10 @@ namespace CCL.Types.Proxies.Ports
             inputs = JSONObject.FromJson(_jsonIn, () => new PortReferenceDefinition[0]);
             output = JSONObject.FromJson(_jsonOut, () => new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUT"));
         }
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            output.ID
+        };
     }
 }

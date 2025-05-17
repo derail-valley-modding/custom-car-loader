@@ -7,13 +7,13 @@ namespace CCL.Types.Proxies.Audio
     public class CylinderCockLayeredPortReaderProxy : MonoBehaviour, ICanReplaceInstanced, IHasPortIdFields
     {
         [PortId(DVPortValueType.STATE, false)]
-        public string crankRotationPortId;
+        public string crankRotationPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylindersInletValveOpenPortId;
+        public string cylindersInletValveOpenPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylinderCockFlowNormalizedPortId;
+        public string cylinderCockFlowNormalizedPortId = string.Empty;
         [PortId(DVPortValueType.CONTROL, false)]
-        public string cylinderCockControlPortId;
+        public string cylinderCockControlPortId = string.Empty;
 
         // Using gameobjects to allow the audio replacer to work.
         [Header("order matters, need to match with cylinder index")]
@@ -24,7 +24,7 @@ namespace CCL.Types.Proxies.Audio
             new PortIdField(this, nameof(crankRotationPortId), crankRotationPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(cylindersInletValveOpenPortId), cylindersInletValveOpenPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(cylinderCockFlowNormalizedPortId), cylinderCockFlowNormalizedPortId, DVPortValueType.STATE),
-            new PortIdField(this, nameof(cylinderCockControlPortId), cylinderCockControlPortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(cylinderCockControlPortId), cylinderCockControlPortId, DVPortValueType.CONTROL),
         };
 
         public void DoFieldReplacing()

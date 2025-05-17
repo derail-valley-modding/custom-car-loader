@@ -7,7 +7,7 @@ namespace CCL.Types.Proxies.Indicators
     public class LampBrakeIssueReaderProxy : MonoBehaviour, IHasFuseIdFields
     {
         [FuseId]
-        public string lampPowerFuseId;
+        public string lampPowerFuseId = string.Empty;
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {

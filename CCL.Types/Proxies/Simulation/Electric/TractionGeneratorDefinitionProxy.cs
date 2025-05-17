@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
-    public class TractionGeneratorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults
+    public class TractionGeneratorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults,
+        IRecommendedDebugPorts
     {
         [Header("Generator")]
         public float maxVoltage = 1000f;
@@ -23,15 +24,16 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
         [Header("Dynamic Brake")]
         public float dynamicBrakeGoalRpmNormalized = 0.5f;
-
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.CONTROL, "THROTTLE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.AMPS, "EXTERNAL_CURRENT_LIMIT_EXT_IN"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "EXTERNAL_CURRENT_LIMIT_ACTIVE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "OVERCURRENT_POWER_FUSE_OFF"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "EXCITATION"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_IN"),
@@ -45,14 +47,23 @@ namespace CCL.Types.Proxies.Simulation.Electric
             new PortReferenceDefinition(DVPortValueType.CONTROL, "DYNAMIC_BRAKE", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "RPM", false),
             new PortReferenceDefinition(DVPortValueType.RPM, "RPM_NORMALIZED", false),
-            new PortReferenceDefinition(DVPortValueType.STATE, "CURRENT_DROP_REQUEST", false),
             new PortReferenceDefinition(DVPortValueType.AMPS, "TOTAL_AMPS", false),
-            new PortReferenceDefinition(DVPortValueType.OHMS, "EFFECTIVE_RESISTANCE", false)
+            new PortReferenceDefinition(DVPortValueType.OHMS, "EFFECTIVE_RESISTANCE", false),
+            new PortReferenceDefinition(DVPortValueType.OHMS, "SINGLE_MOTOR_EFFECTIVE_RESISTANCE", false),
+            new PortReferenceDefinition(DVPortValueType.AMPS, "TRANSITION_CURRENT_LIMIT", false)
         };
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "THROTTLE",
+            "EXCITATION",
+            "VOLTAGE",
+            "POWER_IN"
         };
 
         [MethodButton(nameof(ApplyDE2Defaults), "Apply DE2 Defaults")]
@@ -95,7 +106,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
             excitationGainMaxSpeed = 0.2f;
             excitationDropMaxSpeed = 1.0f;
 
-            dynamicBrakeGoalRpmNormalized = 0.4578947f;
+            dynamicBrakeGoalRpmNormalized = 435.0f/950.0f;
         }
 
         #endregion
