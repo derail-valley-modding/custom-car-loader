@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace CCL.Importer
 {
+    /// <summary>
+    /// Class for quick references to certain objects.
+    /// </summary>
     public static class QuickAccess
     {
         private static TrainCarLivery GetCarLivery(string id)
@@ -29,6 +32,9 @@ namespace CCL.Importer
             return car;
         }
 
+        /// <summary>
+        /// References to locomotive liveries.
+        /// </summary>
         public static class Locomotives
         {
             private static TrainCarLivery? s_de2;
@@ -58,17 +64,23 @@ namespace CCL.Importer
             public static TrainCarLivery Handcar => Extensions.GetCached(ref s_h1, () => GetCarLivery("LocoHandcar"));
         }
 
+        /// <summary>
+        /// References to wagon liveries.
+        /// </summary>
         public static class Wagons
         {
             private static TrainCarLivery? s_flatbed;
             private static TrainCarLivery? s_caboose;
-            private static TrainCarLivery? s_hopper;
+            private static TrainCarLivery? s_hopperBrown;
 
             public static TrainCarLivery Flatbed => Extensions.GetCached(ref s_flatbed, () => GetCarLivery("FlatbedEmpty"));
             public static TrainCarLivery Caboose => Extensions.GetCached(ref s_caboose, () => GetCarLivery("CabooseRed"));
-            public static TrainCarLivery Hopper => Extensions.GetCached(ref s_hopper, () => GetCarLivery("HopperBrown"));
+            public static TrainCarLivery HopperBrown => Extensions.GetCached(ref s_hopperBrown, () => GetCarLivery("HopperBrown"));
         }
 
+        /// <summary>
+        /// References to explosion prefabs.
+        /// </summary>
         public static class Explosions
         {
             private static DeadTractionMotorsController? s_de6deadTM;
@@ -111,6 +123,20 @@ namespace CCL.Importer
                 ExplosionPrefab.DieselLocomotive => DieselLocomotiveExplosion,
                 _ => null!
             };
+        }
+
+        /// <summary>
+        /// References to materials.
+        /// </summary>
+        public static class Materials
+        {
+            private static Material? s_explodedDE2cab;
+            private static Material? s_sightGlassS060;
+
+            public static Material ExplodedDE2Cab => Extensions.GetCached(ref s_explodedDE2cab,
+                () => Locomotives.DE2.explodedInteriorPrefab.transform.Find("Cab").GetComponent<Renderer>().sharedMaterial);
+            public static Material SightGlassS060 => Extensions.GetCached(ref s_sightGlassS060,
+                () => Locomotives.S060.interiorPrefab.transform.Find("Swivelables/WaterMeter/I_BoilerWater/sight_glass").GetComponent<Renderer>().sharedMaterial);
         }
     }
 }

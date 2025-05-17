@@ -83,6 +83,9 @@ namespace CCL.Types
         [Header("Paints - optional")]
         public PaintSubstitutions[] PaintSubstitutions = new PaintSubstitutions[0];
 
+        [Header("Procedural Material Generator - optional")]
+        public ProceduralMaterialDefinitions? ProceduralMaterials;
+
         [SerializeField, HideInInspector]
         private string? brakesJson;
         [SerializeField, HideInInspector]
@@ -167,6 +170,11 @@ namespace CCL.Types
             foreach (var item in PaintSubstitutions)
             {
                 item.AfterImport();
+            }
+
+            if (ProceduralMaterials != null)
+            {
+                ProceduralMaterials.AfterImport();
             }
         }
 

@@ -170,6 +170,8 @@ namespace CCL.Importer
 
                 // Load paints.
                 PaintLoader.LoadSubstitutions(serializedCar.PaintSubstitutions);
+                // Generate procedural materials.
+                ProceduralMaterialGenerator.Generate(serializedCar.ProceduralMaterials);
 
                 CCLPlugin.Log($"Successfully loaded car type {carId}");
 
