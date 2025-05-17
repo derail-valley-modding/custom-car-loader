@@ -1,6 +1,4 @@
-﻿using CCL.Types;
-using CCL.Types.Proxies;
-using CCL.Types.Proxies.Controllers;
+﻿using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
@@ -16,9 +14,6 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class DieselElectricSimCreator : SimCreator
     {
-        // TODO:
-        // Headlights
-
         public DieselElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "DE2", "DE6" };
@@ -34,7 +29,13 @@ namespace CCL.Creator.Wizards.SimSetup
             var indBrake = CreateOverridableControl(OverridableControlType.IndBrake);
             var dynBrake = HasDynamicBrake(basisIndex) ? CreateOverridableControl(OverridableControlType.DynamicBrake) : null;
 
+            var cabLight = CreateOverridableControl(OverridableControlType.IndCabLight);
+            var dashLight = CreateSimComponent<ExternalControlDefinitionProxy>("dashLight");
+            dashLight.saveState = true;
+
             // Headlights.
+            var lightsR = CreateOverridableControl(OverridableControlType.HeadlightsRear, defaultValue: 0.4f);
+            var lightsF = CreateOverridableControl(OverridableControlType.HeadlightsFront, defaultValue: 0.4f);
 
             var genericHornControl = CreateSimComponent<GenericControlDefinitionProxy>("hornControl");
             genericHornControl.defaultValue = 0.5f;
@@ -44,6 +45,7 @@ namespace CCL.Creator.Wizards.SimSetup
             hornControl.neutralAt0 = true;
             var horn = CreateSimComponent<HornDefinitionProxy>("horn");
             horn.controlNeutralAt0 = true;
+            ReparentComponents(genericHornControl, horn);
 
             ExternalControlDefinitionProxy? bellControl = null;
             ElectricBellDefinitionProxy? bell = null;
@@ -53,6 +55,7 @@ namespace CCL.Creator.Wizards.SimSetup
                 bellControl = CreateExternalControl("bellControl", true);
                 bell = CreateSimComponent<ElectricBellDefinitionProxy>("bell");
                 bell.smoothDownTime = 0.5f;
+                ReparentComponents(bellControl, bell);
             }
 
             var waterDetector = CreateWaterDetector();
@@ -68,33 +71,24 @@ namespace CCL.Creator.Wizards.SimSetup
             loadTorque.aReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_0");
             loadTorque.bReader = new PortReferenceDefinition(DVPortValueType.TORQUE, "LOAD_TORQUE_1");
             loadTorque.addReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.TORQUE, "LOAD_TORQUE_TOTAL");
-            loadTorque.transform.parent = engine.transform;
+            ReparentComponents(engine, loadTorque);
 
             var compressor = CreateSimComponent<MechanicalCompressorDefinitionProxy>("compressor");
             var airController = CreateCompressorSim(compressor);
 
             var tractionGen = CreateSimComponent<TractionGeneratorDefinitionProxy>("tractionGenerator");
             var slugPowerCalc = CreateSimComponent<SlugsPowerCalculatorDefinitionProxy>("slugsPowerCalculator");
-            slugPowerCalc.transform.parent = tractionGen.transform;
-            var slugPowerProv = CreateSibling<SlugsPowerProviderModuleProxy>(slugPowerCalc);
-            slugPowerProv.generatorVoltagePortId = FullPortId(tractionGen, "VOLTAGE");
-            slugPowerProv.slugsEffectiveResistancePortId = FullPortId(slugPowerCalc, "EXTERNAL_EFFECTIVE_RESISTANCE_EXT_IN");
-            slugPowerProv.slugsTotalAmpsPortId = FullPortId(slugPowerCalc, "EXTERNAL_AMPS_EXT_IN");
+            var slugPowerProv = CreateSlugsPowerProviderModule(tractionGen, slugPowerCalc);
+            ReparentComponents(tractionGen, slugPowerCalc);
 
             var tm = CreateSimComponent<TractionMotorSetDefinitionProxy>("tm");
-            var deadTMs = CreateSibling<DeadTractionMotorsControllerProxy>(tm);
-            deadTMs.overheatFuseOffPortId = FullPortId(tm, "OVERHEAT_POWER_FUSE_OFF");
-            var tmExplosion = CreateSibling<ExplosionActivationOnSignalProxy>(tm);
-            tmExplosion.explosionSignalPortId = FullPortId(tm, "OVERSPEED_EXPLOSION_TRIGGER");
-            tmExplosion.bodyDamagePercentage = 0.05f;
-            tmExplosion.explosionPrefab = ExplosionPrefab.TMOverspeed;
+            CreateTMsExtras(tm, out var deadTMs, out var tmExplosion);
 
             var cooler = CreateSimComponent<PassiveCoolerDefinitionProxy>("tmPassiveCooler");
-            cooler.transform.parent = tm.transform;
             var heat = CreateSimComponent<HeatReservoirDefinitionProxy>("tmHeat");
-            heat.transform.parent = tm.transform;
             heat.inputCount = 2;
             heat.OnValidate();
+            ReparentComponents(tm, cooler, heat);
 
             var tmRpm = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("tmRpmCalculator");
             tmRpm.aReader = new PortReferenceDefinition(DVPortValueType.RPM, "WHEEL_RPM");
@@ -118,6 +112,20 @@ namespace CCL.Creator.Wizards.SimSetup
                 new FuseDefinition("TM_POWER", false),
             };
 
+            var dashLamp = CreateLampBasicControl("dashLamp", 0.4f);
+            var gaugesLamp = CreateLampBasicControl("gaugesLamp", 0.4f);
+            var cabLamp = CreateLampBasicControl("cabLightLamp", 0.4f);
+            var bellLamp = bell != null ? CreateLampBasicControl("cabLightLamp") : null;
+            var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, 1f, 0.25f, 0.125f, 0f);
+            var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, 1f, 0.4f, 0.2f, 0f);
+            var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.1f, 0.05f, 0f);
+            var lightsRLamp = CreateLampHeadlightControl("headlightsRLamp");
+            var lightsFLamp = CreateLampHeadlightControl("headlightsFLamp");
+            var sanderLamp = CreateLampBasicControl("sanderLamp");
+            var tmOffLamp = CreateLamp("tmOfflineLamp", DVPortValueType.STATE, 0.1f, 1f, -1f, -0.1f, -0.1f, 0.1f);
+            var rpmLamp = CreateLampOnOnly("engineRPMLamp", DVPortValueType.RPM, 0, 1, 1, float.PositiveInfinity, false, true);
+            var ampLamp = CreateAmpLamp(basisIndex);
+
             horn.powerFuseId = FullFuseId(fusebox, 0);
             if (bell != null) bell.powerFuseId = FullFuseId(fusebox, 0);
             sander.powerFuseId = FullFuseId(fusebox, 0);
@@ -126,6 +134,19 @@ namespace CCL.Creator.Wizards.SimSetup
             tm.powerFuseId = FullFuseId(fusebox, 2);
             deadTMs.tmFuseId = FullFuseId(fusebox, 2);
             slugPowerProv.powerFuseId = FullFuseId(fusebox, 2);
+            dashLamp.powerFuseId = FullFuseId(fusebox, 0);
+            gaugesLamp.powerFuseId = FullFuseId(fusebox, 0);
+            cabLamp.powerFuseId = FullFuseId(fusebox, 0);
+            if (bellLamp != null) bellLamp.powerFuseId = FullFuseId(fusebox, 0);
+            fuelLamp.powerFuseId = FullFuseId(fusebox, 0);
+            oilLamp.powerFuseId = FullFuseId(fusebox, 0);
+            sandLamp.powerFuseId = FullFuseId(fusebox, 0);
+            lightsRLamp.powerFuseId = FullFuseId(fusebox, 0);
+            lightsFLamp.powerFuseId = FullFuseId(fusebox, 0);
+            sanderLamp.powerFuseId = FullFuseId(fusebox, 0);
+            tmOffLamp.powerFuseId = FullFuseId(fusebox, 0);
+            rpmLamp.powerFuseId = FullFuseId(fusebox, 0);
+            ampLamp.powerFuseId = FullFuseId(fusebox, 0);
 
             // Damage.
             _damageController.mechanicalPTDamagerPortIds = new[] { FullPortId(engine, "GENERATED_ENGINE_DAMAGE") };
@@ -147,10 +168,7 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(thrtPowr, "MAX_POWER", engine, "MAX_POWER");
 
             ConnectPortRef(horn, "HORN_CONTROL", genericHornControl, "CONTROL");
-            if (bell != null && bellControl != null)
-            {
-                ConnectPortRef(bell, "CONTROL", bellControl, "EXT_IN");
-            }
+            if (bell != null && bellControl != null) ConnectPortRef(bell, "CONTROL", bellControl, "EXT_IN");
 
             ConnectPortRef(sander, "SAND", sand, "AMOUNT");
             ConnectPortRef(sander, "SAND_CONSUMPTION", sand, "CONSUME_EXT_IN");
@@ -216,6 +234,20 @@ namespace CCL.Creator.Wizards.SimSetup
             ConnectPortRef(tmRpm, "WHEEL_RPM", traction, "WHEEL_RPM_EXT_IN");
             ConnectPortRef(tmRpm, "GEAR_RATIO", transmission, "GEAR_RATIO");
 
+            ConnectLampRef(dashLamp, dashLight, "EXT_IN");
+            ConnectLampRef(gaugesLamp, dashLight, "EXT_IN");
+            ConnectLampRef(cabLamp, cabLight, "EXT_IN");
+            if (bellLamp != null && bellControl != null) ConnectLampRef(bellLamp, bellControl, "EXT_IN");
+            ConnectLampRef(fuelLamp, fuel, "NORMALIZED");
+            ConnectLampRef(oilLamp, oil, "NORMALIZED");
+            ConnectLampRef(sandLamp, sand, "NORMALIZED");
+            ConnectLampRef(lightsFLamp, lightsF, "EXT_IN");
+            ConnectLampRef(lightsRLamp, lightsR, "EXT_IN");
+            ConnectLampRef(sanderLamp, sander, "CONTROL_EXT_IN");
+            ConnectLampRef(tmOffLamp, tm, "TMS_STATE");
+            ConnectLampRef(rpmLamp, engine, "RPM_NORMALIZED");
+            ConnectLampRef(ampLamp, tm, "AMPS_PER_TM");
+
             // Apply defaults.
             switch (basisIndex)
             {
@@ -230,21 +262,36 @@ namespace CCL.Creator.Wizards.SimSetup
             }
 
             // Control blockers.
-            var blocker = AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-            blocker.blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
+            AddControlBlocker(reverser, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD)
+                .blockedControlPortId = FullPortId(reverser, "CONTROL_EXT_IN");
 
             if (dynBrake != null)
             {
                 AddControlBlocker(reverser, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
 
-                blocker = AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-                blocker.blockedControlPortId = FullPortId(throttle, "EXT_IN");
-                blocker.resetToZeroOnBlock = true;
+                AddControlBlocker(throttle, dynBrake, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD, true)
+                    .blockedControlPortId = FullPortId(throttle, "EXT_IN");
 
-                AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD);
-                blocker = AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD);
-                blocker.blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
-                blocker.resetToZeroOnBlock = true;
+                AddControlBlocker(dynBrake, throttle, "EXT_IN", 0, BlockType.BLOCK_ON_ABOVE_THRESHOLD, true);
+                AddControlBlocker(dynBrake, reverser, "REVERSER", 0, BlockType.BLOCK_ON_EQUAL_TO_THRESHOLD, true)
+                    .blockedControlPortId = FullPortId(dynBrake, "EXT_IN");
+            }
+
+            AddEmptyControlBlocker(trnBrake);
+            AddEmptyControlBlocker(indBrake);
+            AddEmptyControlBlocker(lightsR);
+            AddEmptyControlBlocker(lightsF);
+            AddEmptyControlBlocker(sander);
+        }
+
+        private LampLogicDefinitionProxy CreateAmpLamp(int index)
+        {
+            switch (index)
+            {
+                case 1:
+                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, 0, 600, 940);
+                default:
+                    return CreateLampIncreasingWarning("ampLamp", DVPortValueType.AMPS, 0, 600, 1200);
             }
         }
 

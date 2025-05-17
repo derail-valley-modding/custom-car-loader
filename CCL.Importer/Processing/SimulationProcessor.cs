@@ -195,23 +195,25 @@ namespace CCL.Importer.Processing
 
         private void SetupControls(BaseControlsOverrider controls, GameObject prefab)
         {
-            controls.throttle = prefab.GetComponent<ThrottleControl>();
-            controls.brake = prefab.GetComponent<BrakeControl>();
-            controls.brakeCutout = prefab.GetComponent<BrakeCutoutControl>();
-            controls.independentBrake = prefab.GetComponent<IndependentBrakeControl>();
-            controls.dynamicBrake = prefab.GetComponent<DynamicBrakeControl>();
-            controls.reverser = prefab.GetComponent<ReverserControl>();
-            controls.sander = prefab.GetComponent<SanderControl>();
-            controls.horn = prefab.GetComponent<HornControl>();
-            controls.headlightsFront = prefab.GetComponent<HeadlightsControlFront>();
-            controls.headlightsRear = prefab.GetComponent<HeadlightsControlRear>();
-            controls.starter = prefab.GetComponent<StarterControl>();
-            controls.powerOff = prefab.GetComponent<PowerOffControl>();
-            controls.dynamo = prefab.GetComponent<DynamoControl>();
-            controls.airPump = prefab.GetComponent<AirPumpControl>();
-            controls.cabLight = prefab.GetComponent<CabLightControl>();
-            controls.indCabLight = prefab.GetComponent<IndCabLightControl>();
-            controls.wipers = prefab.GetComponent<WipersControl>();
+            controls.throttle = prefab.GetComponentInChildren<ThrottleControl>();
+            controls.brake = prefab.GetComponentInChildren<BrakeControl>();
+            controls.brakeCutout = prefab.GetComponentInChildren<BrakeCutoutControl>();
+            controls.independentBrake = prefab.GetComponentInChildren<IndependentBrakeControl>();
+            controls.dynamicBrake = prefab.GetComponentInChildren<DynamicBrakeControl>();
+            controls.reverser = prefab.GetComponentInChildren<ReverserControl>();
+            controls.sander = prefab.GetComponentInChildren<SanderControl>();
+            controls.horn = prefab.GetComponentInChildren<HornControl>();
+            controls.headlightsFront = prefab.GetComponentInChildren<HeadlightsControlFront>();
+            controls.headlightsRear = prefab.GetComponentInChildren<HeadlightsControlRear>();
+            controls.starter = prefab.GetComponentInChildren<StarterControl>();
+            controls.powerOff = prefab.GetComponentInChildren<PowerOffControl>();
+            controls.dynamo = prefab.GetComponentInChildren<DynamoControl>();
+            controls.airPump = prefab.GetComponentInChildren<AirPumpControl>();
+            controls.cabLight = prefab.GetComponentInChildren<CabLightControl>();
+            controls.indCabLight = prefab.GetComponentInChildren<IndCabLightControl>();
+            controls.wipers = prefab.GetComponentInChildren<WipersControl>();
+
+            controls.engineOnReader = prefab.GetComponentInChildren<EngineOnReader>();
         }
 
         private void SetupSimController(SimController simController, GameObject prefab)

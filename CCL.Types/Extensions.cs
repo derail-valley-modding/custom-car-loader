@@ -6,13 +6,13 @@ namespace CCL.Types
 {
     public static class Extensions
     {
-        public static List<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> prefabs)
+        public static List<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> prefabs, bool includeInactive = false)
         {
             var list = new List<T>();
 
             foreach (var prefab in prefabs)
             {
-                list.AddRange(prefab.gameObject.GetComponentsInChildren<T>());
+                list.AddRange(prefab.gameObject.GetComponentsInChildren<T>(includeInactive));
             }
 
             return list;
@@ -34,6 +34,8 @@ namespace CCL.Types
         {
             return Enum.IsDefined(typeof(T), enumValue);
         }
+        public static string ToCamelCase(this string str) =>
+            !string.IsNullOrEmpty(str) && str.Length > 1 ? char.ToLowerInvariant(str[0]) + str.Substring(1) : str.ToLowerInvariant();
 
         public static T AddComponentCopy<T>(this GameObject go, T component) where T : Component
         {

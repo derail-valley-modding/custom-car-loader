@@ -11,7 +11,7 @@ namespace CCL.Types.Components.MultipleUnit
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(ModePortId), ModePortId, DVPortType.READONLY_OUT, DVPortValueType.STATE),
+            new PortIdField(this, nameof(ModePortId), ModePortId),
         };
     }
 }

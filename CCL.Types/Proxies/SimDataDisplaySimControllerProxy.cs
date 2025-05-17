@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
+    [NotExposed]
     public class SimDataDisplaySimControllerProxy : MonoBehaviour
     {
         public int dataQueueSize = 4000;

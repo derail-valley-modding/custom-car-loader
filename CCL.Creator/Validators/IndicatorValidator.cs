@@ -13,7 +13,7 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
 
-            foreach (var indicator in livery.AllPrefabs.GetComponentsInChildren<IndicatorProxy>())
+            foreach (var indicator in livery.AllPrefabs.GetComponentsInChildren<IndicatorProxy>(true))
             {
                 switch (indicator)
                 {

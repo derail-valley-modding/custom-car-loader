@@ -17,7 +17,7 @@ namespace CCL.Types.Proxies.Simulation
         [Delayed]
         public int inputCount = 1;
         [HideInInspector]
-        public PortReferenceDefinition[] inputs;
+        public PortReferenceDefinition[] inputs = new PortReferenceDefinition[0];
         [SerializeField, HideInInspector]
         private string? _inputsJson;
 

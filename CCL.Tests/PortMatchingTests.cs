@@ -1,6 +1,6 @@
-﻿using CCL.Importer;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CCL.Importer;
 using CCL.Types.Proxies.Ports;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +8,7 @@ using System.Reflection;
 
 using PortDef = LocoSim.Definitions.PortDefinition;
 using PortRefDef = LocoSim.Definitions.PortReferenceDefinition;
+using FuseDef = LocoSim.Definitions.FuseDefinition;
 
 namespace CCL.Tests
 {
@@ -24,6 +25,7 @@ namespace CCL.Tests
         private static readonly Type SimCompDefType = typeof(SimComponentDefinitionProxy);
         private static readonly Type PortType = typeof(PortDef);
         private static readonly Type PortRefType = typeof(PortRefDef);
+        private static readonly Type FuseType = typeof(FuseDef);
 
         private static readonly Type[] RequireManualCheckTypes = new[]
         {
@@ -80,6 +82,7 @@ namespace CCL.Tests
             // Check for correct port exposition.
             var proxyPorts = proxy.ExposedPorts;
             var proxyPortRefs = proxy.ExposedPortReferences;
+            var proxyFuses = proxy.ExposedFuses;
 
             if (proxyPorts == null)
             {
@@ -89,6 +92,11 @@ namespace CCL.Tests
             if (proxyPortRefs == null)
             {
                 Assert.Fail($"\n{map.SourceType.Name} failed to expose port references correctly");
+            }
+
+            if (proxyFuses == null)
+            {
+                Assert.Fail($"\n{map.SourceType.Name} failed to expose fuses correctly");
             }
 
             // Real.
@@ -110,7 +118,7 @@ namespace CCL.Tests
                 .NotNull()
                 .ToList();
 
-            PortProxyCheck(fail, map, proxyPorts, realPorts);
+            PortCheck(fail, map, proxyPorts, realPorts);
 
             var realPortRefs = map.DestinationType.GetFields(ALL_INSTANCE)
                 .Where(x => x.FieldType == PortRefType)
@@ -118,7 +126,15 @@ namespace CCL.Tests
                 .NotNull()
                 .ToList();
 
-            PortReferenceProxyCheck(fail, map, proxyPortRefs, realPortRefs);
+            PortReferenceCheck(fail, map, proxyPortRefs, realPortRefs);
+
+            var realFuses = map.DestinationType.GetFields(ALL_INSTANCE)
+                .Where(x => x.FieldType == FuseType)
+                .Select(x => (FuseDef)x.GetValue(real))
+                .NotNull()
+                .ToList();
+
+            FuseCheck(fail, map, proxyFuses, realFuses);
 
             if (fail.Count > 0)
             {
@@ -126,7 +142,7 @@ namespace CCL.Tests
             }
         }
 
-        private static void PortProxyCheck(List<string> fail, AutoMapper.TypeMap map,
+        private static void PortCheck(List<string> fail, AutoMapper.TypeMap map,
             IEnumerable<PortDefinition> proxyPorts, IEnumerable<PortDef> realPorts)
         {
             foreach (var port in realPorts)
@@ -161,7 +177,7 @@ namespace CCL.Tests
             }
         }
 
-        private static void PortReferenceProxyCheck(List<string> fail, AutoMapper.TypeMap map,
+        private static void PortReferenceCheck(List<string> fail, AutoMapper.TypeMap map,
             IEnumerable<PortReferenceDefinition> proxyPortRefs, IEnumerable<PortRefDef> realPortRefs)
         {
             foreach (var port in realPortRefs)
@@ -188,6 +204,31 @@ namespace CCL.Tests
                 if (matched == null)
                 {
                     fail.Add($"{map.SourceType.Name} has extra port reference [{port.ID}]");
+                }
+            }
+        }
+
+
+        private static void FuseCheck(List<string> fail, AutoMapper.TypeMap map,
+            IEnumerable<FuseDefinition> proxyFuses, IEnumerable<FuseDef> realFuses)
+        {
+            foreach (var fuse in realFuses)
+            {
+                var matched = proxyFuses.FirstOrDefault(x => x.id == fuse.id);
+
+                if (matched == null)
+                {
+                    fail.Add($"{map.SourceType.Name} is missing port [{fuse.id}]");
+                }
+            }
+
+            foreach (var fuse in proxyFuses)
+            {
+                var matched = realFuses.FirstOrDefault(x => x != null && x.id == fuse.id);
+
+                if (matched == null)
+                {
+                    fail.Add($"{map.SourceType.Name} has extra port [{fuse.id}]");
                 }
             }
         }

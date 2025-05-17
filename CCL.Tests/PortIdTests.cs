@@ -1,11 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using CCL.Types.Proxies.Ports;
+using CCL.Types.Proxies;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
-using HarmonyLib;
-using CCL.Types.Proxies.Ports;
 using System;
-using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Tests
 {
@@ -23,7 +23,7 @@ namespace CCL.Tests
 
                 foreach (var scriptType in scriptTypes)
                 {
-                    if (scriptType.IsAbstract) continue;
+                    if (scriptType.IsAbstract || (scriptType.GetCustomAttribute<NotExposedAttribute>() != null)) continue;
 
                     var portIds = scriptType.GetFields(ALL_INSTANCE)
                         .Select(f => new KeyValuePair<string, PortIdAttribute>(f.Name, f.GetCustomAttribute<PortIdAttribute>()))

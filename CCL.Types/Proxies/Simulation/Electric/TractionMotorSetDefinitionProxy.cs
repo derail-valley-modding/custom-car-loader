@@ -47,7 +47,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public PoweredWheelsManagerProxy poweredWheelsManager = null!;
 
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         [SerializeField, HideInInspector]
         private string? _configs;
@@ -223,8 +223,8 @@ namespace CCL.Types.Proxies.Simulation.Electric
             maxAmpsPerTm = 1500.0f;
             numberOfTractionMotors = 6;
 
-            dynamicBrakePeakForceRpm = 700.0f;
-            dynamicBrakeGridResistance = 0.15f;
+            dynamicBrakePeakForceRpm = 800.0f;
+            dynamicBrakeGridResistance = 0.65f;
             dynamicBrakeMaxCurrent = 700.0f;
             dynamicBrakeCoolerSmoothTime = 2.0f;
 
@@ -362,9 +362,9 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public void ApplyBE2Defaults()
         {
             maxMotorRpm = 1700.0f;
-            motorResistance = 0.015f;
-            motorTorqueFactor = 0.03f;
-            externalResistance = 0.01f;
+            motorResistance = 0.003f;
+            motorTorqueFactor = 0.005f;
+            externalResistance = 0.025f;
             ampsSmoothTime = 0.5f;
             ampsSmoothMaxSpeed = 1000.0f;
             maxAmpsPerTm = 900.0f;

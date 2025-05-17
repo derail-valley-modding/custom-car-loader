@@ -22,8 +22,14 @@
         //Horn = DVControlType.Horn,
         HeadlightsFront = DVControlType.HeadlightsFront,
         HeadlightsRear = DVControlType.HeadlightsRear,
+        StarterControl = DVControlType.StarterControl,
         DynamicBrake = DVControlType.DynamicBrake,
+        CabLight = DVControlType.CabLight,
+        Wipers = DVControlType.Wipers,
         //FuelCutoff = DVControlType.FuelCutoff,
+        IndCabLight = DVControlType.IndCabLight,
+        Dynamo = DVControlType.Dynamo,
+        AirPump = DVControlType.AirPump,
         TrainBrakeCutout = DVControlType.TrainBrakeCutout
     }
 

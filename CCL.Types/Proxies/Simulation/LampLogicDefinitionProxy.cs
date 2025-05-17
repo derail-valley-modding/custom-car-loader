@@ -1,10 +1,11 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Types.Json;
+using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
-    public class LampLogicDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields
+    public class LampLogicDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IHasFuseIdFields
     {
         [Header("Behaviour setup")]
         public float offRangeMin;
@@ -30,6 +31,9 @@ namespace CCL.Types.Proxies.Simulation
         [FuseId]
         public string powerFuseId = string.Empty;
 
+        [SerializeField, HideInInspector]
+        private string? _json;
+
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "LAMP_STATE")
@@ -44,5 +48,17 @@ namespace CCL.Types.Proxies.Simulation
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId)
         };
+
+        public string GetFullReaderPortRefId() => GetFullPortId(inputReader.ID);
+
+        public void OnValidate()
+        {
+            _json = JSONObject.ToJson(inputReader);
+        }
+
+        public void AfterImport()
+        {
+            inputReader = JSONObject.FromJson(_json, () => new PortReferenceDefinition(DVPortValueType.GENERIC, "INPUT"));
+        }
     }
 }

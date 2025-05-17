@@ -37,7 +37,7 @@ namespace CCL.Types
         /// Gets the centerline vector of a model, and its projection on the plane perpendicular to <paramref name="axis"/>
         /// </summary>
         /// <returns>(center vector, projection vector)</returns>
-        public static (Vector3, Vector3) GetModelCenterHingeProjection( GameObject gameObject, Vector3 axis )
+        public static (Vector3, Vector3) GetModelCenterHingeProjection(GameObject gameObject, Vector3 axis)
         {
             Vector3 massZeroVector = GetModelCenterline(gameObject);
             Vector3 gizmoZeroVector = Vector3.ProjectOnPlane(massZeroVector, axis);
@@ -118,6 +118,19 @@ namespace CCL.Types
         public static void SetLayer(this GameObject go, DVLayer layer)
         {
             go.layer = (int)layer;
+        }
+
+        public static void SetLayersNonRecursive(this GameObject go, DVLayer layer)
+        {
+            SetLayersNonRecursive(go.transform, layer);
+        }
+
+        public static void SetLayersNonRecursive(this Transform transform, DVLayer layer)
+        {
+            foreach (var item in transform.GetComponentsInChildren<Transform>())
+            {
+                item.gameObject.SetLayer(layer);
+            }
         }
 
         public static void SetLayersRecursive(this GameObject go, int layer)

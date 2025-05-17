@@ -8,12 +8,15 @@ namespace CCL.Types.Proxies.Controls
 {
     public class ControlBlockerProxy : MonoBehaviour, IHasPortIdFields, ICustomSerialized
     {
-        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
+        [PortId]
         public string blockedControlPortId = string.Empty;
         public bool resetToZeroOnBlock;
         public BlockerDefinition[] blockers = new BlockerDefinition[0];
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(blockedControlPortId), blockedControlPortId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL) };
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(blockedControlPortId), blockedControlPortId)
+        };
 
         [SerializeField, HideInInspector]
         private string? _json;

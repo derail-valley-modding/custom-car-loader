@@ -7,15 +7,25 @@ namespace CCL.Types.Proxies.Controls
     public class OverridableControlProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
-        public string portId;
+        public string portId = string.Empty;
         public OverridableControlType ControlType;
         [Header("optional")]
-        public ControlBlockerProxy controlBlocker;
+        public ControlBlockerProxy controlBlocker = null!;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[] 
         {
             new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)
         };
+
+        private void Reset()
+        {
+            var externalControl = GetComponent<ExternalControlDefinitionProxy>();
+
+            if (externalControl != null)
+            {
+                portId = externalControl.GetFullPortId("EXT_IN");
+            }
+        }
 
         public void OnValidate()
         {
@@ -29,9 +39,9 @@ namespace CCL.Types.Proxies.Controls
     public class HornControlProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
-        public string portId;
+        public string portId = string.Empty;
         [Header("optional")]
-        public ControlBlockerProxy controlBlocker;
+        public ControlBlockerProxy controlBlocker = null!;
         public bool neutralAt0;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
@@ -51,9 +61,9 @@ namespace CCL.Types.Proxies.Controls
     public class PowerOffControlProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
-        public string portId;
+        public string portId = string.Empty;
         [Header("optional")]
-        public ControlBlockerProxy controlBlocker;
+        public ControlBlockerProxy controlBlocker = null!;
         public bool signalClearedBySim;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]

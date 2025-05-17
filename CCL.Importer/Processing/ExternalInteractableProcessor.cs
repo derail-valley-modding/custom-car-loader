@@ -6,6 +6,7 @@ using DV.Simulation.Brake;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
+
 using static CCL.Types.CarPartNames.FuelPorts;
 using static CCL.Types.CarPartNames.Interactables;
 
@@ -17,6 +18,7 @@ namespace CCL.Importer.Processing
     {
         private static readonly GameObject _flatbedHandbrake;
         private static readonly GameObject _flatbedBrakeRelease;
+        private static readonly GameObject _hopperHandbrake;
         private static readonly GameObject _s060Handbrake;
         private static readonly GameObject _s282Handbrake;
         private static readonly GameObject _de2Handbrake;
@@ -33,6 +35,9 @@ namespace CCL.Importer.Processing
             var flatbedInteractables = QuickAccess.Wagons.Flatbed.externalInteractablesPrefab;
             _flatbedHandbrake = flatbedInteractables.transform.Find(HANDBRAKE_SMALL).gameObject;
             _flatbedBrakeRelease = flatbedInteractables.transform.Find(BRAKE_CYL_RELEASE).gameObject;
+
+            _hopperHandbrake = QuickAccess.Wagons.Hopper.externalInteractablesPrefab
+                .transform.Find(HANDBRAKE_HOPPER).gameObject;
 
             _s060Handbrake = QuickAccess.Locomotives.S060.interiorPrefab
                 .transform.Find(HANDBRAKE_S060).gameObject;
@@ -105,6 +110,9 @@ namespace CCL.Importer.Processing
                         break;
                     case DUMMY_BRAKE_RELEASE:
                         Replace(interactables.transform, current, _flatbedBrakeRelease);
+                        break;
+                    case DUMMY_HANDBRAKE_LARGE:
+                        Replace(interactables.transform, current, _hopperHandbrake);
                         break;
                     case DUMMY_HANDBRAKE_S060:
                         Replace(interactables.transform, current, _s060Handbrake);
