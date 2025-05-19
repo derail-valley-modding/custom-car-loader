@@ -208,45 +208,4 @@ namespace CCL.Creator.Wizards
             return true;
         }
     }
-
-    internal static class OtherMods
-    {
-        public const string PASSENGER_JOBS = "PassengerJobs";
-        public const string CUSTOM_CARGO = "DVCustomCargo";
-
-        public static bool RequiresPassengerJobsMod(CustomCarType carType)
-        {
-            if (carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == "Passengers"))
-            {
-                return true;
-            }
-
-            if (carType.CatalogPage != null && carType.CatalogPage.AllLicenses.Any(x => x == "Passengers"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public static bool RequiresCustomCargoMod(CustomCarType carType)
-        {
-            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId != "Passengers" && !Utilities.IsVanillaCargo(x.CargoId));
-        }
-
-        public static bool RequiresCustomLicenseMod(CustomCarType carType)
-        {
-            if (!Utilities.IsVanillaLicense(carType.LicenseID))
-            {
-                return true;
-            }
-
-            if (carType.CatalogPage != null && carType.CatalogPage.AllLicenses.Any(x => !Utilities.IsVanillaLicense(x)))
-            {
-                return true;
-            }
-
-            return false;
-        }
-    }
 }

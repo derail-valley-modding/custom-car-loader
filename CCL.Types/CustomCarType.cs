@@ -9,7 +9,7 @@ using CCL.Types.Catalog;
 namespace CCL.Types
 {
     [CreateAssetMenu(menuName = "CCL/Custom Car Type", order = MenuOrdering.CarType)]
-    public class CustomCarType : ScriptableObject, IAssetLoadCallback
+    public class CustomCarType : ScriptableObject, ICustomSerialized
     {
         public enum UnusedCarDeletePreventionMode
         {
@@ -39,7 +39,6 @@ namespace CCL.Types
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
         public TranslationData NameTranslations;
-        public ExtraTranslations ExtraTranslations;
 
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
@@ -80,12 +79,6 @@ namespace CCL.Types
         [GeneralLicenseField]
         public string LicenseID = "";
 
-        [Header("Paints - optional")]
-        public PaintSubstitutions[] PaintSubstitutions = new PaintSubstitutions[0];
-
-        [Header("Procedural Material Generator - optional")]
-        public ProceduralMaterialDefinitions? ProceduralMaterials;
-
         [SerializeField, HideInInspector]
         private string? brakesJson;
         [SerializeField, HideInInspector]
@@ -98,11 +91,7 @@ namespace CCL.Types
             damage = new DamageSetup();
         }
 
-        [RenderMethodButtons]
-        [MethodButton("CCL.Creator.Validators.TrainCarValidator:ValidateExport", "Export Car")]
-        public bool buttonRender;
-
-        private void OnValidate()
+        public void OnValidate()
         {
             localizationKey = $"ccl/car/{id}";
 
@@ -115,11 +104,6 @@ namespace CCL.Types
 
             brakesJson = JSONObject.ToJson(brakes);
             damageJson = JSONObject.ToJson(damage);
-
-            if (ExtraTranslations)
-            {
-                ExtraTranslations.OnValidate();
-            }
         }
 
         public void ForceValidation()
@@ -134,7 +118,7 @@ namespace CCL.Types
             }
         }
 
-        public void AfterAssetLoad(AssetBundle bundle)
+        public void AfterImport()
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {
@@ -154,27 +138,12 @@ namespace CCL.Types
             brakes = JSONObject.FromJson<BrakesSetup>(brakesJson) ?? new BrakesSetup();
             damage = JSONObject.FromJson<DamageSetup>(damageJson) ?? new DamageSetup();
 
-            if (ExtraTranslations)
-            {
-                ExtraTranslations.AfterImport();
-            }
-
             if (liveries != null)
             {
                 foreach (var livery in liveries)
                 {
                     livery.AfterAssetLoad();
                 }
-            }
-
-            foreach (var item in PaintSubstitutions)
-            {
-                item.AfterImport();
-            }
-
-            if (ProceduralMaterials != null)
-            {
-                ProceduralMaterials.AfterImport();
             }
         }
 

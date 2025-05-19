@@ -16,8 +16,9 @@ namespace CCL.Creator.Utility
         public static class Colors
         {
             public static readonly Color DEFAULT = Color.white;
-            public static readonly Color WARNING = new Color32(255, 230, 128, 255);
-            public static readonly Color DELETE_ACTION = new Color32(255, 153, 153, 255);
+            public static readonly Color CONFIRM_ACTION = new Color(0.50f, 1.80f, 0.75f);
+            public static readonly Color WARNING = new Color(2.00f, 1.50f, 0.25f);
+            public static readonly Color DELETE_ACTION = new Color(2.00f, 0.75f, 0.75f);
         }
 
         /// <summary>
@@ -365,6 +366,26 @@ namespace CCL.Creator.Utility
             }
 
             return expanded;
+        }
+
+        private static GUIStyle? s_wordWrapLabel;
+        private static GUIStyle WordWrapLabel
+        {
+            get
+            {
+                if (s_wordWrapLabel == null)
+                {
+                    s_wordWrapLabel = new GUIStyle(EditorStyles.label);
+                    s_wordWrapLabel.wordWrap = true;
+                }
+
+                return s_wordWrapLabel;
+            }
+        }
+
+        public static void WordWrappedLabel(string label, params GUILayoutOption[] options)
+        {
+            GUILayout.Label(label, WordWrapLabel, options);
         }
     }
 

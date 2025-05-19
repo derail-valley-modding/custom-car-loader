@@ -1,12 +1,9 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
-using DV.JObjectExtstensions;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityModManagerNet;
 
@@ -37,113 +34,99 @@ namespace CCL.Importer
 
         private static void LoadCarDefinitions(UnityModManager.ModEntry mod)
         {
-            int loadedCount = 0;
-            foreach (string jsonPath in Directory.EnumerateFiles(mod.Path, ExporterConstants.JSON_FILENAME, SearchOption.AllDirectories))
+            int loaded = 0;
+
+            foreach (string file in Directory.EnumerateFiles(mod.Path, ExporterConstants.EXPORTED_BUNDLE_NAME, SearchOption.AllDirectories))
             {
-                JObject json;
-                try
+                var bundle = AssetBundle.LoadFromFile(file);
+
+                if (bundle == null)
                 {
-                    using StreamReader reader = File.OpenText(jsonPath);
-                    json = JObject.Parse(reader.ReadToEnd());
-                }
-                catch (Exception ex)
-                {
-                    CCLPlugin.Error($"Error loading file {jsonPath}:\n{ex.Message}");
+                    CCLPlugin.Error("Failed to load bundle!");
                     continue;
                 }
 
-                string carFolder = Path.GetDirectoryName(jsonPath);
-                var carType = LoadCarDefinition(carFolder, json);
-                if (carType != null)
+                foreach (var pack in bundle.LoadAllAssets<CustomCarPack>())
                 {
-                    CustomCarTypes.Add(carType);
-                    loadedCount += 1;
-
-                    if (carType.CatalogPage != null)
-                    {
-                        carType.CatalogPage.AfterImport();
-                        CatalogGenerator.PageInfos.Add(carType.CatalogPage);
-                    }
+                    loaded += LoadPack(pack);
                 }
 
+                bundle.Unload(false);
                 Mapper.ClearComponentCache();
             }
-            if (loadedCount > 0)
+
+            if (loaded > 0)
             {
-                CCLPlugin.LogVerbose($"Loaded {loadedCount} cars from {mod.Path}");
+                CCLPlugin.LogVerbose($"Loaded {loaded} cars from {mod.Path}");
                 DV.Globals.G.Types.RecalculateCaches();
             }
         }
 
-        private static CCL_CarType? LoadCarDefinition(string directory, JObject jsonFile)
+        private static int LoadPack(CustomCarPack pack)
+        {
+            var version = new Version(pack.ExporterVersion);
+
+            if (version > ExporterConstants.ExporterVersion)
+            {
+                CCLPlugin.Error($"Pack {pack.PackId} was built with a newer version of CCL:\n" +
+                    $"Current Version = {ExporterConstants.ExporterVersion}\n" +
+                    $"Pack Version = {version}");
+                return 0;
+            }
+            else if (version < ExporterConstants.MinimumCompatibleVersion)
+            {
+                CCLPlugin.Error($"Pack {pack.PackId} was built with an incompatible version of CCL:\n" +
+                    $"Minimum Version = {ExporterConstants.MinimumCompatibleVersion}\n" +
+                    $"Pack Version = {version}");
+                return 0;
+            }
+
+            pack.AfterImport();
+
+            int loaded = 0;
+
+            foreach (var car in pack.Cars)
+            {
+                loaded += LoadCar(car) ? 1 : 0;
+            }
+
+            // Load paints.
+            CCLPlugin.Log("Loading paints...");
+            PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
+            // Generate procedural materials.
+            CCLPlugin.Log("Generating materials...");
+            ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
+
+            return loaded;
+        }
+
+        private static bool LoadCar(CustomCarType car)
         {
             try
             {
-                string carId = jsonFile.GetString(ExporterConstants.IDENTIFIER);
-                string versionStr = jsonFile.GetValueOrDefault(ExporterConstants.EXPORTER_VERSION, "1.5");
-                var version = new Version(versionStr);
+                car.AfterImport();
 
-                // make sure car is compatible with current importer
-                if (version > ExporterConstants.ExporterVersion)
-                {
-                    CCLPlugin.Error($"Car {carId} was built with a newer version of CCL: Current Version = {ExporterConstants.ExporterVersion}, Car Version = {version}");
-                    return null;
-                }
-                else if (version < ExporterConstants.MinimumCompatibleVersion)
-                {
-                    CCLPlugin.Error($"Car {carId} was built with an incompatible version of CCL: Minimum Version = {ExporterConstants.MinimumCompatibleVersion}, Car Version = {version}");
-                    return null;
-                }
-
-                // Load asset bundle to memory
-                var assetBundleName = jsonFile.GetString(ExporterConstants.BUNDLE_NAME);
-                var assetBundlePath = Path.Combine(directory, assetBundleName);
-
-                if (!File.Exists(assetBundlePath))
-                {
-                    CCLPlugin.Error($"AssetBundle for car {carId} is missing");
-                    return null;
-                }
-
-                CCLPlugin.Log($"Loading AssetBundle: {assetBundleName} at path {assetBundlePath}");
-                var assetBundle = AssetBundle.LoadFromFile(assetBundlePath);
-
-                if (assetBundle == null)
-                {
-                    CCLPlugin.Error($"Failed to load AssetBundle: {assetBundleName}");
-                    return null;
-                }
-
-                // Fetch car types from bundle
-                var serializedCar = assetBundle.LoadAllAssets<CustomCarType>().SingleOrDefault();
-                if (serializedCar == null)
-                {
-                    CCLPlugin.Error($"Could not load any car types from AssetBundle {assetBundlePath}");
-                    return null;
-                }
-
-                serializedCar.AfterAssetLoad(assetBundle);
                 var carType = ScriptableObject.CreateInstance<CCL_CarType>();
-                Mapper.M.Map(serializedCar, carType);
+                Mapper.M.Map(car, carType);
 
                 CarTypeInjector.SetupTypeLinks(carType);
 
                 // Finalize model & inject
                 if (!FinalizeCarTypePrefabs(carType))
                 {
-                    CCLPlugin.Error($"Failed to wrangle prefab for {carId}");
-                    return null;
+                    CCLPlugin.Error($"Failed to wrangle prefab for {car.id}");
+                    return false;
                 }
 
                 if (!CarTypeInjector.RegisterCarType(carType))
                 {
-                    CCLPlugin.Error($"Failed to register car type for {carId}");
-                    return null;
+                    CCLPlugin.Error($"Failed to register car type for {car.id}");
+                    return false;
                 }
 
-                if (!string.IsNullOrEmpty(serializedCar.LicenseID))
+                if (!string.IsNullOrEmpty(car.LicenseID))
                 {
-                    if (DV.Globals.G.Types.TryGetGeneralLicense(serializedCar.LicenseID, out var license))
+                    if (DV.Globals.G.Types.TryGetGeneralLicense(car.LicenseID, out var license))
                     {
                         foreach (var item in carType.liveries)
                         {
@@ -152,38 +135,39 @@ namespace CCL.Importer
                     }
                     else
                     {
-                        CCLPlugin.Warning($"Failed to find license for {carId} ({serializedCar.LicenseID}), car will not require license to use");
+                        CCLPlugin.Warning($"Failed to find license for {car.id} ({car.LicenseID}), car will not require license to use");
                     }
+                }
+
+                // Generate catalog page.
+                if (carType.CatalogPage != null)
+                {
+                    carType.CatalogPage.AfterImport();
+                    CatalogGenerator.PageInfos.Add(carType.CatalogPage);
                 }
 
                 // Create the HUD if it exists.
-                if (serializedCar.HUDLayout != null)
+                if (car.HUDLayout != null)
                 {
                     CCLPlugin.Log("Generating HUD from layout settings...");
-                    carType.hudPrefab = HUDGenerator.CreateHUD(serializedCar.HUDLayout);
+                    carType.hudPrefab = HUDGenerator.CreateHUD(car.HUDLayout);
 
-                    if (serializedCar.HUDLayout.HUDType == CCL.Types.HUD.VanillaHUDLayout.BaseHUD.Custom)
+                    if (car.HUDLayout.HUDType == CCL.Types.HUD.VanillaHUDLayout.BaseHUD.Custom)
                     {
-                        carType.hudPrefab.name = $"HUD-{serializedCar.id}";
+                        carType.hudPrefab.name = $"HUD-{car.id}";
                     }
                 }
 
-                // Load paints.
-                PaintLoader.LoadSubstitutions(serializedCar.PaintSubstitutions);
-                // Generate procedural materials.
-                ProceduralMaterialGenerator.Generate(serializedCar.ProceduralMaterials);
-
-                CCLPlugin.Log($"Successfully loaded car type {carId}");
-
-                assetBundle.Unload(false);
-
-                return carType;
+                CustomCarTypes.Add(carType);
+                CCLPlugin.Log($"Successfully loaded car type {car.id}");
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                CCLPlugin.Error($"Error loading car from {directory}:\n{ex}");
-                return null;
+                CCLPlugin.Error($"Error loading car from {car.id}:\n{e}");
+                return false;
             }
+
+            return true;
         }
 
         private static bool FinalizeCarTypePrefabs(CCL_CarType carType)
