@@ -160,6 +160,7 @@ namespace CCL.Creator.Validators
 
         private static void DrawSingleCarResults(CarResults results)
         {
+            GUILayout.BeginVertical("box");
             EditorHelpers.DrawHeader(results.CarId);
 
             GUILayout.BeginHorizontal();
@@ -233,6 +234,7 @@ namespace CCL.Creator.Validators
 
             GUILayout.EndHorizontal();
             EditorGUILayout.Space();
+            EditorGUILayout.EndVertical();
         }
     }
 }

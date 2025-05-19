@@ -151,6 +151,7 @@ namespace CCL.Creator.Wizards
                 "• Do not overwrite files if you don't want something potentially going wrong.\n" +
                 "• If any warnings or errors pop up within Unity, do not continue saving your file.");
 
+            EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
         }
 

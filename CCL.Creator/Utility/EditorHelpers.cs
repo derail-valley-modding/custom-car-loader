@@ -387,6 +387,11 @@ namespace CCL.Creator.Utility
         {
             GUILayout.Label(label, WordWrapLabel, options);
         }
+
+        public static void DrawSeparator()
+        {
+            EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
+        }
     }
 
     internal class GUIColorScope : IDisposable

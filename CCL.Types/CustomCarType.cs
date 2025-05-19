@@ -30,8 +30,6 @@ namespace CCL.Types
 
         public string id = string.Empty;
         public string carIdPrefix = "-";
-        public string version = "1.0.0";
-        public string author = string.Empty;
 
         [HideInInspector]
         public string? localizationKey;
