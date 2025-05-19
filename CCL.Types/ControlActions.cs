@@ -258,7 +258,7 @@ namespace CCL.Types
             "ToggleTrackingMode",
             "Escape",
 
-            "Console/Console"
+            "Console"
         };
 
         public static string RemoveCategory(string name)

@@ -4,6 +4,13 @@
     {
         public const int Simulation = 10;
 
+        public static class MenuBar
+        {
+            public const int CarWizard = 100;
+            public const int CargoWizard = 101;
+            public const int LanguagePreview = 200;
+        }
+
         public static class Cab
         {
             public const int Control = 100;

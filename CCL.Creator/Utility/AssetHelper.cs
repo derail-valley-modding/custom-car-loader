@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -36,6 +37,18 @@ namespace CCL.Creator.Utility
             AssetDatabase.SaveAssets();
         }
 
-        public static string GetFolder(Object asset) => System.IO.Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset)).Replace('\\', '/');
+        public static string GetFolder(Object asset) => Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset)).Replace('\\', '/');
+
+        public static T CreateScriptableAsset<T>(string path, string name)
+            where T : ScriptableObject
+        {
+            T instance = ScriptableObject.CreateInstance<T>();
+            instance.name = name;
+
+            path = $"{Path.Combine(path, name)}.asset";
+
+            AssetDatabase.CreateAsset(instance, path);
+            return AssetDatabase.LoadAssetAtPath<T>(path);
+        }
     }
 }

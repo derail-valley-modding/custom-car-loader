@@ -5,8 +5,8 @@ namespace CCL.Types
     public static class ExporterConstants
     {
         public const string MOD_ID = "DVCustomCarLoader";
-        public static readonly Version ExporterVersion = new Version(2, 0, 0);
-        public static readonly Version MinimumCompatibleVersion = new Version(2, 0, 0);
+        public static readonly Version ExporterVersion = new Version(3, 0, 0);
+        public static readonly Version MinimumCompatibleVersion = new Version(3, 0, 0);
 
         public const string MOD_INFO_FILENAME = "Info.json";
         public const string JSON_FILENAME = "car.json";
@@ -15,6 +15,7 @@ namespace CCL.Types
         public const string IDENTIFIER = "identifier";
         public const string CAR_TYPE = "carType";
         public const string EXPORTER_VERSION = "exportVersion";
+        public const string EXPORTED_BUNDLE_NAME = "ccl_bundle";
 
         public const string REPLACE_FRONT_BOGIE = "frontBogieReplacement";
         public const string FRONT_BOGIE_PARAMS = "frontBogieParams";

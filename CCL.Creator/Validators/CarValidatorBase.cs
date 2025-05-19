@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -244,10 +245,10 @@ namespace CCL.Creator.Validators
             {
                 return Status switch
                 {
-                    ResultStatus.Pass => Color.green,
-                    ResultStatus.Warning => Color.yellow,
-                    ResultStatus.Failed => Color.red,
-                    ResultStatus.Critical => Color.red,
+                    ResultStatus.Pass => EditorHelpers.Colors.CONFIRM_ACTION,
+                    ResultStatus.Warning => EditorHelpers.Colors.WARNING,
+                    ResultStatus.Failed => EditorHelpers.Colors.DELETE_ACTION,
+                    ResultStatus.Critical => EditorHelpers.Colors.DELETE_ACTION,
                     _ => Color.black,
                 };
             }
