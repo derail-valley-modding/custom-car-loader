@@ -1,6 +1,5 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -10,7 +9,7 @@ namespace CCL.Creator.Wizards
 {
     internal class CargoWizard : EditorWindow
     {
-        [MenuItem("CCL/Cargo Wizard")]
+        [MenuItem("CCL/Cargo Wizard", priority = MenuOrdering.MenuBar.CargoWizard)]
         public static void ShowWindow()
         {
             ShowWindowForSetup(AssetHelper.GetSelectedAsset<CargoSetup>());
@@ -20,7 +19,7 @@ namespace CCL.Creator.Wizards
         {
             var window = GetWindow<CargoWizard>();
             window.Show();
-            window.titleContent = new GUIContent("Cargo Wizard");
+            window.titleContent = new GUIContent("CCL - Cargo Wizard");
             window._setup = setup;
         }
 

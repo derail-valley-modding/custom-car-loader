@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
 using CCL.Types;
 
-namespace CCL.Creator.Wizards
+namespace CCL.Creator.Utility
 {
     internal static class OtherMods
     {

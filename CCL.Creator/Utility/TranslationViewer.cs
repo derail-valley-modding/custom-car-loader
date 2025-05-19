@@ -18,7 +18,7 @@ namespace CCL.Creator.Utility
 {
     public static class TranslationViewer
     {
-        private const string MISSING = "[MISSING TRANSLATION]";
+        private const string MISSING = "[ MISSING TRANSLATION ]";
 
         private static Dictionary<string, TranslationData>? _defaultTranslations = null;
         private static bool _attemptedLoad = false;
@@ -81,89 +81,89 @@ namespace CCL.Creator.Utility
             EditorHelpers.SaveAndRefresh();
         }
 
-        [MenuItem("CCL/Language Preview/Refresh Web CSVs")]
+        [MenuItem("CCL/Language Preview/Refresh Web CSVs", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void RefreshCSVMenu()
         {
             _refreshCoro = RefreshCSVCoro(true);
             EditorApplication.update += RefreshCSVEditorUpdate;
         }
 
-        [MenuItem("CCL/Language Preview/(preview only applies to normal objects or within prefab editor)")]
+        [MenuItem("CCL/Language Preview/(preview only applies to normal objects or within prefab editor)", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void Dummy() { }
 
-        [MenuItem("CCL/Language Preview/English")]
+        [MenuItem("CCL/Language Preview/English", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewEnglish() => ViewLanguage(DVLanguage.English);
 
-        [MenuItem("CCL/Language Preview/Czech")]
+        [MenuItem("CCL/Language Preview/Czech", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewCzech() => ViewLanguage(DVLanguage.Czech);
 
-        [MenuItem("CCL/Language Preview/Danish")]
+        [MenuItem("CCL/Language Preview/Danish", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewDanish() => ViewLanguage(DVLanguage.Danish);
 
-        [MenuItem("CCL/Language Preview/German")]
+        [MenuItem("CCL/Language Preview/German", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewGerman() => ViewLanguage(DVLanguage.German);
 
-        [MenuItem("CCL/Language Preview/Spanish")]
+        [MenuItem("CCL/Language Preview/Spanish", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewSpanish() => ViewLanguage(DVLanguage.Spanish);
 
-        [MenuItem("CCL/Language Preview/Finnish")]
+        [MenuItem("CCL/Language Preview/Finnish", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewFinnish() => ViewLanguage(DVLanguage.Finnish);
 
-        [MenuItem("CCL/Language Preview/French")]
+        [MenuItem("CCL/Language Preview/French", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewFrench() => ViewLanguage(DVLanguage.French);
 
-        [MenuItem("CCL/Language Preview/Hindi")]
+        [MenuItem("CCL/Language Preview/Hindi", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewHindi() => ViewLanguage(DVLanguage.Hindi);
 
-        [MenuItem("CCL/Language Preview/Hungarian")]
+        [MenuItem("CCL/Language Preview/Hungarian", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewHungarian() => ViewLanguage(DVLanguage.Hungarian);
 
-        [MenuItem("CCL/Language Preview/Italian")]
+        [MenuItem("CCL/Language Preview/Italian", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewItalian() => ViewLanguage(DVLanguage.Italian);
 
-        [MenuItem("CCL/Language Preview/Japanese")]
+        [MenuItem("CCL/Language Preview/Japanese", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewJapanese() => ViewLanguage(DVLanguage.Japanese);
 
-        [MenuItem("CCL/Language Preview/Korean")]
+        [MenuItem("CCL/Language Preview/Korean", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewKorean() => ViewLanguage(DVLanguage.Korean);
 
-        [MenuItem("CCL/Language Preview/Norwegian")]
+        [MenuItem("CCL/Language Preview/Norwegian", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewNorwegian() => ViewLanguage(DVLanguage.Norwegian);
 
-        [MenuItem("CCL/Language Preview/Dutch")]
+        [MenuItem("CCL/Language Preview/Dutch", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewDutch() => ViewLanguage(DVLanguage.Dutch);
 
-        [MenuItem("CCL/Language Preview/Polish")]
+        [MenuItem("CCL/Language Preview/Polish", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewPolish() => ViewLanguage(DVLanguage.Polish);
 
-        [MenuItem("CCL/Language Preview/Portuguese")]
+        [MenuItem("CCL/Language Preview/Portuguese", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewPortuguese() => ViewLanguage(DVLanguage.Portuguese);
 
-        [MenuItem("CCL/Language Preview/Portuguese BR")]
+        [MenuItem("CCL/Language Preview/Portuguese BR", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewPortuguese_BR() => ViewLanguage(DVLanguage.Portuguese_BR);
 
-        [MenuItem("CCL/Language Preview/Romanian")]
+        [MenuItem("CCL/Language Preview/Romanian", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewRomanian() => ViewLanguage(DVLanguage.Romanian);
 
-        [MenuItem("CCL/Language Preview/Russian")]
+        [MenuItem("CCL/Language Preview/Russian", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewRussian() => ViewLanguage(DVLanguage.Russian);
 
-        [MenuItem("CCL/Language Preview/Slovak")]
+        [MenuItem("CCL/Language Preview/Slovak", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewSlovak() => ViewLanguage(DVLanguage.Slovak);
 
-        [MenuItem("CCL/Language Preview/Swedish")]
+        [MenuItem("CCL/Language Preview/Swedish", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewSwedish() => ViewLanguage(DVLanguage.Swedish);
 
-        [MenuItem("CCL/Language Preview/Turkish")]
+        [MenuItem("CCL/Language Preview/Turkish", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewTurkish() => ViewLanguage(DVLanguage.Turkish);
 
-        [MenuItem("CCL/Language Preview/Ukrainian")]
+        [MenuItem("CCL/Language Preview/Ukrainian", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewUkrainian() => ViewLanguage(DVLanguage.Ukrainian);
 
-        [MenuItem("CCL/Language Preview/Chinese Simple")]
+        [MenuItem("CCL/Language Preview/Chinese Simple", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewChinese_Simple() => ViewLanguage(DVLanguage.Chinese_Simple);
 
-        [MenuItem("CCL/Language Preview/Chinese Traditional")]
+        [MenuItem("CCL/Language Preview/Chinese Traditional", priority = MenuOrdering.MenuBar.LanguagePreview)]
         public static void ViewChinese_Trad() => ViewLanguage(DVLanguage.Chinese_Trad);
 
         #endregion
