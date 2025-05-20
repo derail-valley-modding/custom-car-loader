@@ -194,14 +194,10 @@ namespace CCL.Creator.Wizards.SimSetup
 
             fuseController.fuseId = FullFuseId(fusebox, 0);
 
-            switch (basisIndex)
+            if (HasTender(basisIndex))
             {
-                case 1:
-                    _baseControls.propagateNeutralStateToRear = true;
-                    CreateBroadcastProvider(dynamo, "DYNAMO_FLOW_NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "DYNAMO_FLOW");
-                    break;
-                default:
-                    break;
+                _baseControls.propagateNeutralStateToRear = true;
+                CreateBroadcastProvider(dynamo, "DYNAMO_FLOW_NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "DYNAMO_FLOW");
             }
 
             // Neutral states.
@@ -233,6 +229,10 @@ namespace CCL.Creator.Wizards.SimSetup
                 FullPortId(lubricator, "MECHANICAL_PT_HEALTH_EXT_IN"),
                 FullPortId(oilingPoints, "MECHANICAL_PT_HEALTH_EXT_IN")
             };
+
+            // Port Overrider.
+            var portOverrider = AddBasePortsOverrider();
+            FillPortOverriderSteamer(portOverrider, boiler, oilingPoints, lubricator);
 
             // Port connections.
             ConnectPorts(steamEngine, "TORQUE_OUT", traction, "TORQUE_IN");

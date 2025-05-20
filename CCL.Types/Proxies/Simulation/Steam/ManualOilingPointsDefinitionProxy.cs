@@ -12,11 +12,11 @@ namespace CCL.Types.Proxies.Simulation.Steam
         [Serializable]
         public class OilingPointDefinition
         {
-            public PortDefinition oilLevelReadOut;
-            public PortDefinition oilLevelNormalizedReadOut;
-            public PortDefinition pointDoorExtIn;
-            public PortDefinition refillExtIn;
-            public PortDefinition refillingFlowNormalizedReadOut;
+            public PortDefinition oilLevelReadOut = new PortDefinition();
+            public PortDefinition oilLevelNormalizedReadOut = new PortDefinition();
+            public PortDefinition pointDoorExtIn = new PortDefinition();
+            public PortDefinition refillExtIn = new PortDefinition();
+            public PortDefinition refillingFlowNormalizedReadOut = new PortDefinition();
 
             public PortDefinition[] AllPorts => new[]
             {

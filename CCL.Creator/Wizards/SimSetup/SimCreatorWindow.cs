@@ -105,7 +105,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             SelectedType = EditorHelpers.EnumPopup("Simulation Type", SelectedType);
 
-            string[] basisOptions = _creator.SimBasisOptions;
+            string[] basisOptions = _creator!.SimBasisOptions;
             _basisIndex = EditorGUILayout.Popup("Default Values", _basisIndex, basisOptions);
 
             EditorGUILayout.Space(18);
@@ -221,6 +221,16 @@ namespace CCL.Creator.Wizards.SimSetup
             }
 
             return wheelslide;
+        }
+
+        protected BasePortsOverriderProxy AddBasePortsOverrider()
+        {
+            if (!_baseControls.TryGetComponent(out BasePortsOverriderProxy overrider))
+            {
+                overrider = _baseControls.gameObject.AddComponent<BasePortsOverriderProxy>();
+            }
+
+            return overrider;
         }
 
         #region Generic Components

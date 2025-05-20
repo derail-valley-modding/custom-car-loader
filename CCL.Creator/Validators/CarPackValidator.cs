@@ -47,13 +47,72 @@ namespace CCL.Creator.Validators
             }
         }
 
+        private class TableWidths
+        {
+            public const float Padding = 4.0f;
+
+            public float Name = 30.0f;
+            public float Result = 20.0f;
+            public float Button = 20.0f;
+            public float Message = 100.0f;
+
+            public void ResizeName(float value)
+            {
+                Name = Mathf.Max(Name, value);
+            }
+
+            public void ResizeName(string text)
+            {
+                ResizeName(TextSize(text));
+            }
+
+            public void ResizeResult(float value)
+            {
+                Result = Mathf.Max(Result, value);
+            }
+
+            public void ResizeResult(string text)
+            {
+                ResizeResult(TextSize(text));
+            }
+
+            public void ResizeButton(float value)
+            {
+                Button = Mathf.Max(Button, value);
+            }
+
+            public void ResizeButton(string text)
+            {
+                ResizeButton(TextSize(text));
+            }
+
+            public void ResizeMessage(float value)
+            {
+                Message = Mathf.Max(Message, value);
+            }
+
+            public void ResizeMessage(string text)
+            {
+                ResizeMessage(TextSize(text));
+            }
+
+            public GUILayoutOption[] ToOptions()
+            {
+                return new[] { GUILayout.Width(Name), GUILayout.Width(Result), GUILayout.Width(Button), GUILayout.Width(Message) };
+            }
+
+            public static float TextSize(string text) => EditorStyles.label.CalcSize(new GUIContent(text)).x + Padding;
+        }
+
         private static CarPackValidator s_window = null!;
 
         private CustomCarPack? _pack;
+        private ValidationResult _packResult = null!;
         private List<CarResults> _results = new List<CarResults>();
         private bool _needsCorrections = false;
         private bool _failed = false;
         private Vector2 _scroll = Vector2.zero;
+        private TableWidths _widths = null!;
 
         public static void ValidateExport(CustomCarPack pack)
         {
@@ -62,7 +121,7 @@ namespace CCL.Creator.Validators
 
             if (!pack)
             {
-                Debug.LogError("Train car setup is null, cannot validate");
+                Debug.LogError("Car pack is null, cannot validate");
                 return;
             }
 
@@ -78,10 +137,77 @@ namespace CCL.Creator.Validators
             _needsCorrections = false;
             _failed = false;
 
+            ValidatePack(pack);
+
             foreach (var car in pack.Cars)
             {
                 ValidateCar(car);
             }
+
+            _widths = new TableWidths();
+
+            _widths.ResizeButton(" Go ");
+
+            foreach (var name in Enum.GetNames(typeof(ResultStatus)))
+            {
+                _widths.ResizeResult(name);
+            }
+
+            foreach (var entry in _packResult.Entries)
+            {
+                _widths.ResizeName(GetName(entry));
+                _widths.ResizeMessage(GetMessage(entry));
+            }
+
+            foreach (var carResult in _results)
+            {
+                foreach (var result in carResult.Results)
+                {
+                    foreach (var entry in result.Entries)
+                    {
+                        _widths.ResizeName(GetName(entry));
+                        _widths.ResizeMessage(GetMessage(entry));
+                    }
+                }
+            }
+        }
+
+        private void ValidatePack(CustomCarPack pack)
+        {
+            _packResult = new ValidationResult("Pack Fields");
+
+            if (string.IsNullOrEmpty(pack.PackId))
+            {
+                _packResult.Fail("Pack ID is empty", pack);
+            }
+
+            if (string.IsNullOrEmpty(pack.PackName))
+            {
+                _packResult.Fail("Pack name is empty", pack);
+            }
+
+            if (string.IsNullOrEmpty(pack.Author))
+            {
+                _packResult.Fail("Author is empty", pack);
+            }
+
+            if (pack.Cars.Any(x => x is null))
+            {
+                _packResult.Fail("There are missing cars in the pack", pack);
+            }
+
+            if (pack.ExtraModels.Any(x => x is null))
+            {
+                _packResult.Fail("There are missing models in the pack", pack);
+            }
+
+            if (pack.PaintSubstitutions.Any(x => x is null))
+            {
+                _packResult.Fail("There are missing paints in the pack", pack);
+            }
+
+            _needsCorrections |= _packResult.IsCorrectable;
+            _failed |= _packResult.AnyFailure;
         }
 
         private void ValidateCar(CustomCarType car)
@@ -113,9 +239,17 @@ namespace CCL.Creator.Validators
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             EditorGUILayout.BeginVertical();
 
+            GUILayout.BeginVertical("box");
+            EditorHelpers.DrawHeader("Pack");
+
+            DrawResults(_packResult.Entries, _widths);
+
+            EditorGUILayout.Space();
+            EditorGUILayout.EndVertical();
+
             foreach (var list in _results)
             {
-                DrawSingleCarResults(list);
+                DrawSingleCarResults(list, _widths);
             }
 
             EditorGUILayout.EndVertical();
@@ -158,83 +292,75 @@ namespace CCL.Creator.Validators
             }
         }
 
-        private static void DrawSingleCarResults(CarResults results)
+        private static void DrawSingleCarResults(CarResults results, TableWidths widths)
         {
             GUILayout.BeginVertical("box");
             EditorHelpers.DrawHeader(results.CarId);
 
-            GUILayout.BeginHorizontal();
-
-            var entries = results.Results.SelectMany(x => x.Entries);
-
-            // Test Names
-            GUILayout.BeginVertical();
-            foreach (var result in entries)
-            {
-                // All rows need 1 extra pixel to align with the buttons.
-                GUILayout.Label($"{result.TestName}: ", GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
-            }
-            GUILayout.EndVertical();
-
-            // Statuses
-            GUILayout.BeginVertical();
-            foreach (var result in entries)
-            {
-                using (new GUIColorScope(result.StatusColor))
-                {
-                    GUILayout.Label(Enum.GetName(typeof(ResultStatus), result.Status), GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
-                }
-            }
-            GUILayout.EndVertical();
-
-            // Quick link
-            GUILayout.BeginVertical();
-            GUILayout.Space(2);
-            foreach (var result in entries)
-            {
-                if (result.HasContext)
-                {
-                    // Opens the offending object/component in the inspector.
-                    if (GUILayout.Button("Go"))
-                    {
-                        // Open the prefab if needed.
-                        var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(result.Context);
-
-                        if (!string.IsNullOrEmpty(prefabPath))
-                        {
-                            AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
-                        }
-
-                        Selection.activeObject = result.Context;
-                    }
-                }
-                else if (result.HasSettingContext)
-                {
-                    // Opens project settings.
-                    if (GUILayout.Button("Go"))
-                    {
-                        SettingsService.OpenProjectSettings(result.SettingsContext);
-                    }
-                }
-                else
-                {
-                    // Padding so the buttons aren't misaligned.
-                    GUILayout.Label(" ", GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
-                }
-            }
-            GUILayout.EndVertical();
-
-            // Messages
-            GUILayout.BeginVertical(GUILayout.ExpandWidth(true));
-            foreach (var result in entries)
-            {
-                GUILayout.Label(" " + result.Message, GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
-            }
-            GUILayout.EndVertical();
-
-            GUILayout.EndHorizontal();
+            DrawResults(results.Results.SelectMany(x => x.Entries), widths);
+            
             EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
         }
+
+        private static void DrawResults(IEnumerable<ResultEntry> entries, TableWidths widths)
+        {
+            var options = widths.ToOptions();
+
+            foreach (var result in entries)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                EditorGUILayout.LabelField(GetName(result), options[0]);
+
+                using (new GUIColorScope(result.StatusColor))
+                {
+                    GUILayout.Label(GetStatus(result), options[1]);
+                }
+
+                DrawContextButton(result, options[2]);
+
+                GUILayout.Label(GetMessage(result), options[3]);
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        private static void DrawContextButton(ResultEntry result, GUILayoutOption width)
+        {
+            if (result.HasContext)
+            {
+                // Opens the offending object/component in the inspector.
+                if (GUILayout.Button("Go", width))
+                {
+                    // Open the prefab if needed.
+                    var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(result.Context);
+
+                    if (!string.IsNullOrEmpty(prefabPath))
+                    {
+                        AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
+                    }
+
+                    Selection.activeObject = result.Context;
+                }
+            }
+            else if (result.HasSettingContext)
+            {
+                // Opens project settings.
+                if (GUILayout.Button("Go", width))
+                {
+                    SettingsService.OpenProjectSettings(result.SettingsContext);
+                }
+            }
+            else
+            {
+                // Padding so the buttons aren't misaligned.
+                GUILayout.Label(" ", width, GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
+            }
+        }
+
+        private static string GetName(ResultEntry entry) => $"{entry.TestName}: ";
+        private static string GetStatus(ResultEntry entry) => Enum.GetName(typeof(ResultStatus), entry.Status);
+        private static string GetMessage(ResultEntry entry) => entry.Message;
     }
 }

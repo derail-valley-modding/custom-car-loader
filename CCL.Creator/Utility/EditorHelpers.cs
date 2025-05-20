@@ -17,7 +17,7 @@ namespace CCL.Creator.Utility
         {
             public static readonly Color DEFAULT = Color.white;
             public static readonly Color CONFIRM_ACTION = new Color(0.50f, 1.80f, 0.75f);
-            public static readonly Color WARNING = new Color(2.00f, 1.50f, 0.25f);
+            public static readonly Color WARNING = new Color(1.75f, 1.40f, 0.25f);
             public static readonly Color DELETE_ACTION = new Color(2.00f, 0.75f, 0.75f);
         }
 
@@ -349,15 +349,15 @@ namespace CCL.Creator.Utility
 
             if (expanded)
             {
-                int size = Mathf.Max(0, EditorGUILayout.DelayedIntField("Size", array.Length));
-
-                if (array.Length != size)
-                {
-                    Array.Resize(ref array, size);
-                }
-
                 using (new EditorGUI.IndentLevelScope())
                 {
+                    int size = Mathf.Max(0, EditorGUILayout.DelayedIntField("Size", array.Length));
+
+                    if (array.Length != size)
+                    {
+                        Array.Resize(ref array, size);
+                    }
+
                     for (int i = 0; i < size; i++)
                     {
                         array[i] = EditorGUILayout.TextField($"Item {i}", array[i]);

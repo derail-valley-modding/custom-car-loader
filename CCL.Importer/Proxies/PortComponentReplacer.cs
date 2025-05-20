@@ -39,6 +39,8 @@ namespace CCL.Importer.Proxies
             CreateMap<ResourceMassPortReaderProxy, ResourceMassPortReader>().AutoCacheAndMap();
 
             CreateMap<WaterDetectorPortFeederProxy, WaterDetectorPortFeeder>().AutoCacheAndMap();
+
+            CreateMap<BasePortsOverriderProxy, BasePortsOverrider>().AutoCacheAndMap();
         }
     }
 }

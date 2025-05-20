@@ -40,7 +40,7 @@ namespace CCL.Importer
             var harmony = new Harmony(CCLPluginInfo.Guid);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-            InfoDump();
+            InfoDump(false);
 
             return true;
         }
@@ -65,7 +65,7 @@ namespace CCL.Importer
             Instance.Logger.Warning(message);
         }
 
-        private static void InfoDump(bool dump = false)
+        private static void InfoDump(bool dump)
         {
             if (!dump) return;
 
@@ -77,11 +77,13 @@ namespace CCL.Importer
             Write("Livery IDs", DV.Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id));
             Write("Car Type IDs", DV.Globals.G.Types.carTypes.Select(x => x.id));
             Write("Car Kind IDs", DV.Globals.G.Types.CarKinds.Select(x => x.id));
+
             WriteNoDetail("Cargo to Car",
                 DV.Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"));
             WriteNoDetail("Car to Cargo",
                 DV.Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car =>
                     $"{car.id}:\n\"{string.Join("\",    \n\"", DV.Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo))}\""));
+            WriteNoDetail("Cargo ID to Mass", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => $"{{ \"{x.id}\", {x.massPerUnit} }}" ));
 
             static void Write(string title, IEnumerable<string> values)
             {
