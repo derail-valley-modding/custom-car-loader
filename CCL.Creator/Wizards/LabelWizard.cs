@@ -33,10 +33,9 @@ namespace CCL.Creator.Wizards
         private void OnGUI()
         {
             EditorGUILayout.BeginVertical("box");
-            EditorStyles.label.wordWrap = true;
 
-            _name = EditorGUILayout.TextField("Label Name:", _name);
-            _selectedModelIdx = EditorGUILayout.Popup(new GUIContent("Model Type:"), _selectedModelIdx, LabelLocalizerEditor.ModelOptionNames);
+            _name = EditorGUILayout.TextField("Label Name", _name);
+            _selectedModelIdx = EditorGUILayout.Popup(new GUIContent("Model Type"), _selectedModelIdx, LabelLocalizerEditor.ModelOptionNames);
 
             EditorGUILayout.Space(18);
 

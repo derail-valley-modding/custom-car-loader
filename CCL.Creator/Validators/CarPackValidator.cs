@@ -176,17 +176,17 @@ namespace CCL.Creator.Validators
         {
             _packResult = new ValidationResult("Pack Fields");
 
-            if (string.IsNullOrEmpty(pack.PackId))
+            if (string.IsNullOrWhiteSpace(pack.PackId))
             {
                 _packResult.Fail("Pack ID is empty", pack);
             }
 
-            if (string.IsNullOrEmpty(pack.PackName))
+            if (string.IsNullOrWhiteSpace(pack.PackName))
             {
                 _packResult.Fail("Pack name is empty", pack);
             }
 
-            if (string.IsNullOrEmpty(pack.Author))
+            if (string.IsNullOrWhiteSpace(pack.Author))
             {
                 _packResult.Fail("Author is empty", pack);
             }

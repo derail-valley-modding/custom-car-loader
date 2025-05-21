@@ -63,66 +63,68 @@ namespace CCL.Creator.Wizards
 
         private void OnGUI()
         {
-            EditorGUILayout.BeginVertical("box");
-            EditorStyles.label.wordWrap = true;
-
-            var serialized = new SerializedObject(_settings);
-
-            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.IndicatorName)));
-
-            var valueProp = serialized.FindProperty(nameof(Settings.TrackedValueType));
-            EditorGUILayout.PropertyField(valueProp);
-            var valueType = (Settings.ReaderType)Enum.GetValues(typeof(Settings.ReaderType)).GetValue(valueProp.enumValueIndex);
-
-            if (valueType == Settings.ReaderType.Fuse)
+            using (new WordWrapScope(true))
             {
-                EditorGUILayout.Space();
-                var idRect = EditorGUILayout.GetControlRect();
+                EditorGUILayout.BeginVertical("box");
+
+                var serialized = new SerializedObject(_settings);
+
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.IndicatorName)));
+
+                var valueProp = serialized.FindProperty(nameof(Settings.TrackedValueType));
+                EditorGUILayout.PropertyField(valueProp);
+                var valueType = (Settings.ReaderType)Enum.GetValues(typeof(Settings.ReaderType)).GetValue(valueProp.enumValueIndex);
+
+                if (valueType == Settings.ReaderType.Fuse)
+                {
+                    EditorGUILayout.Space();
+                    var idRect = EditorGUILayout.GetControlRect();
+                    FuseIdEditor.RenderProperty(
+                        idRect,
+                        serialized.FindProperty(nameof(Settings.SourceFuseId)),
+                        new GUIContent("Tracked Fuse"),
+                        _settings.TargetObject.transform);
+                }
+                else if (valueType == Settings.ReaderType.Port)
+                {
+                    EditorGUILayout.Space();
+
+                    var filterProp = serialized.FindProperty(nameof(Settings.PortFilter));
+                    EditorGUILayout.PropertyField(filterProp);
+
+                    var filterType = (DVPortValueType)Enum.GetValues(typeof(DVPortValueType)).GetValue(filterProp.enumValueIndex);
+
+                    var idRect = EditorGUILayout.GetControlRect();
+                    var filter = new PortIdAttribute(filterType);
+
+                    PortIdEditor.RenderProperty(
+                        idRect,
+                        serialized.FindProperty(nameof(Settings.SourcePortId)),
+                        new GUIContent("Tracked Port"),
+                        _settings.TargetObject.transform,
+                        filter);
+                }
+
+                var fuseRect = EditorGUILayout.GetControlRect();
                 FuseIdEditor.RenderProperty(
-                    idRect,
-                    serialized.FindProperty(nameof(Settings.SourceFuseId)),
-                    new GUIContent("Tracked Fuse"),
+                    fuseRect,
+                    serialized.FindProperty(nameof(Settings.FuseId)),
+                    new GUIContent("Power Fuse"),
                     _settings.TargetObject.transform);
+
+
+                serialized.ApplyModifiedProperties();
+                EditorGUILayout.Space(18);
+
+                if (GUILayout.Button("Add Lamp"))
+                {
+                    CreateLamp(_settings);
+                    Close();
+                    return;
+                }
+
+                EditorGUILayout.EndVertical();
             }
-            else if (valueType == Settings.ReaderType.Port)
-            {
-                EditorGUILayout.Space();
-
-                var filterProp = serialized.FindProperty(nameof(Settings.PortFilter));
-                EditorGUILayout.PropertyField(filterProp);
-
-                var filterType = (DVPortValueType)Enum.GetValues(typeof(DVPortValueType)).GetValue(filterProp.enumValueIndex);
-
-                var idRect = EditorGUILayout.GetControlRect();
-                var filter = new PortIdAttribute(filterType);
-
-                PortIdEditor.RenderProperty(
-                    idRect,
-                    serialized.FindProperty(nameof(Settings.SourcePortId)),
-                    new GUIContent("Tracked Port"),
-                    _settings.TargetObject.transform,
-                    filter);
-            }
-
-            var fuseRect = EditorGUILayout.GetControlRect();
-            FuseIdEditor.RenderProperty(
-                fuseRect,
-                serialized.FindProperty(nameof(Settings.FuseId)),
-                new GUIContent("Power Fuse"),
-                _settings.TargetObject.transform);
-
-
-            serialized.ApplyModifiedProperties();
-            EditorGUILayout.Space(18);
-
-            if (GUILayout.Button("Add Lamp"))
-            {
-                CreateLamp(_settings);
-                Close();
-                return;
-            }
-
-            EditorGUILayout.EndVertical();
         }
 
         private static void CreateLamp(Settings settings)

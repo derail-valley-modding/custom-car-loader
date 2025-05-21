@@ -418,4 +418,20 @@ namespace CCL.Creator.Utility
             GUI.contentColor = _entryContent;
         }
     }
+
+    internal class WordWrapScope : IDisposable
+    {
+        private readonly bool _wrap;
+
+        public WordWrapScope(bool wrap)
+        {
+            _wrap = EditorStyles.label.wordWrap;
+            EditorStyles.label.wordWrap = wrap;
+        }
+
+        public void Dispose()
+        {
+            EditorStyles.label.wordWrap = _wrap;
+        }
+    }
 }

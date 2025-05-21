@@ -37,13 +37,12 @@ namespace CCL.Creator.Wizards
 
             public DVPortValueType PortFilter;
             [PortId]
-            public string PortId;
-
+            public string PortId = string.Empty;
             [FuseId]
-            public string FuseId;
+            public string FuseId = string.Empty;
         }
 
-        private Settings _settings;
+        private Settings _settings = null!;
 
         private void Refresh(GameObject target)
         {
@@ -53,59 +52,61 @@ namespace CCL.Creator.Wizards
 
         private void OnGUI()
         {
-            EditorGUILayout.BeginVertical("box");
-            EditorStyles.label.wordWrap = true;
-
-            var serialized = new SerializedObject(_settings);
-
-            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.IndicatorName)));
-            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.IndicatorType)));
-
-            var valueProp = serialized.FindProperty(nameof(Settings.ValueType));
-            EditorGUILayout.PropertyField(valueProp);
-
-            var valueType = (IndicatorValueType)Enum.GetValues(typeof(IndicatorValueType)).GetValue(valueProp.enumValueIndex);
-            if (valueType == IndicatorValueType.PortValue)
+            using (new WordWrapScope(true))
             {
+                EditorGUILayout.BeginVertical("box");
+
+                var serialized = new SerializedObject(_settings);
+
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.IndicatorName)));
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.IndicatorType)));
+
+                var valueProp = serialized.FindProperty(nameof(Settings.ValueType));
+                EditorGUILayout.PropertyField(valueProp);
+
+                var valueType = (IndicatorValueType)Enum.GetValues(typeof(IndicatorValueType)).GetValue(valueProp.enumValueIndex);
+                if (valueType == IndicatorValueType.PortValue)
+                {
+                    EditorGUILayout.Space();
+
+                    var filterProp = serialized.FindProperty(nameof(Settings.PortFilter));
+                    EditorGUILayout.PropertyField(filterProp);
+
+                    var filterType = (DVPortValueType)Enum.GetValues(typeof(DVPortValueType)).GetValue(filterProp.enumValueIndex);
+
+                    var idRect = EditorGUILayout.GetControlRect();
+                    var filter = new PortIdAttribute(filterType);
+
+                    PortIdEditor.RenderProperty(
+                        idRect,
+                        serialized.FindProperty(nameof(Settings.PortId)),
+                        new GUIContent("Source Port"),
+                        _settings.TargetObject.transform,
+                        filter);
+                }
+
                 EditorGUILayout.Space();
 
-                var filterProp = serialized.FindProperty(nameof(Settings.PortFilter));
-                EditorGUILayout.PropertyField(filterProp);
+                var fuseRect = EditorGUILayout.GetControlRect();
+                FuseIdEditor.RenderProperty(
+                    fuseRect,
+                    serialized.FindProperty(nameof(Settings.FuseId)),
+                    new GUIContent("Power Fuse"),
+                    _settings.TargetObject.transform);
 
-                var filterType = (DVPortValueType)Enum.GetValues(typeof(DVPortValueType)).GetValue(filterProp.enumValueIndex);
 
-                var idRect = EditorGUILayout.GetControlRect();
-                var filter = new PortIdAttribute(filterType);
+                serialized.ApplyModifiedProperties();
+                EditorGUILayout.Space(18);
 
-                PortIdEditor.RenderProperty(
-                    idRect,
-                    serialized.FindProperty(nameof(Settings.PortId)),
-                    new GUIContent("Source Port"),
-                    _settings.TargetObject.transform,
-                    filter);
+                if (GUILayout.Button("Add Indicator"))
+                {
+                    CreateIndicator(_settings);
+                    Close();
+                    return;
+                }
+
+                EditorGUILayout.EndVertical();
             }
-
-            EditorGUILayout.Space();
-
-            var fuseRect = EditorGUILayout.GetControlRect();
-            FuseIdEditor.RenderProperty(
-                fuseRect,
-                serialized.FindProperty(nameof(Settings.FuseId)),
-                new GUIContent("Power Fuse"),
-                _settings.TargetObject.transform);
-
-
-            serialized.ApplyModifiedProperties();
-            EditorGUILayout.Space(18);
-
-            if (GUILayout.Button("Add Indicator"))
-            {
-                CreateIndicator(_settings);
-                Close();
-                return;
-            }
-
-            EditorGUILayout.EndVertical();
         }
 
         private static IndicatorProxy AddIndicatorScript(IndicatorType type, GameObject location)

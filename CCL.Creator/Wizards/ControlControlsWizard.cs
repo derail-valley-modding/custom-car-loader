@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using CCL.Types.Proxies.Controls;
 using System.Collections.Generic;
 using UnityEditor;
@@ -160,15 +161,15 @@ namespace CCL.Creator.Wizards
         private static ControlControlsWizard s_window = null!;
 
         private SerializedObject _serializedWindow = null!;
-        [SerializeField]
+        [SerializeField, Tooltip("The control to set up")]
         private ControlSpecProxy _controlSpec = null!;
-        [SerializeField]
+        [SerializeField, Tooltip("Automatically add a toggle feature if available")]
         private bool _autoAddToggle = true;
-        [SerializeField]
+        [SerializeField, Tooltip("The control this spec belongs to")]
         private ControlType _controlType;
-        [SerializeField]
+        [SerializeField, Tooltip("How inputs should behave")]
         private InputType _inputType;
-        [SerializeField]
+        [SerializeField, Tooltip("If the input works in the opposite direction")]
         private bool _flip;
 
         [MenuItem("GameObject/CCL/Setup Control Controls", false, MenuOrdering.Cab.Control)]
@@ -209,13 +210,16 @@ namespace CCL.Creator.Wizards
             }
 
             EditorGUILayout.BeginVertical("box");
-            EditorStyles.label.wordWrap = true;
 
-            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_controlSpec)));
-            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_inputType)));
-            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_controlType)));
-            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_autoAddToggle)));
-            EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_flip)));
+            using (new WordWrapScope(true))
+            {
+                EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_controlSpec)));
+                EditorHelpers.DrawSeparator();
+                EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_inputType)));
+                EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_controlType)));
+                EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_autoAddToggle)));
+                EditorGUILayout.PropertyField(_serializedWindow.FindProperty(nameof(_flip)));
+            }
 
             _serializedWindow.ApplyModifiedProperties();
 

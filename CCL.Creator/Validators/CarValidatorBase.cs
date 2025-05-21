@@ -104,8 +104,19 @@ namespace CCL.Creator.Validators
         {
             var overallResult = new ValidationResult(TestName);
 
+            if (string.IsNullOrWhiteSpace(car.id))
+            {
+                overallResult.Fail("Car ID is empty");
+            }
+
             foreach (var livery in car.liveries)
             {
+                if (livery == null)
+                {
+                    overallResult.CriticalFail("Livery is null!");
+                    break;
+                }
+
                 var curResult = ValidateLivery(livery);
                 overallResult.Merge(curResult);
             }

@@ -3,6 +3,7 @@ using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Creator.Wizards.SimSetup
@@ -12,6 +13,14 @@ namespace CCL.Creator.Wizards.SimSetup
         public TenderSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "S282B" };
+
+        public override IEnumerable<string> GetSimFeatures(int basisIndex)
+        {
+            yield return "Water Storage";
+            yield return "Coal Storage";
+            yield return "Electric Connection To Front";
+            yield return "Resource Connection To Front";
+        }
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {

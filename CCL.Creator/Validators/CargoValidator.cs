@@ -27,7 +27,7 @@ namespace CCL.Creator.Validators
                     result.Fail("Cannot have 0 or negative cargo amount per car");
                 }
 
-                if (string.IsNullOrEmpty(cargo.CargoId))
+                if (string.IsNullOrWhiteSpace(cargo.CargoId))
                 {
                     result.Fail("Cargo ID is empty");
                 }

@@ -6,6 +6,7 @@ using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
+using System.Collections.Generic;
 using UnityEngine;
 
 using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
@@ -17,6 +18,29 @@ namespace CCL.Creator.Wizards.SimSetup
         public DieselElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "DE2", "DE6" };
+
+        public override IEnumerable<string> GetSimFeatures(int basisIndex)
+        {
+            yield return "Diesel Engine";
+
+            switch (basisIndex)
+            {
+                case 0:
+                    yield return "2 Traction Motors";
+                    break;
+                case 1:
+                    yield return "6 Traction Motors";
+                    break;
+                default:
+                    break;
+            }
+
+            yield return "Traction Motors";
+            yield return "Mechanical Compressor";
+
+            if (HasDynamicBrake(basisIndex)) yield return "Dynamic Brake";
+            if (HasBell(basisIndex)) yield return "Bell";
+        }
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {

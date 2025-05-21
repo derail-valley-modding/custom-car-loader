@@ -7,6 +7,7 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Steam;
 using CCL.Types.Proxies.Wheels;
+using System.Collections.Generic;
 using UnityEngine;
 
 using static CCL.Types.Proxies.Controls.BaseControlsOverriderProxy;
@@ -16,12 +17,31 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class SteamerSimCreator : SimCreator
     {
-        // TODO:
-        // Headlights
-
         public SteamerSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "S060", "S282" };
+
+        public override IEnumerable<string> GetSimFeatures(int basisIndex)
+        {
+            yield return "Firebox";
+            yield return "Boiler";
+            yield return "2 Pistons";
+            yield return $"{PoweredAxleCount(basisIndex)} Powered Axles";
+
+            if (HasTender(basisIndex))
+            {
+                yield return "Electric Connection To Rear";
+                yield return "Resource Connection To Rear";
+            }
+            else
+            {
+                yield return "Water Storage";
+                yield return "Coal Storage";
+            }
+
+            if (HasSuperheater(basisIndex)) yield return "Superheated";
+            if (HasFeedwaterHeater(basisIndex)) yield return "Feedwater Heater";
+        }
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
