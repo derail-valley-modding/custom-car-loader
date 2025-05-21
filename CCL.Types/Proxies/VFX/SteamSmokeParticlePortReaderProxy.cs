@@ -7,25 +7,25 @@ namespace CCL.Types.Proxies.VFX
     public class SteamSmokeParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         [PortId(DVPortValueType.STATE, false)]
-        public string fireOnPortId;
+        public string fireOnPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string chuffEventPortId;
+        public string chuffEventPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string isBoilerBrokenPortId;
+        public string isBoilerBrokenPortId = string.Empty;
         [PortId(DVPortValueType.PRESSURE, false)]
-        public string exhaustPressurePortId;
+        public string exhaustPressurePortId = string.Empty;
 
         [Header("Smoke particles")]
-        public GameObject smokeParticlesParent;
-        public AnimationCurve smokeStartSpeedMultiplier;
-        public AnimationCurve smokeEmissionRateMultiplier;
-        public AnimationCurve smokeMaxParticlesMultiplier;
+        public GameObject smokeParticlesParent = null!;
+        public AnimationCurve smokeStartSpeedMultiplier = null!;
+        public AnimationCurve smokeEmissionRateMultiplier = null!;
+        public AnimationCurve smokeMaxParticlesMultiplier = null!;
 
         [Header("Ember particles")]
-        public GameObject emberParticlesParent;
-        public AnimationCurve emberStartSpeedMultiplier;
-        public AnimationCurve emberEmissionRateMultiplier;
-        public AnimationCurve emberMaxParticlesMultiplier;
+        public GameObject emberParticlesParent = null!;
+        public AnimationCurve emberStartSpeedMultiplier = null!;
+        public AnimationCurve emberEmissionRateMultiplier = null!;
+        public AnimationCurve emberMaxParticlesMultiplier = null!;
 
         [RenderMethodButtons]
         [MethodButton(nameof(ApplyS060Defaults), "Apply S060 Defaults")]

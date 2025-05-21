@@ -33,15 +33,15 @@ namespace CCL.Types.Proxies.VFX
             new Keyframe(1.00f, 0));
 
         [PortId(DVPortValueType.STATE, false)]
-        public string crankRotationPortId;
+        public string crankRotationPortId = string.Empty;
         [PortId(DVPortValueType.CONTROL, false)]
-        public string reverserPortId;
+        public string reverserPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylindersInletValveOpenPortId;
+        public string cylindersInletValveOpenPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylinderCockFlowNormalizedPortId;
+        public string cylinderCockFlowNormalizedPortId = string.Empty;
         [PortId(DVPortValueType.GENERIC, false)]
-        public string forwardSpeedPortId;
+        public string forwardSpeedPortId = string.Empty;
 
         public CylinderSetup[] cylinderSetups = new CylinderSetup[0];
         public float startSpeedMultiplierMin;

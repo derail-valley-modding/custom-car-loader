@@ -5,11 +5,11 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Ports
 {
     [ExecuteAlways]
-    public abstract class SimComponentDefinitionProxy : MonoBehaviour
+    public abstract class SimComponentDefinitionProxy : MonoBehaviourWithVehicleDefaults
     {
         private string? _previousId = null;
         [Delayed]
-        public string ID;
+        public string ID = string.Empty;
 
         public virtual IEnumerable<PortDefinition> ExposedPorts => Enumerable.Empty<PortDefinition>();
 

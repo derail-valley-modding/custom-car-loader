@@ -39,7 +39,7 @@ namespace CCL.Creator.Wizards.SimSetup
                 yield return "Coal Storage";
             }
 
-            if (HasSuperheater(basisIndex)) yield return "Superheated";
+            if (HasSuperheater(basisIndex)) yield return "Superheater";
             if (HasFeedwaterHeater(basisIndex)) yield return "Feedwater Heater";
         }
 

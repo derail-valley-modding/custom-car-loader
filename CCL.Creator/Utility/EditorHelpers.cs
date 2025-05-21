@@ -169,7 +169,8 @@ namespace CCL.Creator.Utility
         /// <param name="maxResults">The maximum results to display.</param>
         /// <param name="displayIfEmpty">Display results while the search input is empty.</param>
         /// <remarks>Please ensure the property has a string value.</remarks>
-        public static void StringWithSearchField(SerializedProperty property, IEnumerable<string> searchOptions, float searchMaxHeight, int maxResults, bool displayIfEmpty = false)
+        public static void StringWithSearchField(SerializedProperty property, IEnumerable<string> searchOptions, float searchMaxHeight, int maxResults,
+            bool displayIfEmpty = false)
         {
             GUI.SetNextControlName(SearchFieldControlName);
             EditorGUILayout.PropertyField(property);
@@ -249,7 +250,12 @@ namespace CCL.Creator.Utility
         {
             bool first = true;
 
-            void drawButton(string text, Action action)
+            foreach (var item in VehicleDefaultsHelper.GetActionsForType(component))
+            {
+                DrawButton(item.ActionName, item.Action);
+            }
+
+            void DrawButton(string text, Action action)
             {
                 if (first)
                 {
@@ -266,41 +272,6 @@ namespace CCL.Creator.Utility
                         AssetHelper.SaveAsset(obj);
                     }
                 }
-            }
-
-            if (component is IDE2Defaults de2)
-            {
-                drawButton("Apply DE2 Defaults", de2.ApplyDE2Defaults);
-            }
-
-            if (component is IDE6Defaults de6)
-            {
-                drawButton("Apply DE6 Defaults", de6.ApplyDE6Defaults);
-            }
-
-            if (component is IDH4Defaults dh4)
-            {
-                drawButton("Apply DH4 Defaults", dh4.ApplyDH4Defaults);
-            }
-
-            if (component is IDM3Defaults dm3)
-            {
-                drawButton("Apply DM3 Defaults", dm3.ApplyDM3Defaults);
-            }
-
-            if (component is IBE2Defaults be2)
-            {
-                drawButton("Apply BE2 Defaults", be2.ApplyBE2Defaults);
-            }
-
-            if (component is IS060Defaults s060)
-            {
-                drawButton("Apply S060 Defaults", s060.ApplyS060Defaults);
-            }
-
-            if (component is IS282Defaults s282)
-            {
-                drawButton("Apply S282 Defaults", s282.ApplyS282Defaults);
             }
         }
 
@@ -321,8 +292,8 @@ namespace CCL.Creator.Utility
             EditorGUILayout.LabelField(content, EditorStyles.boldLabel);
         }
 
-        public static ReorderableList CreateReorderableList(SerializedObject obj, SerializedProperty elements, bool draggable, bool displayHeader, bool displayButtons,
-            string header)
+        public static ReorderableList CreateReorderableList(SerializedObject obj, SerializedProperty elements, bool draggable, bool displayHeader,
+            bool displayButtons, string header)
         {
             return new ReorderableList(obj, elements, draggable, displayHeader, displayButtons, displayButtons)
             {
