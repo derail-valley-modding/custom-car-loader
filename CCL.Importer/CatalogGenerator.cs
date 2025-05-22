@@ -4,6 +4,7 @@ using CCL.Types.Catalog.Diagram;
 using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
+using DV.ThingTypes;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace CCL.Importer
 {
     internal static class CatalogGenerator
     {
-        public static List<CatalogPage> PageInfos = new();
+        public static Dictionary<TrainCarLivery, CatalogPage> PageInfos = new();
         public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
         public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
         private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
@@ -32,7 +33,7 @@ namespace CCL.Importer
 
             foreach (var item in PageInfos)
             {
-                var result = ProcessPage(item);
+                var result = ProcessPage(item.Key, item.Value);
 
                 if (result == null) continue;
 
@@ -45,20 +46,8 @@ namespace CCL.Importer
             ClearCache();
         }
 
-        private static VehicleCatalogPageTemplatePaper? ProcessPage(CatalogPage layout)
+        private static VehicleCatalogPageTemplatePaper? ProcessPage(TrainCarLivery livery, CatalogPage layout)
         {
-            if (string.IsNullOrEmpty(layout.CarLiveryId))
-            {
-                CCLPlugin.Error($"Catalog page '{layout.PageName}' has no livery set, skipping.");
-                return null;
-            }
-
-            if (!DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery))
-            {
-                CCLPlugin.Error($"Failed to find livery '{layout.CarLiveryId}' on catalog page '{layout.PageName}', skipping.");
-                return null;
-            }
-
             CCLPlugin.Log($"Generating catalog page '{layout.PageName}'...");
 
             var page = ModelProcessor.CreateModifiablePrefab(TransformDE2.gameObject).transform;
@@ -66,7 +55,7 @@ namespace CCL.Importer
             var paper = page.GetComponent<VehicleCatalogPageTemplatePaper>();
             paper.carLivery = livery;
 
-            ProcessHeader(page, paper, layout);
+            ProcessHeader(page, paper, layout, livery);
             ProcessRoles(page, layout);
             ProcessDiagram(page, layout);
             ProcessTechList(page, layout);
@@ -75,7 +64,7 @@ namespace CCL.Importer
             return paper;
         }
 
-        private static void ProcessHeader(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
+        private static void ProcessHeader(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout, TrainCarLivery livery)
         {
             Paths.GetImage(page, Paths.PageColor).color = layout.HeaderColour;
             Paths.GetText(page, Paths.PageName).SetTextAndUpdate(layout.PageName);
@@ -92,9 +81,9 @@ namespace CCL.Importer
                 nick.SetTextAndUpdate(layout.Nickname);
             }
 
-            Paths.GetImage(page, Paths.Icon).sprite = layout.Icon;
+            Paths.GetImage(page, Paths.Icon).sprite = livery.icon;
 
-            ProcessSpawnLocations(page.Find(Paths.Locations), layout);
+            ProcessSpawnLocations(page.Find(Paths.Locations), layout, livery);
 
             #region Licenses
 
@@ -186,7 +175,7 @@ namespace CCL.Importer
             #endregion
         }
 
-        private static void ProcessSpawnLocations(Transform locations, CatalogPage layout)
+        private static void ProcessSpawnLocations(Transform locations, CatalogPage layout, TrainCarLivery livery)
         {
             LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
 
@@ -216,7 +205,6 @@ namespace CCL.Importer
                 return;
             }
 
-            DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery);
             var og = PageDE2.GetComponentInChildren<LocoSpawnRateRenderer>();
             spawner.loco = livery.parentType;
             spawner.spawnRateIndicatorPrefab = og.spawnRateIndicatorPrefab;
@@ -228,7 +216,7 @@ namespace CCL.Importer
                 {
                     // Get the chance for this ID.
                     // Need to invert since it's storing the chance to NOT spawn. Math.
-                    if (chances.TryGetValue(layout.CarLiveryId, out var chance))
+                    if (chances.TryGetValue(livery.id, out var chance))
                     {
                         item.locoSpawnChances.Add(new(livery.parentType, chance));
                     }

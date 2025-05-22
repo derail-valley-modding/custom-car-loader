@@ -11,7 +11,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "2.0.0";
+        public const string Version = "3.0.0";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
@@ -20,6 +20,7 @@ namespace CCL.Importer
     public static class CCLPlugin
     {
         public static UnityModManager.ModEntry Instance = null!;
+        public static Settings Settings = null!;
         public static bool Enabled => Instance.Active;
         public static string Path = null!;
 
@@ -28,8 +29,11 @@ namespace CCL.Importer
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Instance = modEntry;
-
             Translations = new TranslationInjector(CCLPluginInfo.Guid);
+            Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
+
+            Instance.OnGUI += Settings.Draw;
+            Instance.OnSaveGUI += Settings.Save;
 
             // Build caches before any car is loaded, to only get vanilla resources.
             Processing.GrabberProcessor.BuildAllCaches();
@@ -52,6 +56,8 @@ namespace CCL.Importer
 
         public static void LogVerbose(string message)
         {
+            if (!Settings.UseVerboseLogging) return;
+
             Instance.Logger.Log(message);
         }
 

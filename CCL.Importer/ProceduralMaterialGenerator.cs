@@ -20,10 +20,8 @@ namespace CCL.Importer
             public static readonly int SightGlassGlassTint = Shader.PropertyToID("_GlassTint");
         }
 
-        public static void Generate(ProceduralMaterialDefinitions? definitions)
+        public static void Generate(ProceduralMaterialDefinitions definitions)
         {
-            if (definitions == null) return;
-
             foreach (var definition in definitions.Entries)
             {
                 Generate(definition);

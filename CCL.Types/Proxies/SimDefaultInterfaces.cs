@@ -8,6 +8,8 @@ namespace CCL.Types.Proxies
     {
         public static IEnumerable<(string ActionName, Action Action)> GetActionsForType<T>(T defaults)
         {
+            if (defaults is ILocoDefaults loco) yield return ("Apply Generic Loco Defaults", loco.ApplyLocoDefaults);
+
             if (defaults is IDE2Defaults de2) yield return ("Apply DE2 Defaults", de2.ApplyDE2Defaults);
             if (defaults is IDE6Defaults de6) yield return ("Apply DE6 Defaults", de6.ApplyDE6Defaults);
             if (defaults is IDH4Defaults dh4) yield return ("Apply DH4 Defaults", dh4.ApplyDH4Defaults);
@@ -18,6 +20,8 @@ namespace CCL.Types.Proxies
             if (defaults is IS282Defaults s282) yield return ("Apply S282 Defaults", s282.ApplyS282Defaults);
 
             if (defaults is IBE2Defaults be2) yield return ("Apply BE2 Defaults", be2.ApplyBE2Defaults);
+
+            if (defaults is IWagonDefaults wagon) yield return ("Apply Generic Wagon Defaults", wagon.ApplyWagonDefaults);
         }
     }
 
@@ -25,6 +29,11 @@ namespace CCL.Types.Proxies
     /// Dummy class to easily add default buttons.
     /// </summary>
     public class MonoBehaviourWithVehicleDefaults : MonoBehaviour { }
+
+    public interface ILocoDefaults
+    {
+        void ApplyLocoDefaults();
+    }
 
     public interface IDE2Defaults
     {
@@ -64,5 +73,10 @@ namespace CCL.Types.Proxies
     public interface IBE2Defaults
     {
         void ApplyBE2Defaults();
+    }
+
+    public interface IWagonDefaults
+    {
+        void ApplyWagonDefaults();
     }
 }

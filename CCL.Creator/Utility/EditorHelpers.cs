@@ -252,20 +252,15 @@ namespace CCL.Creator.Utility
 
             foreach (var item in VehicleDefaultsHelper.GetActionsForType(component))
             {
-                DrawButton(item.ActionName, item.Action);
-            }
-
-            void DrawButton(string text, Action action)
-            {
                 if (first)
                 {
                     DrawHeader("Defaults");
                     first = false;
                 }
 
-                if (GUILayout.Button(text))
+                if (GUILayout.Button(item.ActionName))
                 {
-                    action();
+                    item.Action();
 
                     if (component is UnityEngine.Object obj)
                     {

@@ -13,7 +13,6 @@ namespace CCL.Types.Catalog
         public string ConsistUnits = "1/1";
         [Tooltip("Optional")]
         public string Nickname = "";
-        public Sprite Icon = null!;
         public string ProductionYears = "1900-1999";
 
         [Header("Licenses")]
@@ -25,7 +24,6 @@ namespace CCL.Types.Catalog
         public string License2 = "";
         [AnyLicenseField]
         public string License3 = "";
-        public string CarLiveryId = "";
 
         [Header("Vehicle Type")]
         public VehicleType Type = VehicleType.Locomotive;

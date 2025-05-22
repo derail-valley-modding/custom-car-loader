@@ -2,6 +2,7 @@
 using UnityEngine;
 using DVLangHelper.Data;
 using CCL.Types.Json;
+using CCL.Types.Catalog;
 
 namespace CCL.Types
 {
@@ -10,7 +11,7 @@ namespace CCL.Types
     {
         [Header("Basic Properties")]
         public CustomCarType? parentType;
-        public string? id;
+        public string id = string.Empty;
 
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
@@ -47,6 +48,9 @@ namespace CCL.Types
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
         [SerializeField, HideInInspector]
         private string? _spawnGroupJson = string.Empty;
+
+        [Header("Catalog - optional")]
+        public CatalogPage? CatalogPage = null;
 
         [RenderMethodButtons]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]

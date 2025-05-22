@@ -5,6 +5,7 @@ using DVLangHelper.Data;
 using CCL.Types.Json;
 using CCL.Types.HUD;
 using CCL.Types.Catalog;
+using CCL.Types.Proxies;
 
 namespace CCL.Types
 {
@@ -24,19 +25,23 @@ namespace CCL.Types
         public const float ROLLING_RESISTANCE_COEFFICIENT = 0.002f;
         public const float WHEELSLIDE_FRICTION_COEFFICIENT = 0.13f;
         public const float WHEELSLIP_FRICTION_COEFFICIENT = 0.2f;
+        public const float BOGIE_BRAKING_FORCE = 15000.0f;
 
         [Header("Basic Properties")]
         public DVTrainCarKind KindSelection = DVTrainCarKind.Car;
 
         public string id = string.Empty;
         public string carIdPrefix = "-";
+        [Tooltip("Check if this car should be treated as a steam locomotive")]
+        public bool IsSteamLocomotive = false;
 
         [HideInInspector]
         public string? localizationKey;
 
+        [Space]
+        public TranslationData NameTranslations;
         [SerializeField, HideInInspector]
         public string? NameTranslationJson = null;
-        public TranslationData NameTranslations;
 
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
@@ -57,20 +62,14 @@ namespace CCL.Types
         public BrakesSetup brakes;
         public DamageSetup damage;
 
+        [Space]
         public UnusedCarDeletePreventionMode unusedCarDeletePreventionMode;
 
-        [Space]
-        [Tooltip("Any extra prefab that has scripts on it should be added here")]
-        public GameObject[] ExtraModels = new GameObject[0];
-
         [Header("Audio - optional")]
-        public GameObject SimAudioPrefab;
+        public GameObject? SimAudioPrefab;
 
         [Header("HUD - optional")]
         public VanillaHUDLayout HUDLayout = null!;
-
-        [Header("Catalog - optional")]
-        public CatalogPage CatalogPage = null!;
 
         [Header("License - optional")]
         [Tooltip("Only general license IDs are supported (not job licenses)")]
@@ -81,6 +80,8 @@ namespace CCL.Types
         private string? brakesJson;
         [SerializeField, HideInInspector]
         private string? damageJson;
+
+        public bool IsActualSteamLocomotive => IsSteamLocomotive && KindSelection == DVTrainCarKind.Loco;
 
         public CustomCarType()
         {
@@ -164,19 +165,11 @@ namespace CCL.Types
                         }
                     }
                 }
-
-                foreach (var model in ExtraModels)
-                {
-                    if (model != null)
-                    {
-                        yield return model;
-                    }
-                }
             }
         }
 
         [Serializable]
-        public class BrakesSetup
+        public class BrakesSetup : IWagonDefaults
         {
             public enum TrainBrakeType
             {
@@ -204,10 +197,22 @@ namespace CCL.Types
             //public BrakesCurve indBrakeCurveData;
             public BrakeCylinderPressureCalculation brakeCylinderPressureCalculation;
             public float brakingForcePerBogieMultiplier = 1;
+
+            public void ApplyWagonDefaults()
+            {
+                hasCompressor = false;
+                hasMainResConnections = false;
+                brakeValveType = TrainBrakeType.None;
+                hasIndependentBrake = false;
+                hasHandbrake = true;
+                ignoreOverheating = false;
+                brakeCylinderPressureCalculation = BrakeCylinderPressureCalculation.Regular;
+                brakingForcePerBogieMultiplier = 1.0f;
+            }
         }
 
         [Serializable]
-        public class DamageSetup
+        public class DamageSetup : IWagonDefaults
         {
             [Header("HP - leave at 0 if unused")]
             public float wheelsHP;
@@ -219,11 +224,17 @@ namespace CCL.Types
             public float wheelsPrice = -1f;
             public float electricalPowertrainPrice = -1f;
             public float mechanicalPowertrainPrice = -1f;
-        }
-    }
 
-    public interface IAssetLoadCallback
-    {
-        void AfterAssetLoad(AssetBundle bundle);
+            public void ApplyWagonDefaults()
+            {
+                wheelsHP = 0.0f;
+                mechanicalPowertrainHP = 0.0f;
+                electricalPowertrainHP = 0.0f;
+
+                wheelsPrice = -1.0f;
+                electricalPowertrainPrice = -1.0f;
+                mechanicalPowertrainPrice = -1.0f;
+            }
+        }
     }
 }
