@@ -63,7 +63,6 @@ namespace CCL.Creator.Wizards
         private void OnGUI()
         {
             _scroll = EditorGUILayout.BeginScrollView(new Vector2(0, _scroll)).y;
-            EditorStyles.label.wordWrap = true;
 
             EditorHelpers.DrawHeader("Front Lights");
             EditorHelpers.DrawStringArray("White Light Names", ref _settingsF.WhiteNames, true);

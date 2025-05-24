@@ -1,4 +1,5 @@
-﻿using CCL.Importer.Processing;
+﻿using CCL.Importer.Patches;
+using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
 using System;
@@ -90,14 +91,47 @@ namespace CCL.Importer
                 loaded += LoadCar(car) ? 1 : 0;
             }
 
+            CCLPlugin.Log("Processing extra models...");
+            foreach (var model in pack.ExtraModels)
+            {
+                ModelProcessor.DoBasicProcessing(model);
+            }
+
             // Load paints.
-            CCLPlugin.Log("Loading paints...");
-            PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
+            if (pack.PaintSubstitutions.Length > 0)
+            {
+                CCLPlugin.Log("Loading paints...");
+                PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
+            }
             // Generate procedural materials.
-            CCLPlugin.Log("Generating materials...");
-            ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
+            if (pack.ProceduralMaterials != null)
+            {
+                CCLPlugin.Log("Generating materials...");
+                ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
+            }
+
+            InjectTranslations(pack);
 
             return loaded;
+        }
+
+        private static void InjectTranslations(CustomCarPack pack)
+        {
+            if (pack.ExtraTranslations == null) return;
+
+            CCLPlugin.Log("Injection custom translations...");
+            if (pack.ExtraTranslations.Terms != null)
+            {
+                foreach (var term in pack.ExtraTranslations.Terms)
+                {
+                    CCLPlugin.Translations.AddTranslations(term.Term, term.Data);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(pack.ExtraTranslations.CSV_Url))
+            {
+                CCLPlugin.Translations.AddTranslationsFromWebCsv(pack.ExtraTranslations.CSV_Url!);
+            }
         }
 
         private static bool LoadCar(CustomCarType car)
@@ -139,13 +173,6 @@ namespace CCL.Importer
                     }
                 }
 
-                // Generate catalog page.
-                if (carType.CatalogPage != null)
-                {
-                    carType.CatalogPage.AfterImport();
-                    CatalogGenerator.PageInfos.Add(carType.CatalogPage);
-                }
-
                 // Create the HUD if it exists.
                 if (car.HUDLayout != null)
                 {
@@ -155,6 +182,14 @@ namespace CCL.Importer
                     if (car.HUDLayout.HUDType == CCL.Types.HUD.VanillaHUDLayout.BaseHUD.Custom)
                     {
                         carType.hudPrefab.name = $"HUD-{car.id}";
+                    }
+                }
+
+                if (car.IsActualSteamLocomotive)
+                {
+                    foreach (var item in car.liveries)
+                    {
+                        CarTypesPatches.SteamLocomotiveIds.Add(item.id);
                     }
                 }
 
@@ -180,17 +215,10 @@ namespace CCL.Importer
                 }
             }
 
-            if (carType.SimAudioPrefab)
+            if (carType.SimAudioPrefab != null)
             {
                 carType.SimAudioPrefab = ModelProcessor.CreateModifiablePrefab(carType.SimAudioPrefab);
                 ModelProcessor.DoBasicProcessing(carType.SimAudioPrefab);
-            }
-
-            CCLPlugin.Log($"Extra models: {carType.ExtraModels.Length}");
-
-            foreach (var extraModel in carType.ExtraModels)
-            {
-                ModelProcessor.DoBasicProcessing(extraModel);
             }
 
             return true;

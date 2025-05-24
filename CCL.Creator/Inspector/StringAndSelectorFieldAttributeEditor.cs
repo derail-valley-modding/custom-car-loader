@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -9,6 +10,9 @@ namespace CCL.Creator.Inspector
     [CustomPropertyDrawer(typeof(StringAndSelectorFieldAttribute), true)]
     internal class StringAndSelectorFieldAttributeEditor : PropertyDrawer
     {
+        private const float SelectorWidth = 20.0f;
+        private const float Separation = 2.0f;
+
         public static readonly GUIContent SelectorField = new GUIContent("    Quick Select",
             "You can quickly select a value from here instead of typing it manually\n" +
             "If this selector supports custom values, it will include an option for it");
@@ -21,12 +25,11 @@ namespace CCL.Creator.Inspector
 
             EditorGUI.BeginProperty(position, label, property);
 
-            Rect controlPos = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-            Vector2 offset = new Vector2(0, EditorGUIUtility.singleLineHeight);
+            Rect controlPos1 = new Rect(position.x, position.y, position.width - SelectorWidth - Separation, EditorGUIUtility.singleLineHeight);
+            Rect controlPos2 = new Rect(position.x + controlPos1.width + Separation, position.y, SelectorWidth, EditorGUIUtility.singleLineHeight);
 
             EditorGUI.BeginChangeCheck();
-            EditorGUI.DelayedTextField(controlPos, property);
-            controlPos.position += offset;
+            EditorGUI.DelayedTextField(controlPos1, property);
 
             // Get the current string as an array index.
             if (EditorGUI.EndChangeCheck())
@@ -58,34 +61,37 @@ namespace CCL.Creator.Inspector
                 }
             }
 
-            // Create the selector. Indent it a bit so it doesn't look like a property itself.
-            var newIndex = EditorGUI.Popup(controlPos, SelectorField, _selected, att.Options
-                .Select(x => new GUIContent(x)).ToArray());
-
-            if (newIndex != _selected)
+            using (new ResetIndentScope())
             {
-                _selected = newIndex;
+                // Create the selector. Indent it a bit so it doesn't look like a property itself.
+                var newIndex = EditorGUI.Popup(controlPos2, _selected, att.Options
+                    .Select(x => new GUIContent(x)).ToArray());
 
-                // Clear the string on Not Set instead of writing... Not Set.
-                if (newIndex == 0)
+                if (newIndex != _selected)
                 {
-                    property.stringValue = string.Empty;
-                }
-                else if (!(att.CustomAllowed && newIndex == att.Options.Count - 1))
-                {
-                    property.stringValue = att.Options[newIndex];
+                    _selected = newIndex;
+
+                    // Clear the string on Not Set instead of writing... Not Set.
+                    if (newIndex == 0)
+                    {
+                        property.stringValue = string.Empty;
+                    }
+                    else if (!(att.CustomAllowed && newIndex == att.Options.Count - 1))
+                    {
+                        property.stringValue = att.Options[newIndex];
+                    }
                 }
             }
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUIUtility.singleLineHeight;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             OnGUIInternal(position, property, label);
-        }
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return EditorGUIUtility.singleLineHeight * 2;
         }
 
         // Easy adding of extra options to prevent duplicate code.

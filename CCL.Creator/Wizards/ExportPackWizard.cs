@@ -87,6 +87,7 @@ namespace CCL.Creator.Wizards
                 "This button will open a window that allows you to select a folder to export your car. " +
                 "If a CCL asset bundle already exists, it will be written over.");
 
+            EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
 
             _openFolderAfterExport = GUILayout.Toggle(_openFolderAfterExport, "Open build folder after export");
@@ -130,6 +131,7 @@ namespace CCL.Creator.Wizards
                 EditorGUILayout.LabelField(_requirements[i]);
             }
 
+            EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
         }
 

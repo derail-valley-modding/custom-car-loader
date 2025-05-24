@@ -1,5 +1,4 @@
 ﻿using CCL.Types;
-using CCL.Types.Catalog;
 using DV;
 using DV.ThingTypes;
 using DVLangHelper.Data;
@@ -16,11 +15,8 @@ namespace CCL.Importer.Types
         public DVTrainCarKind KindSelection;
         public TranslationData NameTranslations = new();
         public CargoSetup? CargoSetup;
-        public GameObject[] ExtraModels = new GameObject[0];
-        public CatalogPage? CatalogPage;
-        public ExtraTranslations ExtraTranslations;
 
-        public GameObject SimAudioPrefab;
+        public GameObject? SimAudioPrefab;
 
         private Dictionary<string, float>? _cargoAmounts;
         public Dictionary<string, float> CargoAmounts => Extensions.GetCached(ref _cargoAmounts, GenerateCargoAmounts);

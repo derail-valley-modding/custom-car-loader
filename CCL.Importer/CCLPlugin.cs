@@ -11,7 +11,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "2.0.0";
+        public const string Version = "3.0.0";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
@@ -20,6 +20,7 @@ namespace CCL.Importer
     public static class CCLPlugin
     {
         public static UnityModManager.ModEntry Instance = null!;
+        public static Settings Settings = null!;
         public static bool Enabled => Instance.Active;
         public static string Path = null!;
 
@@ -28,11 +29,14 @@ namespace CCL.Importer
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Instance = modEntry;
-
             Translations = new TranslationInjector(CCLPluginInfo.Guid);
+            Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
+
+            Instance.OnGUI += Settings.Draw;
+            Instance.OnSaveGUI += Settings.Save;
 
             // Build caches before any car is loaded, to only get vanilla resources.
-            Processing.GrabberProcessor.BuildAllCaches();
+            Processing.GrabberProcessor.BuildAllCaches(false);
 
             CarManager.ScanLoadedMods();
             UnityModManager.toggleModsListen += CarManager.HandleModToggled;
@@ -40,7 +44,7 @@ namespace CCL.Importer
             var harmony = new Harmony(CCLPluginInfo.Guid);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-            InfoDump();
+            InfoDump(false);
 
             return true;
         }
@@ -52,6 +56,8 @@ namespace CCL.Importer
 
         public static void LogVerbose(string message)
         {
+            if (!Settings.UseVerboseLogging) return;
+
             Instance.Logger.Log(message);
         }
 
@@ -65,9 +71,9 @@ namespace CCL.Importer
             Instance.Logger.Warning(message);
         }
 
-        private static void InfoDump(bool dump = false)
+        private static void InfoDump(bool print)
         {
-            if (!dump) return;
+            if (!print) return;
 
             Write("Cargo IDs", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
             Write("General Licence IDs", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));
@@ -77,11 +83,13 @@ namespace CCL.Importer
             Write("Livery IDs", DV.Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id));
             Write("Car Type IDs", DV.Globals.G.Types.carTypes.Select(x => x.id));
             Write("Car Kind IDs", DV.Globals.G.Types.CarKinds.Select(x => x.id));
+
             WriteNoDetail("Cargo to Car",
                 DV.Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"));
             WriteNoDetail("Car to Cargo",
                 DV.Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car =>
                     $"{car.id}:\n\"{string.Join("\",    \n\"", DV.Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo))}\""));
+            WriteNoDetail("Cargo ID to Mass", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => $"{{ \"{x.id}\", {x.massPerUnit} }}" ));
 
             static void Write(string title, IEnumerable<string> values)
             {

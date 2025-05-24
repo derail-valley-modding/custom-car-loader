@@ -17,7 +17,7 @@ namespace CCL.Creator.Utility
         {
             public static readonly Color DEFAULT = Color.white;
             public static readonly Color CONFIRM_ACTION = new Color(0.50f, 1.80f, 0.75f);
-            public static readonly Color WARNING = new Color(2.00f, 1.50f, 0.25f);
+            public static readonly Color WARNING = new Color(1.75f, 1.40f, 0.25f);
             public static readonly Color DELETE_ACTION = new Color(2.00f, 0.75f, 0.75f);
         }
 
@@ -169,7 +169,8 @@ namespace CCL.Creator.Utility
         /// <param name="maxResults">The maximum results to display.</param>
         /// <param name="displayIfEmpty">Display results while the search input is empty.</param>
         /// <remarks>Please ensure the property has a string value.</remarks>
-        public static void StringWithSearchField(SerializedProperty property, IEnumerable<string> searchOptions, float searchMaxHeight, int maxResults, bool displayIfEmpty = false)
+        public static void StringWithSearchField(SerializedProperty property, IEnumerable<string> searchOptions, float searchMaxHeight, int maxResults,
+            bool displayIfEmpty = false)
         {
             GUI.SetNextControlName(SearchFieldControlName);
             EditorGUILayout.PropertyField(property);
@@ -249,7 +250,7 @@ namespace CCL.Creator.Utility
         {
             bool first = true;
 
-            void drawButton(string text, Action action)
+            foreach (var item in VehicleDefaultsHelper.GetActionsForType(component))
             {
                 if (first)
                 {
@@ -257,50 +258,15 @@ namespace CCL.Creator.Utility
                     first = false;
                 }
 
-                if (GUILayout.Button(text))
+                if (GUILayout.Button(item.ActionName))
                 {
-                    action();
+                    item.Action();
 
                     if (component is UnityEngine.Object obj)
                     {
                         AssetHelper.SaveAsset(obj);
                     }
                 }
-            }
-
-            if (component is IDE2Defaults de2)
-            {
-                drawButton("Apply DE2 Defaults", de2.ApplyDE2Defaults);
-            }
-
-            if (component is IDE6Defaults de6)
-            {
-                drawButton("Apply DE6 Defaults", de6.ApplyDE6Defaults);
-            }
-
-            if (component is IDH4Defaults dh4)
-            {
-                drawButton("Apply DH4 Defaults", dh4.ApplyDH4Defaults);
-            }
-
-            if (component is IDM3Defaults dm3)
-            {
-                drawButton("Apply DM3 Defaults", dm3.ApplyDM3Defaults);
-            }
-
-            if (component is IBE2Defaults be2)
-            {
-                drawButton("Apply BE2 Defaults", be2.ApplyBE2Defaults);
-            }
-
-            if (component is IS060Defaults s060)
-            {
-                drawButton("Apply S060 Defaults", s060.ApplyS060Defaults);
-            }
-
-            if (component is IS282Defaults s282)
-            {
-                drawButton("Apply S282 Defaults", s282.ApplyS282Defaults);
             }
         }
 
@@ -321,8 +287,8 @@ namespace CCL.Creator.Utility
             EditorGUILayout.LabelField(content, EditorStyles.boldLabel);
         }
 
-        public static ReorderableList CreateReorderableList(SerializedObject obj, SerializedProperty elements, bool draggable, bool displayHeader, bool displayButtons,
-            string header)
+        public static ReorderableList CreateReorderableList(SerializedObject obj, SerializedProperty elements, bool draggable, bool displayHeader,
+            bool displayButtons, string header)
         {
             return new ReorderableList(obj, elements, draggable, displayHeader, displayButtons, displayButtons)
             {
@@ -349,15 +315,15 @@ namespace CCL.Creator.Utility
 
             if (expanded)
             {
-                int size = Mathf.Max(0, EditorGUILayout.DelayedIntField("Size", array.Length));
-
-                if (array.Length != size)
-                {
-                    Array.Resize(ref array, size);
-                }
-
                 using (new EditorGUI.IndentLevelScope())
                 {
+                    int size = Mathf.Max(0, EditorGUILayout.DelayedIntField("Size", array.Length));
+
+                    if (array.Length != size)
+                    {
+                        Array.Resize(ref array, size);
+                    }
+
                     for (int i = 0; i < size; i++)
                     {
                         array[i] = EditorGUILayout.TextField($"Item {i}", array[i]);
@@ -416,6 +382,39 @@ namespace CCL.Creator.Utility
             GUI.color = _entryColor;
             GUI.backgroundColor = _entryBackground;
             GUI.contentColor = _entryContent;
+        }
+    }
+
+    internal class WordWrapScope : IDisposable
+    {
+        private readonly bool _wrap;
+
+        public WordWrapScope(bool wrap)
+        {
+            _wrap = EditorStyles.label.wordWrap;
+            EditorStyles.label.wordWrap = wrap;
+        }
+
+        public void Dispose()
+        {
+            EditorStyles.label.wordWrap = _wrap;
+        }
+    }
+
+    // Unity is Unity.
+    internal class ResetIndentScope : IDisposable
+    {
+        private readonly int _indent;
+
+        public ResetIndentScope()
+        {
+            _indent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+        }
+
+        public void Dispose()
+        {
+            EditorGUI.indentLevel = _indent;
         }
     }
 }

@@ -7,6 +7,7 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Steam;
 using CCL.Types.Proxies.Wheels;
+using System.Collections.Generic;
 using UnityEngine;
 
 using static CCL.Types.Proxies.Controls.BaseControlsOverriderProxy;
@@ -16,12 +17,31 @@ namespace CCL.Creator.Wizards.SimSetup
 {
     internal class SteamerSimCreator : SimCreator
     {
-        // TODO:
-        // Headlights
-
         public SteamerSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "S060", "S282" };
+
+        public override IEnumerable<string> GetSimFeatures(int basisIndex)
+        {
+            yield return "Firebox";
+            yield return "Boiler";
+            yield return "2 Pistons";
+            yield return $"{PoweredAxleCount(basisIndex)} Powered Axles";
+
+            if (HasTender(basisIndex))
+            {
+                yield return "Electric Connection To Rear";
+                yield return "Resource Connection To Rear";
+            }
+            else
+            {
+                yield return "Water Storage";
+                yield return "Coal Storage";
+            }
+
+            if (HasSuperheater(basisIndex)) yield return "Superheater";
+            if (HasFeedwaterHeater(basisIndex)) yield return "Feedwater Heater";
+        }
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
@@ -194,14 +214,10 @@ namespace CCL.Creator.Wizards.SimSetup
 
             fuseController.fuseId = FullFuseId(fusebox, 0);
 
-            switch (basisIndex)
+            if (HasTender(basisIndex))
             {
-                case 1:
-                    _baseControls.propagateNeutralStateToRear = true;
-                    CreateBroadcastProvider(dynamo, "DYNAMO_FLOW_NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "DYNAMO_FLOW");
-                    break;
-                default:
-                    break;
+                _baseControls.propagateNeutralStateToRear = true;
+                CreateBroadcastProvider(dynamo, "DYNAMO_FLOW_NORMALIZED", DVPortForwardConnectionType.COUPLED_REAR, "DYNAMO_FLOW");
             }
 
             // Neutral states.
@@ -233,6 +249,10 @@ namespace CCL.Creator.Wizards.SimSetup
                 FullPortId(lubricator, "MECHANICAL_PT_HEALTH_EXT_IN"),
                 FullPortId(oilingPoints, "MECHANICAL_PT_HEALTH_EXT_IN")
             };
+
+            // Port Overrider.
+            var portOverrider = AddBasePortsOverrider();
+            FillPortOverriderSteamer(portOverrider, boiler, oilingPoints, lubricator);
 
             // Port connections.
             ConnectPorts(steamEngine, "TORQUE_OUT", traction, "TORQUE_IN");

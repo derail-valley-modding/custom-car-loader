@@ -5,6 +5,7 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -15,6 +16,11 @@ namespace CCL.Creator.Wizards.SimSetup
         public SlugSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "DE6 Slug" };
+
+        public override IEnumerable<string> GetSimFeatures(int basisIndex)
+        {
+            yield return "6 Traction Motors";
+        }
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {

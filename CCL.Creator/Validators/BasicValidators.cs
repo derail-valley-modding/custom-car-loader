@@ -14,6 +14,11 @@ namespace CCL.Creator.Validators
                 return CriticalFail("Livery must have a prefab assigned!");
             }
 
+            if (string.IsNullOrWhiteSpace(livery.id))
+            {
+                return Fail("Livery has no ID set");
+            }
+
             return Pass();
         }
     }

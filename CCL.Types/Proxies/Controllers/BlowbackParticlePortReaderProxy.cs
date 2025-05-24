@@ -4,20 +4,20 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
-    public class BlowbackParticlePortReaderProxy : MonoBehaviour, IHasPortIdFields, IS060Defaults, IS282Defaults
+    public class BlowbackParticlePortReaderProxy : MonoBehaviourWithVehicleDefaults, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         public float blowbackAirflowThreshold = 1.5f;
         public ExplosionPrefab blowbackParticlesPrefab = ExplosionPrefab.Fire;
         public float particlesLifetime = 4f;
-        public Transform spawnAnchor;
+        public Transform spawnAnchor = null!;
         [PortId(null, null, false)]
-        public string forwardSpeedId;
+        public string forwardSpeedId = string.Empty;
         [PortId(null, null, false)]
-        public string airflowId;
+        public string airflowId = string.Empty;
         [PortId(null, null, false)]
-        public string fireOnId;
+        public string fireOnId = string.Empty;
         [PortId(null, null, false)]
-        public string fireboxDoorId;
+        public string fireboxDoorId = string.Empty;
 
         [RenderMethodButtons]
         [MethodButton(nameof(SetLayers), "Set Layers",

@@ -2,7 +2,7 @@
 
 namespace CCL.Types.Proxies.VFX
 {
-    public class TunnelParticleDampeningProxy : MonoBehaviour, IS060Defaults, IS282Defaults
+    public class TunnelParticleDampeningProxy : MonoBehaviourWithVehicleDefaults, IS060Defaults, IS282Defaults
     {
         public enum Bogie
         {
@@ -11,7 +11,7 @@ namespace CCL.Types.Proxies.VFX
         }
 
         [Header("Particle systems will have their LimitVelocityOverLifetime.drag values overwritten.")]
-        public GameObject[] systems;
+        public GameObject[] systems = new GameObject[0];
 
         public Bogie bogie;
 

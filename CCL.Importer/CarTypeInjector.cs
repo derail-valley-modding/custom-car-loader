@@ -24,27 +24,17 @@ namespace CCL.Importer
             Globals.G.Types.carTypes.Add(carType);
 
             CCLPlugin.Translations.AddTranslations(carType.localizationKey, carType.NameTranslations);
-
-            if (carType.ExtraTranslations)
-            {
-                if (carType.ExtraTranslations.Terms != null)
-                {
-                    foreach (var term in carType.ExtraTranslations.Terms)
-                    {
-                        CCLPlugin.Translations.AddTranslations(term.Term, term.Data);
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(carType.ExtraTranslations.CSV_Url))
-                {
-                    CCLPlugin.Translations.AddTranslationsFromWebCsv(carType.ExtraTranslations.CSV_Url!);
-                }
-            }
             
             foreach (var livery in carType.Variants)
             {
                 IdToLiveryMap.Add(livery.id, livery);
                 CCLPlugin.Translations.AddTranslations(livery.localizationKey, livery.NameTranslations);
+
+                if (livery.CatalogPage != null)
+                {
+                    livery.CatalogPage.AfterImport();
+                    CatalogGenerator.PageInfos.Add(livery, livery.CatalogPage);
+                }
             }
 
             CargoInjector.InjectLoadableCargos(carType);

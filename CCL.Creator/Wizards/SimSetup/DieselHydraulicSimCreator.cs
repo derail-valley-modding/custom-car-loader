@@ -8,6 +8,7 @@ using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
+using System.Collections.Generic;
 using UnityEngine;
 
 using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
@@ -19,6 +20,15 @@ namespace CCL.Creator.Wizards.SimSetup
         public DieselHydraulicSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "DH4" };
+
+        public override IEnumerable<string> GetSimFeatures(int basisIndex)
+        {
+            yield return "Diesel Engine";
+            yield return "3-Speed Hydraulic Transmission";
+            yield return "Mechanical Compressor";
+            yield return "Hydrodynamic Brake";
+            yield return "Bell";
+        }
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {

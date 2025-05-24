@@ -292,15 +292,17 @@ namespace CCL.Importer.Processing
             }
         }
 
-        public static void BuildAllCaches()
+        public static void BuildAllCaches(bool print)
         {
             s_soundCache.BuildCache();
             s_materialCache.BuildCache();
             s_meshCache.BuildCache();
 
-            //s_soundCache.PrintCache("\",\n\"");
-            //s_materialCache.PrintCache("\",\n\"");
-            //s_meshCache.PrintCache("\",\n\"");
+            if (!print) return;
+
+            s_soundCache.PrintCache("\",\n\"");
+            s_materialCache.PrintCache("\",\n\"");
+            s_meshCache.PrintCache("\",\n\"");
         }
 
         private static string MaterialDiscriminator(Material mat) => mat.HasProperty("_MainTex") ? mat.mainTexture.name : string.Empty;

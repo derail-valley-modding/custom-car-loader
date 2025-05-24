@@ -5,15 +5,12 @@ using System.Linq;
 namespace CCL.Importer.Patches
 {
     [HarmonyPatch(typeof(StaticTextureRenderBase))]
-    internal class BookletTextureRenderPatches
+    internal class StaticTextureRenderBasePatches
     {
         [HarmonyPrefix, HarmonyPatch(nameof(StaticTextureRenderBase.GenerateStaticPagesTextures))]
         private static void PreparePrefix(StaticTextureRenderBase __instance)
         {
-            if (__instance is not VehicleCatalogRender catalog)
-            {
-                return;
-            }
+            if (__instance is not VehicleCatalogRender catalog) return;
 
             CCLPlugin.Log("Starting loco catalog injection...");
             var sw = System.Diagnostics.Stopwatch.StartNew();

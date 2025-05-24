@@ -87,36 +87,45 @@ namespace CCL.Creator.Wizards.SimSetup
 
         public void OnGUI()
         {
-            EditorGUILayout.BeginVertical("box");
-            EditorStyles.label.wordWrap = true;
-
-            if (_simItemsExist)
+            using (new WordWrapScope(true))
             {
-                EditorGUILayout.LabelField("There is already a [sim] implementation on this prefab, this wizard should only be used on a newly created car");
+                EditorGUILayout.BeginVertical("box");
 
-                if (GUILayout.Button("OK"))
+                if (_simItemsExist)
                 {
+                    EditorGUILayout.LabelField("There is already a [sim] implementation on this prefab, this wizard should only be used on a newly created car");
+
+                    if (GUILayout.Button("OK"))
+                    {
+                        Close();
+                    }
+
+                    EditorGUILayout.EndVertical();
+                    return;
+                }
+
+                SelectedType = EditorHelpers.EnumPopup("Simulation Type", SelectedType);
+
+                string[] basisOptions = _creator!.SimBasisOptions;
+                _basisIndex = EditorGUILayout.Popup("Default Values", _basisIndex, basisOptions);
+
+                EditorGUILayout.Space(18);
+
+                if (GUILayout.Button("Add Simulation"))
+                {
+                    _creator.CreateSimForBasis(_basisIndex);
                     Close();
                 }
 
+                EditorHelpers.DrawHeader("Features");
+
+                foreach (var feature in _creator.GetSimFeatures(_basisIndex))
+                {
+                    EditorGUILayout.LabelField($"• {feature}");
+                }
+
                 EditorGUILayout.EndVertical();
-                return;
             }
-
-            SelectedType = EditorHelpers.EnumPopup("Simulation Type", SelectedType);
-
-            string[] basisOptions = _creator.SimBasisOptions;
-            _basisIndex = EditorGUILayout.Popup("Default Values", _basisIndex, basisOptions);
-
-            EditorGUILayout.Space(18);
-            EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Add Simulation"))
-            {
-                _creator.CreateSimForBasis(_basisIndex);
-                Close();
-            }
-            EditorGUILayout.EndHorizontal();
-            EditorGUILayout.EndVertical();
         }
     }
 
@@ -125,10 +134,10 @@ namespace CCL.Creator.Wizards.SimSetup
         public abstract string[] SimBasisOptions { get; }
 
         protected GameObject _root;
-        protected GameObject _sim;
-        protected DamageControllerProxy _damageController;
-        protected SimConnectionsDefinitionProxy _connectionDef;
-        protected BaseControlsOverriderProxy _baseControls;
+        protected GameObject _sim = null!;
+        protected DamageControllerProxy _damageController = null!;
+        protected SimConnectionsDefinitionProxy _connectionDef = null!;
+        protected BaseControlsOverriderProxy _baseControls = null!;
 
         public SimCreator(GameObject prefabRoot)
         {
@@ -221,6 +230,16 @@ namespace CCL.Creator.Wizards.SimSetup
             }
 
             return wheelslide;
+        }
+
+        protected BasePortsOverriderProxy AddBasePortsOverrider()
+        {
+            if (!_baseControls.TryGetComponent(out BasePortsOverriderProxy overrider))
+            {
+                overrider = _baseControls.gameObject.AddComponent<BasePortsOverriderProxy>();
+            }
+
+            return overrider;
         }
 
         #region Generic Components
@@ -608,6 +627,8 @@ namespace CCL.Creator.Wizards.SimSetup
         }
 
         #endregion
+
+        public abstract IEnumerable<string> GetSimFeatures(int basisIndex);
 
         public abstract void CreateSimForBasisImpl(int basisIndex);
     }

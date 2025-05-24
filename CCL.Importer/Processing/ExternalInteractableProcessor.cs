@@ -72,7 +72,7 @@ namespace CCL.Importer.Processing
                 brakeFeeders.RefreshChildren();
 
                 // Car has no handbrakes, delete controller.
-                if (brakeFeeders.entries.Count == 0)
+                if (brakeFeeders.entries.Length == 0)
                 {
                     Object.Destroy(brakeFeeders);
                 }
@@ -181,7 +181,7 @@ namespace CCL.Importer.Processing
 
             if (children.Length > 0)
             {
-                prefab.AddComponent<DoorsAndWindowsController>().entries = children.ToList();
+                prefab.AddComponent<DoorsAndWindowsController>().entries = children;
             }
         }
     }

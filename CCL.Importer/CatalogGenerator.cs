@@ -4,6 +4,7 @@ using CCL.Types.Catalog.Diagram;
 using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
+using DV.ThingTypes;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -13,26 +14,22 @@ namespace CCL.Importer
 {
     internal static class CatalogGenerator
     {
-        public static List<CatalogPage> PageInfos = new();
+        public static Dictionary<TrainCarLivery, CatalogPage> PageInfos = new();
         public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
         public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
         private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
-        private static VehicleCatalogPageTemplatePaper PageH1 { get; set; } = null!;
         private static Transform TransformDE2 { get; set; } = null!;
-        private static Transform TransformH1 { get; set; } = null!;
 
         public static void GeneratePages(VehicleCatalogRender original)
         {
             PageDE2 = original.vehiclePages[0];
-            PageH1 = original.vehiclePages[9];
             TransformDE2 = PageDE2.transform;
-            TransformH1 = PageH1.transform;
 
             NewCatalogPages.Clear();
 
             foreach (var item in PageInfos)
             {
-                var result = ProcessPage(item);
+                var result = ProcessPage(item.Key, item.Value);
 
                 if (result == null) continue;
 
@@ -45,20 +42,8 @@ namespace CCL.Importer
             ClearCache();
         }
 
-        private static VehicleCatalogPageTemplatePaper? ProcessPage(CatalogPage layout)
+        private static VehicleCatalogPageTemplatePaper? ProcessPage(TrainCarLivery livery, CatalogPage layout)
         {
-            if (string.IsNullOrEmpty(layout.CarLiveryId))
-            {
-                CCLPlugin.Error($"Catalog page '{layout.PageName}' has no livery set, skipping.");
-                return null;
-            }
-
-            if (!DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery))
-            {
-                CCLPlugin.Error($"Failed to find livery '{layout.CarLiveryId}' on catalog page '{layout.PageName}', skipping.");
-                return null;
-            }
-
             CCLPlugin.Log($"Generating catalog page '{layout.PageName}'...");
 
             var page = ModelProcessor.CreateModifiablePrefab(TransformDE2.gameObject).transform;
@@ -66,13 +51,29 @@ namespace CCL.Importer
             var paper = page.GetComponent<VehicleCatalogPageTemplatePaper>();
             paper.carLivery = livery;
 
+            UpdateReferences(page, paper, layout);
             ProcessHeader(page, paper, layout);
             ProcessRoles(page, layout);
-            ProcessDiagram(page, layout);
+            ProcessDiagram(page, paper, layout);
             ProcessTechList(page, layout);
             ProcessAllScoreLists(page, layout);
 
             return paper;
+        }
+
+        private static void UpdateReferences(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
+        {
+            if (layout.UnlockedByGarage)
+            {
+                paper.garage.icon = Paths.GetImage(page, Paths.GarageLockIcon);
+                paper.garage.price = Paths.GetTextUGUI(page, Paths.GaragePrice);
+            }
+
+            if (layout.SummonableByRemote)
+            {
+                paper.summon.icon = Paths.GetImage(page, Paths.SummonIcon);
+                paper.summon.price = Paths.GetTextUGUI(page, Paths.SummonPrice);
+            }
         }
 
         private static void ProcessHeader(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
@@ -92,44 +93,9 @@ namespace CCL.Importer
                 nick.SetTextAndUpdate(layout.Nickname);
             }
 
-            Paths.GetImage(page, Paths.Icon).sprite = layout.Icon;
+            Paths.GetImage(page, Paths.Icon).sprite = paper.carLivery.icon;
 
-            ProcessSpawnLocations(page.Find(Paths.Locations), layout);
-
-            #region Licenses
-
-            //if (layout.UnlockedByGarage)
-            //{
-            //    page.Find(Paths.GarageIcon).gameObject.SetActive(true);
-            //    page.Find(Paths.LicenseContainer + "1" + Paths.LicenseLock).gameObject.SetActive(true);
-
-            //    var text = Paths.GetText(page, Paths.LicenseContainer + "1" + Paths.LicenseValue);
-            //    text.gameObject.SetActive(true);
-            //    text.SetTextAndUpdate(FormatPrice(layout.GaragePrice));
-
-            //    page.Find(Paths.License1).gameObject.SetActive(false);
-            //    page.Find(Paths.License2).gameObject.SetActive(false);
-            //    page.Find(Paths.License3).gameObject.SetActive(false);
-
-            //    page.Find(Paths.LicenseContainer + "2" + Paths.LicenseLock).gameObject.SetActive(false);
-            //    page.Find(Paths.LicenseContainer + "2" + Paths.LicenseValue).gameObject.SetActive(false);
-            //    page.Find(Paths.LicenseContainer + "3" + Paths.LicenseLock).gameObject.SetActive(false);
-            //    page.Find(Paths.LicenseContainer + "3" + Paths.LicenseValue).gameObject.SetActive(false);
-            //}
-            //else
-            //{
-            //    ProcessLicense(page, 1, layout.License1);
-            //    ProcessLicense(page, 2, layout.License2);
-            //    ProcessLicense(page, 3, layout.License3);
-            //}
-
-            //if (!layout.UnlockedByGarage)
-            //{
-            //    paper.garage.icon.gameObject.SetActive(false);
-            //    paper.garage.icon = null;
-            //    paper.garage.price.gameObject.SetActive(false);
-            //    paper.garage.price = null;
-            //}
+            ProcessSpawnLocations(page.Find(Paths.Locations), layout, paper.carLivery);
 
             if (!string.IsNullOrEmpty(layout.ProductionYears))
             {
@@ -142,28 +108,8 @@ namespace CCL.Importer
                 page.Find(Paths.ProductionYears).gameObject.SetActive(false);
             }
 
-            #endregion
-
-            //if (layout.SummonableByRemote)
-            //{
-            //    page.Find(Paths.Summonable).gameObject.SetActive(true);
-            //    page.Find(Paths.SummonIcon).gameObject.SetActive(true);
-            //    var text = Paths.GetText(page, Paths.SummonPrice);
-            //    text.gameObject.SetActive(true);
-            //    text.SetTextAndUpdate(FormatPrice(layout.SummonPrice));
-            //}
-            //else
-            //{
-            //    page.Find(Paths.Summonable).gameObject.SetActive(false);
-            //}
-
-            //if (!layout.SummonableByRemote)
-            //{
-            //    paper.summon.icon.gameObject.SetActive(false);
-            //    paper.summon.icon = null;
-            //    paper.summon.price.gameObject.SetActive(false);
-            //    paper.summon.price = null;
-            //}
+            page.Find(Paths.GarageIcon).gameObject.SetActive(layout.UnlockedByGarage);
+            page.Find(Paths.Summonable).gameObject.SetActive(layout.SummonableByRemote);
 
             #region Load Ratings
 
@@ -186,11 +132,12 @@ namespace CCL.Importer
             #endregion
         }
 
-        private static void ProcessSpawnLocations(Transform locations, CatalogPage layout)
+        private static void ProcessSpawnLocations(Transform locations, CatalogPage layout, TrainCarLivery livery)
         {
             LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
 
             // Cache the children so they can be deleted without causing loop issues.
+            // These are the original spawn chance icons.
             List<GameObject> children = new();
 
             for (int i = 0; i < spawner.transform.childCount; i++)
@@ -210,13 +157,15 @@ namespace CCL.Importer
             if (layout.UnlockedByGarage)
             {
                 Object.DestroyImmediate(spawner);
+                // Move icons up to avoid blank space.
+                // Which doesn't work who knows why.
                 var rect = (RectTransform)locations.GetChild(0);
                 rect.sizeDelta = Vector2.zero;
-                rect.GetComponent<Image>().enabled = false;
+                Object.DestroyImmediate(rect.GetComponent<Image>());
+                rect.localPosition += new Vector3(0, -34, 0);
                 return;
             }
 
-            DV.Globals.G.Types.TryGetLivery(layout.CarLiveryId, out var livery);
             var og = PageDE2.GetComponentInChildren<LocoSpawnRateRenderer>();
             spawner.loco = livery.parentType;
             spawner.spawnRateIndicatorPrefab = og.spawnRateIndicatorPrefab;
@@ -228,7 +177,7 @@ namespace CCL.Importer
                 {
                     // Get the chance for this ID.
                     // Need to invert since it's storing the chance to NOT spawn. Math.
-                    if (chances.TryGetValue(layout.CarLiveryId, out var chance))
+                    if (chances.TryGetValue(livery.parentType.id, out var chance))
                     {
                         item.locoSpawnChances.Add(new(livery.parentType, chance));
                     }
@@ -339,7 +288,7 @@ namespace CCL.Importer
 
         #region Diagram
 
-        private static void ProcessDiagram(Transform page, CatalogPage layout)
+        private static void ProcessDiagram(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
         {
             var parent = page.Find(Paths.DiagramParent);
 
@@ -357,11 +306,11 @@ namespace CCL.Importer
             var diagram = parent.Find(Paths.Diagrams.Generic);
             diagram.gameObject.SetActive(true);
 
-            ProcessDiagramExtras(diagram, layout.DiagramExtras);
+            ProcessDiagramExtras(diagram, paper, layout.DiagramExtras);
             ProcessDiagramIcons(diagram, layout.DiagramLayout.transform);
         }
 
-        private static void ProcessDiagramExtras(Transform root, VehicleDiagramExtras extras)
+        private static void ProcessDiagramExtras(Transform root, VehicleCatalogPageTemplatePaper paper, VehicleDiagramExtras extras)
         {
             if (extras.IsThinVehicle)
             {
@@ -376,17 +325,9 @@ namespace CCL.Importer
             Paths.GetText(root, Paths.Diagrams.YText).SetTextAndUpdate($"{extras.Height} mm");
             Paths.GetText(root, Paths.Diagrams.ZText).SetTextAndUpdate($"{extras.Width} mm");
 
-            //var cost = Paths.GetText(root, Paths.Diagrams.Price);
-            //cost.SetTextAndUpdate(FormatPrice(extras.TotalCost));
-            //cost.gameObject.SetActive(extras.TotalCost > 0);
-
-            //var mass = Paths.GetText(root, Paths.Diagrams.MassFull);
-            //mass.SetTextAndUpdate($"{extras.MassFull}t");
-            //mass.transform.parent.gameObject.SetActive(extras.MassFull > 0);
-
-            //mass = Paths.GetText(root, Paths.Diagrams.MassEmpty);
-            //mass.SetTextAndUpdate($"{extras.MassEmpty}t");
-            //mass.transform.parent.gameObject.SetActive(extras.MassEmpty > 0);
+            paper.price = Paths.GetTextUGUI(root, Paths.Diagrams.Price);
+            paper.massEmpty = Paths.GetTextUGUI(root, Paths.Diagrams.MassEmpty);
+            paper.massFull = Paths.GetTextUGUI(root, Paths.Diagrams.MassFull);
         }
 
         private static void ProcessDiagramIcons(Transform root, Transform layout)
@@ -476,6 +417,8 @@ namespace CCL.Importer
 
         #endregion
 
+        #region Tech List
+
         private static void ProcessTechList(Transform page, CatalogPage layout)
         {
             ProcessTech(page.Find(Paths.TechnologyItem), layout.TechList.Tech1);
@@ -557,17 +500,16 @@ namespace CCL.Importer
                     return;
             }
 
-            if (tech.Description.Entries.Length > 0)
-            {
-                //var desc = Paths.GetLocalizeSequence(slot, Paths.TechItems.TechnologyDesc);
-                //desc.gameObject.SetActive(true);
-                //desc.sequence = tech.Description.ToSequence();
-            }
+            var desc = Paths.GetLocalize(slot, Paths.TechItems.TechnologyDesc);
+            desc.gameObject.SetActive(!string.IsNullOrEmpty(tech.Description));
+            desc.SetKeyAndUpdate(tech.Description);
 
             var type = Paths.GetLocalize(slot, Paths.TechItems.TechnologyType);
-            type.gameObject.SetActive(true);
+            type.gameObject.SetActive(!string.IsNullOrEmpty(tech.Type));
             type.SetKeyAndUpdate(tech.Type);
         }
+
+        #endregion
 
         #region Score Lists
 
@@ -718,19 +660,17 @@ namespace CCL.Importer
             _ => throw new System.ArgumentOutOfRangeException(nameof(role)),
         };
 
-        private static string FormatPrice(float price) => "$" + price.ToString("N0", LocalizationAPI.CC);
-
         private static void ClearCache()
         {
             CCLPlugin.Log("Cleaning up...");
             PageDE2 = null!;
             PageDE2 = null!;
-            PageH1 = null!;
             TransformDE2 = null!;
-            TransformH1 = null!;
             SpawnChances.Clear();
             Icons.ClearCache();
         }
+
+        public static string FormatPrice(float price) => "$" + price.ToString("N0", LocalizationAPI.CC);
 
         private static class Paths
         {
@@ -754,6 +694,8 @@ namespace CCL.Importer
             public const string LicenseValue = "-PriceValue";
             public const string SummonIcon = Locations + "/YearPriceContainer/SummonIcon";
             public const string SummonPrice = Locations + "/YearPriceContainer/SummonPrice";
+            public const string GarageLockIcon = Locations + "/YearPriceContainer/Garage-LockIcon";
+            public const string GaragePrice = Locations + "/YearPriceContainer/Garage-PriceValue";
 
             public const string VehicleType = Content + "/ColumnLeft/VCVehicleType/VehicleType";
             public const string VehicleRole1 = VehicleType + "/VehicleRoles/VehicleRole1";
@@ -867,11 +809,11 @@ namespace CCL.Importer
 
             public static TMP_Text GetText(Transform root, string path) => TMPHelper.GetTMP(root.Find(path));
 
+            public static TextMeshProUGUI GetTextUGUI(Transform root, string path) => TMPHelper.GetTextMeshProUGUI(root.Find(path));
+
             public static Localize GetLocalize(Transform root, string path) => root.Find(path).GetComponent<Localize>();
 
             public static LocalizedNumber GetLocalizedNumber(Transform root, string path) => root.Find(path).GetComponent<LocalizedNumber>();
-
-            //public static LocalizeSequence GetLocalizeSequence(Transform root, string path) => root.Find(path).GetComponent<LocalizeSequence>();
 
             public static Image GetImage(Transform root, string path) => root.Find(path).GetComponent<Image>();
         }

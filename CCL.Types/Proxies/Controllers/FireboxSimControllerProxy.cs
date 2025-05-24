@@ -1,28 +1,26 @@
 ﻿using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Simulation.Steam;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
-    public class FireboxSimControllerProxy : MonoBehaviour, IHasPortIdFields, IS060Defaults, IS282Defaults
+    public class FireboxSimControllerProxy : MonoBehaviourWithVehicleDefaults, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         public float coalConsumptionMultiplier = 1f;
-
         [PortId(null, null, false)]
-        public string fireboxCapacityPortId;
+        public string fireboxCapacityPortId = string.Empty;
         [PortId(null, null, false)]
-        public string fireboxContentsPortId;
+        public string fireboxContentsPortId = string.Empty;
         [PortId(null, null, false)]
-        public string fireboxDoorPortId;
+        public string fireboxDoorPortId = string.Empty;
         [PortId(null, null, false)]
-        public string combustionRateNormalizedPortId;
+        public string combustionRateNormalizedPortId = string.Empty;
         [PortId(null, null, false)]
-        public string fireOnPortId;
+        public string fireOnPortId = string.Empty;
         [PortId(null, null, false)]
-        public string fireboxCoalControlPortId;
+        public string fireboxCoalControlPortId = string.Empty;
         [PortId(null, null, false)]
-        public string fireboxIgnitionPortId;
+        public string fireboxIgnitionPortId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

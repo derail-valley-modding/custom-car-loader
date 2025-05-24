@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Types;
+using CCL.Types.Catalog;
 using DV.ThingTypes;
 using DVLangHelper.Data;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ namespace CCL.Importer.Types
         public bool HideBackCoupler;
 
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
+        public CatalogPage? CatalogPage = null;
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;

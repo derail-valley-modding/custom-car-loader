@@ -15,6 +15,11 @@ namespace CCL.Importer
             return c.GetComponent<TMP_Text>();
         }
 
+        public static TextMeshProUGUI GetTextMeshProUGUI(Component c)
+        {
+            return c.GetComponent<TextMeshProUGUI>();
+        }
+
         public static void SetTextAndUpdate(this TMP_Text component, string text)
         {
             component.text = text;

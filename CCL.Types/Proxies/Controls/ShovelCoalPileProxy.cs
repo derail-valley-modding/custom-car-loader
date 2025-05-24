@@ -2,7 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
-    public class ShovelCoalPileProxy : MonoBehaviour, IS060Defaults, IS282Defaults
+    public class ShovelCoalPileProxy : MonoBehaviourWithVehicleDefaults, IS060Defaults, IS282Defaults
     {
         [Tooltip("Whether this coal pile supplies infinite coal")]
         public bool isInfinite;

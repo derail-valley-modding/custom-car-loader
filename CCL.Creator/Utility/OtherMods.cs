@@ -33,11 +33,6 @@ namespace CCL.Creator.Utility
                 return true;
             }
 
-            if (carType.CatalogPage != null && carType.CatalogPage.AllLicenses.Any(x => x == "Passengers"))
-            {
-                return true;
-            }
-
             return false;
         }
 
@@ -49,11 +44,6 @@ namespace CCL.Creator.Utility
         public static bool RequiresCustomLicenseMod(CustomCarType carType)
         {
             if (!Utilities.IsVanillaLicense(carType.LicenseID))
-            {
-                return true;
-            }
-
-            if (carType.CatalogPage != null && carType.CatalogPage.AllLicenses.Any(x => !Utilities.IsVanillaLicense(x)))
             {
                 return true;
             }

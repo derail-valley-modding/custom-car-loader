@@ -56,53 +56,55 @@ namespace CCL.Creator.Wizards
 
         private void OnGUI()
         {
-            EditorGUILayout.BeginVertical("box");
-            EditorStyles.label.wordWrap = true;
-
-            var serialized = new SerializedObject(_settings);
-
-            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlName)));
-            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlType)));
-            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AddStaticInteractionArea)));
-
-            var fuseProp = serialized.FindProperty(nameof(Settings.IsFuseControl));
-            EditorGUILayout.PropertyField(fuseProp);
-            bool isFuse = fuseProp.boolValue;
-
-            var idRect = EditorGUILayout.GetControlRect();
-            if (isFuse)
+            using (new WordWrapScope(true))
             {
-                FuseIdEditor.RenderProperty(
-                    idRect,
-                    serialized.FindProperty(nameof(Settings.ControlledFuseId)),
-                    new GUIContent("Controlled Fuse"),
-                    _settings.TargetObject.transform);
+                EditorGUILayout.BeginVertical("box");
+
+                var serialized = new SerializedObject(_settings);
+
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlName)));
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.ControlType)));
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AddStaticInteractionArea)));
+
+                var fuseProp = serialized.FindProperty(nameof(Settings.IsFuseControl));
+                EditorGUILayout.PropertyField(fuseProp);
+                bool isFuse = fuseProp.boolValue;
+
+                var idRect = EditorGUILayout.GetControlRect();
+                if (isFuse)
+                {
+                    FuseIdEditor.RenderProperty(
+                        idRect,
+                        serialized.FindProperty(nameof(Settings.ControlledFuseId)),
+                        new GUIContent("Controlled Fuse"),
+                        _settings.TargetObject.transform);
+                }
+                else
+                {
+                    var filter = new PortIdAttribute(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL);
+
+                    PortIdEditor.RenderProperty(
+                        idRect,
+                        serialized.FindProperty(nameof(Settings.ControlledPortId)),
+                        new GUIContent("Controlled Port"),
+                        _settings.TargetObject.transform,
+                        filter);
+                }
+
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AutomaticReparenting)));
+
+                serialized.ApplyModifiedProperties();
+                EditorGUILayout.Space(18);
+
+                if (GUILayout.Button("Add Control"))
+                {
+                    CreateControl(_settings);
+                    Close();
+                    return;
+                }
+
+                EditorGUILayout.EndVertical();
             }
-            else
-            {
-                var filter = new PortIdAttribute(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL);
-
-                PortIdEditor.RenderProperty(
-                    idRect,
-                    serialized.FindProperty(nameof(Settings.ControlledPortId)),
-                    new GUIContent("Controlled Port"),
-                    _settings.TargetObject.transform,
-                    filter);
-            }
-
-            EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AutomaticReparenting)));
-
-            serialized.ApplyModifiedProperties();
-            EditorGUILayout.Space(18);
-
-            if (GUILayout.Button("Add Control"))
-            {
-                CreateControl(_settings);
-                Close();
-                return;
-            }
-
-            EditorGUILayout.EndVertical();
         }
 
         private static Type GetSpecType(DVControlClass type)

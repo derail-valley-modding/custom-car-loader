@@ -79,11 +79,11 @@ namespace CCL.Importer.Processing
             var newTrainCar = Car.prefab.AddComponent<TrainCar>();
             newTrainCar.carLivery = Car;
 
-            // Set interior layers.
-            if (Car.interiorPrefab)
-            {
-                ModelUtil.SetLayersRecursiveAndExclude(Car.interiorPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
-            }
+            // Set layers.
+            if (Car.interiorPrefab) ModelUtil.SetLayersRecursiveAndExclude(Car.interiorPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
+            if (Car.explodedInteriorPrefab) ModelUtil.SetLayersRecursiveAndExclude(Car.explodedInteriorPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
+            if (Car.externalInteractablesPrefab) ModelUtil.SetLayersRecursiveAndExclude(Car.externalInteractablesPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
+            if (Car.explodedExternalInteractablesPrefab) ModelUtil.SetLayersRecursiveAndExclude(Car.explodedExternalInteractablesPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
         }
 
         private static Transform CreateHolder()
@@ -114,7 +114,7 @@ namespace CCL.Importer.Processing
 
         public static void DoBasicProcessing(GameObject prefab)
         {
-            CCLPlugin.LogVerbose($"Deserializing, processing grabbers and proxies for {prefab.name}");
+            CCLPlugin.LogVerbose($"Doing basic processing for {prefab.name}");
             HandleCustomSerialization(prefab);
             GrabberProcessor.ProcessGrabbersOnPrefab(prefab);
             ShaderProcessor.ReplaceShaderGrabbers(prefab);

@@ -5,6 +5,7 @@ using CCL.Types.Proxies.Resources;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Wheels;
+using System.Collections.Generic;
 using UnityEngine;
 
 using static CCL.Types.Proxies.Controls.ControlBlockerProxy.BlockerDefinition;
@@ -16,6 +17,13 @@ namespace CCL.Creator.Wizards.SimSetup
         public BatteryElectricSimCreator(GameObject prefabRoot) : base(prefabRoot) { }
 
         public override string[] SimBasisOptions => new[] { "BE2" };
+
+        public override IEnumerable<string> GetSimFeatures(int basisIndex)
+        {
+            yield return "Battery";
+            yield return "2 Traction Motors";
+            yield return "Electric Compressor";
+        }
 
         public override void CreateSimForBasisImpl(int basisIndex)
         {
