@@ -4,7 +4,6 @@ using UnityEngine;
 using DVLangHelper.Data;
 using CCL.Types.Json;
 using CCL.Types.HUD;
-using CCL.Types.Catalog;
 using CCL.Types.Proxies;
 
 namespace CCL.Types
@@ -141,7 +140,7 @@ namespace CCL.Types
             {
                 foreach (var livery in liveries)
                 {
-                    livery.AfterAssetLoad();
+                    livery.AfterImport();
                 }
             }
         }

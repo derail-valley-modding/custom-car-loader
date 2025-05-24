@@ -159,7 +159,7 @@ namespace CCL.Importer.Processing
             if (entries.Length > 0)
             {
                 var controller = prefab.GetOrAddComponent<TController>();
-                controller.entries = entries.ToList();
+                controller.entries = entries;
             }
         }
 

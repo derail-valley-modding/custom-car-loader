@@ -28,6 +28,7 @@ namespace CCL.Types.Proxies
     /// <summary>
     /// Dummy class to easily add default buttons.
     /// </summary>
+    [NotProxied]
     public class MonoBehaviourWithVehicleDefaults : MonoBehaviour { }
 
     public interface ILocoDefaults

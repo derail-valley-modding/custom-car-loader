@@ -36,7 +36,7 @@ namespace CCL.Importer
             Instance.OnSaveGUI += Settings.Save;
 
             // Build caches before any car is loaded, to only get vanilla resources.
-            Processing.GrabberProcessor.BuildAllCaches();
+            Processing.GrabberProcessor.BuildAllCaches(false);
 
             CarManager.ScanLoadedMods();
             UnityModManager.toggleModsListen += CarManager.HandleModToggled;
@@ -71,9 +71,9 @@ namespace CCL.Importer
             Instance.Logger.Warning(message);
         }
 
-        private static void InfoDump(bool dump)
+        private static void InfoDump(bool print)
         {
-            if (!dump) return;
+            if (!print) return;
 
             Write("Cargo IDs", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
             Write("General Licence IDs", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));

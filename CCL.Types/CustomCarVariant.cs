@@ -111,7 +111,7 @@ namespace CCL.Types
             }
         }
 
-        public void AfterAssetLoad()
+        public void AfterImport()
         {
             if (!string.IsNullOrEmpty(NameTranslationJson))
             {

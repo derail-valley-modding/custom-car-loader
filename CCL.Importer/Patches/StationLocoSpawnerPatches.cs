@@ -27,7 +27,14 @@ namespace CCL.Importer.Patches
                         // If the group is supposed to use this spawner...
                         if (group.Track.ToName() == __instance.name)
                         {
-                            CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.AdditionalLiveries)}]");
+                            if (group.AdditionalLiveries.Length > 0)
+                            {
+                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.AdditionalLiveries)}]");
+                            }
+                            else
+                            {
+                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}]");
+                            }
                             __instance.locoTypeGroupsToSpawn.Add(FromGroup(variant, group));
                         }
                     }

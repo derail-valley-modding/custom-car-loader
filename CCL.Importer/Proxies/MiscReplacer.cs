@@ -72,6 +72,8 @@ namespace CCL.Importer.Proxies
                 .ForMember(d => d.blocker, o => o.MapFrom(s => Mapper.GetFromCache(s.blocker)))
                 .AfterMap(InvalidTeleportLocationReactionAfter);
 
+            CreateMap<IgnoreCharacterHeadCollisionTagProxy, IgnoreCharacterHeadCollisionTag>().AutoCacheAndMap();
+
             CreateMap<HJAFDrivenAnimationProxy, HJAFDrivenAnimation>().AutoCacheAndMap();
 
             CreateMap<DE6KnifeSwitchFuseHUDHackFixProxy, DE6KnifeSwitchFuseHUDHackFix>().AutoCacheAndMap();
@@ -96,7 +98,7 @@ namespace CCL.Importer.Proxies
         {
             if (src.includeChildren)
             {
-                dest.gameObject.SetLayersRecursive(src.Layer);
+                dest.gameObject.SetLayersNonRecursive(src.Layer);
             }
             else
             {

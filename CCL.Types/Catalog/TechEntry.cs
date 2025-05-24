@@ -7,10 +7,10 @@ namespace CCL.Types.Catalog
     public class TechEntry
     {
         public TechIcon Icon = TechIcon.None;
-        [Tooltip("Description of the tech")]
-        public TechDescription Description = new TechDescription();
+        [Tooltip("Description of the tech"), TechDescription]
+        public string Description = string.Empty;
         [Tooltip("Type of the tech"), TechType]
-        public string Type = "";
+        public string Type = string.Empty;
 
         public static void TryToSetAppropriateType(TechEntry tech, VehicleType type)
         {
@@ -44,24 +44,9 @@ namespace CCL.Types.Catalog
             };
 
             // Unit effect is tied to the icon too so try to fill it.
-            if (tech.Icon == TechIcon.UnitEffect)
+            if (tech.Icon == TechIcon.UnitEffect && string.IsNullOrEmpty(tech.Description))
             {
-                tech.Description ??= new TechDescription();
-
-                if (tech.Description.Entries.Length == 0)
-                {
-                    tech.Description.Entries = new TechDescription.Entry[1];
-                }
-
-                if (tech.Description.Entries.Length == 1)
-                {
-                    tech.Description.Entries[0] ??= new TechDescription.Entry();
-
-                    if (string.IsNullOrEmpty(tech.Description.Entries[0].Key))
-                    {
-                        tech.Description.Entries[0].Key = TryToGuessUnitEffectDesc(type);
-                    }
-                }
+                tech.Description = TryToGuessUnitEffectDesc(type);
             }
         }
 

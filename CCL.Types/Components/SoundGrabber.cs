@@ -5,7 +5,7 @@ namespace CCL.Types.Components
 {
     public class SoundGrabber : VanillaResourceGrabber<AudioClip>
     {
-        // Last update B99.4
+        // Last update B99.4 Hotfix 7
         public static HashSet<string> SoundNames = new HashSet<string>
         {
             "AirPressureExternal_01",
@@ -388,7 +388,7 @@ namespace CCL.Types.Components
             "WiperGlassWet_01",
             "WiperMotor_01",
             "WiperMotor_02",
-            "WiperWhip_01"
+            "WiperWhip_01",
         };
 
         public override HashSet<string> GetNames()

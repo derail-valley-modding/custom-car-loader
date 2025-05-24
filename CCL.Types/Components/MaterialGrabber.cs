@@ -5,7 +5,7 @@ namespace CCL.Types.Components
 {
     public class MaterialGrabber : VanillaResourceGrabber<Material>
     {
-        // Last update B99.4
+        // Last update B99.4 Hotfix 7
         // Removed 1 (empty).
         public static HashSet<string> MaterialNames = new HashSet<string>
         {
@@ -574,7 +574,7 @@ namespace CCL.Types.Components
             "WirelessMUController",
             "WirelessMUController_Logo",
             "WispyCloudWhite",
-            "WoodChips"
+            "WoodChips",
         };
 
         public override HashSet<string> GetNames()

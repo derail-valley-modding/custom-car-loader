@@ -9,21 +9,15 @@ namespace CCL.Types.Catalog
     {
         [Header("Header")]
         public Color HeaderColour = Color.yellow;
-        public string PageName = "";
+        public string PageName = string.Empty;
         public string ConsistUnits = "1/1";
         [Tooltip("Optional")]
-        public string Nickname = "";
+        public string Nickname = string.Empty;
         public string ProductionYears = "1900-1999";
 
         [Header("Licenses")]
         public bool UnlockedByGarage = false;
         public int GaragePrice = 20000;
-        [AnyLicenseField]
-        public string License1 = "";
-        [AnyLicenseField]
-        public string License2 = "";
-        [AnyLicenseField]
-        public string License3 = "";
 
         [Header("Vehicle Type")]
         public VehicleType Type = VehicleType.Locomotive;
@@ -85,16 +79,6 @@ namespace CCL.Types.Catalog
                 yield return Maintenance;
                 yield return Hauling;
                 yield return Shunting;
-            }
-        }
-
-        public IEnumerable<string> AllLicenses
-        {
-            get
-            {
-                yield return License1;
-                yield return License2;
-                yield return License3;
             }
         }
 

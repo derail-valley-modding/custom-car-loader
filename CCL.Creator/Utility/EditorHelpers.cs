@@ -400,4 +400,21 @@ namespace CCL.Creator.Utility
             EditorStyles.label.wordWrap = _wrap;
         }
     }
+
+    // Unity is Unity.
+    internal class ResetIndentScope : IDisposable
+    {
+        private readonly int _indent;
+
+        public ResetIndentScope()
+        {
+            _indent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+        }
+
+        public void Dispose()
+        {
+            EditorGUI.indentLevel = _indent;
+        }
+    }
 }
