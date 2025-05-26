@@ -9,7 +9,7 @@ namespace CCL.Types.Components.Controllers
     {
         public ResourceContainerType Type = ResourceContainerType.Water;
         [Min(0), Tooltip("Amount of resources transfered per second at maximum flow rate")]
-        public float MaxTransfer = 200.0f;
+        public float MaxTransfer = 500.0f;
         [Min(0), Tooltip("Amount of resources transfered per second at minimum flow rate")]
         public float MinTransfer = 10.0f;
 

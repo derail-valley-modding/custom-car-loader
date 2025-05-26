@@ -62,6 +62,8 @@ namespace CCL.Types
 
         public static float MaxTransfer2Containers(float capacityA, float amountA, float capacityB, float amountB)
         {
+            if (capacityA == 0 || capacityB == 0) return 0;
+
             float normalA = amountA / capacityA;
             float normalB = amountB / capacityB;
 

@@ -13,7 +13,7 @@ namespace CCL.Importer.Components.Controllers
     internal class ResourceSharerControllerInternal : ASimInitializedController
     {
         public ResourceContainerType Type = ResourceContainerType.WATER;
-        public float MaxTransfer = 200.0f;
+        public float MaxTransfer = 500.0f;
         public float MinTransfer = 10.0f;
 
         [PortId(PortType.READONLY_OUT)]
@@ -65,10 +65,10 @@ namespace CCL.Importer.Components.Controllers
                 car.frontCoupler.Uncoupled += FrontUncoupled;
             }
 
-            if (car.frontCoupler != null)
+            if (car.rearCoupler != null)
             {
-                car.frontCoupler.Coupled += RearCoupled;
-                car.frontCoupler.Uncoupled += RearUncoupled;
+                car.rearCoupler.Coupled += RearCoupled;
+                car.rearCoupler.Uncoupled += RearUncoupled;
             }
         }
 
@@ -114,8 +114,6 @@ namespace CCL.Importer.Components.Controllers
 
         public override void Tick(float deltaTime)
         {
-            float total = 0;
-
             // First try to transfer to a shared resource thingy, before
             // retrying with the pit stop abuse.
             if (_frontShared != null)
@@ -139,30 +137,32 @@ namespace CCL.Importer.Components.Controllers
 
             void DoTransferShare(ResourceSharerControllerInternal other)
             {
+                // Calculate total transfer needed.
                 var transfer = MathHelper.MaxTransfer2ContainersPositiveOnly(
                     _capacity.Value, _amount.Value, other._capacity.Value, other._amount.Value);
 
-                transfer = Mathf.Min(transfer, _amount.Value - total,
-                    Mathf.Lerp(MinTransfer, MaxTransfer, Normalized - other.Normalized));
+                // Cap the transfer rate based on max and min transfer rates, and the difference between amounts.
+                transfer = Mathf.Min(transfer, Mathf.Lerp(MinTransfer, MaxTransfer, Normalized - other.Normalized)) * deltaTime;
 
-                _consume.Value += transfer;
-                other._refill.Value += transfer;
-                total += transfer;
+                // Apply the values to the ports. These are automatically cleared
+                // each time so no infinite fluid is possible.
+                _consume.Value = transfer;
+                other._refill.Value = transfer;
             }
 
             void DoTransferPit(CarPitStopParametersBase other)
             {
+                // Similar to the other one but values are in the repair stuff.
+                // This allows transfering into vanilla vehicles.
                 var pit = other.GetCarPitStopParameters()[AsResourceType];
 
                 var transfer = MathHelper.MaxTransfer2ContainersPositiveOnly(
                     _capacity.Value, _amount.Value, pit.maxValue, pit.value);
 
-                transfer = Mathf.Min(transfer, _amount.Value - total,
-                    Mathf.Lerp(MinTransfer, MaxTransfer, Normalized - (pit.value / pit.maxValue)));
+                transfer = Mathf.Min(transfer, Mathf.Lerp(MinTransfer, MaxTransfer, Normalized - (pit.value / pit.maxValue))) * deltaTime;
 
-                _consume.Value += transfer;
+                _consume.Value = transfer;
                 other.UpdateCarPitStopParameter(AsResourceType, transfer);
-                total += transfer;
             }
         }
     }
