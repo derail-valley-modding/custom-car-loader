@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using CCL.Importer.Components.Controllers;
 using CCL.Importer.Components.Headlights;
 using CCL.Importer.Components.Indicators;
 using CCL.Importer.Components.MultipleUnit;
 using CCL.Importer.Components.Simulation;
 using CCL.Types.Components;
+using CCL.Types.Components.Controllers;
 using CCL.Types.Components.Headlights;
 using CCL.Types.Components.Indicators;
 using CCL.Types.Components.MultipleUnit;
@@ -20,6 +22,7 @@ namespace CCL.Importer.Components
             MapIndicators();
             MapSimulation();
             MapMultipleUnit();
+            MapControllers();
 
             CreateMap<ControlNameTMPDisplay, ControlNameTMPDisplayInternal>().AutoCacheAndMap();
             CreateMap<HideObjectsOnCargoLoad, HideObjectsOnCargoLoadInternal>().AutoCacheAndMap();
@@ -60,6 +63,11 @@ namespace CCL.Importer.Components
         private void MapMultipleUnit()
         {
             CreateMap<MultipleUnitCombinedThrottleDynamicBrakeMode, MultipleUnitCombinedThrottleDynamicBrakeModeInternal>().AutoCacheAndMap();
+        }
+
+        private void MapControllers()
+        {
+            CreateMap<ResourceSharerController, ResourceSharerControllerInternal>().AutoCacheAndMap();
         }
 
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)

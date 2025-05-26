@@ -59,5 +59,24 @@ namespace CCL.Types
         {
             return (b - a).sqrMagnitude;
         }
+
+        public static float MaxTransfer2Containers(float capacityA, float amountA, float capacityB, float amountB)
+        {
+            float normalA = amountA / capacityA;
+            float normalB = amountB / capacityB;
+
+            if (normalA == normalB) return 0;
+
+            // Solve for transfer.
+            // amountA - transfer   amountB + transfer
+            // ------------------ = ------------------
+            //     capacityA            capacityB
+            return -((amountB * capacityA - amountA * capacityB) / (capacityA + capacityB));
+        }
+
+        public static float MaxTransfer2ContainersPositiveOnly(float capacityA, float amountA, float capacityB, float amountB)
+        {
+            return Mathf.Max(MaxTransfer2Containers(capacityA, amountA, capacityB, amountB), 0);
+        }
     }
 }
