@@ -182,6 +182,11 @@ namespace CCL.Importer
             return car.frontCoupler == coupler;
         }
 
+        public static CoupleEventArgs CreateDummyArgs(this Coupler coupler)
+        {
+            return new CoupleEventArgs(coupler, coupler.coupledTo, false);
+        }
+
         //public static bool IsCustomCargoClass(this CargoContainerType containerType)
         //{
         //    return containerType == (CargoContainerType)BaseCargoContainerType.Custom;

@@ -15,6 +15,8 @@ namespace CCL.Importer.Components.Controllers
         public ResourceContainerType Type = ResourceContainerType.WATER;
         public float MaxTransfer = 500.0f;
         public float MinTransfer = 10.0f;
+        public bool AllowSharingToFront = true;
+        public bool AllowSharingToRear = true;
 
         [PortId(PortType.READONLY_OUT)]
         public string CapacityPortId = string.Empty;
@@ -59,16 +61,26 @@ namespace CCL.Importer.Components.Controllers
                 Destroy(this);
             }
 
-            if (car.frontCoupler != null)
+            if (car.frontCoupler != null && AllowSharingToFront)
             {
                 car.frontCoupler.Coupled += FrontCoupled;
                 car.frontCoupler.Uncoupled += FrontUncoupled;
+
+                if (car.frontCoupler.coupledTo != null)
+                {
+                    FrontCoupled(false, car.frontCoupler.CreateDummyArgs());
+                }
             }
 
-            if (car.rearCoupler != null)
+            if (car.rearCoupler != null && AllowSharingToRear)
             {
                 car.rearCoupler.Coupled += RearCoupled;
                 car.rearCoupler.Uncoupled += RearUncoupled;
+
+                if (car.rearCoupler.coupledTo != null)
+                {
+                    RearCoupled(false, car.rearCoupler.CreateDummyArgs());
+                }
             }
         }
 
