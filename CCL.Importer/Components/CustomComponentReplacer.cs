@@ -43,7 +43,7 @@ namespace CCL.Importer.Components
         {
             CreateMap<FrontConnectedDualCarAutomaticHeadlightsController, FrontConnectedDualCarAutomaticHeadlightsControllerInternal>().AutoCacheAndMap();
             CreateMap<FrontAndRearConnectedTriCarAutomaticHeadlightsController, FrontAndRearConnectedTriCarAutomaticHeadlightsControllerInternal>().AutoCacheAndMap();
-            CreateMap<NoCableHeadlights, NoCableHeadlightsInternal>().AutoCacheAndMap();
+            CreateMap<NoCableHeadlightsController, NoCableHeadlightsControllerInternal>().AutoCacheAndMap();
         }
 
         private void MapIndicators()

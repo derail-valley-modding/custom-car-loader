@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CCL.Importer.Components.Headlights
 {
-    internal class NoCableHeadlightsInternal : MonoBehaviour
+    internal class NoCableHeadlightsControllerInternal : MonoBehaviour
     {
         private TrainCar _car = null!;
         private HeadlightsMainController _controller = null!;
@@ -90,7 +90,7 @@ namespace CCL.Importer.Components.Headlights
                     Connect(frontComp, ConnectedFrontToFront(_car, frontCar));
 
                     _frontComp = frontComp;
-                    _frontPowered = !frontCar.GetComponentInChildren<NoCableHeadlightsInternal>();
+                    _frontPowered = !frontCar.GetComponentInChildren<NoCableHeadlightsControllerInternal>();
                 }
             }
             else
@@ -114,7 +114,7 @@ namespace CCL.Importer.Components.Headlights
                     Connect(rearComp, ConnectedRearToRear(_car, rearCar));
 
                     _rearComp = rearComp;
-                    _rearPowered = !rearCar.GetComponentInChildren<NoCableHeadlightsInternal>();
+                    _rearPowered = !rearCar.GetComponentInChildren<NoCableHeadlightsControllerInternal>();
                 }
             }
             else
