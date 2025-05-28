@@ -57,11 +57,15 @@ namespace CCL.Types.Proxies.Ports
             connections ??= new List<PortConnectionProxy>();
             portReferenceConnections ??= new List<PortReferenceConnectionProxy>();
 
-            //connections.OrderBy(x => x.fullPortIdOut);
-            //portReferenceConnections.OrderBy(x => x.portReferenceId);
+            // Ordered by the first ID.
+            //connections = connections.OrderBy(x => x.fullPortIdOut).ToList();
+            //portReferenceConnections = portReferenceConnections.OrderBy(x => x.portReferenceId).ToList();
 
-            connections.OrderBy(c => executionOrder.FirstIndexMatch(e => e.ID == c.fullPortIdOut.Split('.')[0]));
-            portReferenceConnections.OrderBy(c => executionOrder.FirstIndexMatch(e => e.ID == c.portReferenceId.Split('.')[0]));
+            // Ordered by order of the component that exposes the port in execution order.
+            connections = connections.OrderBy(c => executionOrder.FirstIndexMatch(
+                e => e.ID == c.fullPortIdOut.Split('.')[0])).ToList();
+            portReferenceConnections = portReferenceConnections.OrderBy(c => executionOrder.FirstIndexMatch(
+                e => e.ID == c.portReferenceId.Split('.')[0])).ToList();
         }
 
         public void DestroyConnectionsToComponent(SimComponentDefinitionProxy component)

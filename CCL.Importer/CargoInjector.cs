@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Processing;
 using CCL.Importer.Types;
+using CCL.Types;
 using DV;
 using DV.ThingTypes;
 using HarmonyLib;
@@ -30,6 +31,11 @@ namespace CCL.Importer
                     for (int i = 0; i < entry.Models.Length; i++)
                     {
                         ModelProcessor.DoBasicProcessing(entry.Models[i]);
+
+                        if (entry.Models[i].transform.TryFind(CarPartNames.Colliders.ROOT, out var colliderRoot))
+                        {
+                            ColliderProcessor.FixLayers(colliderRoot);
+                        }
                     }
                 }
 

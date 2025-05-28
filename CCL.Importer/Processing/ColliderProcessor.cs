@@ -120,7 +120,7 @@ namespace CCL.Importer.Processing
             FixLayers(colliderRoot);
         }
 
-        private void FixLayers(Transform colliderRoot)
+        public static void FixLayers(Transform colliderRoot)
         {
             if (colliderRoot.TryFind(CarPartNames.Colliders.COLLISION, out var t))
             {

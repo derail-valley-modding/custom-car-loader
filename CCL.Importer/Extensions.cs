@@ -177,6 +177,16 @@ namespace CCL.Importer
             UObject.DestroyImmediate(localize);
         }
 
+        public static bool IsFrontCoupler(this TrainCar car, Coupler coupler)
+        {
+            return car.frontCoupler == coupler;
+        }
+
+        public static CoupleEventArgs CreateDummyArgs(this Coupler coupler)
+        {
+            return new CoupleEventArgs(coupler, coupler.coupledTo, false);
+        }
+
         //public static bool IsCustomCargoClass(this CargoContainerType containerType)
         //{
         //    return containerType == (CargoContainerType)BaseCargoContainerType.Custom;
