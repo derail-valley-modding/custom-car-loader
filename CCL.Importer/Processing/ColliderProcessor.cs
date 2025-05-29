@@ -82,14 +82,6 @@ namespace CCL.Importer.Processing
                         newCollisionBox.size = boundBox.size;
                     }
                 }
-
-                // Setup pass through colliders.
-                var passthru = walkable.GetComponentsInChildren<TeleportArcPassThroughProxy>();
-
-                for (int i = 0; i < passthru.Length; i++)
-                {
-                    Mapper.MapComponent(passthru[i], out TeleportArcPassThrough _);
-                }
             }
 
             // [bogies]
