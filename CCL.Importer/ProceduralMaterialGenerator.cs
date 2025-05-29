@@ -12,6 +12,12 @@ namespace CCL.Importer
             public static readonly int MainTex = Shader.PropertyToID("_MainTex");
             public static readonly int OcclusionStrength = Shader.PropertyToID("_OcclusionStrength");
             public static readonly int OcclusionMap = Shader.PropertyToID("_OcclusionMap");
+            public static readonly int NormalMap = Shader.PropertyToID("_BumpMap");
+
+            // Standard Detail
+            public static readonly int DetailAlbedoMap = Shader.PropertyToID("_DetailAlbedoMap");
+            public static readonly int DetailNormalMap = Shader.PropertyToID("_DetailNormalMap");
+            public static readonly int DetailNormalScale = Shader.PropertyToID("_DetailNormalMapScale");
 
             // DV/SightGlass
             public static readonly int SightGlassThickness = Shader.PropertyToID("_PipeThickness");
@@ -35,6 +41,18 @@ namespace CCL.Importer
                 case ProceduralMaterialDefinitions.MaterialType.Exploded:
                     GenerateExploded(definition.Original);
                     return;
+                case ProceduralMaterialDefinitions.MaterialType.PaintDetailsOld:
+                    GeneratePaintDetailsOld(definition.Original);
+                    return;
+                case ProceduralMaterialDefinitions.MaterialType.PaintDetailsNew:
+                    GeneratePaintDetailsNew(definition.Original);
+                    return;
+                case ProceduralMaterialDefinitions.MaterialType.PaintDetailsRusted:
+                    GeneratePaintDetailsRusted(definition.Original);
+                    return;
+                case ProceduralMaterialDefinitions.MaterialType.Primer:
+                    GeneratePrimer(definition.Original);
+                    return;
                 default:
                     return;
             }
@@ -48,6 +66,45 @@ namespace CCL.Importer
             original.CopyPropertiesFromMaterial(QuickAccess.Materials.ExplodedDE2Cab);
             original.SetFloat(ShaderProps.OcclusionStrength, strength);
             original.SetTexture(ShaderProps.OcclusionMap, map);
+        }
+
+        public static void GeneratePaintDetailsOld(Material original)
+        {
+            var mat = QuickAccess.Materials.BodyDE2;
+
+            original.SetTexture(ShaderProps.DetailAlbedoMap, mat.GetTexture(ShaderProps.DetailAlbedoMap));
+            original.SetTexture(ShaderProps.DetailNormalMap, mat.GetTexture(ShaderProps.DetailNormalMap));
+            original.SetFloat(ShaderProps.DetailNormalScale, mat.GetFloat(ShaderProps.DetailNormalScale));
+        }
+
+        public static void GeneratePaintDetailsNew(Material original)
+        {
+            var mat = QuickAccess.Materials.BodyDE2New;
+
+            original.SetTexture(ShaderProps.DetailAlbedoMap, mat.GetTexture(ShaderProps.DetailAlbedoMap));
+            original.SetTexture(ShaderProps.DetailNormalMap, mat.GetTexture(ShaderProps.DetailNormalMap));
+            original.SetFloat(ShaderProps.DetailNormalScale, mat.GetFloat(ShaderProps.DetailNormalScale));
+        }
+
+        public static void GeneratePaintDetailsRusted(Material original)
+        {
+            var mat = QuickAccess.Materials.BodyDE2;
+
+            original.SetTexture(ShaderProps.DetailAlbedoMap, mat.GetTexture(ShaderProps.DetailAlbedoMap));
+            original.SetTexture(ShaderProps.DetailNormalMap, mat.GetTexture(ShaderProps.DetailNormalMap));
+            original.SetFloat(ShaderProps.DetailNormalScale, mat.GetFloat(ShaderProps.DetailNormalScale));
+        }
+
+        public static void GeneratePrimer(Material original)
+        {
+            var strength = original.GetFloat(ShaderProps.OcclusionStrength);
+            var ao = original.GetTexture(ShaderProps.OcclusionMap);
+            var normal = original.GetTexture(ShaderProps.NormalMap);
+
+            original.CopyPropertiesFromMaterial(QuickAccess.Materials.PrimerDE2);
+            original.SetFloat(ShaderProps.OcclusionStrength, strength);
+            original.SetTexture(ShaderProps.OcclusionMap, ao);
+            original.SetTexture(ShaderProps.NormalMap, normal);
         }
 
         public static Material GenerateMaterial(IGeneratedMaterial generator)

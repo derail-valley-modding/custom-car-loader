@@ -9,7 +9,16 @@ namespace CCL.Types
     {
         public enum MaterialType
         {
-            Exploded
+            [Tooltip("Please include a dummy texture in the Detail Albedo x2 field of the material")]
+            Exploded,
+            [Tooltip("Please include a dummy texture in the Detail Albedo x2 field of the material")]
+            PaintDetailsOld,
+            [Tooltip("Please include a dummy texture in the Detail Albedo x2 field of the material")]
+            PaintDetailsNew,
+            [Tooltip("Please include a dummy texture in the Detail Albedo x2 field of the material")]
+            PaintDetailsRusted,
+            [Tooltip("Please include a dummy texture in the secondary Normal Map field of the material")]
+            Primer,
         }
 
         [Serializable]

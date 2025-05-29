@@ -23,7 +23,7 @@ namespace CCL.Importer.Proxies
 
         public MiscReplacer()
         {
-            CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>();
+            CreateMap<TeleportArcPassThroughProxy, TeleportArcPassThrough>().AutoCacheAndMap();
             CreateMap<InternalExternalSnapshotSwitcherProxy, InternalExternalSnapshotSwitcher>()
                 .AutoCacheAndMap()
                 .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)));
