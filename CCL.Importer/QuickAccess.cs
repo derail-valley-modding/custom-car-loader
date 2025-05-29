@@ -135,6 +135,7 @@ namespace CCL.Importer
             private static Material? s_sightGlassS060;
             private static Material? s_bodyDE2;
             private static Material? s_bodyDE2new;
+            private static Material? s_primerDE2;
 
             public static Material ExplodedDE2Cab => Extensions.GetCached(ref s_explodedDE2cab,
                 () => Locomotives.DE2.explodedInteriorPrefab.transform.Find("Cab").GetComponent<Renderer>().sharedMaterial);
@@ -144,10 +145,18 @@ namespace CCL.Importer
                 () => GetDVRTNew().substitutions[0].original);
             public static Material BodyDE2New => Extensions.GetCached(ref s_bodyDE2new,
                 () => GetDVRTNew().substitutions[0].substitute);
+            public static Material PrimerDE2 => Extensions.GetCached(ref s_primerDE2,
+                () => GetPrimer().substitutions[0].substitute);
 
             private static PaintTheme GetDVRTNew()
             {
                 PaintTheme.TryLoad("DVRT_New", out var theme);
+                return theme;
+            }
+
+            private static PaintTheme GetPrimer()
+            {
+                PaintTheme.TryLoad("Null", out var theme);
                 return theme;
             }
         }
