@@ -24,7 +24,7 @@ namespace CCL.Importer.Implementations
 
             if (coupler.coupledTo)
             {
-                OnCoupled(this, new CoupleEventArgs(coupler, coupler.coupledTo, false));
+                OnCoupled(this, coupler.CreateDummyArgs());
             }
         }
 
