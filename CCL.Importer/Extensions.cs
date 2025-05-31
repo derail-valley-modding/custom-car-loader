@@ -14,11 +14,6 @@ namespace CCL.Importer
 {
     public static class Extensions
     {
-        public static bool IsEnvironmental(this ResourceType_v2 type)
-        {
-            return type.canDamageEnvironment;
-        }
-
         public static T GetOrAddComponent<T>(this GameObject go) where T : Component
         {
             if (go.TryGetComponent(out T comp))
@@ -99,12 +94,6 @@ namespace CCL.Importer
             return GetComponentInParentIncludingInactive<T>(component.gameObject);
         }
 
-        public static void RefreshChildren<T>(this ARefreshableChildrenController<T> controller)
-            where T : MonoBehaviour
-        {
-            controller.entries = controller.gameObject.GetComponentsInChildren<T>(true);
-        }
-
         public static bool EqualsOneOf<T>(this T compare, params T[] values)
         {
             foreach (T v in values)
@@ -165,28 +154,6 @@ namespace CCL.Importer
             return cacheValue.Value;
         }
 
-        public static void SetKeyAndUpdate(this Localize localize, string key)
-        {
-            localize.key = key;
-            localize.UpdateLocalization();
-        }
-
-        public static void ManualLocalize(this Localize localize, string key)
-        {
-            TMPHelper.GetTMP(localize).SetTextAndUpdate(LocalizationAPI.L(key));
-            UObject.DestroyImmediate(localize);
-        }
-
-        public static bool IsFrontCoupler(this TrainCar car, Coupler coupler)
-        {
-            return car.frontCoupler == coupler;
-        }
-
-        public static CoupleEventArgs CreateDummyArgs(this Coupler coupler)
-        {
-            return new CoupleEventArgs(coupler, coupler.coupledTo, false);
-        }
-
         //public static bool IsCustomCargoClass(this CargoContainerType containerType)
         //{
         //    return containerType == (CargoContainerType)BaseCargoContainerType.Custom;
@@ -221,6 +188,50 @@ namespace CCL.Importer
             else
             {
                 dest = default!;
+            }
+        }
+    }
+
+    public static class DVExtensions
+    {
+        public static bool IsEnvironmental(this ResourceType_v2 type)
+        {
+            return type.canDamageEnvironment;
+        }
+
+        public static void RefreshChildren<T>(this ARefreshableChildrenController<T> controller)
+            where T : MonoBehaviour
+        {
+            controller.entries = controller.gameObject.GetComponentsInChildren<T>(true);
+        }
+
+        public static void SetKeyAndUpdate(this Localize localize, string key)
+        {
+            localize.key = key;
+            localize.UpdateLocalization();
+        }
+
+        public static void ManualLocalize(this Localize localize, string key)
+        {
+            TMPHelper.GetTMP(localize).SetTextAndUpdate(LocalizationAPI.L(key));
+            UObject.DestroyImmediate(localize);
+        }
+
+        public static bool IsFrontCoupler(this TrainCar car, Coupler coupler)
+        {
+            return car.frontCoupler == coupler;
+        }
+
+        public static CoupleEventArgs CreateDummyArgs(this Coupler coupler)
+        {
+            return new CoupleEventArgs(coupler, coupler.coupledTo, false);
+        }
+
+        public static IEnumerable<TrainCar> AllLocos(this Trainset trainset)
+        {
+            foreach (var indice in trainset.locoIndices)
+            {
+                yield return trainset.cars[indice];
             }
         }
     }

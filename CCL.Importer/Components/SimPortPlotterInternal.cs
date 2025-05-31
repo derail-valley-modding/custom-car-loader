@@ -1,4 +1,6 @@
 ﻿using CCL.Types;
+using DV.Simulation.Cars;
+using LocoSim.Definitions;
 using LocoSim.Implementations;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,11 +9,10 @@ namespace CCL.Importer.Components
 {
     internal class SimPortPlotterInternal : MonoBehaviour
     {
-        private const string FormatString = "F3";
-        private const int WindowId = 98;
+        private const int WindowId = 9001;
         // Window size.
-        private const float WindowWidth = 1020.0f;
-        private const float WindowHeight = 700.0f;
+        private const float WindowWidth = 1010.0f;
+        private const float WindowHeight = 720.0f;
         // Scroll area size.
         private const float ScrollWidth = 1000.0f;
         private const float ScrollHeight = 620.0f;
@@ -26,6 +27,10 @@ namespace CCL.Importer.Components
         // Misc.
         private const float SideOffset = 100.0f;
         private const float ButtonSize = 17.5f;
+        private const float ButtonSelectWidth = 100f;
+        private const float ButtonSelectHeight = 20f;
+        private const float LowerButtonsPosY = WindowHeight - 30.0f;
+        private const float CloseButtonPosX = WindowWidth - 18.75f;
 
         private class PortData
         {
@@ -39,12 +44,15 @@ namespace CCL.Importer.Components
             public float Last;
             public float ZeroOffset;
             public Queue<float> Values;
+            public string Unit;
 
-            public PortData(string id, Port port)
+            public PortData(string id, Port port, string? unit = null)
             {
                 Id = id;
                 Port = port;
                 Values = new Queue<float>(DataLength);
+
+                Unit = unit ?? (id.Contains("NORMALIZED") ? string.Empty : GetUnitForValueType(port.valueType));
             }
 
             public void Reset()
@@ -63,6 +71,11 @@ namespace CCL.Importer.Components
                     SetStartingValues();
                 }
 
+                if (Values.Count >= DataLength)
+                {
+                    Values.Dequeue();
+                }
+
                 var value = Port.Value;
 
                 if (value < Min)
@@ -78,17 +91,12 @@ namespace CCL.Importer.Components
                 Values.Enqueue(value);
                 Last = value;
 
-                if (Values.Count > DataLength)
-                {
-                    Values.Dequeue();
-                }
-
                 ZeroOffset = Mathf.InverseLerp(Min, Max, 0);
             }
 
             public void Draw(Rect bounds)
             {
-                //GUI.color = GetColourForPortValueType();
+                //GUI.color = GetColourForPortValueType(Port.valueType);
 
                 // If there's no difference to draw yet, draw a single line with the correct length.
                 if (Min == Max)
@@ -143,82 +151,94 @@ namespace CCL.Importer.Components
                 Max = Mathf.Max(0, Port.Value);
             }
 
-            public Color GetColourForPortValueType()
+            public static Color GetColourForPortValueType(PortValueType valueType) => valueType switch
             {
-                switch (Port.valueType)
-                {
-                    case LocoSim.Definitions.PortValueType.GENERIC:
-                        return new Color(0.90f, 0.90f, 0.90f);
-                    case LocoSim.Definitions.PortValueType.CONTROL:
-                        return new Color(0.80f, 0.80f, 0.80f);
-                    case LocoSim.Definitions.PortValueType.STATE:
-                        return new Color(0.55f, 1.00f, 0.85f);
-                    case LocoSim.Definitions.PortValueType.DAMAGE:
-                        return new Color(1.00f, 0.35f, 0.90f);
-                    case LocoSim.Definitions.PortValueType.POWER:
-                        return new Color(0.80f, 0.20f, 0.90f);
-                    case LocoSim.Definitions.PortValueType.TORQUE:
-                        return new Color(0.45f, 0.90f, 1.00f);
-                    case LocoSim.Definitions.PortValueType.FORCE:
-                        return new Color(0.45f, 1.00f, 0.90f);
-                    case LocoSim.Definitions.PortValueType.TEMPERATURE:
-                        return new Color(1.00f, 0.40f, 0.40f);
-                    case LocoSim.Definitions.PortValueType.RPM:
-                        return new Color(0.70f, 0.70f, 0.70f);
-                    case LocoSim.Definitions.PortValueType.AMPS:
-                        return new Color(1.00f, 1.00f, 0.20f);
-                    case LocoSim.Definitions.PortValueType.VOLTS:
-                        return new Color(0.20f, 1.00f, 0.90f);
-                    case LocoSim.Definitions.PortValueType.HEAT_RATE:
-                        return new Color(1.00f, 0.80f, 0.20f);
-                    case LocoSim.Definitions.PortValueType.PRESSURE:
-                        return new Color(0.50f, 1.00f, 0.60f);
-                    case LocoSim.Definitions.PortValueType.MASS_RATE:
-                        return new Color(0.60f, 1.00f, 0.70f);
-                    case LocoSim.Definitions.PortValueType.OHMS:
-                        return new Color(0.30f, 0.80f, 1.00f);
-                    case LocoSim.Definitions.PortValueType.FUEL:
-                        return new Color(0.85f, 0.55f, 0.20f);
-                    case LocoSim.Definitions.PortValueType.OIL:
-                        return new Color(0.20f, 0.55f, 0.85f);
-                    case LocoSim.Definitions.PortValueType.SAND:
-                        return new Color(0.95f, 0.90f, 0.30f);
-                    case LocoSim.Definitions.PortValueType.WATER:
-                        return new Color(0.45f, 0.75f, 1.00f);
-                    case LocoSim.Definitions.PortValueType.COAL:
-                        return new Color(0.50f, 0.50f, 0.50f);
-                    case LocoSim.Definitions.PortValueType.ELECTRIC_CHARGE:
-                        return new Color(0.50f, 1.00f, 1.00f);
-                    default:
-                        return Color.white;
-                }
-            }
+                PortValueType.GENERIC => new Color(0.90f, 0.90f, 0.90f),
+                PortValueType.CONTROL => new Color(0.80f, 0.80f, 0.80f),
+                PortValueType.STATE => new Color(0.55f, 1.00f, 0.85f),
+                PortValueType.DAMAGE => new Color(1.00f, 0.35f, 0.90f),
+                PortValueType.POWER => new Color(0.80f, 0.20f, 0.90f),
+                PortValueType.TORQUE => new Color(0.45f, 0.90f, 1.00f),
+                PortValueType.FORCE => new Color(0.45f, 1.00f, 0.90f),
+                PortValueType.TEMPERATURE => new Color(1.00f, 0.40f, 0.40f),
+                PortValueType.RPM => new Color(0.70f, 0.70f, 0.70f),
+                PortValueType.AMPS => new Color(1.00f, 1.00f, 0.20f),
+                PortValueType.VOLTS => new Color(0.20f, 1.00f, 0.90f),
+                PortValueType.HEAT_RATE => new Color(1.00f, 0.80f, 0.20f),
+                PortValueType.PRESSURE => new Color(0.50f, 1.00f, 0.60f),
+                PortValueType.MASS_RATE => new Color(0.60f, 1.00f, 0.70f),
+                PortValueType.OHMS => new Color(0.30f, 0.80f, 1.00f),
+                PortValueType.FUEL => new Color(0.85f, 0.55f, 0.20f),
+                PortValueType.OIL => new Color(0.20f, 0.55f, 0.85f),
+                PortValueType.SAND => new Color(0.95f, 0.90f, 0.30f),
+                PortValueType.WATER => new Color(0.45f, 0.75f, 1.00f),
+                PortValueType.COAL => new Color(0.50f, 0.50f, 0.50f),
+                PortValueType.ELECTRIC_CHARGE => new Color(0.50f, 1.00f, 1.00f),
+                _ => Color.white,
+            };
+
+            public static string GetUnitForValueType(PortValueType valueType) => valueType switch
+            {
+                PortValueType.POWER => "W",
+                PortValueType.TORQUE => "Nm",
+                PortValueType.FORCE => "N",
+                PortValueType.TEMPERATURE => "°C",
+                PortValueType.AMPS => "A",
+                PortValueType.VOLTS => "V",
+                PortValueType.PRESSURE => "bar",
+                PortValueType.OHMS => "Ω",
+                PortValueType.FUEL => "l",
+                PortValueType.OIL => "l",
+                PortValueType.SAND => "kg",
+                PortValueType.WATER => "l",
+                PortValueType.COAL => "kg",
+                PortValueType.ELECTRIC_CHARGE => "C",
+                _ => string.Empty,
+            };
         }
+
+        private static List<SimPortPlotterInternal> s_windows = new();
+        private static GUIStyle? s_style = null;
+        private static bool s_round = false;
+
+        private static GUIStyle Style => Extensions.GetCached(ref s_style, () => new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 12,
+            alignment = TextAnchor.MiddleCenter
+        });
 
         public int TickRate = 5;
         public List<string> PortIds = new();
         public List<string> PortReferenceIds = new();
         public bool UseColours = true;
+        public bool AddDummyForcePort = true;
+        public bool AddDummyPowerPort = true;
 
+        private TrainCar _car = null!;
         private List<PortData> _ports = new();
+        private Rect _windowRect = new(10f, 0f, WindowWidth, WindowHeight);
+        private Vector2 _scroll = Vector2.zero;
         private int _ticking = 0;
         private bool _record = false;
-        private bool _display = true;
-        private GUIStyle _style = null!;
-        private Rect _windowRect = new(10f, 0f, WindowWidth, WindowHeight);
-        private Vector2 _scroll;
+        private bool _active = true;
+        private DrivingForce? _drivingForce;
+        private Port? _dummyForce;
+        private Port? _dummyPower;
+        private Port? _dummyTrainsetForce;
+        private Port? _dummyTrainsetPower;
+        private string _portToAdd = string.Empty;
 
         private void Start()
         {
-            var car = TrainCar.Resolve(gameObject);
+            _car = TrainCar.Resolve(gameObject);
 
-            if (car == null)
+            if (_car == null)
             {
                 Debug.LogError("Could not find TrainCar for SimPortPlotter");
                 return;
             }
 
-            var controller = car.SimController;
+            var controller = _car.SimController;
 
             if (controller == null)
             {
@@ -254,17 +274,48 @@ namespace CCL.Importer.Components
             {
                 if (map.TryGetValue(id, out var port))
                 {
-                    _ports.Add(new PortData(id, port));
+                    _ports.Add(new PortData($"{id} (R)", port));
                 }
             }
 
+            if (AddDummyForcePort && controller.drivingForce != null)
+            {
+                _drivingForce = controller.drivingForce;
+                _dummyForce = new Port("car", new PortDefinition(
+                    PortType.READONLY_OUT,
+                    PortValueType.FORCE,
+                    "FORCE"));
+
+                _ports.Add(new PortData("GENERATED_FORCE", _dummyForce));
+            }
+
+            if (AddDummyPowerPort && controller.drivingForce != null)
+            {
+                _drivingForce = controller.drivingForce;
+                _dummyPower = new Port("car", new PortDefinition(
+                    PortType.READONLY_OUT,
+                    PortValueType.POWER,
+                    "POWER"));
+
+                _ports.Add(new PortData("GENERATED_POWER", _dummyPower));
+            }
+
             flow.TickEvent += OnTick;
+
+            s_windows.Add(this);
+        }
+
+        private void OnDestroy()
+        {
+            s_windows.Remove(this);
         }
 
         private void OnTick()
         {
             if (!_record) return;
             if (_ticking-- > 0) return;
+
+            UpdateDummies();
 
             foreach (var port in _ports)
             {
@@ -274,19 +325,54 @@ namespace CCL.Importer.Components
             _ticking = TickRate;
         }
 
+        private void UpdateDummies()
+        {
+            if (_drivingForce == null) return;
+
+            if (_dummyForce != null)
+            {
+                _dummyForce.Value = _drivingForce.generatedForce;
+            }
+
+            if (_dummyPower != null)
+            {
+                _dummyPower.Value = _drivingForce.generatedForce * _drivingForce.train.GetAbsSpeed();
+            }
+
+            if (_dummyTrainsetForce == null || _dummyTrainsetPower == null) return;
+
+            float force = 0;
+            float power = 0;
+
+            foreach (var loco in _car.trainset.AllLocos())
+            {
+                var driving = loco.SimController.drivingForce;
+
+                if (driving == null) continue;
+
+                force += driving.generatedForce;
+                power += driving.generatedForce * loco.GetAbsSpeed();
+            }
+
+            _dummyTrainsetForce.Value = force;
+            _dummyTrainsetPower.Value = power;
+        }
+
         private void OnGUI()
         {
-            if (_display)
+            int index = s_windows.IndexOf(this);
+
+            if (_active)
             {
-                _windowRect = GUILayout.Window(WindowId, _windowRect, Window, "Loco simulation graph");
+                _windowRect = GUILayout.Window(WindowId + index, _windowRect, Window, $"Loco Simulation Graph - {_car.ID}");
                 return;
             }
 
             GUILayout.BeginVertical();
 
-            if (GUILayout.Button("Graph"))
+            if (GUI.Button(new Rect(0, index * ButtonSelectHeight, ButtonSelectWidth, ButtonSelectHeight), $"Graph ({_car.ID})"))
             {
-                _display = !_display;
+                _active = !_active;
             }
 
             GUILayout.EndVertical();
@@ -294,68 +380,161 @@ namespace CCL.Importer.Components
 
         private void Window(int id)
         {
-            if (_style == null)
-            {
-                _style = new GUIStyle(GUI.skin.label)
-                {
-                    fontSize = 12,
-                    alignment = TextAnchor.MiddleCenter
-                };
-            }
+            DrawButtons();
 
-            // Record data box.
-            Rect recordDataBox = new(10f, 0f, SideOffset, 20f);
-            _record = GUI.Toggle(recordDataBox, _record, "Record data");
-
-            if (GUI.Button(new Rect(20f + SideOffset, 0f, SideOffset, ButtonSize), "Clear data"))
-            {
-                ResetData();
-            }
-
-            if (GUI.Button(new Rect(1001.25f, 0f, ButtonSize, ButtonSize), "x"))
-            {
-                _display = !_display;
-            }
-
+            // Prepare scroll view.
             GUI.skin.label.fontSize = 16;
-            Rect scrollArea = new(0f, 40f, ScrollWidth, ScrollHeight);
-            _scroll = GUI.BeginScrollView(scrollArea, _scroll, new Rect(0f, 40f, BoxWidth, _ports.Count * BoxTotalHeight), false, true);
+            _scroll = GUI.BeginScrollView(
+                new Rect(0f, 40f, ScrollWidth, ScrollHeight), _scroll,
+                new Rect(0f, 40f, BoxWidth, _ports.Count * BoxTotalHeight), false, true);
             GUILayout.BeginVertical();
 
             PortData port;
             int count = _ports.Count;
 
-            for (int i = 0; i < count && ((i + 1.0f) * BoxTotalHeight <= ScrollHeight + _scroll.y); i++)
+            for (int i = 0; i < count && ((i + 1) * BoxTotalHeight <= ScrollHeight + _scroll.y); i++)
             {
+                // Skip drawing outside bounds.
                 if ((i + 1) * BoxTotalHeight < _scroll.y) continue;
 
                 port = _ports[i];
 
+                // Skip drawing if there are no values.
                 if (port.Values.Count == 0) continue;
 
                 float posY = 40f + i * BoxTotalHeight;
                 float zeroOffset = BoxHeight * (1.0f - port.ZeroOffset);
 
+                // Draw where 0 is if it is not at the borders.
                 if (zeroOffset > 0 && zeroOffset < BoxHeight)
                 {
-                    GUI.Label(new Rect(0f, posY + zeroOffset, LabelWidth, LabelHeight), "0", _style);
+                    GUI.Label(new Rect(0f, posY + zeroOffset, LabelWidth, LabelHeight), "0", Style);
                 }
 
-                GUI.Label(new Rect(0f, posY, LabelWidth, LabelHeight), port.Max.ToString(FormatString), _style);
-                GUI.Label(new Rect(0f, posY + BoxHeight, LabelWidth, LabelHeight), port.Min.ToString(FormatString), _style);
+                // Draw max and min value labels.
+                GUI.Label(new Rect(0f, posY, LabelWidth, LabelHeight), GetFormattedString(port.Max), Style);
+                GUI.Label(new Rect(0f, posY + BoxHeight, LabelWidth, LabelHeight), GetFormattedString(port.Min), Style);
 
-                Rect box = new(SideOffset, posY + 10.0f, BoxWidth, BoxHeight);
+                posY += 10f;
+
+                // Draw graph box.
+                Rect box = new(SideOffset, posY, BoxWidth, BoxHeight);
                 GUI.Box(box, GUIContent.none);
                 GUI.color = GetColour(i);
                 port.Draw(box);
                 GUI.color = Color.white;
                 GUI.BeginClip(box);
-                GUI.Label(new Rect(10f, 0f, BoxWidth, LabelHeight), $"{port.Id}: {port.Last:F3}");
+                GUI.Label(new Rect(10f, 0f, BoxWidth, LabelHeight), $"{port.Id}: {GetFormattedString(port.Last, port.Unit)}");
                 GUI.EndClip();
+
+                // Buttons to swap port order.
+                var buttonHeight = BoxHeight / 4f;
+
+                if (i > 0)
+                {
+                    if (GUI.Button(new Rect(LabelWidth + BoxWidth + 30f, posY, 30f, buttonHeight), "↑"))
+                    {
+                        _ports.Swap(i, i - 1);
+                    }
+                }
+                if (i < count - 1)
+                {
+                    if (GUI.Button(new Rect(LabelWidth + BoxWidth + 30f, posY + BoxHeight - buttonHeight, 30f, buttonHeight), "↓"))
+                    {
+                        _ports.Swap(i, i + 1);
+                    }
+                }
             }
 
             GUILayout.EndVertical();
             GUI.EndScrollView();
+
+            GUI.DragWindow(new Rect(0f, 0f, 10000f, 20f));
+
+            static string GetFormattedString(float value, string? unit = null)
+            {
+                // 1 234 567 890 ->    1.23 G
+                //   123 456 789 ->  123.45 M
+                //    12 345 678 ->   12.34 M
+                //     1 234 567 ->    1.23 M
+                //       123 456 ->  123.45 k
+                //        12 345 ->   12.34 k
+                //         1 234 -> 1234.000
+
+                unit ??= string.Empty;
+
+                if (s_round && unit != "kg")
+                {
+                    if (value >= 1000000000)
+                    {
+                        return $"{value:0,,,.## G}{unit}";
+                    }
+
+                    if (value >= 1000000)
+                    {
+                        return $"{value:0,,.## M}{unit}";
+                    }
+
+                    if (value >= 10000)
+                    {
+                        return $"{value:0,.## k}{unit}";
+                    }
+                }
+
+                return $"{value:0.###} {unit}";
+            }
+        }
+
+        private void DrawButtons()
+        {
+            // Button to minimise (hide window).
+            if (GUI.Button(new Rect(CloseButtonPosX - ButtonSize, 0f, ButtonSize, ButtonSize), "-"))
+            {
+                _active = !_active;
+            }
+
+            // Record data toggle.
+            _record = GUI.Toggle(new(GetSideOffset(0), LowerButtonsPosY, SideOffset, 20f), _record, "Record data");
+
+            // Rounding toggle.
+            s_round = GUI.Toggle(new(GetSideOffset(1), LowerButtonsPosY, SideOffset, 20f), s_round, "Round values");
+
+            // Text field and button to add ports easily.
+            if (GUI.Button(new Rect(GetSideOffset(2), LowerButtonsPosY, SideOffset, ButtonSize), "Try Add Port"))
+            {
+                TryAddPort();
+            }
+
+            _portToAdd = GUI.TextField(new Rect(GetSideOffset(3), LowerButtonsPosY, SideOffset * 3, ButtonSize), _portToAdd);
+
+            // Button to add trainset ports.
+            if (GUI.Button(new Rect(GetSideOffset(6), LowerButtonsPosY, SideOffset, ButtonSize), "Trainset Ports"))
+            {
+                AddTrainsetPorts();
+            }
+
+            // Change background colour for the last 2 buttons.
+            var colour = GUI.backgroundColor;
+            GUI.backgroundColor = Color.red;
+
+            // Button to reset port data.
+            if (GUI.Button(new Rect(GetSideOffset(8), LowerButtonsPosY, SideOffset, ButtonSize), "Clear data"))
+            {
+                ResetData();
+            }
+
+            // Button to close (disable GO).
+            if (GUI.Button(new Rect(CloseButtonPosX, 0f, ButtonSize, ButtonSize), "x"))
+            {
+                gameObject.SetActive(false);
+            }
+            GUI.backgroundColor = colour;
+
+            // X offset based on button count.
+            static float GetSideOffset(int count)
+            {
+                return 10f + count * (10f + SideOffset);
+            }
         }
 
         private Color GetColour(int count)
@@ -374,6 +553,79 @@ namespace CCL.Importer.Components
             {
                 port.Reset();
             }
+        }
+
+        private void AddTrainsetPorts()
+        {
+            _dummyTrainsetForce = new Port("trainset", new PortDefinition(
+                PortType.READONLY_OUT,
+                PortValueType.FORCE,
+                "FORCE"));
+
+            _ports.Add(new PortData("TRAINSET_FORCE", _dummyTrainsetForce));
+
+            _dummyTrainsetPower = new Port("trainset", new PortDefinition(
+                PortType.READONLY_OUT,
+                PortValueType.POWER,
+                "POWER"));
+
+            _ports.Add(new PortData("TRAINSET_POWER", _dummyTrainsetPower));
+        }
+
+        private void TryAddPort()
+        {
+            var flow = _car.SimController.SimulationFlow;
+            var map = new Dictionary<string, Port>();
+
+            foreach (var comp in flow.OrderedSimComps)
+            {
+                foreach (var port in comp.GetAllPorts())
+                {
+                    map[port.id] = port;
+                }
+
+                foreach (var portReference in comp.GetAllPortReferences())
+                {
+                    map[portReference.id] = portReference.GetPort();
+                }
+            }
+
+            if (map.TryGetValue(_portToAdd, out var match))
+            {
+                _ports.Add(new PortData(_portToAdd, match));
+            }
+        }
+
+        public static SimPortPlotterInternal? AddToCarId(string carId)
+        {
+            if (!CarSpawner.Instance.AllCars.TryFind(x => x.ID == carId, out var car))
+            {
+                Debug.LogWarning($"Could not find car with ID {carId}");
+                return null;
+            }
+
+            return AddToCar(car);
+        }
+
+        public static SimPortPlotterInternal? AddToLastLoco()
+        {
+            var loco = PlayerManager.LastLoco;
+            if (loco == null)
+            {
+                Debug.LogWarning($"Player has no last loco!");
+                return null;
+            }
+
+            return AddToCar(loco);
+        }
+
+        private static SimPortPlotterInternal AddToCar(TrainCar car)
+        {
+            var comp = new GameObject("DATA").AddComponent<SimPortPlotterInternal>();
+            comp.transform.parent = car.transform;
+            comp.transform.Reset();
+
+            return comp;
         }
     }
 }
