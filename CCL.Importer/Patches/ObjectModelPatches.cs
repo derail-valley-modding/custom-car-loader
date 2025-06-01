@@ -27,4 +27,19 @@ namespace CCL.Importer.Patches
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(DVObjectModel))]
+    internal class DVObjectModelPatches
+    {
+        [HarmonyPostfix,  HarmonyPatch(nameof(DVObjectModel.RecalculateCaches))]
+        private static void RecalculateCachesPostfix()
+        {
+            CarManager.Trainsets.Clear();
+
+            foreach (var car in CarManager.CustomCarTypes)
+            {
+                CarManager.AddTrainsets(car);
+            }
+        }
+    }
 }

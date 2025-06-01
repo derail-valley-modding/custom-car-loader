@@ -195,8 +195,6 @@ namespace CCL.Importer
                     }
                 }
 
-                AddTrainsets(carType);
-
                 CustomCarTypes.Add(carType);
                 CCLPlugin.Log($"Successfully loaded car type {car.id}");
             }
@@ -235,7 +233,7 @@ namespace CCL.Importer
             return true;
         }
 
-        private static void AddTrainsets(CCL_CarType car)
+        internal static void AddTrainsets(CCL_CarType car)
         {
             foreach(var livery in car.Variants)
             {
