@@ -7,19 +7,19 @@ namespace CCL.Types.Proxies.Controllers
     public class CompressorSimControllerProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
-        public string activationSignalExtInPortId;
+        public string activationSignalExtInPortId = string.Empty;
         [PortId(DVPortValueType.STATE, true)]
-        public string productionRateOutPortId;
+        public string productionRateOutPortId = string.Empty;
         [PortId(DVPortValueType.GENERIC, true)]
-        public string mainReservoirVolumePortId;
+        public string mainReservoirVolumePortId = string.Empty;
         [PortId(DVPortValueType.GENERIC, true)]
-        public string activationPressureThresholdPortId;
+        public string activationPressureThresholdPortId = string.Empty;
 
         [Header("optional")]
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, true)]
-        public string compressorHealthStatePortId;
+        public string compressorHealthStatePortId = string.Empty;
         [PortId(DVPortValueType.PRESSURE, true)]
-        public string mainResPressureNormalizedPortId;
+        public string mainResPressureNormalizedPortId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
