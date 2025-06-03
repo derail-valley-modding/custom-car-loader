@@ -7,7 +7,7 @@ namespace CCL.Types.Components.Simulation
     public class SteamMechanicalStokerDefinition : SimComponentDefinitionProxy
     {
         [Min(0.0f)]
-        public float MaxTransferRate = 1f;
+        public float MaxTransferRate = 10f;
         [Min(0.0f)]
         public float MaxSteamConsumption = 1f;
         [Min(2.0f)]

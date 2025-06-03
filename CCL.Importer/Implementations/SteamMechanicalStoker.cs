@@ -72,7 +72,7 @@ namespace CCL.Importer.Implementations
 
             // Apply modifiers and send it.
             CoalConsumeExtIn.Value = transfer * ConsumptionModifier;
-            FireboxCoalControl.Value = transfer * CoalConsumptionMultiplier;
+            FireboxCoalControl.Value = transfer / CoalConsumptionMultiplier;
 
             // Calculate readouts.
             StokingNormalizedReadout.Value = NormalizedRate;
