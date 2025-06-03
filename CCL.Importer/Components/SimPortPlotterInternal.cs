@@ -465,17 +465,17 @@ namespace CCL.Importer.Components
 
                 if (s_round && unit != "kg")
                 {
-                    if (value >= 1000000000)
+                    if (value >= 1000000000 || value <= -1000000000)
                     {
                         return $"{value:0,,,.## G}{unit}";
                     }
 
-                    if (value >= 1000000)
+                    if (value >= 1000000 || value <= -1000000)
                     {
                         return $"{value:0,,.## M}{unit}";
                     }
 
-                    if (value >= 10000)
+                    if (value >= 10000 || value <= -10000)
                     {
                         return $"{value:0,.## k}{unit}";
                     }
