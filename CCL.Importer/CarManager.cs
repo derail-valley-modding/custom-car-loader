@@ -86,6 +86,19 @@ namespace CCL.Importer
 
             pack.AfterImport();
 
+            // Generate procedural materials.
+            if (pack.ProceduralMaterials != null)
+            {
+                CCLPlugin.Log("Generating materials...");
+                ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
+            }
+            // Load paints.
+            if (pack.PaintSubstitutions.Length > 0)
+            {
+                CCLPlugin.Log("Loading paints...");
+                PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
+            }
+
             int loaded = 0;
 
             foreach (var car in pack.Cars)
@@ -97,19 +110,6 @@ namespace CCL.Importer
             foreach (var model in pack.ExtraModels)
             {
                 ModelProcessor.DoBasicProcessing(model);
-            }
-
-            // Load paints.
-            if (pack.PaintSubstitutions.Length > 0)
-            {
-                CCLPlugin.Log("Loading paints...");
-                PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
-            }
-            // Generate procedural materials.
-            if (pack.ProceduralMaterials != null)
-            {
-                CCLPlugin.Log("Generating materials...");
-                ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
             }
 
             InjectTranslations(pack);
