@@ -4,9 +4,9 @@ using LocoSim.Implementations;
 
 namespace CCL.Importer.Components.Simulation
 {
-    internal class SteamAutostokerDefinitionInternal : SimComponentDefinition
+    internal class SteamMechanicalStokerDefinitionInternal : SimComponentDefinition
     {
-        public float MaxTransferRate = 10f;
+        public float MaxTransferRate = 1f;
         public float MaxSteamConsumption = 1f;
         public float MaxWorkingPressure = 6f;
         public float FireboxCoalConsumptionMultiplier = 1f;
@@ -25,7 +25,7 @@ namespace CCL.Importer.Components.Simulation
 
         public override SimComponent InstantiateImplementation()
         {
-            return new SteamAutostoker(this);
+            return new SteamMechanicalStoker(this);
         }
     }
 }

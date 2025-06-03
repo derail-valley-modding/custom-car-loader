@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
-    public class SteamAutostokerDefinition : SimComponentDefinitionProxy
+    public class SteamMechanicalStokerDefinition : SimComponentDefinitionProxy
     {
         [Min(0.0f)]
-        public float MaxTransferRate = 10f;
+        public float MaxTransferRate = 1f;
         [Min(0.0f)]
         public float MaxSteamConsumption = 1f;
-        [Min(3.001f)]
+        [Min(2.0f)]
         public float MaxWorkingPressure = 6f;
         [Min(0.0f)]
         public float SmoothTime = 5f;

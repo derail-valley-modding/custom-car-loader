@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace CCL.Importer.Implementations
 {
-    internal class SteamAutostoker : SimComponent
+    internal class SteamMechanicalStoker : SimComponent
     {
-        public const float MIN_WORKING_PRESSURE = 3.0f;
+        public const float MIN_WORKING_PRESSURE = 2.0f;
 
         public readonly float MaxTransferRate;
         public readonly float MaxSteamConsumption;
@@ -33,7 +33,7 @@ namespace CCL.Importer.Implementations
         private float SpaceForCoal => (FireboxCoalCapacity.Value - FireboxCoalLevel.Value) * CoalConsumptionMultiplier;
         private float CoalAvailable => ConsumptionModifier == 0f ? CoalAmount.Value : CoalAmount.Value / ConsumptionModifier;
 
-        public SteamAutostoker(SteamAutostokerDefinitionInternal def) : base(def.ID)
+        public SteamMechanicalStoker(SteamMechanicalStokerDefinitionInternal def) : base(def.ID)
         {
             _rate = 0;
             _vel = 0;

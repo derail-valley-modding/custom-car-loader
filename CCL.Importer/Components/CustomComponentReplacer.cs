@@ -59,7 +59,7 @@ namespace CCL.Importer.Components
                 .AfterMap(FuseInverterAfter);
             CreateMap<CombinedThrottleDynamicBrakeDefinition, CombinedThrottleDynamicBrakeDefinitionInternal>().AutoCacheAndMap();
             CreateMap<TimeReaderDefinition, TimeReaderDefinitionInternal>().AutoCacheAndMap();
-            CreateMap<SteamAutostokerDefinition, SteamAutostokerDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<SteamMechanicalStokerDefinition, SteamMechanicalStokerDefinitionInternal>().AutoCacheAndMap();
         }
 
         private void MapMultipleUnit()
