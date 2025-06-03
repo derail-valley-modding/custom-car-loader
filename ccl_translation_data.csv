@@ -1,0 +1,5 @@
+Key,Description,English,Czech,Danish,German,Spanish,Finnish,French,Hindi,Hungarian,Italian,Japanese,Korean,Norwegian,Dutch,Polish,Portuguese,Portuguese (Brazil),Romanian,Russian,Slovak,Swedish,Turkish,Ukrainian,Chinese (Simplified),Chinese (Traditional)
+,,en,cs,da,de,es,fi,fr,hi,hu,it,ja,ko,nb,nl,pl,pt,pt-br,ro,ru,sk,sv,tr,uk,zh-CN,zh-TW
+ccl/car/stocker,"Control label, used in labels/driving UI (short)",Stoker,,,,,,,,,,,,,,,,,,,,,,,,
+ccl/car/deflector,"Control label, used in labels/driving UI (short)",Deflector,,,,,,,,,,,,,,,,,,,,,,,,
+ccl/car/selector,"Control label, used in labels/driving UI (short)",Selector,,,,,,,,,,,,,,,,,,,,,,,,
