@@ -7,7 +7,7 @@ namespace CCL.Types.Proxies.Indicators
     {
         public int selectedDefaultIdx;
         [Delayed]
-        public string key;
+        public string key = string.Empty;
 
         public LabelModelType ModelType = LabelModelType.None;
 
@@ -44,6 +44,7 @@ namespace CCL.Types.Proxies.Indicators
         public static readonly string[] DefaultOptions =
         {
             "CUSTOM",
+
             "car/air_pump",
             "car/alerter",
             "car/amperage",
@@ -135,6 +136,10 @@ namespace CCL.Types.Proxies.Indicators
             "car/wiper",
             "car/wipers_1",
             "car/wipers_2",
+
+            "ccl/car/stocker",
+            "ccl/car/deflector",
+            "ccl/car/selector"
         };
     }
 

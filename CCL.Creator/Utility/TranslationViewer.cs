@@ -21,6 +21,7 @@ namespace CCL.Creator.Utility
         private const string MISSING = "[ MISSING TRANSLATION ]";
 
         private static Dictionary<string, TranslationData>? _defaultTranslations = null;
+        private static Dictionary<string, TranslationData>? _defaultOnlineTranslations = null;
         private static bool _attemptedLoad = false;
 
         private static Dictionary<string, TranslationData> _webTranslations = new Dictionary<string, TranslationData>();

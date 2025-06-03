@@ -11,9 +11,9 @@ namespace CCL.Creator.Inspector
     [CustomEditor(typeof(LabelLocalizer))]
     public class LabelLocalizerEditor : Editor
     {
-        private SerializedProperty _key;
-        private SerializedProperty _selectedDefaultIdx;
-        private SerializedProperty _modelType;
+        private SerializedProperty _key = null!;
+        private SerializedProperty _selectedDefaultIdx = null!;
+        private SerializedProperty _modelType = null!;
 
         private void OnEnable()
         {
