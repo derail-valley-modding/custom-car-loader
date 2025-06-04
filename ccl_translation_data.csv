@@ -3,3 +3,6 @@ Key,Description,English,Czech,Danish,German,Spanish,Finnish,French,Hindi,Hungari
 ccl/car/stoker,"Control label, used in labels/driving UI (short)",Stoker,,,,,,,,,,,,,,,,,,,,,,,,
 ccl/car/deflector,"Control label, used in labels/driving UI (short)",Deflector,,,,,,,,,,,,,,,,,,,,,,,,
 ccl/car/selector,"Control label, used in labels/driving UI (short)",Selector,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,
+ccl/vc/techdesc/special/articulation,,Articulated,,,,,,,,,,,,,,,,,,,,,,,,
+ccl/vc/techdesc/specialized_equipment/steam_mech_stoker,,Steam-Powered Mechanical Stoker,,,,,,,,,,,,,,,,,,,,,,,,

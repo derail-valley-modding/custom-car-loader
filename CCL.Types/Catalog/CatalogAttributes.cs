@@ -183,7 +183,12 @@
             "vc/techdesc/unit/primary",
             "vc/techdesc/unit/primary_score",
             "vc/techdesc/unit/secondary",
-            "vc/techdesc/unit/secondary_score"
+            "vc/techdesc/unit/secondary_score",
+
+            // CCL section.
+            "ccl/vc/techdesc/special/articulation",
+
+            "ccl/vc/techdesc/specialized_equipment/steam_mech_stoker",
         };
 
         public TechDescriptionAttribute(bool customAllowed = true) : base(s_techDesc, customAllowed) { }
