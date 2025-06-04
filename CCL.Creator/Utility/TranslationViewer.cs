@@ -67,7 +67,7 @@ namespace CCL.Creator.Utility
                 var textMesh = localizer.GetComponent<TextMeshPro>();
                 if (!textMesh) continue;
 
-                if (localizer.selectedDefaultIdx > 0)
+                if (CarLabelKeyAttribute.CarLabelKeys.Contains(localizer.key))
                 {
                     textMesh.SetText(GetDefaultTranslation(localizer.key, _pendingLangToApply.Value));
                 }
@@ -75,6 +75,7 @@ namespace CCL.Creator.Utility
                 {
                     textMesh.SetText(GetUserTranslation(userData, localizer.key, _pendingLangToApply.Value));
                 }
+
                 textMesh.ForceMeshUpdate();
                 EditorUtility.SetDirty(textMesh);
             }
