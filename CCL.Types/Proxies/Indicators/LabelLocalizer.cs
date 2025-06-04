@@ -137,7 +137,7 @@ namespace CCL.Types.Proxies.Indicators
             "car/wipers_1",
             "car/wipers_2",
 
-            "ccl/car/stocker",
+            "ccl/car/stoker",
             "ccl/car/deflector",
             "ccl/car/selector"
         };

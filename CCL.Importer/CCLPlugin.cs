@@ -15,6 +15,7 @@ namespace CCL.Importer
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
+        public const string TranslationCsvFile = "ccl_translation_data.csv";
         public const string TranslationCsvUrl = "https://github.com/derail-valley-modding/custom-car-loader/blob/default-translations/ccl_translation_data.csv";
         // Replace with this before merging into master.
         //public const string TranslationCsvUrl = "https://github.com/derail-valley-modding/custom-car-loader/blob/master/ccl_translation_data.csv";
@@ -42,6 +43,7 @@ namespace CCL.Importer
             Processing.GrabberProcessor.BuildAllCaches(false);
 
             // Load default translation data.
+            Translations.AddTranslationsFromCsv(System.IO.Path.Combine(modEntry.Path, CCLPluginInfo.TranslationCsvFile));
             Translations.AddTranslationsFromWebCsv(CCLPluginInfo.TranslationCsvUrl);
 
             CarManager.ScanLoadedMods();
