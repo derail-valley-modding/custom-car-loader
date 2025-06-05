@@ -1,4 +1,5 @@
-﻿using CCL.Importer.Processing;
+﻿using CCL.Importer.Patches;
+using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
 using DV;
@@ -46,7 +47,12 @@ namespace CCL.Importer
 
         public static Sprite GetCargoIcon(CargoType_v2 cargo, TrainCarType_v2 car)
         {
-            if (car is not CCL_CarType ccl) return cargo.icon;
+            if (car is not CCL_CarType ccl)
+            {
+                if (CargoType_v2Patches.OriginalSprites.TryGetValue(cargo, out var icon)) return icon;
+
+                return cargo.icon;
+            }
 
             // It should never be null if we get here, but it doesn't hurt to check.
             if (ccl.CargoSetup == null || !ccl.CargoSetup.Entries.TryFind(x => x.CargoId == cargo.id, out var entry)) return null!;

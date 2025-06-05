@@ -6,6 +6,7 @@ using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityModManagerNet;
 
@@ -140,6 +141,22 @@ namespace CCL.Importer
         {
             try
             {
+                // Ensure no duplicate IDs ever load, entire game dies otherwise.
+                if (DV.Globals.G.Types.carTypes.Any(x => x.id == car.id))
+                {
+                    CCLPlugin.Error($"Failed to load car {car.id}, car ID already ingame");
+                    return false;
+                }
+
+                foreach (var livery in car.liveries)
+                {
+                    if (DV.Globals.G.Types.Liveries.Any(x => x.id == livery.id))
+                    {
+                        CCLPlugin.Error($"Failed to load car {car.id}, livery ID '{livery.id}' already ingame");
+                        return false;
+                    }
+                }
+
                 car.AfterImport();
 
                 var carType = ScriptableObject.CreateInstance<CCL_CarType>();
