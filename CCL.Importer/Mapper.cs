@@ -143,9 +143,39 @@ namespace CCL.Importer
                 .ForMember(c => c.audioPoolSize, o => o.MapFrom(ccl => Utilities.GetAudioPoolSize(ccl.KindSelection)));
 
             cfg.CreateMap<CustomCarType.BrakesSetup, TrainCarType_v2.BrakesSetup>()
-                .ForMember(b => b.trainBrake, o => o.MapFrom(s => s.brakeValveType));
+                .ForMember(b => b.trainBrake, o => o.MapFrom(s => s.brakeValveType))
+                .AfterMap(BrakesAfter);
             cfg.CreateMap<CustomCarType.DamageSetup, TrainCarType_v2.DamageSetup>();
             cfg.AddMaps(Assembly.GetExecutingAssembly());
+        }
+
+        private static void BrakesAfter(CustomCarType.BrakesSetup proxy, TrainCarType_v2.BrakesSetup setup)
+        {
+            switch (proxy.TrainBrakeCurveType)
+            {
+                case CustomCarType.BrakesSetup.BrakeCurveType.LocoDefault:
+                    setup.trainBrakeCurveData = QuickAccess.Locomotives.DE2.parentType.brakes.trainBrakeCurveData;
+                    break;
+                case CustomCarType.BrakesSetup.BrakeCurveType.Custom:
+                    setup.trainBrakeCurveData = ScriptableObject.CreateInstance<BrakesCurve>();
+                    setup.trainBrakeCurveData.brakesCurve = proxy.TrainBrakeCurve;
+                    break;
+                default:
+                    break;
+            }
+
+            switch (proxy.IndBrakeCurveType)
+            {
+                case CustomCarType.BrakesSetup.BrakeCurveType.LocoDefault:
+                    setup.indBrakeCurveData = QuickAccess.Locomotives.DE2.parentType.brakes.indBrakeCurveData;
+                    break;
+                case CustomCarType.BrakesSetup.BrakeCurveType.Custom:
+                    setup.indBrakeCurveData = ScriptableObject.CreateInstance<BrakesCurve>();
+                    setup.indBrakeCurveData.brakesCurve = proxy.IndBrakeCurve;
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>

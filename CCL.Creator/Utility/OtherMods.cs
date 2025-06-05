@@ -43,9 +43,17 @@ namespace CCL.Creator.Utility
 
         public static bool RequiresCustomLicenseMod(CustomCarType carType)
         {
-            if (!Utilities.IsVanillaLicense(carType.LicenseID))
+            if (!Utilities.IsVanillaLicense(carType.GeneralLicense))
             {
                 return true;
+            }
+
+            foreach (var license in carType.JobLicenses)
+            {
+                if (!Utilities.IsVanillaLicense(license))
+                {
+                    return true;
+                }
             }
 
             return false;
