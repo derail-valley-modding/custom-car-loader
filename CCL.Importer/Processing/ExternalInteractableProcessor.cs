@@ -141,7 +141,6 @@ namespace CCL.Importer.Processing
             }
 
             interactables.SetLayersRecursive(ModelProcessor.NonStandardLayerExclusion, DVLayer.Interactable);
-            FixControlColliders(interactables);
             SetupOpenables(interactables);
         }
 
@@ -163,15 +162,6 @@ namespace CCL.Importer.Processing
                         Replace(prefab.transform, current, _be2ChargePort);
                         break;
                 }
-            }
-        }
-
-        private static void FixControlColliders(GameObject root)
-        {
-            var controls = root.GetComponentsInChildren<Collider>(true);
-            foreach (var control in controls)
-            {
-                control.isTrigger = true;
             }
         }
 

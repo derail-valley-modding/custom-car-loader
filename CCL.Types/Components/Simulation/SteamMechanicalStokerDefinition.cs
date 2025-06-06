@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
-    public class SteamMechanicalStokerDefinition : SimComponentDefinitionProxy
+    public class SteamMechanicalStokerDefinition : SimComponentDefinitionProxy, IRecommendedDebugPorts
     {
         [Min(0.0f)]
         public float MaxTransferRate = 10f;
@@ -32,6 +32,11 @@ namespace CCL.Types.Components.Simulation
             new PortReferenceDefinition(DVPortValueType.CONTROL, "FIREBOX_COAL_CONTROL", true),
             new PortReferenceDefinition(DVPortValueType.COAL, "COAL_AMOUNT", false),
             new PortReferenceDefinition(DVPortValueType.COAL, "COAL_CONSUMPTION", true)
+        };
+
+        public IEnumerable<string> GetDebugPorts() => new[]
+        {
+            "STOKING_NORMALIZED"
         };
     }
 }
