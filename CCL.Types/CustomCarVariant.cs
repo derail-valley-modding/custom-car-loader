@@ -44,7 +44,13 @@ namespace CCL.Types
         public bool HideFrontCoupler = false;
         public bool HideBackCoupler = false;
 
-        [Header("Spawning")]
+        [Header("Trainset - optional")]
+        [Tooltip("This is used to tell other mods if this vehicle is part of a set of vehicles\n" +
+            "Examples are a locomotive and her tender (S282A + S282B)\n" +
+            "Order is important")]
+        public string[] TrainsetLiveries = new string[0];
+
+        [Header("Spawning - optional")]
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
         [SerializeField, HideInInspector]
         private string? _spawnGroupJson = string.Empty;

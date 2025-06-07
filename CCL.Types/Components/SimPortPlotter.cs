@@ -9,10 +9,14 @@ namespace CCL.Types.Components
     public class SimPortPlotter : MonoBehaviour
     {
         public int TickRate = 5;
-        [PortId(null, null, false)]
+        [PortId]
         public List<string> PortIds = new List<string>();
         [PortReferenceId]
         public List<string> PortReferenceIds = new List<string>();
         public bool UseColours = true;
+        [Tooltip("Adds a dummy port that outputs the generated force of the vehicle")]
+        public bool AddDummyForcePort = true;
+        [Tooltip("Adds a dummy port that outputs the generated power of the vehicle")]
+        public bool AddDummyPowerPort = true;
     }
 }

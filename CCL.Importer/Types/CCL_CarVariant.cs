@@ -23,6 +23,7 @@ namespace CCL.Importer.Types
         public bool HideFrontCoupler;
         public bool HideBackCoupler;
 
+        public string[] TrainsetLiveries = new string[0];
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
         public CatalogPage? CatalogPage = null;
 

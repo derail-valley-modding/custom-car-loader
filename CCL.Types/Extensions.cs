@@ -105,5 +105,11 @@ namespace CCL.Types
 
             return -1;
         }
+
+        // Swaps the values at the 2 indexes of the list.
+        public static void Swap<T>(this IList<T> list, int indexA, int indexB)
+        {
+            (list[indexB], list[indexA]) = (list[indexA], list[indexB]);
+        }
     }
 }

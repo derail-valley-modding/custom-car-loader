@@ -2,6 +2,7 @@
 using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Types;
+using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ namespace CCL.Importer
     public static class CarManager
     {
         public static readonly List<CCL_CarType> CustomCarTypes = new();
+        public static readonly Dictionary<TrainCarLivery, TrainCarLivery[]> Trainsets = new();
 
         public static void ScanLoadedMods()
         {
@@ -229,6 +231,38 @@ namespace CCL.Importer
             var processor = new ModelProcessor(livery);
             processor.ExecuteSteps();
             return true;
+        }
+
+        internal static void AddTrainsets(CCL_CarType car)
+        {
+            foreach(var livery in car.Variants)
+            {
+                // No trainset for single vehicles.
+                if (livery.TrainsetLiveries.Length < 2) continue;
+
+                List<TrainCarLivery> liveries = new();
+
+                foreach (var id in livery.TrainsetLiveries)
+                {
+                    if (DV.Globals.G.Types.TryGetLivery(id, out var match))
+                    {
+                        liveries.Add(match);
+                    }
+                    else
+                    {
+                        CCLPlugin.Error($"Could not find livery {id} for trainset of {livery.id}");
+                    }
+                }
+
+                Trainsets.Add(livery, liveries.ToArray());
+            }
+        }
+
+        public static TrainCarLivery[] GetTrainsetForLivery(TrainCarLivery car)
+        {
+            if (Trainsets.TryGetValue(car, out var set)) return set;
+
+            return Array.Empty<TrainCarLivery>();
         }
     }
 }
