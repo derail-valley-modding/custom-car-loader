@@ -1,4 +1,6 @@
 ﻿using CCL.Importer.Components;
+using DV.CabControls.Spec;
+using DV.Simulation.Brake;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
 
@@ -13,7 +15,7 @@ namespace CCL.Importer.Implementations
 
         public override float Value => _coupled != null ? _coupled.brakeSystem.handbrakePosition : base.Value;
 
-        public DuplicateHandbrake(TrainCar car, DuplicateHandbrakeOverriderInternal overrider) : base(car)
+        public DuplicateHandbrake(TrainCar car, DuplicateHandbrakeOverriderInternal overrider) : base(car, null)
         {
             _overrider = overrider;
 
