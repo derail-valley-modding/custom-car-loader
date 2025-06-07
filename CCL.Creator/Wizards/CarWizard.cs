@@ -215,6 +215,8 @@ namespace CCL.Creator.Wizards
             {
                 hasCompressor = isLoco,
                 brakeValveType = isLoco ? CustomCarType.BrakesSetup.TrainBrakeType.SelfLap : CustomCarType.BrakesSetup.TrainBrakeType.None,
+                TrainBrakeCurveType = isLoco ? CustomCarType.BrakesSetup.BrakeCurveType.LocoDefault : CustomCarType.BrakesSetup.BrakeCurveType.Linear,
+                IndBrakeCurveType = isLoco ? CustomCarType.BrakesSetup.BrakeCurveType.LocoDefault : CustomCarType.BrakesSetup.BrakeCurveType.Linear,
                 hasIndependentBrake = isLoco,
                 hasHandbrake = true,
             };

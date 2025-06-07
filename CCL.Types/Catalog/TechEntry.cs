@@ -23,8 +23,8 @@ namespace CCL.Types.Catalog
             {
                 TechIcon.None => "",
                 //TechIcon.Generic => throw new NotImplementedException(),
-                TechIcon.ClosedCab => "vc/techtype/closed_cab",
-                TechIcon.OpenCab => "vc/techtype/open_cab",
+                TechIcon.ClosedCab => "vc/techtype/cab_closed",
+                TechIcon.OpenCab => "vc/techtype/cab_open",
                 TechIcon.CrewCompartment => "vc/techtype/crew_quarters",
                 TechIcon.CompressedAirBrakeSystem => "vc/techtype/air_brake",
                 TechIcon.DirectBrakeSystem => "vc/techtype/direct_brake",

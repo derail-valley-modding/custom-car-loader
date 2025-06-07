@@ -160,20 +160,7 @@ namespace CCL.Importer
                     return false;
                 }
 
-                if (!string.IsNullOrEmpty(car.LicenseID))
-                {
-                    if (DV.Globals.G.Types.TryGetGeneralLicense(car.LicenseID, out var license))
-                    {
-                        foreach (var item in carType.liveries)
-                        {
-                            item.requiredLicense = license;
-                        }
-                    }
-                    else
-                    {
-                        CCLPlugin.Warning($"Failed to find license for {car.id} ({car.LicenseID}), car will not require license to use");
-                    }
-                }
+                SetupLicenses(car, carType);
 
                 // Create the HUD if it exists.
                 if (car.HUDLayout != null)
@@ -233,6 +220,40 @@ namespace CCL.Importer
             return true;
         }
 
+        private static void SetupLicenses(CustomCarType car, CCL_CarType carType)
+        {
+            if (!string.IsNullOrEmpty(car.GeneralLicense))
+            {
+                if (DV.Globals.G.Types.TryGetGeneralLicense(car.GeneralLicense, out var license))
+                {
+                    foreach (var item in carType.liveries)
+                    {
+                        item.requiredLicense = license;
+                    }
+                }
+                else
+                {
+                    CCLPlugin.Warning($"Failed to find general license for {car.id} ({car.GeneralLicense}), car will not require license to use");
+                }
+            }
+
+            List<JobLicenseType_v2> jobLicenses = new();
+
+            foreach (var id in car.JobLicenses)
+            {
+                if (DV.Globals.G.Types.TryGetJobLicense(id, out var license))
+                {
+                    jobLicenses.Add(license);
+                }
+                else
+                {
+                    CCLPlugin.Warning($"Failed to find job license for {car.id} ({car.GeneralLicense}), car will not require this license to use");
+                }
+            }
+
+            carType.requiredJobLicenses = jobLicenses.ToArray();
+        }
+
         internal static void AddTrainsets(CCL_CarType car)
         {
             foreach(var livery in car.Variants)
@@ -258,6 +279,11 @@ namespace CCL.Importer
             }
         }
 
+        /// <summary>
+        /// Returns an array of ordered liveries that should always be together (i.e. loco + tender).
+        /// </summary>
+        /// <param name="car">The livery that may or may not belong to a trainset.</param>
+        /// <returns>An array of liveries if there is a trainset, or an empty array if there is not.</returns>
         public static TrainCarLivery[] GetTrainsetForLivery(TrainCarLivery car)
         {
             if (Trainsets.TryGetValue(car, out var set)) return set;

@@ -51,15 +51,15 @@ namespace CCL.Types
         public float wheelSlidingFrictionCoefficient = WHEELSLIDE_FRICTION_COEFFICIENT;
         public float wheelslipFrictionCoefficient = WHEELSLIP_FRICTION_COEFFICIENT;
 
+        public BrakesSetup brakes;
+        public DamageSetup damage;
+
         [Header("Wheels")]
         public float wheelRadius;
         public bool useDefaultWheelRotation = true;
 
         [Header("Cargo")]
         public CargoSetup? CargoSetup;
-
-        public BrakesSetup brakes;
-        public DamageSetup damage;
 
         [Space]
         public UnusedCarDeletePreventionMode unusedCarDeletePreventionMode;
@@ -70,10 +70,11 @@ namespace CCL.Types
         [Header("HUD - optional")]
         public VanillaHUDLayout HUDLayout = null!;
 
-        [Header("License - optional")]
-        [Tooltip("Only general license IDs are supported (not job licenses)")]
-        [GeneralLicenseField]
-        public string LicenseID = "";
+        [Header("Licenses - optional")]
+        [GeneralLicenseField, Tooltip("For a locomotive, this is where the required license goes")]
+        public string GeneralLicense = string.Empty;
+        [JobLicenseField, Tooltip("For wagons, this is where the required licenses go (ex. Military1 for military wagons)")]
+        public string[] JobLicenses = new string[0];
 
         [SerializeField, HideInInspector]
         private string? brakesJson;
@@ -185,17 +186,30 @@ namespace CCL.Types
                 CopyMax
             }
 
+            public enum BrakeCurveType
+            {
+                Linear,
+                LocoDefault,
+                Custom
+            }
+
+            [Header("Behaviour")]
             public bool hasCompressor;
             public bool hasMainResConnections;
             public TrainBrakeType brakeValveType;
             public bool hasIndependentBrake;
             public bool hasHandbrake = true;
             public bool ignoreOverheating;
-            //[Header("Leave brake curve data blank for linear behaviour")]
-            //public BrakesCurve trainBrakeCurveData;
-            //public BrakesCurve indBrakeCurveData;
             public BrakeCylinderPressureCalculation brakeCylinderPressureCalculation;
             public float brakingForcePerBogieMultiplier = 1;
+
+            [Header("Performance Curves")]
+            public BrakeCurveType TrainBrakeCurveType;
+            public AnimationCurve TrainBrakeCurve = null!;
+            public BrakeCurveType IndBrakeCurveType;
+            public AnimationCurve IndBrakeCurve = null!;
+
+            public float ForcePerBogie => brakingForcePerBogieMultiplier * BOGIE_BRAKING_FORCE;
 
             public void ApplyWagonDefaults()
             {
@@ -207,6 +221,8 @@ namespace CCL.Types
                 ignoreOverheating = false;
                 brakeCylinderPressureCalculation = BrakeCylinderPressureCalculation.Regular;
                 brakingForcePerBogieMultiplier = 1.0f;
+                TrainBrakeCurveType = BrakeCurveType.Linear;
+                IndBrakeCurveType = BrakeCurveType.Linear;
             }
         }
 
@@ -218,11 +234,11 @@ namespace CCL.Types
             public float mechanicalPowertrainHP;
             public float electricalPowertrainHP;
 
-            [Header("Price (cars not using wheels price currently")]
-            public float bodyPrice = -1f;
-            public float wheelsPrice = -1f;
-            public float electricalPowertrainPrice = -1f;
-            public float mechanicalPowertrainPrice = -1f;
+            [Header("Price (cars not using wheels price currently)")]
+            public float bodyPrice = 0f;
+            public float wheelsPrice = 0f;
+            public float electricalPowertrainPrice = 0f;
+            public float mechanicalPowertrainPrice = 0f;
 
             public void ApplyWagonDefaults()
             {
@@ -230,9 +246,9 @@ namespace CCL.Types
                 mechanicalPowertrainHP = 0.0f;
                 electricalPowertrainHP = 0.0f;
 
-                wheelsPrice = -1.0f;
-                electricalPowertrainPrice = -1.0f;
-                mechanicalPowertrainPrice = -1.0f;
+                wheelsPrice = 0.0f;
+                electricalPowertrainPrice = 0.0f;
+                mechanicalPowertrainPrice = 0.0f;
             }
         }
     }
