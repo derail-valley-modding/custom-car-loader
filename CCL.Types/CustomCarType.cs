@@ -6,6 +6,8 @@ using CCL.Types.Json;
 using CCL.Types.HUD;
 using CCL.Types.Proxies;
 
+using static CCL.Types.CustomCarType.BrakesSetup;
+
 namespace CCL.Types
 {
     [CreateAssetMenu(menuName = "CCL/Custom Car Type", order = MenuOrdering.CarType)]
@@ -205,8 +207,10 @@ namespace CCL.Types
 
             [Header("Performance Curves")]
             public BrakeCurveType TrainBrakeCurveType;
+            [EnableIf(nameof(EnableTrainBrakeCurve))]
             public AnimationCurve TrainBrakeCurve = null!;
             public BrakeCurveType IndBrakeCurveType;
+            [EnableIf(nameof(EnableIndBrakeCurve))]
             public AnimationCurve IndBrakeCurve = null!;
 
             public float ForcePerBogie => brakingForcePerBogieMultiplier * BOGIE_BRAKING_FORCE;
@@ -251,5 +255,9 @@ namespace CCL.Types
                 mechanicalPowertrainPrice = 0.0f;
             }
         }
+
+        // For the EnableIfAttribute to work cannot be in the nested class.
+        private bool EnableTrainBrakeCurve => brakes.TrainBrakeCurveType == BrakeCurveType.Custom;
+        private bool EnableIndBrakeCurve => brakes.IndBrakeCurveType == BrakeCurveType.Custom;
     }
 }

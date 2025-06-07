@@ -28,9 +28,10 @@ namespace CCL.Creator.Inspector
 
             bool isCustom = _layout.HUDType == VanillaHUDLayout.BaseHUD.Custom;
 
-            GUI.enabled = isCustom;
-            EditorGUILayout.Foldout(isCustom, "Custom Layout Settings");
-            GUI.enabled = true;
+            using (new EditorGUI.DisabledScope(!isCustom))
+            {
+                EditorGUILayout.Foldout(isCustom, "Custom Layout Settings");
+            }
 
             if (!isCustom)
             {

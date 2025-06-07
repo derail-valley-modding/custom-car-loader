@@ -104,8 +104,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
             rpmToPowerCurve = new AnimationCurve()
             {
-                preWrapMode = WrapMode.Loop,
-                postWrapMode = WrapMode.Loop,
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
                 keys = new[]
                 {
                     new Keyframe
@@ -168,8 +168,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
             rpmToPowerCurve = new AnimationCurve()
             {
-                preWrapMode = WrapMode.Loop,
-                postWrapMode = WrapMode.Loop,
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
                 keys = new[]
                 {
                     new Keyframe
@@ -232,8 +232,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
             rpmToPowerCurve = new AnimationCurve()
             {
-                preWrapMode = WrapMode.Loop,
-                postWrapMode = WrapMode.Loop,
+                preWrapMode = WrapMode.ClampForever,
+                postWrapMode = WrapMode.ClampForever,
                 keys = new[]
                 {
                     new Keyframe
