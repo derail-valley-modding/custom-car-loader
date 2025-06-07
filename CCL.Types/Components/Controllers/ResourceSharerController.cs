@@ -32,9 +32,9 @@ namespace CCL.Types.Components.Controllers
                 return new[]
                 {
                     new PortIdField(this, nameof(CapacityPortId), CapacityPortId, DVPortType.READONLY_OUT, valueType),
-                    new PortIdField(this, nameof(AmountPortId), AmountPortId, DVPortType.EXTERNAL_IN, valueType),
+                    new PortIdField(this, nameof(AmountPortId), AmountPortId, DVPortType.READONLY_OUT, valueType),
                     new PortIdField(this, nameof(ConsumePortId), ConsumePortId, DVPortType.EXTERNAL_IN, valueType),
-                    new PortIdField(this, nameof(RefillPortId), RefillPortId, DVPortType.READONLY_OUT, valueType)
+                    new PortIdField(this, nameof(RefillPortId), RefillPortId, DVPortType.EXTERNAL_IN, valueType)
                 };
             }
         }
