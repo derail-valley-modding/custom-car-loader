@@ -14,12 +14,12 @@ namespace CCL.Types.Proxies.Weather
         public bool useBakedUVs;
         public bool mirrorX;
         public bool mirrorY;
-        public RenderTexture dropletRenderingTexture;
-        public Rigidbody rb;
+        public RenderTexture dropletRenderingTexture = null!;
+        public Rigidbody rb = null!;
 
-        [RenderMethodButtons]
-        [MethodButton(nameof(SetupDuplicates), "Setup duplicates")]
-        public bool buttonRender;
+        [RenderMethodButtons, SerializeField]
+        [MethodButton(nameof(SetupDuplicates), "Setup Duplicates")]
+        private bool _buttonRender;
 
         private void OnDrawGizmosSelected()
         {
@@ -50,12 +50,12 @@ namespace CCL.Types.Proxies.Weather
                 new Vector3(sizeInMeters.x, sizeInMeters.y, 0.1f));
         }
 
-        private static void SetupDuplicates(WindowProxy proxy)
+        private void SetupDuplicates()
         {
-            proxy.duplicates = proxy.transform.parent.GetComponentsInChildren<WindowProxy>().Where(x => x != proxy).ToArray();
-            proxy.simulate = true;
+            duplicates = transform.parent.GetComponentsInChildren<WindowProxy>().Where(x => x != this).ToArray();
+            simulate = true;
 
-            foreach (var window in proxy.duplicates)
+            foreach (var window in duplicates)
             {
                 window.simulate = false;
                 window.duplicates = new WindowProxy[0];

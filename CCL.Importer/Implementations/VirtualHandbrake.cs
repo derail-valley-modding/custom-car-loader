@@ -13,7 +13,7 @@ namespace CCL.Importer.Implementations
 
         protected override bool canExistWithoutHandbrake => true;
 
-        public VirtualHandbrake(TrainCar car, VirtualHandbrakeOverriderInternal overrider) : base(car)
+        public VirtualHandbrake(TrainCar car, VirtualHandbrakeOverriderInternal overrider) : base(car, null)
         {
             _overrider = overrider;
 
