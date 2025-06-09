@@ -301,11 +301,67 @@ namespace CCL.Importer
         /// </summary>
         /// <param name="car">The livery that may or may not belong to a trainset.</param>
         /// <returns>An array of liveries if there is a trainset, or an empty array if there is not.</returns>
+        /// <remarks>Base game car liveries are ignored by this method.</remarks>
         public static TrainCarLivery[] GetTrainsetForLivery(TrainCarLivery car)
         {
             if (Trainsets.TryGetValue(car, out var set)) return set;
 
             return Array.Empty<TrainCarLivery>();
+        }
+
+        /// <summary>
+        /// Returns an array of ordered train cars that belong together (i.e. loco + tender).
+        /// </summary>
+        /// <param name="car">The car instance that may or may not belong to a trainset.</param>
+        /// <returns>An array of train cars if there is a trainset, or an empty array if there is not.</returns>
+        /// <remarks>Base game car liveries are ignored by this method.</remarks>
+        public static TrainCar[] GetInstancedTrainset(TrainCar car)
+        {
+            var trainset = GetTrainsetForLivery(car.carLivery);
+
+            // Same rules as the other method.
+            if (trainset.Length < 2) return Array.Empty<TrainCar>();
+
+            int check = trainset.Length;
+
+            while (check > 0 && car.frontCoupler.coupledTo != null)
+            {
+                // If the current car isn't the starting one for the sequence, advance 1 car forwards.
+                // Check variable decreases and means we only check at most the # of cars in the set.
+                if (!MatchingLiverySequence(car, trainset))
+                {
+                    car = car.frontCoupler.coupledTo.train;
+                    check--;
+                    continue;
+                }
+
+                var result = new TrainCar[trainset.Length];
+
+                for (int i = 0; i < result.Length; i++)
+                {
+                    result[i] = car;
+                    // It is safe to iterate as MatchingLiverySequence needs to match the length.
+                    car = car.rearCoupler.coupledTo.train;
+                }
+
+                return result;
+            }
+
+            return Array.Empty<TrainCar>();
+
+            static bool MatchingLiverySequence(TrainCar? car, TrainCarLivery[] liveries)
+            {
+                for (int i = 0; i < liveries.Length; i++)
+                {
+                    // Check if the current car livery matches with the order.
+                    if (car == null || car.carLivery != liveries[i]) return false;
+
+                    // Get the next car, or null if there is nothing coupled.
+                    car = car.rearCoupler.coupledTo != null ? car.rearCoupler.coupledTo.train : null;
+                }
+
+                return true;
+            }
         }
     }
 }
