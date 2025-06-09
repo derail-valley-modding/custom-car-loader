@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using CCL.Types.Proxies;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace CCL.Creator.Validators
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
         {
-            // root
+            // Root.
             var collidersRoot = livery.prefab!.transform.FindSafe(CarPartNames.Colliders.ROOT);
             if (!collidersRoot)
             {
@@ -21,7 +22,7 @@ namespace CCL.Creator.Validators
 
             var result = Pass();
 
-            // bounding collider
+            // Bounding collider.
             var collision = collidersRoot.FindSafe(CarPartNames.Colliders.COLLISION);
             var collisionComp = collision ? collision!.GetComponentsInChildren<BoxCollider>(true) : Enumerable.Empty<Collider>();
             if (!collision || !collisionComp.Any())
@@ -29,7 +30,7 @@ namespace CCL.Creator.Validators
                 result.Warning($"{livery.id} - Bounding {CarPartNames.Colliders.COLLISION} collider will be auto-generated", collidersRoot);
             }
 
-            // walkable
+            // Walkable.
             var walkable = collidersRoot.FindSafe(CarPartNames.Colliders.WALKABLE);
             var walkableComp = walkable ? walkable!.GetComponentsInChildren<Collider>(true) : Enumerable.Empty<Collider>();
             if (!walkable || !walkableComp.Any())
@@ -37,7 +38,32 @@ namespace CCL.Creator.Validators
                 result.Fail($"{livery.id} - No {CarPartNames.Colliders.WALKABLE} colliders set - car has no player collision", collidersRoot);
             }
 
-            // bogies
+            // Fall safeties.
+            if (walkable != null)
+            {
+                foreach (Collider collider in walkable.GetComponentsInChildren<Collider>())
+                {
+                    if (collider.name.StartsWith("[fall safety]") && !collider.name.Equals("[fall safety]"))
+                    {
+                        result.Warning($"Bad fall safety name '{collider.name}'", collider);
+                    }
+
+                    if (collider.name == "[fall safety]")
+                    {
+                        if (!collider.GetComponent<TeleportArcPassThroughProxy>())
+                        {
+                            result.Warning("Missing TeleportArcPassThrough in [fall safety] collider", collider);
+                        }
+
+                        if (!collider.isTrigger == false)
+                        {
+                            result.Warning("[fall safety] is not set as trigger", collider);
+                        }
+                    }
+                }
+            }
+
+            // Bogies.
             var bogies = collidersRoot.FindSafe(CarPartNames.Colliders.BOGIES);
             var bogieColliders = bogies ? bogies!.GetComponentsInChildren<Collider>(true) : Array.Empty<Collider>();
             if (!bogies || bogieColliders.Length != 2)
