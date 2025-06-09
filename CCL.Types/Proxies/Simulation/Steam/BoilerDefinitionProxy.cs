@@ -11,6 +11,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public float diameter;
         public float length;
         public float capacityMultiplier;
+        public float thermalInsulance = 0.04f;
 
         [Header("Injector")]
         public float maxInjectorRate;
@@ -89,6 +90,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             diameter = 1.25f;
             length = 4.6f;
             capacityMultiplier = 0.85f;
+            thermalInsulance = 0.04f;
 
             maxInjectorRate = 5.0f;
             defaultFeedwaterTemperature = 25.0f;
@@ -117,6 +119,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             diameter = 1.7f;
             length = 8.8f;
             capacityMultiplier = 0.85f;
+            thermalInsulance = 0.04f;
 
             maxInjectorRate = 20.0f;
             defaultFeedwaterTemperature = 110.0f;

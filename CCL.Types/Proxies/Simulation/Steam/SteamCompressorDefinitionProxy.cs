@@ -37,8 +37,8 @@ namespace CCL.Types.Proxies.Simulation.Steam
             maxProductionRate = 20.0f;
             maxSteamConsumption = 1.0f;
             pressureForMaxProduction = 3.0f;
-            activationPressureThreshold = 7.0f;
-            mainReservoirVolume = 100.0f;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 1000.0f;
             smoothTime = 2.0f;
         }
 
@@ -47,8 +47,8 @@ namespace CCL.Types.Proxies.Simulation.Steam
             maxProductionRate = 20.0f;
             maxSteamConsumption = 1.0f;
             pressureForMaxProduction = 3.0f;
-            activationPressureThreshold = 7.0f;
-            mainReservoirVolume = 100.0f;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 1000.0f;
             smoothTime = 2.0f;
         }
 

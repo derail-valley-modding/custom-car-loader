@@ -76,7 +76,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public void ApplyDE2Defaults()
         {
             maxVoltage = 1600.0f;
-            torqueFactor = 1.5f;
+            torqueFactor = 3.0f;
             maxAmps = 2500.0f;
 
             throttleProportionalGain = 5.0f;
