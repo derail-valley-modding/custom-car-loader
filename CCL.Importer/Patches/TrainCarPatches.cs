@@ -6,17 +6,17 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(TrainCar))]
     public static class TrainCarPatches
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(TrainCar.SetupRigidbody))]
-        public static void SetupCOMOverride(TrainCar __instance)
-        {
-            var t = __instance.transform.Find(CarPartNames.CENTER_OF_MASS);
+        //[HarmonyPrefix]
+        //[HarmonyPatch(nameof(TrainCar.SetupRigidbody))]
+        //public static void SetupCOMOverride(TrainCar __instance)
+        //{
+        //    var t = __instance.transform.Find(CarPartNames.CENTER_OF_MASS);
 
-            if (t != null)
-            {
-                __instance.centerOfMassOverride = t;
-            }
-        }
+        //    if (t != null)
+        //    {
+        //        __instance.centerOfMassOverride = t;
+        //    }
+        //}
     }
 
     /*
