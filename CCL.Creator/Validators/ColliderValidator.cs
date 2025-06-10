@@ -55,7 +55,7 @@ namespace CCL.Creator.Validators
                             result.Warning($"Missing {nameof(TeleportArcPassThroughProxy)} in {CarPartNames.Colliders.FALL_SAFETY} collider", collider);
                         }
 
-                        if (!collider.isTrigger == false)
+                        if (collider.isTrigger == false)
                         {
                             result.Warning($"{CarPartNames.Colliders.FALL_SAFETY} is not set as trigger", collider);
                         }

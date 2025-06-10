@@ -1,5 +1,6 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types;
+using CCL.Types.Proxies;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -93,8 +94,15 @@ namespace CCL.Creator
                 case CarPartNames.Colliders.FALL_SAFETY:
                     if (go.TryGetComponent<Collider>(out var col) && col.isTrigger)
                     {
-                        TrySetContentToTexture("FallSafety", "This object helps preventing falling out of vehicles");
-                        txC = EditorHelpers.Colors.CONFIRM_ACTION;
+                        if (go.GetComponent<TeleportArcPassThroughProxy>())
+                        {
+                            TrySetContentToTexture("FallSafety", "This object helps preventing falling out of vehicles");
+                            txC = EditorHelpers.Colors.CONFIRM_ACTION;
+                        }
+                        else
+                        {
+                            SetBadEntry($"This object is missing the {nameof(TeleportArcPassThroughProxy)} component");
+                        }
                     }
                     else
                     {
@@ -268,7 +276,7 @@ namespace CCL.Creator
 
             if (prefab != PrefabType.None)
             {
-                r = Color.Lerp(r, ColourPrefab, 0.65f);
+                r = Color.Lerp(r, ColourPrefab, 0.55f);
             }
 
             return go.activeInHierarchy ? r : Transparent(r);

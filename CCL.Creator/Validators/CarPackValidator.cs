@@ -313,7 +313,8 @@ namespace CCL.Creator.Validators
 
                 EditorGUILayout.LabelField(GetName(result), options[0]);
                 
-                GUILayout.Label(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor), options[1]);
+                GUILayout.Label(GetStatus(result), EditorHelpers.StyleWithTextColour(
+                    EditorGUIUtility.isProSkin ? result.StatusColor : Darken(result.StatusColor)), options[1]);
 
                 DrawContextButton(result, options[2]);
 
@@ -359,5 +360,6 @@ namespace CCL.Creator.Validators
         private static string GetName(ResultEntry entry) => $"{entry.TestName}: ";
         private static string GetStatus(ResultEntry entry) => Enum.GetName(typeof(ResultStatus), entry.Status);
         private static string GetMessage(ResultEntry entry) => entry.Message;
+        private static Color Darken(Color color) => new Color(color.r * 0.5f, color.g * 0.5f, color.b * 0.5f, color.a);
     }
 }
