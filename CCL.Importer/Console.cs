@@ -1,5 +1,7 @@
 ﻿using CCL.Importer.Components;
 using CommandTerminal;
+using System;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -7,6 +9,8 @@ namespace CCL.Importer
 {
     internal static class Console
     {
+        private static bool StringEqualsAny(string source, params string[] values) => values.Contains(source, StringComparer.OrdinalIgnoreCase);
+
         [RegisterCommand("CCL.AllLoadedTypes",
             Help = "Prints all custom car types added by CCL, optionally with liveries",
             MinArgCount = 0, MaxArgCount = 1)]
@@ -19,7 +23,7 @@ namespace CCL.Importer
             }
 
             StringBuilder sb = new();
-            bool liveries = args.Length > 0 && args[0].String.ToLowerInvariant() == "l";
+            bool liveries = args.Length > 0 && StringEqualsAny(args[0].String, "l", "liveries");
 
             foreach (var type in CarManager.CustomCarTypes)
             {
