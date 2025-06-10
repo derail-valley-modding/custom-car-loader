@@ -16,6 +16,7 @@ namespace CCL.Importer
     {
         public static readonly List<CCL_CarType> CustomCarTypes = new();
         public static readonly Dictionary<TrainCarLivery, TrainCarLivery[]> Trainsets = new();
+        public static readonly List<string> LoadFailures = new();
 
         public static void ScanLoadedMods()
         {
@@ -104,7 +105,14 @@ namespace CCL.Importer
 
             foreach (var car in pack.Cars)
             {
-                loaded += LoadCar(car) ? 1 : 0;
+                if (LoadCar(car))
+                {
+                    loaded++;
+                }
+                else
+                {
+                    LoadFailures.Add($"{car.id} ({pack.PackId})");
+                }
             }
 
             CCLPlugin.Log("Processing extra models...");
