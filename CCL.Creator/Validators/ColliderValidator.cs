@@ -43,21 +43,21 @@ namespace CCL.Creator.Validators
             {
                 foreach (Collider collider in walkable.GetComponentsInChildren<Collider>())
                 {
-                    if (collider.name.StartsWith("[fall safety]") && !collider.name.Equals("[fall safety]"))
+                    if (collider.name.StartsWith(CarPartNames.Colliders.FALL_SAFETY) && !collider.name.Equals(CarPartNames.Colliders.FALL_SAFETY))
                     {
                         result.Warning($"Bad fall safety name '{collider.name}'", collider);
                     }
 
-                    if (collider.name == "[fall safety]")
+                    if (collider.name.Equals(CarPartNames.Colliders.FALL_SAFETY))
                     {
                         if (!collider.GetComponent<TeleportArcPassThroughProxy>())
                         {
-                            result.Warning("Missing TeleportArcPassThrough in [fall safety] collider", collider);
+                            result.Warning($"Missing {nameof(TeleportArcPassThroughProxy)} in {CarPartNames.Colliders.FALL_SAFETY} collider", collider);
                         }
 
-                        if (!collider.isTrigger == false)
+                        if (collider.isTrigger == false)
                         {
-                            result.Warning("[fall safety] is not set as trigger", collider);
+                            result.Warning($"{CarPartNames.Colliders.FALL_SAFETY} is not set as trigger", collider);
                         }
                     }
                 }

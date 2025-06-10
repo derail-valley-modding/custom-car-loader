@@ -64,7 +64,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             maxCoalCapacity = 60.0f;
             coalDumpRate = 4.0f;
 
-            burnTime = 150.0f;
+            burnTime = 180.0f;
             efficiencyAtMaxCombustion = 0.5f;
             combustionRateSmoothTime = 5.0f;
             temperatureSmoothTime = 15.0f;
@@ -77,7 +77,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             maxCoalCapacity = 150.0f;
             coalDumpRate = 10.0f;
 
-            burnTime = 150.0f;
+            burnTime = 120.0f;
             efficiencyAtMaxCombustion = 0.5f;
             combustionRateSmoothTime = 5.0f;
             temperatureSmoothTime = 15.0f;

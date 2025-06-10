@@ -221,7 +221,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
             retarderBrakingTorque = 100000.0f;
 
-            fuelInjection = 2.0f;
+            fuelInjection = 1.3f;
             oilConsumptionRate = 0.025f;
 
             noOilDamagePerSecond = 30.0f;
@@ -276,11 +276,11 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
             retarderBrakingTorque = 6500.0f;
 
-            fuelInjection = 0.5f;
+            fuelInjection = 0.35f;
             oilConsumptionRate = 0.01f;
 
             noOilDamagePerSecond = 30.0f;
-            rpmDamagePerSecond = 0.03f;
+            rpmDamagePerSecond = 0.006f;
             rpmDamageImmunityTime = 2.0f;
             overheatingThreshold = 110.0f;
             overheatingDamagePerDegreePerSecond = 0.1f;
@@ -342,8 +342,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
 
         public void ApplyDM1UDefaults()
         {
-            rotationalInertia = 2.0f;
-            viscousDampingFactor = 10.0f;
+            rotationalInertia = 1.5f;
+            viscousDampingFactor = 4.0f;
             engineRpmMax = 2200.0f;
             engineRpmIdle = 700.0f;
 

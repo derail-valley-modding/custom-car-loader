@@ -128,7 +128,7 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                 }
             };
 
-            hydroDynamicBrakeTorqueCapacity = 50;
+            hydroDynamicBrakeTorqueCapacity = 110;
 
             pumpRpmFillCurve = new AnimationCurve
             {
@@ -136,8 +136,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                 postWrapMode = WrapMode.ClampForever,
                 keys = new[]
                 {
-                    new Keyframe(600, 0, 0, 0),
-                    new Keyframe(700, 1, 0, 0),
+                    new Keyframe(500, 0, 0, 0, 0, 0),
+                    new Keyframe(600, 1, 0, 0, 0, 0),
                 }
             };
             fillCouplingAtIdle = false;
@@ -237,7 +237,6 @@ namespace CCL.Types.Proxies.Simulation.Diesel
                     },
                 }
             };
-
             fillCouplingAtIdle = true;
             couplingFillTime = 1;
 

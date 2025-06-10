@@ -78,6 +78,7 @@ namespace CCL.Importer.Processing
             Car.prefab.name = Car.id;
             var newTrainCar = Car.prefab.AddComponent<TrainCar>();
             newTrainCar.carLivery = Car;
+            newTrainCar.centerOfMassOverride = newTrainCar.transform.Find(CarPartNames.CENTER_OF_MASS);
 
             // Set layers.
             if (Car.interiorPrefab) ModelUtil.SetLayersRecursiveAndExclude(Car.interiorPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);

@@ -33,8 +33,8 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         {
             loadTorque = 200.0f;
             maxProductionRate = 50.0f;
-            activationPressureThreshold = 7.0f;
-            mainReservoirVolume = 100.0f;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 1000.0f;
             smoothTime = 0.3f;
         }
 
@@ -42,35 +42,35 @@ namespace CCL.Types.Proxies.Simulation.Diesel
         {
             loadTorque = 400.0f;
             maxProductionRate = 100.0f;
-            activationPressureThreshold = 7.0f;
-            mainReservoirVolume = 200.0f;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 2000.0f;
             smoothTime = 0.3f;
         }
 
         public void ApplyDH4Defaults()
         {
-            loadTorque = 270;
-            maxProductionRate = 75;
-            activationPressureThreshold = 7;
-            mainReservoirVolume = 80;
+            loadTorque = 270.0f;
+            maxProductionRate = 75.0f;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 800.0f;
             smoothTime = 0.3f;
         }
 
         public void ApplyDM3Defaults()
         {
-            loadTorque = 250;
-            maxProductionRate = 45;
-            activationPressureThreshold = 7;
-            mainReservoirVolume = 50;
+            loadTorque = 250.0f;
+            maxProductionRate = 45.0f;
+            activationPressureThreshold = 8.3f;
+            mainReservoirVolume = 500.0f;
             smoothTime = 0.3f;
         }
 
         public void ApplyDM1UDefaults()
         {
-            loadTorque = 250;
-            maxProductionRate = 45;
+            loadTorque = 60.0f;
+            maxProductionRate = 15.0f;
             activationPressureThreshold = 8.3f;
-            mainReservoirVolume = 500;
+            mainReservoirVolume = 500.0f;
             smoothTime = 0.3f;
         }
 

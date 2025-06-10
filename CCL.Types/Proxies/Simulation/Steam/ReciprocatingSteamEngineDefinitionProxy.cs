@@ -89,7 +89,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             minCutoff = 0.05f;
             maxCutoff = 0.9f;
 
-            throttleMaxFlow = 3f;
+            throttleMaxFlow = 2f;
             steamChestVolume = 200f;
 
             cylinderHeatRate = 0.01f;
@@ -114,7 +114,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             minCutoff = 0.05f;
             maxCutoff = 0.9f;
 
-            throttleMaxFlow = 8f;
+            throttleMaxFlow = 6f;
             steamChestVolume = 1000;
 
             cylinderHeatRate = 0.01f;

@@ -596,7 +596,7 @@ namespace CCL.Importer.Components
             }
         }
 
-        public static SimPortPlotterInternal? AddToCarId(string carId)
+        public static SimPortPlotterInternal? GetOrAddToCarId(string carId)
         {
             if (!CarSpawner.Instance.AllCars.TryFind(x => x.ID == carId, out var car))
             {
@@ -604,10 +604,10 @@ namespace CCL.Importer.Components
                 return null;
             }
 
-            return AddToCar(car);
+            return GetOrAddToCar(car);
         }
 
-        public static SimPortPlotterInternal? AddToLastLoco()
+        public static SimPortPlotterInternal? GetOrAddToLastLoco()
         {
             var loco = PlayerManager.LastLoco;
             if (loco == null)
@@ -616,12 +616,20 @@ namespace CCL.Importer.Components
                 return null;
             }
 
-            return AddToCar(loco);
+            return GetOrAddToCar(loco);
         }
 
-        private static SimPortPlotterInternal AddToCar(TrainCar car)
+        private static SimPortPlotterInternal GetOrAddToCar(TrainCar car)
         {
-            var comp = new GameObject("DATA").AddComponent<SimPortPlotterInternal>();
+            var comp = car.GetComponentInChildren<SimPortPlotterInternal>(true);
+
+            if (comp != null)
+            {
+                comp.gameObject.SetActive(true);
+                return comp;
+            }
+
+            comp = new GameObject("DATA").AddComponent<SimPortPlotterInternal>();
             comp.transform.parent = car.transform;
             comp.transform.Reset();
 
