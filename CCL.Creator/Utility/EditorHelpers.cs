@@ -358,6 +358,11 @@ namespace CCL.Creator.Utility
         {
             EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         }
+
+        public static GUIStyle StyleWithTextColour(Color c)
+        {
+            return new GUIStyle() { normal = new GUIStyleState() { textColor = c } };
+        }
     }
 
     internal class GUIColorScope : IDisposable

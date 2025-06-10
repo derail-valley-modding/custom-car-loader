@@ -211,10 +211,7 @@ namespace CCL.Creator
             content ??= GetDefaultIconContent(prefab, selected);
             content.text = go.name;
             content.tooltip = string.IsNullOrEmpty(content.tooltip) ? "This is a special CCL name" : content.tooltip;
-            EditorGUI.LabelField(selectionRect, content, new GUIStyle()
-            {
-                normal = new GUIStyleState() { textColor = ProcessTextColour(go, txC, prefab, selected) }
-            });
+            EditorGUI.LabelField(selectionRect, content, EditorHelpers.StyleWithTextColour(ProcessTextColour(go, txC, prefab, selected)));
 
             void TrySetContentToTexture(string name, string tooltip = "")
             {

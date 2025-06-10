@@ -234,7 +234,7 @@ namespace CCL.Creator.Validators
 
         private void OnGUI()
         {
-            if (_pack == null) return;
+            if (_pack == null || _packResult == null) return;
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             EditorGUILayout.BeginVertical();
@@ -312,11 +312,8 @@ namespace CCL.Creator.Validators
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUILayout.LabelField(GetName(result), options[0]);
-
-                using (new GUIColorScope(result.StatusColor))
-                {
-                    GUILayout.Label(GetStatus(result), options[1]);
-                }
+                
+                GUILayout.Label(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor), options[1]);
 
                 DrawContextButton(result, options[2]);
 
