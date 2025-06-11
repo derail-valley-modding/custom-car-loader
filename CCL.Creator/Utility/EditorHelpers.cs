@@ -365,31 +365,6 @@ namespace CCL.Creator.Utility
         }
     }
 
-    internal class GUIColorScope : IDisposable
-    {
-        private readonly Color _entryColor;
-        private readonly Color _entryBackground;
-        private readonly Color _entryContent;
-
-        public GUIColorScope(Color? newColor = null, Color? newBackground = null, Color? newContent = null)
-        {
-            _entryColor = GUI.color;
-            _entryBackground = GUI.backgroundColor;
-            _entryContent = GUI.contentColor;
-
-            if (newColor.HasValue) GUI.color = newColor.Value;
-            if (newBackground.HasValue) GUI.backgroundColor = newBackground.Value;
-            if (newContent.HasValue) GUI.contentColor = newContent.Value;
-        }
-
-        public void Dispose()
-        {
-            GUI.color = _entryColor;
-            GUI.backgroundColor = _entryBackground;
-            GUI.contentColor = _entryContent;
-        }
-    }
-
     internal class WordWrapScope : IDisposable
     {
         private readonly bool _wrap;

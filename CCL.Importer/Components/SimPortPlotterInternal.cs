@@ -11,10 +11,11 @@ namespace CCL.Importer.Components
     {
         private const int WindowId = 9001;
         // Window size.
-        private const float WindowWidth = 1010.0f;
-        private const float WindowHeight = 720.0f;
+        private const float WindowWidth = 1000.0f;
+        private const float WindowHeight = 740.0f;
+        private const float WindowBorder = 10.0f;
         // Scroll area size.
-        private const float ScrollWidth = 1000.0f;
+        private const float ScrollWidth = WindowWidth - 2 * WindowBorder;
         private const float ScrollHeight = 620.0f;
         // Box size.
         private const float BoxWidth = 800.0f;
@@ -29,7 +30,8 @@ namespace CCL.Importer.Components
         private const float ButtonSize = 17.5f;
         private const float ButtonSelectWidth = 100f;
         private const float ButtonSelectHeight = 20f;
-        private const float LowerButtonsPosY = WindowHeight - 30.0f;
+        private const float LowerButtonsPosY = WindowHeight - WindowBorder - 2 * LabelHeight;
+        private const float LowerButtonsPosY2 = WindowHeight - WindowBorder - LabelHeight;
         private const float CloseButtonPosX = WindowWidth - 18.75f;
 
         private class PortData
@@ -176,34 +178,26 @@ namespace CCL.Importer.Components
                 PortValueType.ELECTRIC_CHARGE => new Color(0.50f, 1.00f, 1.00f),
                 _ => Color.white,
             };
-
-            public static string GetUnitForValueType(PortValueType valueType) => valueType switch
-            {
-                PortValueType.POWER => "W",
-                PortValueType.TORQUE => "Nm",
-                PortValueType.FORCE => "N",
-                PortValueType.TEMPERATURE => "°C",
-                PortValueType.AMPS => "A",
-                PortValueType.VOLTS => "V",
-                PortValueType.PRESSURE => "bar",
-                PortValueType.OHMS => "Ω",
-                PortValueType.FUEL => "l",
-                PortValueType.OIL => "l",
-                PortValueType.SAND => "kg",
-                PortValueType.WATER => "l",
-                PortValueType.COAL => "kg",
-                PortValueType.ELECTRIC_CHARGE => "C",
-                _ => string.Empty,
-            };
         }
 
         private static List<SimPortPlotterInternal> s_windows = new();
-        private static GUIStyle? s_style = null;
+        private static GUIStyle? s_graphNumStyle = null;
+        private static GUIStyle? s_portIdStyle = null;
+        private static GUIStyle? s_windowButtons = null;
         private static bool s_round = false;
 
-        private static GUIStyle Style => Extensions.GetCached(ref s_style, () => new GUIStyle(GUI.skin.label)
+        private static GUIStyle GraphNumberStyle => Extensions.GetCached(ref s_graphNumStyle, () => new GUIStyle(GUI.skin.label)
         {
             fontSize = 12,
+            alignment = TextAnchor.MiddleCenter
+        });
+        private static GUIStyle PortIdStyle => Extensions.GetCached(ref s_portIdStyle, () => new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 16,
+        });
+        private static GUIStyle WindowButtonsStyle => Extensions.GetCached(ref s_windowButtons, () => new GUIStyle(GUI.skin.button)
+        {
+            fontSize = 10,
             alignment = TextAnchor.MiddleCenter
         });
 
@@ -383,7 +377,6 @@ namespace CCL.Importer.Components
             DrawButtons();
 
             // Prepare scroll view.
-            GUI.skin.label.fontSize = 16;
             _scroll = GUI.BeginScrollView(
                 new Rect(0f, 40f, ScrollWidth, ScrollHeight), _scroll,
                 new Rect(0f, 40f, BoxWidth, _ports.Count * BoxTotalHeight), false, true);
@@ -408,12 +401,12 @@ namespace CCL.Importer.Components
                 // Draw where 0 is if it is not at the borders.
                 if (zeroOffset > 0 && zeroOffset < BoxHeight)
                 {
-                    GUI.Label(new Rect(0f, posY + zeroOffset, LabelWidth, LabelHeight), "0", Style);
+                    GUI.Label(new Rect(0f, posY + zeroOffset, LabelWidth, LabelHeight), "0", GraphNumberStyle);
                 }
 
                 // Draw max and min value labels.
-                GUI.Label(new Rect(0f, posY, LabelWidth, LabelHeight), GetFormattedString(port.Max), Style);
-                GUI.Label(new Rect(0f, posY + BoxHeight, LabelWidth, LabelHeight), GetFormattedString(port.Min), Style);
+                GUI.Label(new Rect(0f, posY, LabelWidth, LabelHeight), GetFormattedString(port.Max), GraphNumberStyle);
+                GUI.Label(new Rect(0f, posY + BoxHeight, LabelWidth, LabelHeight), GetFormattedString(port.Min), GraphNumberStyle);
 
                 posY += 10f;
 
@@ -424,7 +417,7 @@ namespace CCL.Importer.Components
                 port.Draw(box);
                 GUI.color = Color.white;
                 GUI.BeginClip(box);
-                GUI.Label(new Rect(10f, 0f, BoxWidth, LabelHeight), $"{port.Id}: {GetFormattedString(port.Last, port.Unit)}");
+                GUI.Label(new Rect(10f, 0f, BoxWidth, LabelHeight), $"{port.Id}: {GetFormattedString(port.Last, port.Unit)}", PortIdStyle);
                 GUI.EndClip();
 
                 // Buttons to swap port order.
@@ -450,45 +443,46 @@ namespace CCL.Importer.Components
             GUI.EndScrollView();
 
             GUI.DragWindow(new Rect(0f, 0f, 10000f, 20f));
+        }
 
-            static string GetFormattedString(float value, string? unit = null)
+        private static string GetFormattedString(float value, string? unit = null)
+        {
+            // 1 234 567 890 ->    1.23 G
+            //   123 456 789 ->  123.45 M
+            //    12 345 678 ->   12.34 M
+            //     1 234 567 ->    1.23 M
+            //       123 456 ->  123.45 k
+            //        12 345 ->   12.34 k
+            //         1 234 -> 1234.000
+
+            unit ??= string.Empty;
+
+            if (s_round && unit != "kg")
             {
-                // 1 234 567 890 ->    1.23 G
-                //   123 456 789 ->  123.45 M
-                //    12 345 678 ->   12.34 M
-                //     1 234 567 ->    1.23 M
-                //       123 456 ->  123.45 k
-                //        12 345 ->   12.34 k
-                //         1 234 -> 1234.000
-
-                unit ??= string.Empty;
-
-                if (s_round && unit != "kg")
+                if (value >= 1000000000 || value <= -1000000000)
                 {
-                    if (value >= 1000000000 || value <= -1000000000)
-                    {
-                        return $"{value:0,,,.## G}{unit}";
-                    }
-
-                    if (value >= 1000000 || value <= -1000000)
-                    {
-                        return $"{value:0,,.## M}{unit}";
-                    }
-
-                    if (value >= 10000 || value <= -10000)
-                    {
-                        return $"{value:0,.## k}{unit}";
-                    }
+                    return $"{value:0,,,.## G}{unit}";
                 }
 
-                return $"{value:0.###} {unit}";
+                if (value >= 1000000 || value <= -1000000)
+                {
+                    return $"{value:0,,.## M}{unit}";
+                }
+
+                if (value >= 10000 || value <= -10000)
+                {
+                    return $"{value:0,.## k}{unit}";
+                }
             }
+
+            // 3 decimal spaces looks ugly, so only keep them for very small values.
+            return (value < 10 || value > -10) ? $"{value:0.###} {unit}" : $"{value:0.##} {unit}";
         }
 
         private void DrawButtons()
         {
             // Button to minimise (hide window).
-            if (GUI.Button(new Rect(CloseButtonPosX - ButtonSize, 0f, ButtonSize, ButtonSize), "-"))
+            if (GUI.Button(new Rect(CloseButtonPosX - ButtonSize, 0f, ButtonSize, ButtonSize), "-", WindowButtonsStyle))
             {
                 _active = !_active;
             }
@@ -514,26 +508,59 @@ namespace CCL.Importer.Components
             }
 
             // Change background colour for the last 2 buttons.
-            var colour = GUI.backgroundColor;
-            GUI.backgroundColor = Color.red;
-
-            // Button to reset port data.
-            if (GUI.Button(new Rect(GetSideOffset(8), LowerButtonsPosY, SideOffset, ButtonSize), "Clear data"))
+            using (new GUIColorScope(newBackground: Color.red))
             {
-                ResetData();
+                // Button to reset port data.
+                if (GUI.Button(new Rect(GetSideOffset(8), LowerButtonsPosY, SideOffset, ButtonSize), "Clear data"))
+                {
+                    ResetData();
+                }
+
+                // Button to close (disable GO).
+                if (GUI.Button(new Rect(CloseButtonPosX, 0f, ButtonSize, ButtonSize), "x", WindowButtonsStyle))
+                {
+                    gameObject.SetActive(false);
+                }
             }
 
-            // Button to close (disable GO).
-            if (GUI.Button(new Rect(CloseButtonPosX, 0f, ButtonSize, ButtonSize), "x"))
+            // 2nd row with additional info.
+            var sim = _car.SimController;
+
+            if (sim != null && sim.wheelslipController != null)
             {
-                gameObject.SetActive(false);
+                // Wheelslip is happening or not.
+                GUI.Toggle(new(GetSideOffset(0), LowerButtonsPosY2, SideOffset, 20f), sim.wheelslipController.IsWheelslipping, "Wheelslipping");
+
+                // Adhesion limit.
+                GUI.Label(new(GetSideOffset(1), LowerButtonsPosY2, SideOffset * 2, 20f),
+                    $"Adhesion Limit: {GetFormattedString(sim.wheelslipController.TotalForceLimit, GetUnitForValueType(PortValueType.FORCE))}");
             }
-            GUI.backgroundColor = colour;
+
+            if (_car.stress != null)
+            {
+                // Derail buildup normalized.
+                bool canDerail = _car.GetVelocity().magnitude * 3.6f > _car.stress.gameParams.DerailMinVelocity;
+                float chance = canDerail ? _car.stress.derailBuildUp / _car.stress.gameParams.derailBuildUpThreshold : 0;
+
+                GUI.Label(new(GetSideOffset(3), LowerButtonsPosY2, SideOffset - 40f, 20f), "Derail:");
+
+                // Red text for dangerous values.
+                using (new GUIColorScope(newContent: DerailDangerColour(chance)))
+                {
+                    GUI.Label(new(GetSideOffset(3) + 40f, LowerButtonsPosY2, SideOffset - 40f, 20f), GetFormattedString(chance));
+                }
+            }
 
             // X offset based on button count.
             static float GetSideOffset(int count)
             {
-                return 10f + count * (10f + SideOffset);
+                return WindowBorder + count * (10f + SideOffset);
+            }
+
+            static Color DerailDangerColour(float chance)
+            {
+                // Start changing colour at 75%, maximum red at 95%.
+                return Color.Lerp(Color.white, Color.red, Extensions.Mapf(0.75f, 0.95f, 0.0f, 1.0f, chance));
             }
         }
 
@@ -544,6 +571,7 @@ namespace CCL.Importer.Components
                 return Color.white;
             }
 
+            // Offsets colours a bit without looping perfectly for "random" colours as you go through ports.
             return Color.HSVToRGB((count * 0.31f) % 1.00f, 0.55f, 1.00f);
         }
 
@@ -557,6 +585,18 @@ namespace CCL.Importer.Components
 
         private void AddTrainsetPorts()
         {
+            if (_dummyTrainsetForce != null)
+            {
+                _ports.RemoveAll(x => x.Port == _dummyTrainsetForce);
+                _dummyTrainsetForce = null;
+            }
+
+            if (_dummyTrainsetPower != null)
+            {
+                _ports.RemoveAll(x => x.Port == _dummyTrainsetPower);
+                _dummyTrainsetPower = null;
+            }
+
             _dummyTrainsetForce = new Port("trainset", new PortDefinition(
                 PortType.READONLY_OUT,
                 PortValueType.FORCE,
@@ -596,6 +636,30 @@ namespace CCL.Importer.Components
             }
         }
 
+        public static string GetUnitForValueType(PortValueType valueType) => valueType switch
+        {
+            PortValueType.POWER => "W",
+            PortValueType.TORQUE => "Nm",
+            PortValueType.FORCE => "N",
+            PortValueType.TEMPERATURE => "°C",
+            PortValueType.AMPS => "A",
+            PortValueType.VOLTS => "V",
+            PortValueType.PRESSURE => "bar",
+            PortValueType.OHMS => "Ω",
+            PortValueType.FUEL => "l",
+            PortValueType.OIL => "l",
+            PortValueType.SAND => "kg",
+            PortValueType.WATER => "l",
+            PortValueType.COAL => "kg",
+            PortValueType.ELECTRIC_CHARGE => "C",
+            _ => string.Empty,
+        };
+
+        /// <summary>
+        /// Gets or adds a <see cref="SimPortPlotterInternal"/> to a car with matching <paramref name="carId"/>.
+        /// </summary>
+        /// <param name="carId">The ID to match.</param>
+        /// <returns>A <see cref="SimPortPlotterInternal"/> if successful, or <see langword="null"/> if not.</returns>
         public static SimPortPlotterInternal? GetOrAddToCarId(string carId)
         {
             if (!CarSpawner.Instance.AllCars.TryFind(x => x.ID == carId, out var car))
@@ -607,6 +671,10 @@ namespace CCL.Importer.Components
             return GetOrAddToCar(car);
         }
 
+        /// <summary>
+        /// Gets or adds a <see cref="SimPortPlotterInternal"/> to the last locomotive used by the player.
+        /// </summary>
+        /// <returns>A <see cref="SimPortPlotterInternal"/> if successful, or <see langword="null"/> if not.</returns>
         public static SimPortPlotterInternal? GetOrAddToLastLoco()
         {
             var loco = PlayerManager.LastLoco;

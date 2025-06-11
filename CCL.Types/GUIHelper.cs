@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CCL.Types
 {
@@ -53,6 +54,31 @@ namespace CCL.Types
         public static void DrawTexture(Rect rect, Texture2D tex, Color c)
         {
             GUI.DrawTexture(rect, tex, ScaleMode.StretchToFill, true, 0, c, 0, 0);
+        }
+    }
+
+    public class GUIColorScope : IDisposable
+    {
+        private readonly Color _entryColor;
+        private readonly Color _entryBackground;
+        private readonly Color _entryContent;
+
+        public GUIColorScope(Color? newColor = null, Color? newBackground = null, Color? newContent = null)
+        {
+            _entryColor = GUI.color;
+            _entryBackground = GUI.backgroundColor;
+            _entryContent = GUI.contentColor;
+
+            if (newColor.HasValue) GUI.color = newColor.Value;
+            if (newBackground.HasValue) GUI.backgroundColor = newBackground.Value;
+            if (newContent.HasValue) GUI.contentColor = newContent.Value;
+        }
+
+        public void Dispose()
+        {
+            GUI.color = _entryColor;
+            GUI.backgroundColor = _entryBackground;
+            GUI.contentColor = _entryContent;
         }
     }
 }
