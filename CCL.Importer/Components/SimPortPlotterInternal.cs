@@ -15,6 +15,7 @@ namespace CCL.Importer.Components
         private const float WindowHeight = 740.0f;
         private const float WindowBorder = 10.0f;
         // Scroll area size.
+        private const float ScrollYPosition = 40.0f;
         private const float ScrollWidth = WindowWidth - 2 * WindowBorder;
         private const float ScrollHeight = 620.0f;
         // Box size.
@@ -57,6 +58,12 @@ namespace CCL.Importer.Components
                 Unit = unit ?? (id.Contains("NORMALIZED") ? string.Empty : GetUnitForValueType(port.valueType));
             }
 
+            private void SetStartingValues()
+            {
+                Min = Mathf.Min(0, Port.Value);
+                Max = Mathf.Max(0, Port.Value);
+            }
+
             public void Reset()
             {
                 Min = 0;
@@ -96,61 +103,96 @@ namespace CCL.Importer.Components
                 ZeroOffset = Mathf.InverseLerp(Min, Max, 0);
             }
 
-            public void Draw(Rect bounds)
+            public void Draw(Rect box, Color c, Rect view)
             {
+                if (Values.Count < 2) return;
+
                 //GUI.color = GetColourForPortValueType(Port.valueType);
+                Vector2 pos1;
+                Vector2 pos2;
 
                 // If there's no difference to draw yet, draw a single line with the correct length.
                 if (Min == Max)
                 {
-                    GUIHelper.DrawLine(ToPosition(0, bounds.height), ToPosition(Offset * Values.Count, bounds.height), 1.0f);
+                    pos1 = ToGLPosition(0, box.height - 2);
+                    pos2 = ToGLPosition(Offset * Values.Count, box.height - 2);
+
+                    // Only draw if the line is within the view rectangle.
+                    if (WithinViewBounds(pos1, view, out _) | WithinViewBounds(pos2, view, out _))
+                    {
+                        GLHelper.StartPixelLineStrip(c);
+                        GL.Vertex(pos1);
+                        GL.Vertex(pos2);
+                        GLHelper.EndAndPop();
+                    }
+
                     return;
                 }
 
-                Vector2? prev = null;
+                // Draw lines and not line strips so they can be cut for clipping.
+                GLHelper.StartPixelLines(c);
+                Vector2 prev = Vector2.zero;
                 float x = 0;
+                bool init = false;
 
                 foreach (var item in Values)
                 {
                     var mapped = GetMapped(item);
 
-                    if (!prev.HasValue)
+                    // Setup the first previous value to be able to draw lines.
+                    if (!init)
                     {
-                        prev = ToPosition(x, mapped);
+                        prev = ToGLPosition(x, mapped);
+                        init = true;
                         continue;
                     }
 
-                    x += Offset;
-                    var current = ToPosition(x, mapped);
-                    GUIHelper.DrawPixel(current);
+                    var current = ToGLPosition(x, mapped);
 
-                    // To bridge large vertical gaps.
-                    var dif = current.y - prev.Value.y;
-                    if (dif * dif > 4.0f)
+                    // Only draw if at least one position is within the view rectangle.
+                    // If both are out, don't draw, but if 1 is in we clip the line.
+                    if (WithinViewBounds(prev, view, out pos1) | WithinViewBounds(current, view, out pos2))
                     {
-                        GUIHelper.DrawLine(prev.Value, current, 1);
+                        GL.Vertex(pos1);
+                        GL.Vertex(pos2);
                     }
 
+                    // Advance offset and move previous.
+                    x += Offset;
                     prev = current;
                 }
+
+                GLHelper.EndAndPop();
 
                 float GetMapped(float value)
                 {
                     // Slight offset from 0-height to keep within the box outlines.
-                    return Extensions.Mapf(Max, Min, 1, bounds.height - 2, value);
+                    return Extensions.Mapf(Max, Min, 2, box.height - 2, value);
                 }
 
                 Vector2 ToPosition(float x, float y)
                 {
                     // Offsets to the box's origin.
-                    return new Vector2(x + bounds.xMin, y + bounds.yMin);
+                    return new Vector2(x + box.xMin, y + box.yMin);
                 }
-            }
 
-            private void SetStartingValues()
-            {
-                Min = Mathf.Min(0, Port.Value);
-                Max = Mathf.Max(0, Port.Value);
+                Vector3 ToGLPosition(float x, float y)
+                {
+                    return GLHelper.GUIToGLPosition(GUIUtility.GUIToScreenPoint(ToPosition(x, y)));
+                }
+
+                bool WithinViewBounds(Vector2 position, Rect view, out Vector2 transformed)
+                {
+                    // Check if the position is within the view rectangle.
+                    var contains = view.Contains(position);
+
+                    // If it is not, clamp the position to the view.
+                    transformed = contains ? position : new Vector2(
+                        Mathf.Clamp(position.x, view.xMin + 1, view.xMax - 1),
+                        Mathf.Clamp(position.y, view.yMin + 1, view.yMax - 1));
+
+                    return contains;
+                }
             }
 
             public static Color GetColourForPortValueType(PortValueType valueType) => valueType switch
@@ -377,15 +419,19 @@ namespace CCL.Importer.Components
             DrawButtons();
 
             // Prepare scroll view.
+            // The view rect is used to clip the graphs.
+            // Has to be created before the scrollview itself or else GUIToScreenRect will account for scrolling.
+            var view = GLHelper.GUIToGLView(GUIUtility.GUIToScreenRect(
+                new Rect(SideOffset / 2f, ScrollYPosition, BoxWidth + SideOffset, ScrollHeight)));
             _scroll = GUI.BeginScrollView(
-                new Rect(0f, 40f, ScrollWidth, ScrollHeight), _scroll,
-                new Rect(0f, 40f, BoxWidth, _ports.Count * BoxTotalHeight), false, true);
+                new Rect(0f, ScrollYPosition, ScrollWidth, ScrollHeight), _scroll,
+                new Rect(0f, ScrollYPosition, BoxWidth, _ports.Count * BoxTotalHeight), false, true);
             GUILayout.BeginVertical();
 
             PortData port;
             int count = _ports.Count;
 
-            for (int i = 0; i < count && ((i + 1) * BoxTotalHeight <= ScrollHeight + _scroll.y); i++)
+            for (int i = 0; i < count && (i * BoxTotalHeight <= ScrollHeight + _scroll.y); i++)
             {
                 // Skip drawing outside bounds.
                 if ((i + 1) * BoxTotalHeight < _scroll.y) continue;
@@ -413,9 +459,7 @@ namespace CCL.Importer.Components
                 // Draw graph box.
                 Rect box = new(SideOffset, posY, BoxWidth, BoxHeight);
                 GUI.Box(box, GUIContent.none);
-                GUI.color = GetColour(i);
-                port.Draw(box);
-                GUI.color = Color.white;
+                port.Draw(box, GetColour(i), view);
                 GUI.BeginClip(box);
                 GUI.Label(new Rect(10f, 0f, BoxWidth, LabelHeight), $"{port.Id}: {GetFormattedString(port.Last, port.Unit)}", PortIdStyle);
                 GUI.EndClip();

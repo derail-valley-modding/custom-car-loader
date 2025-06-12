@@ -11,7 +11,7 @@ namespace CCL.Importer.Components.Controllers
         public GameObject DummyControl = null!;
         public Transform RelativeTo = null!;
         public float DistanceTolerance = 0.03f;
-        public float MaxStrenghtDistance = 0.25f;
+        public float MaxStrengthDistance = 0.25f;
 
         private ControlImplBase _dummy = null!;
         private InteriorControlsManager? _icm;
@@ -54,7 +54,7 @@ namespace CCL.Importer.Components.Controllers
                 return;
             }
 
-            var value = Mathf.Max(0, Vector3.Distance(RelativeTo.position, transform.position) / MaxStrenghtDistance - DistanceTolerance);
+            var value = Mathf.Max(0, Vector3.Distance(RelativeTo.position, transform.position) / MaxStrengthDistance - DistanceTolerance);
             _smoothedValue = Mathf.SmoothDamp(_smoothedValue, value, ref _velocity, 0.1f);
 
             if (value <= 0 && _dummy.Value > 0 && _smoothedValue < 0.01f)
