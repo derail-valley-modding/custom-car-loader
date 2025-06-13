@@ -318,6 +318,8 @@ namespace CCL.Creator.Wizards
                 toggle.toggleKey = 0;
                 toggle.useAction = new ActionReference(map.Toggle);
             }
+
+            AssetHelper.SaveAsset(go);
         }
 
         private static bool IsToggleInput(InputType input) => input switch

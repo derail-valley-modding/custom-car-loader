@@ -6,7 +6,6 @@ using DV.Damage;
 using DV.ModularAudioCar;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 using LocoSim.Implementations.Wheels;
 using System.Linq;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace CCL.Importer
     {
         private static GameObject? s_audioDM3;
         private static GameObject AudioDM3 =>
-            Extensions.GetCached(ref s_audioDM3, () => TrainCarType.LocoDM3.ToV2().parentType.audioPrefab);
+            Extensions.GetCached(ref s_audioDM3, () => QuickAccess.Locomotives.DM3.parentType.audioPrefab);
 
         private static bool NeedsWheelsAudioModule(CCL_CarType carType)
         {
@@ -42,7 +41,7 @@ namespace CCL.Importer
 
                 if (!NeedsCustomAudio(carType)) continue;
 
-                carType.audioPoolSize = 10;
+                //carType.audioPoolSize = 10;
 
                 var newAudioFab = ModelProcessor.CreateModifiablePrefab(pool.defaultAudioPrefab);
                 var modularAudio = newAudioFab.GetComponent<CarModularAudio>();

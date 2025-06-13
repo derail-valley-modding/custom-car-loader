@@ -61,8 +61,7 @@ namespace CCL.Creator
                         break;
                     }
                     if (go.transform.Find(CarPartNames.Colliders.COLLISION) &&
-                        go.transform.Find(CarPartNames.Colliders.WALKABLE) &&
-                        go.transform.Find(CarPartNames.Colliders.ITEMS))
+                        go.transform.Find(CarPartNames.Colliders.WALKABLE))
                     {
                         content = EditorGUIUtility.IconContent("BoxCollider Icon");
                         content.tooltip = "The root of all colliders";
@@ -78,12 +77,13 @@ namespace CCL.Creator
                 case CarPartNames.Colliders.ITEMS:
                 case CarPartNames.Colliders.CAMERA_DAMPENING:
                     content = EditorGUIUtility.IconContent("BoxCollider Icon");
+                    content.tooltip = "A collider group root";
                     txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     break;
                 case CarPartNames.Colliders.BOGIES:
                     if (go.GetComponentsInChildren<CapsuleCollider>().Length == 2)
                     {
-                        TrySetContentToTexture("Bogie");
+                        TrySetContentToTexture("BogieCollider", "The bogie colliders");
                         txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     }
                     else
@@ -236,9 +236,10 @@ namespace CCL.Creator
                 txC = EditorHelpers.Colors.DELETE_ACTION;
             }
 
-            void SetWarning()
+            void SetWarning(string? reason = null)
             {
                 content = EditorGUIUtility.IconContent("Warning@2x");
+                content.tooltip = string.IsNullOrEmpty(reason) ? "This object might be incorrectly set up" : reason;
                 txC = EditorHelpers.Colors.WARNING;
             }
 

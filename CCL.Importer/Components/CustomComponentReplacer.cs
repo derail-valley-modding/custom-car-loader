@@ -70,6 +70,7 @@ namespace CCL.Importer.Components
         private void MapControllers()
         {
             CreateMap<ResourceSharerController, ResourceSharerControllerInternal>().AutoCacheAndMap();
+            CreateMap<WhistleDistanceController, WhistleDistanceControllerInternal>().AutoCacheAndMap();
         }
 
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)
