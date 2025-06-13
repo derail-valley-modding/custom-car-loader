@@ -39,16 +39,6 @@ namespace CCL.Importer.Components.Controllers
 
         public override bool ExternalTick => true;
         public float Normalized => _amount.Value / _capacity.Value;
-        public ResourceType AsResourceType => Type switch
-        {
-            ResourceContainerType.FUEL => ResourceType.Fuel,
-            ResourceContainerType.SAND => ResourceType.Sand,
-            ResourceContainerType.OIL => ResourceType.Oil,
-            ResourceContainerType.WATER => ResourceType.Water,
-            ResourceContainerType.COAL => ResourceType.Coal,
-            ResourceContainerType.ELECTRIC_CHARGE => ResourceType.ElectricCharge,
-            _ => throw new System.ArgumentException(nameof(Type)),
-        };
 
         public override void Init(TrainCar car, SimulationFlow simFlow)
         {
@@ -92,7 +82,7 @@ namespace CCL.Importer.Components.Controllers
 
             var pit = e.otherCoupler.train.GetComponentInChildren<CarPitStopParametersBase>();
 
-            if (pit != null && pit.carPitStopParameters.ContainsKey(AsResourceType))
+            if (pit != null && pit.carPitStopParameters.ContainsKey(Type.ConvertToDVResource()))
             {
                 _frontPit = pit;
             }
@@ -112,7 +102,7 @@ namespace CCL.Importer.Components.Controllers
 
             var pit = e.otherCoupler.train.GetComponentInChildren<CarPitStopParametersBase>();
 
-            if (pit != null && pit.carPitStopParameters.ContainsKey(AsResourceType))
+            if (pit != null && pit.carPitStopParameters.ContainsKey(Type.ConvertToDVResource()))
             {
                 _rearPit = pit;
             }
@@ -166,7 +156,7 @@ namespace CCL.Importer.Components.Controllers
             {
                 // Similar to the other one but values are in the repair stuff.
                 // This allows transfering into vanilla vehicles.
-                var pit = other.GetCarPitStopParameters()[AsResourceType];
+                var pit = other.GetCarPitStopParameters()[Type.ConvertToDVResource()];
 
                 var transfer = MathHelper.MaxTransfer2ContainersPositiveOnly(
                     _capacity.Value, _amount.Value, pit.maxValue, pit.value);
@@ -174,7 +164,7 @@ namespace CCL.Importer.Components.Controllers
                 transfer = Mathf.Min(transfer, Mathf.Lerp(MinTransfer, MaxTransfer, Normalized - (pit.value / pit.maxValue))) * deltaTime;
 
                 _consume.Value = transfer;
-                other.UpdateCarPitStopParameter(AsResourceType, transfer);
+                other.UpdateCarPitStopParameter(Type.ConvertToDVResource(), transfer);
             }
         }
     }
