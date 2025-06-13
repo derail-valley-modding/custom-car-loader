@@ -332,12 +332,15 @@ namespace CCL.Importer
 
             int check = trainset.Length;
 
-            while (check > 0 && car.frontCoupler.coupledTo != null)
+            while (check > 0)
             {
                 // If the current car isn't the starting one for the sequence, advance 1 car forwards.
                 // Check variable decreases and means we only check at most the # of cars in the set.
                 if (!MatchingLiverySequence(car, trainset))
                 {
+                    // If we cannot advance more, stop.
+                    if (car.frontCoupler == null || car.frontCoupler.coupledTo == null) break;
+
                     car = car.frontCoupler.coupledTo.train;
                     check--;
                     continue;
@@ -348,6 +351,10 @@ namespace CCL.Importer
                 for (int i = 0; i < result.Length; i++)
                 {
                     result[i] = car;
+
+                    // Stop walking through at the end.
+                    if (i == result.Length - 1) break;
+
                     // It is safe to iterate as MatchingLiverySequence needs to match the length.
                     car = car.rearCoupler.coupledTo.train;
                 }
@@ -365,7 +372,7 @@ namespace CCL.Importer
                     if (car == null || car.carLivery != liveries[i]) return false;
 
                     // Get the next car, or null if there is nothing coupled.
-                    car = car.rearCoupler.coupledTo != null ? car.rearCoupler.coupledTo.train : null;
+                    car = car.rearCoupler != null && car.rearCoupler.coupledTo != null ? car.rearCoupler.coupledTo.train : null;
                 }
 
                 return true;

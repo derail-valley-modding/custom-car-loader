@@ -1,4 +1,5 @@
 ﻿using CCL.Importer.Components;
+using CCL.Importer.Types;
 using CommandTerminal;
 using System;
 using System.Linq;
@@ -77,6 +78,66 @@ namespace CCL.Importer
             {
                 SimPortPlotterInternal.GetOrAddToLastLoco();
             }
+        }
+
+        [RegisterCommand("CCL.Trainset",
+            Help = "Prints the trainset of the vehicle with the provided ID or, if no ID is provided, the current vehicle",
+            Hint = "CCL.Trainset L-017",
+            MinArgCount = 0, MaxArgCount = 1)]
+        public static void PrintTrainset(CommandArg[] args)
+        {
+            TrainCar car;
+
+            if (args.Length > 0)
+            {
+                if (!CarSpawner.Instance.TryGetTraincar(args[0].String, out car))
+                {
+                    Debug.LogWarning($"Could not find car with ID {args[0].String}");
+                    return;
+                }
+            }
+            else
+            {
+                car = PlayerManager.Car;
+
+                if (car == null)
+                {
+                    Debug.LogWarning($"Could not find player's car");
+                    return;
+                }
+            }
+
+            if (car.carLivery is not CCL_CarVariant)
+            {
+                Debug.LogWarning($"Car is not a CCL car, ignoring command");
+                return;
+            }
+
+            var trainset = CarManager.GetInstancedTrainset(car);
+
+            if (trainset.Length < 2)
+            {
+                Debug.Log($"Car {car.ID} does not belong to a trainset, or it is incomplete");
+                return;
+            }
+
+            StringBuilder sb = new();
+
+            foreach (var instance in trainset)
+            {
+                sb.Append($"{instance.ID} ({instance.carLivery.id})");
+
+                if (instance.ID == car.ID)
+                {
+                    sb.AppendLine(" [#]");
+                }
+                else
+                {
+                    sb.AppendLine();
+                }
+            }
+
+            Debug.Log(sb.ToString());
         }
     }
 }

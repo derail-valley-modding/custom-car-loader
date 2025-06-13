@@ -706,7 +706,7 @@ namespace CCL.Importer.Components
         /// <returns>A <see cref="SimPortPlotterInternal"/> if successful, or <see langword="null"/> if not.</returns>
         public static SimPortPlotterInternal? GetOrAddToCarId(string carId)
         {
-            if (!CarSpawner.Instance.AllCars.TryFind(x => x.ID == carId, out var car))
+            if (!CarSpawner.Instance.TryGetTraincar(carId, out var car))
             {
                 Debug.LogWarning($"Could not find car with ID {carId}");
                 return null;

@@ -234,5 +234,10 @@ namespace CCL.Importer
                 yield return trainset.cars[indice];
             }
         }
+
+        public static bool TryGetTraincar(this CarSpawner instance, string id, out TrainCar car)
+        {
+            return instance.AllCars.TryFind(x => x.ID == id, out car);
+        }
     }
 }
