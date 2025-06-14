@@ -43,11 +43,11 @@ namespace CCL.Importer.Processing
                         // create new holder for text and model
                         var holder = new GameObject($"{labelProxy.gameObject.name}_text");
                         holder.transform.SetParent(labelProxy.transform.parent, false);
-                        holder.transform.CopyLocal(labelProxy.transform);
+                        holder.transform.CopyLocalFrom(labelProxy.transform);
 
                         // reparent original text obj to holder
                         labelProxy.transform.SetParent(holder.transform, false);
-                        labelProxy.transform.Reset();
+                        labelProxy.transform.ResetLocal();
 
                         if (labelProxy.ModelType.HasFlag(LabelModelType.Offset))
                         {

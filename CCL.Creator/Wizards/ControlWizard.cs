@@ -164,7 +164,7 @@ namespace CCL.Creator.Wizards
                 holder.transform.SetParent(parent, false);
                 Utilities.CopyTransform(settings.TargetObject.transform, holder.transform);
                 settings.TargetObject.transform.SetParent(newControl.transform);
-                settings.TargetObject.transform.Reset();
+                settings.TargetObject.transform.ResetLocal();
             }
             else
             {

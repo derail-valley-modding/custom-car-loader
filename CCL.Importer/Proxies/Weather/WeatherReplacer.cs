@@ -75,9 +75,9 @@ namespace CCL.Importer.Proxies.Weather
             audio.motorAudioSource = Object.Instantiate(source.motorAudioSource, audio.transform);
             audio.endAudio = Object.Instantiate(source.endAudio, audio.transform);
 
-            audio.slideAudioSource.transform.Reset();
-            audio.motorAudioSource.transform.Reset();
-            audio.endAudio.transform.Reset();
+            audio.slideAudioSource.transform.ResetLocal();
+            audio.motorAudioSource.transform.ResetLocal();
+            audio.endAudio.transform.ResetLocal();
 
             audio.slideVolume = source.slideVolume;
             audio.endClip = source.endClip;

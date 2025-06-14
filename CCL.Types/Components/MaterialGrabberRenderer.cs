@@ -14,7 +14,7 @@ namespace CCL.Types.Components
             public string ReplacementName = string.Empty;
         }
 
-        public MeshRenderer[] RenderersToAffect = new MeshRenderer[0];
+        public Renderer[] RenderersToAffect = new Renderer[0];
         public IndexToName[] Replacements = new IndexToName[0];
 
         [HideInInspector]
@@ -37,7 +37,7 @@ namespace CCL.Types.Components
         public void PickChildren()
         {
             var renderers = RenderersToAffect.ToList();
-            renderers.AddRange(GetComponentsInChildren<MeshRenderer>());
+            renderers.AddRange(GetComponentsInChildren<Renderer>());
             RenderersToAffect = renderers.ToArray();
         }
     }
