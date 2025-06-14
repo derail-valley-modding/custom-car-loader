@@ -53,6 +53,7 @@
 		<Reference Include="DV.RailTrack" />
 		<Reference Include="DV.Simulation" />
 		<Reference Include="DV.ThingTypes" />
+		<Reference Include="DV.TimeBasedEvents" />
 		<Reference Include="DV.UI" />
 		<Reference Include="DV.Utils" />
 		<Reference Include="DV.WeatherSystem" />
