@@ -71,6 +71,7 @@ namespace CCL.Importer.Components
         {
             CreateMap<ResourceSharerController, ResourceSharerControllerInternal>().AutoCacheAndMap();
             CreateMap<WhistleDistanceController, WhistleDistanceControllerInternal>().AutoCacheAndMap();
+            CreateMap<CoachLightsController, CoachLightsControllerInternal>().AutoCacheAndMap();
         }
 
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)

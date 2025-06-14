@@ -227,7 +227,7 @@ namespace CCL.Importer
             return new CoupleEventArgs(coupler, coupler.coupledTo, false);
         }
 
-        public static IEnumerable<TrainCar> AllLocos(this Trainset trainset)
+        public static IEnumerable<TrainCar> GetAllLocos(this Trainset trainset)
         {
             foreach (var indice in trainset.locoIndices)
             {

@@ -380,7 +380,7 @@ namespace CCL.Importer.Components
             float force = 0;
             float power = 0;
 
-            foreach (var loco in _car.trainset.AllLocos())
+            foreach (var loco in _car.trainset.GetAllLocos())
             {
                 var driving = loco.SimController.drivingForce;
 
