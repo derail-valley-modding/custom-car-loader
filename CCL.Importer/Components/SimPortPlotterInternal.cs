@@ -584,12 +584,12 @@ namespace CCL.Importer.Components
             {
                 // Derail buildup normalized.
                 bool canDerail = _car.GetVelocity().magnitude * 3.6f > _car.stress.gameParams.DerailMinVelocity;
-                float chance = canDerail ? _car.stress.derailBuildUp / _car.stress.gameParams.derailBuildUpThreshold : 0;
+                float chance = _car.stress.derailBuildUp / _car.stress.gameParams.derailBuildUpThreshold;
 
                 GUI.Label(new(GetSideOffset(3), LowerButtonsPosY2, SideOffset - 40f, 20f), "Derail:");
 
                 // Red text for dangerous values.
-                using (new GUIColorScope(newContent: DerailDangerColour(chance)))
+                using (new GUIColorScope(newContent: DerailDangerColour(canDerail, chance)))
                 {
                     GUI.Label(new(GetSideOffset(3) + 40f, LowerButtonsPosY2, SideOffset - 40f, 20f), GetFormattedString(chance));
                 }
@@ -601,10 +601,13 @@ namespace CCL.Importer.Components
                 return WindowBorder + count * (10f + SideOffset);
             }
 
-            static Color DerailDangerColour(float chance)
+            static Color DerailDangerColour(bool canDerail, float chance)
             {
-                // Start changing colour at 75%, maximum red at 95%.
-                return Color.Lerp(Color.white, Color.red, Extensions.Mapf(0.75f, 0.95f, 0.0f, 1.0f, chance));
+                return !canDerail ?
+                    // When derail is not possible, show a slight blue.
+                    new Color(0.7f, 0.8f, 1.0f) :
+                    // Start changing colour at 75%, maximum red at 95%.
+                    Color.Lerp(Color.white, Color.red, Extensions.Mapf(0.75f, 0.95f, 0.0f, 1.0f, chance));
             }
         }
 
@@ -743,7 +746,7 @@ namespace CCL.Importer.Components
 
             comp = new GameObject("DATA").AddComponent<SimPortPlotterInternal>();
             comp.transform.parent = car.transform;
-            comp.transform.Reset();
+            comp.transform.ResetLocal();
 
             return comp;
         }

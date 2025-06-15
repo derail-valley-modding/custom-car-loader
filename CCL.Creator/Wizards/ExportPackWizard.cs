@@ -6,16 +6,34 @@ using System.IO;
 using System;
 using UnityEditor;
 using UnityEngine;
+using System.Linq;
 
 namespace CCL.Creator.Wizards
 {
     internal class ExportPackWizard : EditorWindow
     {
+        private enum RequirementType
+        {
+            Required,
+            Optional
+        }
+
+        private class ModDependencyEntry
+        {
+            public RequirementType Type;
+            public string Id;
+
+            public ModDependencyEntry(string id)
+            {
+                Id = id;
+            }
+        }
+
         private static ExportPackWizard? _window;
 
         private CustomCarPack _pack = null!;
         private bool _openFolderAfterExport = false;
-        private string[] _requirements = null!;
+        private ModDependencyEntry[] _requirements = null!;
 
         private static string LastExportPath
         {
@@ -28,7 +46,7 @@ namespace CCL.Creator.Wizards
             // Get existing open window or if none, make a new one:
             _window = GetWindow<ExportPackWizard>();
             _window._pack = pack;
-            _window._requirements = OtherMods.GetModRequirements(pack).ToArray();
+            _window._requirements = OtherMods.GetModRequirements(pack).Select(x => new ModDependencyEntry(x)).ToArray();
             _window.titleContent = new GUIContent("CCL - Export Car Pack");
 
             _window.Show();
@@ -124,11 +142,11 @@ namespace CCL.Creator.Wizards
             if (_requirements == null || _requirements.Length <= 1) return;
 
             EditorGUILayout.BeginVertical("box");
-            EditorHelpers.DrawHeader("Additional Requirements:");
+            EditorHelpers.DrawHeader("Additional Requirements");
 
             for (int i = 1; i < _requirements.Length; i++)
             {
-                EditorGUILayout.LabelField(_requirements[i]);
+                _requirements[i].Type = EditorHelpers.EnumPopup(_requirements[i].Id, _requirements[i].Type);
             }
 
             EditorGUILayout.Space();
@@ -143,7 +161,7 @@ namespace CCL.Creator.Wizards
             EditorHelpers.WordWrappedLabel(
                 "• The tool will attempt to find your Derail Valley installation. If the tool can't find your install path, navigate to it manually.\n" +
                 "• Once you are in the installation path, navigate to the Mods/ folder.\n" +
-                "• When you are in the Mods folder, create a new folder for your car, name doesn't matter. (Example: Explody Boy Tanker)\n" +
+                "• When you are in the Mods folder, create a new folder for your car, name doesn't matter (example: Explody Boy Tanker).\n" +
                 "• After creating that new folder, make sure to select it and click 'Save'.");
 
             EditorGUILayout.Space();
@@ -157,7 +175,7 @@ namespace CCL.Creator.Wizards
             EditorGUILayout.EndVertical();
         }
 
-        private static void Export(CustomCarPack pack, string exportPath, string[] requirements)
+        private static void Export(CustomCarPack pack, string exportPath, ModDependencyEntry[] requirements)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             pack.ExporterVersion = ExporterConstants.ExporterVersion.ToString();
@@ -180,7 +198,15 @@ namespace CCL.Creator.Wizards
                 Debug.Log($"[{DateTime.Now:HH:mm:ss}] Finished AssetBundle build for pack: {pack.PackId} ({sw.Elapsed.TotalSeconds:F2}s).");
 
                 if (Progress("Creating mod info...", 0.9f)) return;
-                WriteModInfoFile(pack, exportPath, requirements);
+
+                var required = requirements
+                    .Where(x => x.Type == RequirementType.Required && !string.IsNullOrWhiteSpace(x.Id))
+                    .Select(x => x.Id).ToArray();
+                var optional = requirements
+                    .Where(x => x.Type == RequirementType.Optional && !string.IsNullOrWhiteSpace(x.Id))
+                    .Select(x => x.Id).ToArray();
+
+                WriteModInfoFile(pack, exportPath, required, optional);
             }
             catch (Exception ex)
             {
@@ -199,7 +225,7 @@ namespace CCL.Creator.Wizards
 
         private static bool Progress(string status, float percent) => EditorUtility.DisplayCancelableProgressBar("Exporting Pack", status, percent);
 
-        private static void WriteModInfoFile(CustomCarPack pack, string exportPath, string[] requirements)
+        private static void WriteModInfoFile(CustomCarPack pack, string exportPath, string[] requirements, string[] optional)
         {
             var outFilePath = Path.Combine(exportPath, ExporterConstants.MOD_INFO_FILENAME);
 
@@ -211,6 +237,7 @@ namespace CCL.Creator.Wizards
                 { "Author", pack.Author },
                 { "ManagerVersion", "0.27.3" },
                 { "Requirements", JSONObject.CreateFromObject(requirements) },
+                { "LoadAfter", JSONObject.CreateFromObject(optional) },
             };
 
             using StreamWriter stream = new StreamWriter(outFilePath, false);
