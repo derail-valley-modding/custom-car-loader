@@ -55,6 +55,11 @@ namespace CCL.Types
         [SerializeField, HideInInspector]
         private string? _spawnGroupJson = string.Empty;
 
+        [Header("Work Train - optional")]
+        public bool UnlockableAsWorkTrain = false;
+        public float UnlockPrice = 30000.0f;
+        public float SummonPrice = 5000.0f;
+
         [Header("Catalog - optional")]
         public CatalogPage? CatalogPage = null;
 

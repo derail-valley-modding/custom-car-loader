@@ -1,10 +1,10 @@
 ﻿using CCL.Importer.Processing;
+using CCL.Importer.Types;
 using CCL.Types.Catalog;
 using CCL.Types.Catalog.Diagram;
 using DV.Booklets;
 using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
-using DV.ThingTypes;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -14,7 +14,7 @@ namespace CCL.Importer
 {
     internal static class CatalogGenerator
     {
-        public static Dictionary<TrainCarLivery, CatalogPage> PageInfos = new();
+        public static Dictionary<CCL_CarVariant, CatalogPage> PageInfos = new();
         public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
         public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
         private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
@@ -42,7 +42,7 @@ namespace CCL.Importer
             ClearCache();
         }
 
-        private static VehicleCatalogPageTemplatePaper? ProcessPage(TrainCarLivery livery, CatalogPage layout)
+        private static VehicleCatalogPageTemplatePaper? ProcessPage(CCL_CarVariant livery, CatalogPage layout)
         {
             CCLPlugin.Log($"Generating catalog page '{layout.PageName}'...");
 
@@ -51,8 +51,8 @@ namespace CCL.Importer
             var paper = page.GetComponent<VehicleCatalogPageTemplatePaper>();
             paper.carLivery = livery;
 
-            UpdateReferences(page, paper, layout);
-            ProcessHeader(page, paper, layout);
+            UpdateReferences(page, paper, livery);
+            ProcessHeader(page, livery, layout);
             ProcessRoles(page, layout);
             ProcessDiagram(page, paper, layout);
             ProcessTechList(page, layout);
@@ -61,22 +61,18 @@ namespace CCL.Importer
             return paper;
         }
 
-        private static void UpdateReferences(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
+        private static void UpdateReferences(Transform page, VehicleCatalogPageTemplatePaper paper, CCL_CarVariant livery)
         {
-            if (layout.UnlockedByGarage)
-            {
-                paper.garage.icon = Paths.GetImage(page, Paths.GarageLockIcon);
-                paper.garage.price = Paths.GetTextUGUI(page, Paths.GaragePrice);
-            }
+            if (!livery.UnlockableAsWorkTrain) return;
 
-            if (layout.SummonableByRemote)
-            {
-                paper.summon.icon = Paths.GetImage(page, Paths.SummonIcon);
-                paper.summon.price = Paths.GetTextUGUI(page, Paths.SummonPrice);
-            }
+            paper.garage.icon = Paths.GetImage(page, Paths.GarageLockIcon);
+            paper.garage.price = Paths.GetTextUGUI(page, Paths.GaragePrice);
+
+            paper.summon.icon = Paths.GetImage(page, Paths.SummonIcon);
+            paper.summon.price = Paths.GetTextUGUI(page, Paths.SummonPrice);
         }
 
-        private static void ProcessHeader(Transform page, VehicleCatalogPageTemplatePaper paper, CatalogPage layout)
+        private static void ProcessHeader(Transform page, CCL_CarVariant livery, CatalogPage layout)
         {
             Paths.GetImage(page, Paths.PageColor).color = layout.HeaderColour;
             Paths.GetText(page, Paths.PageName).SetTextAndUpdate(layout.PageName);
@@ -93,9 +89,9 @@ namespace CCL.Importer
                 nick.SetTextAndUpdate(layout.Nickname);
             }
 
-            Paths.GetImage(page, Paths.Icon).sprite = paper.carLivery.icon;
+            Paths.GetImage(page, Paths.Icon).sprite = livery.icon;
 
-            ProcessSpawnLocations(page.Find(Paths.Locations), layout, paper.carLivery);
+            ProcessSpawnLocations(page.Find(Paths.Locations), livery);
 
             if (!string.IsNullOrEmpty(layout.ProductionYears))
             {
@@ -108,8 +104,8 @@ namespace CCL.Importer
                 page.Find(Paths.ProductionYears).gameObject.SetActive(false);
             }
 
-            page.Find(Paths.GarageIcon).gameObject.SetActive(layout.UnlockedByGarage);
-            page.Find(Paths.Summonable).gameObject.SetActive(layout.SummonableByRemote);
+            page.Find(Paths.GarageIcon).gameObject.SetActive(livery.UnlockableAsWorkTrain);
+            page.Find(Paths.Summonable).gameObject.SetActive(livery.UnlockableAsWorkTrain);
 
             #region Load Ratings
 
@@ -132,9 +128,22 @@ namespace CCL.Importer
             #endregion
         }
 
-        private static void ProcessSpawnLocations(Transform locations, CatalogPage layout, TrainCarLivery livery)
+        private static void ProcessSpawnLocations(Transform locations, CCL_CarVariant livery)
         {
             LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
+
+            // If unlocked by a garage, don't show spawn bar.
+            if (livery.UnlockableAsWorkTrain)
+            {
+                Object.DestroyImmediate(spawner);
+                // Move icons up to avoid blank space.
+                // Which doesn't work who knows why.
+                var rect = (RectTransform)locations.GetChild(0);
+                rect.sizeDelta = Vector2.zero;
+                Object.DestroyImmediate(rect.GetComponent<Image>());
+                rect.localPosition += new Vector3(0, -34, 0);
+                return;
+            }
 
             // Cache the children so they can be deleted without causing loop issues.
             // These are the original spawn chance icons.
@@ -151,19 +160,6 @@ namespace CCL.Importer
                 {
                     Object.DestroyImmediate(item);
                 }
-            }
-
-            // If unlocked by a garage, don't show spawn bar.
-            if (layout.UnlockedByGarage)
-            {
-                Object.DestroyImmediate(spawner);
-                // Move icons up to avoid blank space.
-                // Which doesn't work who knows why.
-                var rect = (RectTransform)locations.GetChild(0);
-                rect.sizeDelta = Vector2.zero;
-                Object.DestroyImmediate(rect.GetComponent<Image>());
-                rect.localPosition += new Vector3(0, -34, 0);
-                return;
             }
 
             var og = PageDE2.GetComponentInChildren<LocoSpawnRateRenderer>();
@@ -183,49 +179,6 @@ namespace CCL.Importer
                     }
                 }
             }
-        }
-
-        private static void ProcessLicense(Transform page, int number, string id)
-        {
-            var lockIcon = page.Find($"{Paths.LicenseContainer}{number}{Paths.LicenseLock}");
-            var text = Paths.GetText(page, $"{Paths.LicenseContainer}{number}{Paths.LicenseValue}");
-            var icon = number switch
-            {
-                1 => Paths.GetImage(page, Paths.License1),
-                2 => Paths.GetImage(page, Paths.License2),
-                3 => Paths.GetImage(page, Paths.License3),
-                _ => throw new System.ArgumentOutOfRangeException(nameof(number)),
-            };
-
-            string licensePrice;
-            Sprite licenseIcon;
-
-            if (!DV.Globals.G.Types.TryGetGeneralLicense(id, out var generalLicense))
-            {
-                if (!DV.Globals.G.Types.TryGetJobLicense(id, out var jobLicense))
-                {
-                    CCLPlugin.Error($"Missing license with ID '{id}' (number {number})");
-                    lockIcon.gameObject.SetActive(false);
-                    text.gameObject.SetActive(false);
-                    icon.gameObject.SetActive(false);
-                    return;
-                }
-
-                licensePrice = FormatPrice(jobLicense.price);
-                licenseIcon = jobLicense.icon;
-            }
-            else
-            {
-                licensePrice = FormatPrice(generalLicense.price);
-                licenseIcon = generalLicense.icon;
-            }
-
-            lockIcon.gameObject.SetActive(true);
-            text.gameObject.SetActive(true);
-            icon.gameObject.SetActive(true);
-
-            text.SetTextAndUpdate(licensePrice);
-            icon.sprite = licenseIcon;
         }
 
         private static void ProcessLoadRating(Transform root, LoadRating rating)

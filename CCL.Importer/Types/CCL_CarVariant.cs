@@ -25,6 +25,9 @@ namespace CCL.Importer.Types
 
         public string[] TrainsetLiveries = new string[0];
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
+        public bool UnlockableAsWorkTrain = false;
+        public float UnlockPrice = 30000.0f;
+        public float SummonPrice = 5000.0f;
         public CatalogPage? CatalogPage = null;
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;

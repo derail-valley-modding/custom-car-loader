@@ -1,4 +1,5 @@
-﻿using DV.Localization;
+﻿using CCL.Importer.Types;
+using DV.Localization;
 using DV.RenderTextureSystem.BookletRender;
 using HarmonyLib;
 
@@ -11,7 +12,7 @@ namespace CCL.Importer.Patches
         private static void FillInDataPostfix(VehicleCatalogPageTemplatePaper __instance)
         {
             // No need to do anything with the original pages.
-            if (!CatalogGenerator.PageInfos.TryGetValue(__instance.carLivery, out var layout)) return;
+            if (__instance.carLivery is not CCL_CarVariant livery || !CatalogGenerator.PageInfos.TryGetValue(livery, out _)) return;
 
             // ?????????????
             foreach (var item in __instance.GetComponentsInChildren<Localize>())
@@ -20,18 +21,15 @@ namespace CCL.Importer.Patches
             }
 
             // Reprocess the comms radio and garage icons.
-            if (layout.SummonableByRemote)
+            if (livery.UnlockableAsWorkTrain)
             {
                 __instance.summon.icon.gameObject.SetActive(true);
                 __instance.summon.price.gameObject.SetActive(true);
-                __instance.summon.price.SetTextAndUpdate(CatalogGenerator.FormatPrice(layout.SummonPrice));
-            }
+                __instance.summon.price.SetTextAndUpdate(CatalogGenerator.FormatPrice(livery.SummonPrice));
 
-            if (layout.UnlockedByGarage)
-            {
                 __instance.garage.icon.gameObject.SetActive(true);
                 __instance.garage.price.gameObject.SetActive(true);
-                __instance.garage.price.SetTextAndUpdate(CatalogGenerator.FormatPrice(layout.GaragePrice));
+                __instance.garage.price.SetTextAndUpdate(CatalogGenerator.FormatPrice(livery.UnlockPrice));
             }
         }
     }
