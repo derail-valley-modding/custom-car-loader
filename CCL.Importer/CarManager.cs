@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Patches;
 using CCL.Importer.Processing;
 using CCL.Importer.Types;
+using CCL.Importer.WorkTrains;
 using CCL.Types;
 using DV.ThingTypes;
 using System;
@@ -186,6 +187,7 @@ namespace CCL.Importer
                 }
 
                 SetupLicenses(car, carType);
+                SetupWorkTrains(carType);
 
                 // Create the HUD if it exists.
                 if (car.HUDLayout != null)
@@ -277,6 +279,17 @@ namespace CCL.Importer
             }
 
             carType.requiredJobLicenses = jobLicenses.ToArray();
+        }
+
+        private static void SetupWorkTrains(CCL_CarType carType)
+        {
+            foreach (var item in carType.Variants)
+            {
+                if (item.UnlockableAsWorkTrain)
+                {
+                    CarPurchaseHandler.WorkTrainLiveries.Add(item);
+                }
+            }
         }
 
         internal static void AddTrainsets(CCL_CarType car)

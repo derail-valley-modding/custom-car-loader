@@ -80,5 +80,18 @@ namespace CCL.Types
         {
             return Mathf.Max(MaxTransfer2Containers(capacityA, amountA, capacityB, amountB), 0);
         }
+
+        public static int Loop(int value, int length)
+        {
+            if (value >= length)
+            {                
+                return value % length;
+            }
+            if (value < 0)
+            {
+                return value + length;
+            }
+            return value;
+        }
     }
 }
