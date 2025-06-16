@@ -8,8 +8,7 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(CommsRadioController))]
     internal class CommsRadioControllerPatches
     {
-        // Disabled for now.
-        //[HarmonyPatch(nameof(CommsRadioController.Awake)), HarmonyPostfix]
+        [HarmonyPatch(nameof(CommsRadioController.Awake)), HarmonyPostfix]
         private static void AwakePostfix(CommsRadioController __instance)
         {
             // Create the object as inactive to prevent Awake() from running too early.
