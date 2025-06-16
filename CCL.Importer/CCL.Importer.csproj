@@ -47,6 +47,7 @@
 		<Reference Include="DV.CharacterController" />
 		<Reference Include="DV.Common" />
 		<Reference Include="DV.Interaction" />
+		<Reference Include="DV.Inventory" />
 		<Reference Include="DV.LayeredAudio" />
 		<Reference Include="DV.Localization" />
 		<Reference Include="DV.NAudio" />

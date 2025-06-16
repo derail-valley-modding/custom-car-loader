@@ -15,18 +15,12 @@ namespace CCL.Types.Catalog
         public string Nickname = string.Empty;
         public string ProductionYears = "1900-1999";
 
-        [Header("Licenses")]
-        public bool UnlockedByGarage = false;
-        public int GaragePrice = 20000;
-
         [Header("Vehicle Type")]
         public VehicleType Type = VehicleType.Locomotive;
         public VehicleRole Role1 = VehicleRole.None;
         public VehicleRole Role2 = VehicleRole.None;
 
-        [Header("Properties And Tonnage")]
-        public bool SummonableByRemote = false;
-        public int SummonPrice = 5000;
+        [Header("Tonnage")]
         public bool ShowLoadRatings = true;
         public LoadRating LoadFlat = new LoadRating { Tonnage = 1200, Rating = TonnageRating.Medium };
         public LoadRating LoadIncline = new LoadRating { Tonnage = 300, Rating = TonnageRating.Bad };
