@@ -5,16 +5,16 @@ using System.Linq;
 
 namespace CCL.Importer.WorkTrains
 {
-    internal class CarPurchaseHandler
+    internal class WorkTrainPurchaseHandler
     {
         public static readonly List<CCL_CarVariant> WorkTrainLiveries = new();
         public static Action<CCL_CarVariant>? LiveryUnlocked;
 
-        private static List<CCL_CarVariant> s_unlocked = new();
-        private static List<string> s_ids = new();
+        private static readonly List<CCL_CarVariant> s_unlocked = new();
+        private static readonly List<string> s_ids = new();
 
-        public static List<CCL_CarVariant> UnlockedLiveries => s_unlocked;
-        public static List<CCL_CarVariant> LockedLiveries => WorkTrainLiveries.Except(UnlockedLiveries).ToList();
+        public static List<CCL_CarVariant> UnlockedLiveries => s_unlocked.ToList();
+        public static List<CCL_CarVariant> LockedLiveries => WorkTrainLiveries.Except(s_unlocked).ToList();
 
         public static bool Unlock(CCL_CarVariant livery)
         {
@@ -29,10 +29,12 @@ namespace CCL.Importer.WorkTrains
             return true;
         }
 
-        public static void LoadFromSave(SaveGameData data)
+        public static void Load(SaveGameData data)
         {
             s_unlocked.Clear();
             s_ids.Clear();
+
+            if (data == null) return;
 
             var array = data.GetStringArray(SaveConstants.UNLOCKED_WORK_TRAINS);
 

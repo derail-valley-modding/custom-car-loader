@@ -8,6 +8,7 @@ namespace CCL.Importer
         {
             public static string PurchaseModeTitle => LocalizationAPI.L("ccl/comms/work_train_purchase_mode");
             public static string EnterSelection => LocalizationAPI.L("ccl/comms/work_train_purchase_enter");
+            public static string ExitSelection => LocalizationAPI.L("ccl/comms/work_train_purchase_exit");
             public static string NoneForPurchase => LocalizationAPI.L("ccl/comms/no_work_train_available");
             public static string PurchaseComplete => LocalizationAPI.L("ccl/comms/purchase_complete");
 
