@@ -9,6 +9,8 @@ namespace CCL.Creator.Validators
     [RequiresStep(typeof(LiverySettingsValidator))]
     internal class ColliderValidator : LiveryValidator
     {
+        private const string ServiceTag = "MainTriggerCollider";
+
         public override string TestName => "Colliders";
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
@@ -24,10 +26,18 @@ namespace CCL.Creator.Validators
 
             // Bounding collider.
             var collision = collidersRoot.FindSafe(CarPartNames.Colliders.COLLISION);
-            var collisionComp = collision ? collision!.GetComponentsInChildren<BoxCollider>(true) : Enumerable.Empty<Collider>();
-            if (!collision || !collisionComp.Any())
+            var collisionComp = collision ? collision!.GetComponentsInChildren<BoxCollider>(true) : Array.Empty<Collider>();
+            if (!collision || collisionComp.Length < 1)
             {
                 result.Warning($"{livery.id} - Bounding {CarPartNames.Colliders.COLLISION} collider will be auto-generated", collidersRoot);
+            }
+            // For anything that isn't a generic car, check if it can be serviced.
+            if (collisionComp.Length > 0 && livery.parentType != null &&
+                livery.parentType.KindSelection != DVTrainCarKind.Car && 
+                !collisionComp.Any(x => x.tag == ServiceTag))
+            {
+                result.Warning($"{livery.id} - No collider in {CarPartNames.Colliders.COLLISION} with the tag \"{ServiceTag}\" found, " +
+                    $"it won't be possible to service this vehicle", collidersRoot);
             }
 
             // Walkable.
