@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using DV.ThingTypes;
+using LocoSim.Implementations;
 using System.Collections;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace CCL.Importer.Components
 
         private Coupler _coupler = null!;
         private Coroutine? _checkAutoCoupleCoro;
+        private Port? _disabler;
 
         public CouplerDirection Direction;
         public CouplerDirection OtherDirection;
@@ -21,6 +23,9 @@ namespace CCL.Importer.Components
         public string[] CarKinds = new string[0];
         public string[] CarTypes = new string[0];
         public string[] CarLiveries = new string[0];
+        public string DisablerPort = string.Empty;
+
+        private bool DisabledByPort => _disabler != null && _disabler.Value >= 0.5f;
 
         private IEnumerator Start()
         {
@@ -35,6 +40,23 @@ namespace CCL.Importer.Components
 
             yield return WaitFor.Seconds(1.5f);
 
+            if (!string.IsNullOrEmpty(DisablerPort))
+            {
+                var flow = car.SimController != null ? car.SimController.simFlow : null;
+
+                if (flow != null)
+                {
+                    if (flow.TryGetPort(DisablerPort, out _disabler))
+                    {
+                        _disabler.ValueUpdatedInternally += DisablerValueChanged;
+                    }
+                }
+                else
+                {
+                    Debug.LogError("CarAutoCoupler couldn't find sim flow for disabler port, ignoring it", this);
+                }
+            }
+
             StartAutoCoupleCoroIfConditionsFulfilled(true);
             SetupListeners(true);
         }
@@ -44,6 +66,11 @@ namespace CCL.Importer.Components
             if (UnloadWatcher.isUnloading) return;
 
             KillAutoCoupleCoro();
+        }
+
+        private void OnDestroy()
+        {
+            SetupListeners(false);
         }
 
         private void SetupListeners(bool on)
@@ -74,6 +101,8 @@ namespace CCL.Importer.Components
 
                 if (_coupler.IsCoupled()) break;
 
+                if (DisabledByPort) continue;
+
                 var firstCouplerInRange = _coupler.GetFirstCouplerInRange(AUTOCOUPLE_RANGE);
                 if (firstCouplerInRange != null && !firstCouplerInRange.IsCoupled())
                 {
@@ -85,7 +114,7 @@ namespace CCL.Importer.Components
 
                         if (_coupler.IsCoupled())
                         {
-                            _checkAutoCoupleCoro = null;
+                            KillAutoCoupleCoro();
                             yield break;
                         }
 
@@ -95,7 +124,7 @@ namespace CCL.Importer.Components
             }
 
             Debug.LogError("Unexpected state, coro shouldn't run if coupler is coupled!", this);
-            _checkAutoCoupleCoro = null;
+            KillAutoCoupleCoro();
         }
 
         private void OnRerailed() => StartAutoCoupleCoroIfConditionsFulfilled(false);
@@ -127,6 +156,8 @@ namespace CCL.Importer.Components
 
         private bool MeetsConditions(TrainCarLivery car)
         {
+            if (DisabledByPort) return false;
+
             if (AlwaysCouple) return true;
 
             foreach (var item in CarKinds)
@@ -145,6 +176,14 @@ namespace CCL.Importer.Components
             }
 
             return false;
+        }
+
+        private void DisablerValueChanged(float value)
+        {
+            if (value >= 0.5f)
+            {
+                _coupler.Uncouple();
+            }
         }
     }
 }
