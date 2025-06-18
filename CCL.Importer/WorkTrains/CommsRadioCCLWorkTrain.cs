@@ -3,7 +3,9 @@ using CCL.Types;
 using DV;
 using DV.InventorySystem;
 using DV.Localization;
+using DV.ServicePenalty.UI;
 using System.Collections.Generic;
+using UnityEditor.Localization.Editor;
 using UnityEngine;
 
 namespace CCL.Importer.WorkTrains
@@ -25,6 +27,8 @@ namespace CCL.Importer.WorkTrains
             public bool IsDefaultEntry => Livery == null;
             public float Price => Livery != null ? Livery.UnlockPrice : 0;
         }
+
+        private const float ReturnToMainScreenTime = 4.0f;
 
         public CommsRadioController Controller = null!;
         public CommsRadioDisplay Display = null!;
@@ -55,14 +59,14 @@ namespace CCL.Importer.WorkTrains
             ButtonBehaviour = ButtonBehaviourType.Regular;
             SetStartingDisplay();
 
-            CarPurchaseHandler.LiveryUnlocked += LiveryUnlocked;
+            WorkTrainPurchaseHandler.LiveryUnlocked += LiveryUnlocked;
             UpdateEntries();
         }
 
         public void Disable()
         {
             StopDisplayCoro();
-            CarPurchaseHandler.LiveryUnlocked -= LiveryUnlocked;
+            WorkTrainPurchaseHandler.LiveryUnlocked -= LiveryUnlocked;
         }
 
         public void OnUpdate()
@@ -136,11 +140,12 @@ namespace CCL.Importer.WorkTrains
                     }
                     // Buy and unlock the livery. Keep a reference because the list is changed.
                     var selected = Selected;
-                    if (CarPurchaseHandler.Unlock(selected.Livery))
+                    if (WorkTrainPurchaseHandler.Unlock(selected.Livery))
                     {
                         Inventory.Instance.RemoveMoney(selected.Price);
                         SetDisplayToCompletePurchase();
                         Play2DSound(MoneySound);
+                        Play2DSound(QuickAccess.Audio.WinSound);
                     }
                     SetState(State.ReturnToEnter);
                     return;
@@ -254,7 +259,7 @@ namespace CCL.Importer.WorkTrains
 
             if (Selected.IsDefaultEntry)
             {
-                Display.SetContentAndAction(CommsRadioLocalization.CANCEL);
+                Display.SetContentAndAction(Localization.WorkTrains.ExitSelection, CommsRadioLocalization.CONFIRM);
                 return;
             }
 
@@ -304,7 +309,7 @@ namespace CCL.Importer.WorkTrains
 
         private System.Collections.IEnumerator ReturnToStartRoutine()
         {
-            yield return new WaitForSeconds(2.0f);
+            yield return new WaitForSeconds(ReturnToMainScreenTime);
             SetStartingDisplay();
             SetState(State.EnterMode);
         }
@@ -336,7 +341,7 @@ namespace CCL.Importer.WorkTrains
             _entries.Clear();
             _entries.Add(new Entry());
 
-            foreach (var item in CarPurchaseHandler.LockedLiveries)
+            foreach (var item in WorkTrainPurchaseHandler.LockedLiveries)
             {
                 _entries.Add(new Entry { Livery = item });
             }

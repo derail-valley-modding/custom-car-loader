@@ -10,12 +10,6 @@ using UnityEngine;
 
 namespace CCL.Importer.Patches
 {
-    static class SaveConstants
-    {
-        public const string CUSTOM_CAR_KEY = "customcar";
-        public const string CUSTOM_CARGO_KEY = "customcargo";
-    }
-
     [HarmonyPatch(typeof(CarsSaveManager))]
     public static class CarsSaveManagerPatch
     {

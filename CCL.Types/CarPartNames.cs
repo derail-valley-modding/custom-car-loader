@@ -106,9 +106,7 @@
 
         public static class Caboose
         {
-            public const string CAREER_MANAGER = "CareerManagerTrainInterior";
-            public const string REMOTE_CHARGER = "RemoteControllerCharger";
-            public const string REMOTE_ANTENNA = "RemoteControllerSignalBooster";
+            public const string CAREER_MANAGER = PERSISTENT_INTERIOR + "/CareerManagerTrainInterior";
         }
 
         public static class Interactables
@@ -167,5 +165,7 @@
         public const string CENTER_OF_MASS = "[center of mass]";
         public const string LICENSE_BLOCKER = "LocoLicenseBlocker";
         public const string GRABPASS_HACK = "[grabpass hack]";
+        public const string INTERIOR_LOD = "[interior LOD]";
+        public const string PERSISTENT_INTERIOR = "[persistent interior]";
     }
 }

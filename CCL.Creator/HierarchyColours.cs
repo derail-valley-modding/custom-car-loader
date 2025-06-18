@@ -190,8 +190,9 @@ namespace CCL.Creator
 
                 // Special transforms.
                 case CarPartNames.CENTER_OF_MASS:
+                case CarPartNames.INTERIOR_LOD:
+                case CarPartNames.PERSISTENT_INTERIOR:
                 case CarPartNames.Cab.TELEPORT_ROOT:
-                case "[interior LOD]":
                     if (IsUnderRoot(go))
                     {
                         content = EditorGUIUtility.IconContent("Transform Icon");

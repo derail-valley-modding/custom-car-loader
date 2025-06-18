@@ -3,6 +3,7 @@ using CCL.Importer.Processing;
 using CCL.Importer.Types;
 using CCL.Importer.WorkTrains;
 using CCL.Types;
+using DV;
 using DV.ThingTypes;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,16 @@ namespace CCL.Importer
 {
     public static class CarManager
     {
+        private const int IdMappingStart = -1000;
+
         public static readonly List<CCL_CarType> CustomCarTypes = new();
         public static readonly Dictionary<TrainCarLivery, TrainCarLivery[]> Trainsets = new();
         public static readonly List<string> LoadFailures = new();
+
+        internal static readonly Dictionary<string, int> CurrentMapping = new();
+        internal static readonly HashSet<TrainCarType> AddedValues = new();
+
+        private static int s_tempId = IdMappingStart;
 
         public static void ScanLoadedMods()
         {
@@ -188,6 +196,7 @@ namespace CCL.Importer
 
                 SetupLicenses(car, carType);
                 SetupWorkTrains(carType);
+                SetupTempIds(carType);
 
                 // Create the HUD if it exists.
                 if (car.HUDLayout != null)
@@ -287,8 +296,16 @@ namespace CCL.Importer
             {
                 if (item.UnlockableAsWorkTrain)
                 {
-                    CarPurchaseHandler.WorkTrainLiveries.Add(item);
+                    WorkTrainPurchaseHandler.WorkTrainLiveries.Add(item);
                 }
+            }
+        }
+
+        private static void SetupTempIds(CCL_CarType carType)
+        {
+            foreach (var item in carType.liveries)
+            {
+                item.v1 = (TrainCarType)(--s_tempId);
             }
         }
 
@@ -315,6 +332,85 @@ namespace CCL.Importer
 
                 Trainsets.Add(livery, liveries.ToArray());
             }
+        }
+
+        internal static void LoadMapping(SaveGameData data)
+        {
+            CurrentMapping.Clear();
+            AddedValues.Clear();
+
+            if (data == null) return;
+
+            var keys = data.GetStringArray(SaveConstants.LIVERY_MAPPING_KEY);
+            var values = data.GetIntArray(SaveConstants.LIVERY_MAPPING_VALUE);
+
+            // No data.
+            if (keys == null || values == null)
+            {
+                CCLPlugin.Warning("No mapping data in save file, ignoring mapping load");
+                return;
+            }
+
+            if (keys.Length != values.Length)
+            {
+                CCLPlugin.Error("Error loading mapping data from save file: keys and values don't match!");
+            }
+
+            int length = Mathf.Min(keys.Length, values.Length);
+
+            for (int i = 0; i < length; i++)
+            {
+                CurrentMapping.Add(keys[i], values[i]);
+                AddedValues.Add((TrainCarType)values[i]);
+            }
+        }
+
+        internal static void SaveMapping(SaveGameData data)
+        {
+            data.SetStringArray(SaveConstants.LIVERY_MAPPING_KEY, CurrentMapping.Keys.ToArray());
+            data.SetIntArray(SaveConstants.LIVERY_MAPPING_VALUE, CurrentMapping.Values.ToArray());
+        }
+
+        internal static void ApplyMapping()
+        {
+            int lowest = IdMappingStart;
+
+            foreach (var item in CurrentMapping)
+            {
+                lowest = Mathf.Min(lowest, item.Value);
+            }
+
+            int newTypes = 0;
+
+            foreach (var type in CustomCarTypes)
+            {
+                foreach (var livery in type.liveries)
+                {
+                    if (!CurrentMapping.TryGetValue(livery.id, out var value))
+                    {
+                        value = --lowest;
+                        CurrentMapping.Add(livery.id, value);
+                        newTypes++;
+                    }
+
+                    livery.v1 = (TrainCarType)value;
+                    AddedValues.Add(livery.v1);
+
+                    if (livery.prefab != null)
+                    {
+                        var car = livery.prefab.GetComponentInChildren<TrainCar>();
+
+                        if (car != null)
+                        {
+                            // Why is this. Why. Why does it need a separate field for it.
+                            car.carType = livery.v1;
+                        }
+                    }
+                }
+            }
+
+            Globals.G.Types.RecalculateCaches();
+            CCLPlugin.Log($"Mappings applied: {AddedValues.Count}/{CurrentMapping.Count} (new: {newTypes}), lowest value is {lowest}");
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 ﻿using CCL.Types;
 using DV;
 using DV.Customization.Paint;
+using DV.ServicePenalty.UI;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
 using LocoSim.Definitions;
@@ -159,6 +160,17 @@ namespace CCL.Importer
                 PaintTheme.TryLoad("Null", out var theme);
                 return theme;
             }
+        }
+
+        /// <summary>
+        /// References to audio clips.
+        /// </summary>
+        public static class Audio
+        {
+
+            private static AudioClip? s_winSound;
+            public static AudioClip WinSound => Extensions.GetCached(ref s_winSound,
+                () => Wagons.Caboose.prefab.GetComponentInChildren<CareerManagerFeesScreen>().feesClearedSound);
         }
     }
 }
