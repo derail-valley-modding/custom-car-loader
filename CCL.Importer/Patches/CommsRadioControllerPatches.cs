@@ -2,6 +2,7 @@
 using CCL.Importer.WorkTrains;
 using DV;
 using HarmonyLib;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Importer.Patches
@@ -9,7 +10,7 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(CommsRadioController))]
     internal class CommsRadioControllerPatches
     {
-        [HarmonyPatch(nameof(CommsRadioController.Awake)), HarmonyPostfix]
+        [HarmonyPostfix, HarmonyPatch(nameof(CommsRadioController.Awake))]
         private static void AwakePostfix(CommsRadioController __instance)
         {
             // Create the object as inactive to prevent Awake() from running too early.
@@ -32,6 +33,28 @@ namespace CCL.Importer.Patches
             if (car == null || car.carLivery is not CCL_CarVariant livery) return;
 
             WorkTrainPurchaseHandler.SetAsSummoned(livery);
+        }
+
+        [HarmonyPostfix, HarmonyPatch(nameof(CommsRadioController.UpdateModesAvailability))]
+        private static void UpdateModesAvailabilityPostfix(CommsRadioController __instance)
+        {
+            var mode = __instance.allModes.OfType<CommsRadioCCLWorkTrain>().FirstOrDefault();
+
+            if (mode == null) return;
+
+            var index = __instance.allModes.IndexOf(mode);
+            __instance.disabledModeIndices.Remove(index);
+
+            // Match mode availability with the default work train mode.
+            if (__instance.disabledModeIndices.Contains(__instance.allModes.IndexOf(__instance.crewVehicleControl)))
+            {
+                __instance.disabledModeIndices.Add(index);
+
+                if (__instance.activeModeIndex == index)
+                {
+                    __instance.SetNextMode();
+                }
+            }
         }
     }
 }
