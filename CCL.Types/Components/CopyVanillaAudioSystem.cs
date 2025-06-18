@@ -8,10 +8,10 @@ namespace CCL.Types.Components
     {
         public VanillaAudioSystem AudioSystem;
 
-        [PortId(null, null, false)]
-        public string PortId1;
-        [PortId(null, null, false)]
-        public string PortId2;
+        [PortId]
+        public string PortId1 = string.Empty;
+        [PortId]
+        public string PortId2 = string.Empty;
 
         public Transform[] SourcePositions = new Transform[0];
         public AudioClip[] Clips = new AudioClip[0];

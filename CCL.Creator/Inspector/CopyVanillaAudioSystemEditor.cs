@@ -146,7 +146,7 @@ namespace CCL.Creator.Inspector
                 case VanillaAudioSystem.S060Whistle:
                     return new[] { "Chime 1", "Chime 2", "Chord (Steam)" };
                 case VanillaAudioSystem.S282Whistle:
-                    return new[] { "Chime 1", "Chime 2", "Chime 3", "Chime 4", "Chime 5", "Chord (Steam)" };
+                    return new[] { "Chime 1", "Chime 2", "Chime 3", "Chime 4", "Chord (Steam)" };
 
                 default:
                     return new string[0];
@@ -160,7 +160,7 @@ namespace CCL.Creator.Inspector
                 case VanillaAudioSystem.S060Whistle:
                     return new[] { "Chime 1", "Chime 2", "Chord (Steam)" };
                 case VanillaAudioSystem.S282Whistle:
-                    return new[] { "Chime 1", "Chime 2", "Chime 3", "Chime 4", "Chime 5", "Chord (Steam)" };
+                    return new[] { "Chime 1", "Chime 2", "Chime 3", "Chime 4", "Chord (Steam)" };
                 default:
                     return new string[0];
             }
