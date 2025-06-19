@@ -17,12 +17,17 @@ namespace CCL.Creator.Validators
         {
             // Root.
             var collidersRoot = livery.prefab!.transform.FindSafe(CarPartNames.Colliders.ROOT);
-            if (!collidersRoot)
+            if (collidersRoot == null)
             {
                 return Fail($"{livery.id} - {CarPartNames.Colliders.ROOT} root is missing entirely!");
             }
 
             var result = Pass();
+
+            if (collidersRoot.transform.localPosition != Vector3.zero)
+            {
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.ROOT} is not at the local origin ({Vector3.zero})");
+            }
 
             // Bounding collider.
             var collision = collidersRoot.FindSafe(CarPartNames.Colliders.COLLISION);
@@ -39,19 +44,28 @@ namespace CCL.Creator.Validators
                 result.Warning($"{livery.id} - No collider in {CarPartNames.Colliders.COLLISION} with the tag \"{ServiceTag}\" found, " +
                     $"it won't be possible to service this vehicle", collidersRoot);
             }
+            if (collision != null && collision.transform.localPosition != Vector3.zero)
+            {
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.COLLISION} is not at the local origin ({Vector3.zero})");
+            }
 
             // Walkable.
             var walkable = collidersRoot.FindSafe(CarPartNames.Colliders.WALKABLE);
-            var walkableComp = walkable ? walkable!.GetComponentsInChildren<Collider>(true) : Enumerable.Empty<Collider>();
+            var walkableComp = walkable ? walkable!.GetComponentsInChildren<Collider>(true) : Array.Empty<Collider>();
             if (!walkable || !walkableComp.Any())
             {
                 result.Fail($"{livery.id} - No {CarPartNames.Colliders.WALKABLE} colliders set - car has no player collision", collidersRoot);
             }
 
-            // Fall safeties.
             if (walkable != null)
             {
-                foreach (Collider collider in walkable.GetComponentsInChildren<Collider>())
+                if (walkable.transform.localPosition != Vector3.zero)
+                {
+                    result.Warning($"{livery.id} - {CarPartNames.Colliders.WALKABLE} is not at the local origin ({Vector3.zero})");
+                }
+
+                // Fall safeties.
+                foreach (Collider collider in walkableComp)
                 {
                     if (collider.name.StartsWith(CarPartNames.Colliders.FALL_SAFETY) && !collider.name.Equals(CarPartNames.Colliders.FALL_SAFETY))
                     {
@@ -71,6 +85,21 @@ namespace CCL.Creator.Validators
                         }
                     }
                 }
+            }
+
+
+            // Items.
+            var items = collidersRoot.FindSafe(CarPartNames.Colliders.ITEMS);
+            if (items != null && items.transform.localPosition != Vector3.zero)
+            {
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.ITEMS} is not at the local origin ({Vector3.zero})");
+            }
+
+            // Camera dampening.
+            var cameraDampening = collidersRoot.FindSafe(CarPartNames.Colliders.CAMERA_DAMPENING);
+            if (cameraDampening != null && cameraDampening.transform.localPosition != Vector3.zero)
+            {
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.CAMERA_DAMPENING} is not at the local origin ({Vector3.zero})");
             }
 
             // Bogies.
