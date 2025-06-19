@@ -1,4 +1,5 @@
 ﻿using CCL.Importer.Components;
+using CCL.Types;
 using CCL.Types.Components;
 using System.ComponentModel.Composition;
 using UnityEngine;
@@ -14,6 +15,8 @@ namespace CCL.Importer.Processing
             //{
             //    TiltingInternal.Create(tilting);
             //}
+
+            ProcessVehicleAOShadow(context.Car.prefab);
 
             foreach (var prefab in context.Car.AllPrefabs)
             {
@@ -46,6 +49,20 @@ namespace CCL.Importer.Processing
                     };
                 }
             }
+        }
+
+        private static GameObject? s_aoRectangle;
+        private static GameObject AORectangle => Extensions.GetCached(ref s_aoRectangle,
+            () => QuickAccess.Locomotives.DE2.prefab.transform.Find("AORectangleBlobPrefab").gameObject);
+
+        private static void ProcessVehicleAOShadow(GameObject prefab)
+        {
+            var comp = prefab.GetComponentInChildren<VehicleAOShadow>();
+
+            if (comp == null) return;
+
+            Object.Instantiate(AORectangle, comp.transform).transform.ResetLocal();
+            Object.Destroy(comp);
         }
     }
 }
