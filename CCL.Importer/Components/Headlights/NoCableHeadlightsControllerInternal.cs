@@ -9,8 +9,7 @@ namespace CCL.Importer.Components.Headlights
         private HeadlightsMainController _controller = null!;
         private HeadlightsMainController? _frontComp;
         private HeadlightsMainController? _rearComp;
-        private bool _frontPowered = false;
-        private bool _rearPowered = false;
+        private bool _setupFlag = false;
 
         private void Start()
         {
@@ -36,12 +35,14 @@ namespace CCL.Importer.Components.Headlights
             {
                 _car.frontCoupler.Coupled += Coupled;
                 _car.frontCoupler.Uncoupled += Uncoupled;
+                _car.frontCoupler.HoseConnectionChanged += HoseChanged;
             }
 
             if (_car.rearCoupler != null)
             {
                 _car.rearCoupler.Coupled += Coupled;
                 _car.rearCoupler.Uncoupled += Uncoupled;
+                _car.rearCoupler.HoseConnectionChanged += HoseChanged;
             }
 
             RefreshConnections();
@@ -72,8 +73,34 @@ namespace CCL.Importer.Components.Headlights
             RefreshConnections();
         }
 
+        private void HoseChanged(bool connected, bool isFront, bool playAudio)
+        {
+            if (isFront)
+            {
+                UpdateFrontHeadlights(_controller.headlightControlFront.Value);
+            }
+            else
+            {
+                UpdateRearHeadlights(_controller.headlightControlRear.Value);
+            }
+        }
+
+        private void SetupChanged(HeadlightsMainController.HeadlightSetup newSetup, HeadlightsMainController.HeadlightSetup oldSetup, bool front)
+        {
+            if (_setupFlag) return;
+
+            _setupFlag = true;
+            UpdateFrontHeadlights(_controller.headlightControlFront.Value);
+            UpdateRearHeadlights(_controller.headlightControlRear.Value);
+            _setupFlag = false;
+        }
+
         private void RefreshConnections()
         {
+            ResetHeadlights();
+            Disconnect(_frontComp);
+            Disconnect(_rearComp);
+
             // Check for front coupling.
             var frontCar = _car.frontCoupler.coupledTo != null ? _car.frontCoupler.coupledTo.train : null;
 
@@ -82,23 +109,8 @@ namespace CCL.Importer.Components.Headlights
                 // If we are coupled at the front, get the headlight controller there.
                 var frontComp = frontCar.SimController != null ? frontCar.SimController.headlightsController : null;
 
-                // If there was a change to the front component, disconnect the old one and connect the new.
-                // If it is null, no worries, since it won't connect.
-                if (frontComp != _frontComp)
-                {
-                    Disconnect(_frontComp);
-                    Connect(frontComp, ConnectedFrontToFront(_car, frontCar));
-
-                    _frontComp = frontComp;
-                    _frontPowered = !frontCar.GetComponentInChildren<NoCableHeadlightsControllerInternal>();
-                }
-            }
-            else
-            {
-                // If not coupled, disconnect any existing one.
-                Disconnect(_frontComp);
-                _frontComp = null;
-                _frontPowered = false;
+                Connect(frontComp, ConnectedFrontToFront(_car, frontCar));
+                _frontComp = frontComp;
             }
 
             // Repeat steps for the rear.
@@ -108,28 +120,8 @@ namespace CCL.Importer.Components.Headlights
             {
                 var rearComp = rearCar.SimController != null ? rearCar.SimController.headlightsController : null;
 
-                if (rearComp != _rearComp)
-                {
-                    Disconnect(_rearComp);
-                    Connect(rearComp, ConnectedRearToRear(_car, rearCar));
-
-                    _rearComp = rearComp;
-                    _rearPowered = !rearCar.GetComponentInChildren<NoCableHeadlightsControllerInternal>();
-                }
-            }
-            else
-            {
-                Disconnect(_rearComp);
-                _rearComp = null;
-                _rearPowered = false;
-            }
-
-            // If both sides are null, reset the headlights.
-            // Also reset if neither side is self powered.
-            if ((_frontComp == null && _rearComp == null) ||
-                !(_frontPowered || _rearPowered))
-            {
-                ResetHeadlights();
+                Connect(rearComp, ConnectedRearToRear(_car, rearCar));
+                _rearComp = rearComp;
             }
         }
 
@@ -139,19 +131,21 @@ namespace CCL.Importer.Components.Headlights
 
             if (reverse)
             {
-                controller.headlightControlFront.ValueUpdatedInternally += _controller.headlightControlRear.ExternalValueUpdate;
-                controller.headlightControlRear.ValueUpdatedInternally += _controller.headlightControlFront.ExternalValueUpdate;
+                controller.headlightControlFront.ValueUpdatedInternally += UpdateRearHeadlights;
+                controller.headlightControlRear.ValueUpdatedInternally += UpdateFrontHeadlights;
+                controller.HeadlightSetupChanged += SetupChanged;
 
-                _controller.headlightControlFront.Value = controller.headlightControlRear.Value;
-                _controller.headlightControlRear.Value = controller.headlightControlFront.Value;
+                UpdateFrontHeadlights(controller.headlightControlRear.Value);
+                UpdateRearHeadlights(controller.headlightControlFront.Value);
             }
             else
             {
-                controller.headlightControlFront.ValueUpdatedInternally += _controller.headlightControlFront.ExternalValueUpdate;
-                controller.headlightControlRear.ValueUpdatedInternally += _controller.headlightControlRear.ExternalValueUpdate;
+                controller.headlightControlFront.ValueUpdatedInternally += UpdateFrontHeadlights;
+                controller.headlightControlRear.ValueUpdatedInternally += UpdateRearHeadlights;
+                controller.HeadlightSetupChanged += SetupChanged;
 
-                _controller.headlightControlFront.Value = controller.headlightControlFront.Value;
-                _controller.headlightControlRear.Value = controller.headlightControlRear.Value;
+                UpdateFrontHeadlights(controller.headlightControlFront.Value);
+                UpdateRearHeadlights(controller.headlightControlRear.Value);
             }
 
             if (controller.PowerFuse != null && _controller.PowerFuse != null)
@@ -162,19 +156,35 @@ namespace CCL.Importer.Components.Headlights
             }
         }
 
-        private void Disconnect(HeadlightsMainController? controller)
+        private void Disconnect(bool front)
         {
+            HeadlightsMainController? controller;
+
+            if (front)
+            {
+                controller = _frontComp;
+                _frontComp = null;
+            }
+            else
+            {
+                controller = _rearComp;
+                _rearComp = null;
+            }
+
             if (controller == null) return;
 
-            controller.headlightControlFront.ValueUpdatedInternally -= _controller.headlightControlFront.ExternalValueUpdate;
-            controller.headlightControlFront.ValueUpdatedInternally -= _controller.headlightControlRear.ExternalValueUpdate;
-            controller.headlightControlRear.ValueUpdatedInternally -= _controller.headlightControlFront.ExternalValueUpdate;
-            controller.headlightControlRear.ValueUpdatedInternally -= _controller.headlightControlRear.ExternalValueUpdate;
+            controller.headlightControlFront.ValueUpdatedInternally -= UpdateFrontHeadlights;
+            controller.headlightControlFront.ValueUpdatedInternally -= UpdateRearHeadlights;
+            controller.headlightControlRear.ValueUpdatedInternally -= UpdateFrontHeadlights;
+            controller.headlightControlRear.ValueUpdatedInternally -= UpdateRearHeadlights;
+            controller.HeadlightSetupChanged -= SetupChanged;
 
             if (controller.PowerFuse != null && _controller.PowerFuse != null)
             {
                 controller.PowerFuse.StateUpdated -= _controller.PowerFuse.ChangeState;
             }
+
+            controller.OnConnectionChanged(false, false);
         }
 
         private void ResetHeadlights()
@@ -182,6 +192,38 @@ namespace CCL.Importer.Components.Headlights
             _controller.headlightControlFront.Value = _controller.GetNeutralPortValue(true);
             _controller.headlightControlRear.Value = _controller.GetNeutralPortValue(false);
             _controller.PowerFuse?.ChangeState(false);
+        }
+
+        private void UpdateFrontHeadlights(float value)
+        {
+            _controller.headlightControlFront.ExternalValueUpdate(value);
+
+            if (!HoseConnected(true)) return;
+
+            _controller.ForceTurnOffHeadlights(true);
+
+            if (_frontComp == null) return;
+
+            _frontComp.ForceTurnOffHeadlights(_frontComp.car.IsFrontCoupler(_car.frontCoupler.coupledTo));
+        }
+
+        private void UpdateRearHeadlights(float value)
+        {
+            _controller.headlightControlRear.ExternalValueUpdate(value);
+
+            if (!HoseConnected(false)) return;
+
+            _controller.ForceTurnOffHeadlights(false);
+
+            if (_rearComp == null) return;
+
+            _rearComp.ForceTurnOffHeadlights(_rearComp.car.IsFrontCoupler(_car.rearCoupler.coupledTo));
+        }
+
+        private bool HoseConnected(bool front)
+        {
+            var coupler = front ? _car.frontCoupler : _car.rearCoupler;
+            return coupler != null && coupler.hoseAndCock != null && coupler.hoseAndCock.IsHoseConnected;
         }
 
         private static bool ConnectedFrontToFront(TrainCar a, TrainCar b)
