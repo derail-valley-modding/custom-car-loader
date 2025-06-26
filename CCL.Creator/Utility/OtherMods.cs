@@ -8,6 +8,7 @@ namespace CCL.Creator.Utility
     {
         public const string PASSENGER_JOBS = "PassengerJobs";
         public const string CUSTOM_CARGO = "DVCustomCargo";
+        public const string CUSTOM_LICENSES = "DVCustomLicenses";
 
         public static List<string> GetModRequirements(CustomCarPack pack)
         {
@@ -23,17 +24,24 @@ namespace CCL.Creator.Utility
                 requirements.Add(CUSTOM_CARGO);
             }
 
+            if (pack.Cars.Any(x => RequiresCustomLicenseMod(x)))
+            {
+                requirements.Add(CUSTOM_LICENSES);
+            }
+
+            foreach (var item in pack.AdditionalDependencies)
+            {
+                if (requirements.Contains(item)) continue;
+
+                requirements.Add(item);
+            }
+
             return requirements;
         }
 
         public static bool RequiresPassengerJobsMod(CustomCarType carType)
         {
-            if (carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == "Passengers"))
-            {
-                return true;
-            }
-
-            return false;
+            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == "Passengers");
         }
 
         public static bool RequiresCustomCargoMod(CustomCarType carType)
