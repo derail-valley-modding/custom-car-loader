@@ -6,8 +6,9 @@ namespace CCL.Importer
     {
         [Draw("Use Verbose Logging", Tooltip = "Enable this if you experience bugs or are developing your own custom car")]
         public bool UseVerboseLogging = false;
-        // Don't show this one in the settings screen.
+        // Don't show these in the settings screen.
         public bool InfoDump = false;
+        public bool CacheDump = false;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

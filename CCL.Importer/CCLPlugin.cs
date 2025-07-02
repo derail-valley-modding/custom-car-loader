@@ -38,7 +38,7 @@ namespace CCL.Importer
             Instance.OnSaveGUI += Settings.Save;
 
             // Build caches before any car is loaded, to only get vanilla resources.
-            Processing.GrabberProcessor.BuildAllCaches(false);
+            Processing.GrabberProcessor.BuildAllCaches();
 
             // Load default translation data.
             Translations.AddTranslationsFromCsv(System.IO.Path.Combine(modEntry.Path, CCLPluginInfo.TranslationCsvFile));

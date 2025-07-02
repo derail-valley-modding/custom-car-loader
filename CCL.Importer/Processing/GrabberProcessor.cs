@@ -292,13 +292,13 @@ namespace CCL.Importer.Processing
             }
         }
 
-        public static void BuildAllCaches(bool print)
+        public static void BuildAllCaches()
         {
             s_soundCache.BuildCache();
             s_materialCache.BuildCache();
             s_meshCache.BuildCache();
 
-            if (!print) return;
+            if (!CCLPlugin.Settings.CacheDump) return;
 
             s_soundCache.PrintCache("\",\n\"");
             s_materialCache.PrintCache("\",\n\"");
