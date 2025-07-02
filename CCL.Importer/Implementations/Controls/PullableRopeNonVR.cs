@@ -30,6 +30,7 @@ namespace CCL.Importer.Implementations.Controls
 
             public override void FeedPosition(Vector3 worldPosition)
             {
+                // Ensure the object is not pulled further away than max length.
                 var dif = worldPosition - Rope.Origin.position;
 
                 if (dif.sqrMagnitude > Rope.MaxLength * Rope.MaxLength)
