@@ -147,7 +147,6 @@ namespace CCL.Importer.Implementations.Controls
             _joint.xMotion = ConfigurableJointMotion.Limited;
             _joint.yMotion = ConfigurableJointMotion.Limited;
             _joint.zMotion = ConfigurableJointMotion.Limited;
-            _joint.angularYMotion = ConfigurableJointMotion.Locked;
             _joint.linearLimit = GetJointLimit(false);
 
             // Make the starting velocity the same as the body it is parented to,
@@ -213,15 +212,12 @@ namespace CCL.Importer.Implementations.Controls
             base.FireUngrabbed();
         }
 
-        private SoftJointLimit GetJointLimit(bool grabbed)
+        protected virtual SoftJointLimit GetJointLimit(bool grabbed) => new()
         {
-            return new SoftJointLimit()
-            {
-                limit = grabbed ? Spec.MaxLength : Spec.RestLength,
-                bounciness = 0.1f,
-                contactDistance = 0.0f
-            };
-        }
+            limit = grabbed ? Spec.MaxLength : Spec.RestLength,
+            bounciness = 0.1f,
+            contactDistance = 0.0f
+        };
 
         private void StopResetCoroutine()
         {
