@@ -15,6 +15,8 @@ namespace CCL.Importer.Components.Controls
 
         public AudioClip? Drag;
         public AudioClip? LimitHit;
+        public AudioClip? Notch;
+        public int AudioNotches;
         public bool LimitVibration;
 
         public override InteractableTag InteractableTag => InteractableTag.Gizmo;

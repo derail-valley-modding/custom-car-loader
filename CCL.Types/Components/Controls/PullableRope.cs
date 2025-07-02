@@ -17,6 +17,9 @@ namespace CCL.Types.Components.Controls
         [Header("Audio")]
         public AudioClip? Drag;
         public AudioClip? LimitHit;
+        [Tooltip("Notches are audio only")]
+        public AudioClip? Notch;
+        public int AudioNotches;
         public bool LimitVibration;
 
         private void OnDrawGizmos()

@@ -2,6 +2,7 @@
 using DV.CabControls;
 using DV.Interaction;
 using DV.VRTK_Extensions;
+using System;
 using UnityEngine;
 using VRTK;
 
@@ -15,6 +16,7 @@ namespace CCL.Importer.Implementations.Controls
 
             private AudioSource _dragSource = null!;
             private AudioSource _limitSource = null!;
+            private AudioSource? _notchSource = null!;
             private bool _muted = true;
             private bool _justHit = false;
             private float _prevTime = 0;
@@ -23,6 +25,12 @@ namespace CCL.Importer.Implementations.Controls
             {
                 _dragSource = NAudio.CreateSource(transform, Rope.Spec.Drag, 1, 1, true).source;
                 _limitSource = NAudio.CreateSource(transform, Rope.Spec.LimitHit, 1, 1, false).source;
+
+                if (Rope.Spec.Notch != null)
+                {
+                    _notchSource = NAudio.CreateSource(transform, Rope.Spec.Notch, 1, 1, false).source;
+                    Rope.AudioNotchChanged += PlayNotch;
+                }
 
                 StartCoroutine(Unmute(0.5f));
             }
@@ -39,7 +47,7 @@ namespace CCL.Importer.Implementations.Controls
             {
                 var time = Time.fixedTime;
 
-                if (time == _prevTime) return;
+                if (time == 0 || time == _prevTime) return;
 
                 if (_muted)
                 {
@@ -48,8 +56,10 @@ namespace CCL.Importer.Implementations.Controls
                     return;
                 }
 
+                _prevTime = time;
+
                 // Volume based on how fast it is being pulled.
-                var volume = Rope.NormalDelta * 20.0f;
+                var volume = Rope.NormalDelta * 30.0f / time;
 
                 if (Rope.NormalDelta == 0 && _dragSource.isPlaying)
                 {
@@ -98,7 +108,17 @@ namespace CCL.Importer.Implementations.Controls
 
                 HapticUtils.DoHapticPulse(VRTK_ControllerReference.GetControllerReference(comp.GetGrabbingObject()), strength);
             }
+
+            private void PlayNotch(int _)
+            {
+                if (_notchSource != null)
+                {
+                    _notchSource.Play();
+                }
+            }
         }
+
+        public Action<int>? AudioNotchChanged;
 
         protected PullableRopeInternal Spec = null!;
 
@@ -109,6 +129,7 @@ namespace CCL.Importer.Implementations.Controls
         private bool _initialised = false;
         private float _normalised = 0;
         private float _prevNorm = 0;
+        private int _notch = 0;
 
         protected override InteractionHandPoses GenericHandPoses => new(HandPose.PreGrab, HandPose.PreGrab, HandPose.Grab);
 
@@ -183,11 +204,30 @@ namespace CCL.Importer.Implementations.Controls
 
             RequestValueUpdate(_normalised);
 
+            if (Spec.AudioNotches > 1)
+            {
+                var notch = Mathf.RoundToInt(_normalised * (Spec.AudioNotches - 1));
+
+                if (notch != _notch)
+                {
+                    AudioNotchChanged?.Invoke(notch);
+                    _notch = notch;
+                }
+            }
+
             // Prevent it from trying to move away.
             if (IsGrabbed())
             {
                 _rb.velocity = _joint.connectedBody.velocity;
             }
+        }
+
+        private void OnDisable()
+        {
+            // Don't let it get stuck active.
+            StopResetCoroutine();
+            RequestValueUpdate(0);
+            transform.position = Spec.Origin.position;
         }
 
         protected override void AcceptSetValue(float newValue)
