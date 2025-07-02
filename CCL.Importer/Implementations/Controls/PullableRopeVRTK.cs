@@ -9,28 +9,6 @@ namespace CCL.Importer.Implementations.Controls
 {
     internal class PullableRopeVRTK : PullableRopeBase, IGrabPoseProvider
     {
-        //private class VRTK_LimitedRangeTrackGrabAttach : VRTK_TrackObjectGrabAttach
-        //{
-        //    public Transform Origin = null!;
-        //    public float MaxDistance;
-
-        //    public override void ProcessFixedUpdate()
-        //    {
-        //        base.ProcessFixedUpdate();
-
-        //        var dif = transform.position - Origin.position;
-
-        //        if (dif.sqrMagnitude > MaxDistance * MaxDistance)
-        //        {
-        //            Vector3 force = trackPoint.position - initialAttachPoint.position;
-        //            grabbedObjectRigidBody.AddForceAtPosition(force, initialAttachPoint.position, ForceMode.VelocityChange);
-        //            //var target = Origin.position + dif.normalized * MaxDistance;
-        //            //grabbedObjectRigidBody.MovePosition(target);
-        //            //controllerAttachPoint.MovePosition(target);
-        //        }
-        //    }
-        //}
-
         private VRTK_ControlImplBaseInteractableObject _interactable = null!;
 
         public HandPose GrabPose => _interactable.interactionHandPoses.grabPose;
@@ -50,8 +28,6 @@ namespace CCL.Importer.Implementations.Controls
             _interactable.InteractableObjectUngrabbed += (_, _) => FireUngrabbed();
 
             var attach = gameObject.AddComponent<VRTK_TrackObjectGrabAttach>();
-            //attach.Origin = Spec.Origin;
-            //attach.MaxDistance = Spec.MaxLength;
             attach.precisionGrab = true;
             _interactable.grabAttachMechanicScript = attach;
 

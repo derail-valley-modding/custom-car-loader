@@ -118,6 +118,8 @@ namespace CCL.Importer.Implementations.Controls
             }
         }
 
+        private const float ScrollMultiplier = 0.0001f;
+
         public Action<int>? AudioNotchChanged;
 
         protected PullableRopeInternal Spec = null!;
@@ -208,11 +210,12 @@ namespace CCL.Importer.Implementations.Controls
             {
                 var notch = Mathf.RoundToInt(_normalised * (Spec.AudioNotches - 1));
 
-                if (notch != _notch)
+                if (notch != _notch && notch > 0)
                 {
                     AudioNotchChanged?.Invoke(notch);
-                    _notch = notch;
                 }
+
+                _notch = notch;
             }
 
             // Prevent it from trying to move away.
@@ -291,6 +294,7 @@ namespace CCL.Importer.Implementations.Controls
 
             // Once under rest length, reset limit so it doesn't reactivate.
             _joint.linearLimit = GetJointLimit(false);
+            _rb.velocity = Vector3.LerpUnclamped(_rb.velocity, _joint.connectedBody.velocity, 0.5f);
         }
 
         public void Scroll(ScrollAction action, ScrollSource source = ScrollSource.Mouse)
@@ -308,8 +312,8 @@ namespace CCL.Importer.Implementations.Controls
             // Move the rigidbody away from the origin when scrolling is positive.
             // Reduce velocity a bit to prevent going too fast.
             _joint.linearLimit = GetJointLimit(true);
-            _rb.MovePosition(transform.position + Direction.normalized * (action.IsPositive() ? 0.1f : -0.1f) * Time.deltaTime);
-            _rb.velocity = Vector3.Lerp(_rb.velocity, _joint.connectedBody.velocity, 0.5f);
+            _rb.MovePosition(transform.position + Direction.normalized * (action.IsPositive() ? ScrollMultiplier : -ScrollMultiplier) * Time.deltaTime);
+            _rb.velocity = Vector3.LerpUnclamped(_rb.velocity, _joint.connectedBody.velocity, 0.5f);
         }
 
         public bool IsAtEnd(ScrollAction action) => _normalised <= 0 || _normalised >= 1;
