@@ -1,5 +1,4 @@
 ﻿using CCL.Creator.Utility;
-using CCL.Types;
 using CCL.Types.Proxies.Controls;
 using System.Collections.Generic;
 using UnityEditor;
@@ -63,8 +62,6 @@ namespace CCL.Creator.Wizards
 
         private class KeyMap
         {
-            public BaseKeyType Up;
-            public BaseKeyType Down;
             public string Incremental;
             public string Absolute;
             public string Toggle;
@@ -72,14 +69,12 @@ namespace CCL.Creator.Wizards
             public bool HasAbsolute => !string.IsNullOrEmpty(Absolute);
             public bool HasToggle => !string.IsNullOrEmpty(Toggle);
 
-            public KeyMap(BaseKeyType up, BaseKeyType down, string incremental) : this(up, down, incremental, string.Empty, string.Empty) { }
+            public KeyMap(string incremental) : this(incremental, string.Empty, string.Empty) { }
 
-            public KeyMap(BaseKeyType up, BaseKeyType down, string incremental, string absolute) : this(up, down, incremental, absolute, string.Empty) { }
+            public KeyMap(string incremental, string absolute) : this(incremental, absolute, string.Empty) { }
 
-            public KeyMap(BaseKeyType up, BaseKeyType down, string incremental, string absolute, string toggle)
+            public KeyMap(string incremental, string absolute, string toggle)
             {
-                Up = up;
-                Down = down;
                 Incremental = incremental;
                 Absolute = absolute;
                 Toggle = toggle;
@@ -88,74 +83,43 @@ namespace CCL.Creator.Wizards
 
         private static Dictionary<ControlType, KeyMap> s_typeToKeyMap = new Dictionary<ControlType, KeyMap>()
         {
-            { ControlType.Throttle, new KeyMap(BaseKeyType.IncreaseThrottle, BaseKeyType.DecreaseThrottle,
-                "ThrottleIncremental", "ThrottleAbsolute") },
-            { ControlType.Reverser, new KeyMap(BaseKeyType.IncreaseReverser, BaseKeyType.DecreaseReverser,
-                "ReverserIncremental", "ReverserAbsolute") },
+            { ControlType.Throttle, new KeyMap("ThrottleIncremental", "ThrottleAbsolute") },
+            { ControlType.Reverser, new KeyMap("ReverserIncremental", "ReverserAbsolute") },
 
-            { ControlType.TrainBrake, new KeyMap(BaseKeyType.IncreaseBrake, BaseKeyType.DecreaseBrake,
-                "BrakeIncremental", "BrakeAbsolute") },
-            { ControlType.IndependentBrake, new KeyMap(BaseKeyType.IncreaseIndependentBrake, BaseKeyType.DecreaseIndependentBrake,
-                "IndependentBrakeIncremental", "IndependentBrakeAbsolute") },
-            { ControlType.DynamicBrake, new KeyMap(BaseKeyType.IncreaseDynamicBrake, BaseKeyType.DecreaseDynamicBrake,
-                "DynamicBrakeIncremental", "DynamicBrakeAbsolute") },
-            { ControlType.BrakeCutout, new KeyMap(0, 0,
-                "BrakeCutoutIncremental", "BrakeCutoutAbsolute", "BrakeCutoutToggle") },
-            { ControlType.Handbrake, new KeyMap(BaseKeyType.IncreaseHandbrake, BaseKeyType.DecreaseHandbrake,
-                "HandbrakeIncremental", "HandbrakeAbsolute", "HandbrakeToggle") },
-            { ControlType.BrakeRelease, new KeyMap(BaseKeyType.ReleaseCyl, 0,
-                "ReleaseCyl", string.Empty, "ReleaseCyl") },
+            { ControlType.TrainBrake, new KeyMap("BrakeIncremental", "BrakeAbsolute") },
+            { ControlType.IndependentBrake, new KeyMap("IndependentBrakeIncremental", "IndependentBrakeAbsolute") },
+            { ControlType.DynamicBrake, new KeyMap("DynamicBrakeIncremental", "DynamicBrakeAbsolute") },
+            { ControlType.BrakeCutout, new KeyMap("BrakeCutoutIncremental", "BrakeCutoutAbsolute", "BrakeCutoutToggle") },
+            { ControlType.Handbrake, new KeyMap("HandbrakeIncremental", "HandbrakeAbsolute", "HandbrakeToggle") },
+            { ControlType.BrakeRelease, new KeyMap("ReleaseCyl", string.Empty, "ReleaseCyl") },
 
-            { ControlType.GearboxA, new KeyMap(BaseKeyType.IncreaseGearA, BaseKeyType.DecreaseGearA,
-                "GearAIncrement", "GearAAbsolute") },
-            { ControlType.GearboxB, new KeyMap(BaseKeyType.IncreaseGearB, BaseKeyType.DecreaseGearB,
-                "GearBIncrement", "GearBAbsolute") },
+            { ControlType.GearboxA, new KeyMap("GearAIncrement", "GearAAbsolute") },
+            { ControlType.GearboxB, new KeyMap("GearBIncrement", "GearBAbsolute") },
 
-            { ControlType.HeadlightFront, new KeyMap(BaseKeyType.IncreaseHeadlightFront, BaseKeyType.DecreaseHeadlightFront,
-                "HeadlightFrontIncremental", "HeadlightFrontAbsolute") },
-            { ControlType.HeadlightRear, new KeyMap(BaseKeyType.IncreaseHeadlightRear, BaseKeyType.DecreaseHeadlightRear,
-                "HeadlightRearIncremental", "HeadlightRearAbsolute") },
-            { ControlType.CabLights, new KeyMap(BaseKeyType.IncreaseCabLight, BaseKeyType.DecreaseCabLight,
-                "CabLightIncremental", string.Empty, "CabLightToggle") },
+            { ControlType.HeadlightFront, new KeyMap("HeadlightFrontIncremental", "HeadlightFrontAbsolute") },
+            { ControlType.HeadlightRear, new KeyMap("HeadlightRearIncremental", "HeadlightRearAbsolute") },
+            { ControlType.CabLights, new KeyMap("CabLightIncremental", string.Empty, "CabLightToggle") },
 
-            { ControlType.Sander, new KeyMap(BaseKeyType.IncreaseSand, BaseKeyType.DecreaseSand,
-                "SandIncremental", "SandAbsolute", "SandToggle") },
-            { ControlType.Horn, new KeyMap(BaseKeyType.IncreaseHorn, BaseKeyType.DecreaseHorn,
-                "HornIncremental") },
-            { ControlType.Bell, new KeyMap(BaseKeyType.Bell, 0,
-                "BellIncremental", "BellAbsolute", "BellToggle") },
-            { ControlType.Wipers, new KeyMap(BaseKeyType.IncreaseWiper, BaseKeyType.DecreaseWiper,
-                "WiperIncremental", "WiperAbsolute", "WiperToggle") },
+            { ControlType.Sander, new KeyMap("SandIncremental", "SandAbsolute", "SandToggle") },
+            { ControlType.Horn, new KeyMap("HornIncremental") },
+            { ControlType.Bell, new KeyMap("BellIncremental", "BellAbsolute", "BellToggle") },
+            { ControlType.Wipers, new KeyMap("WiperIncremental", "WiperAbsolute", "WiperToggle") },
 
-            { ControlType.Injector, new KeyMap(BaseKeyType.OpenInjector, BaseKeyType.CloseInjector,
-                "InjectorIncremental", "InjectorAbsolute", "InjectorToggle") },
-            { ControlType.Blowdown, new KeyMap(BaseKeyType.IncreaseWaterDump, BaseKeyType.DecreaseWaterDump,
-                "BlowdownIncremental", "BlowdownAbsolute", "BlowdownToggle") },
-            { ControlType.Blower, new KeyMap(BaseKeyType.IncreaseBlower, BaseKeyType.DecreaseBlower,
-                "BlowerIncremental", "BlowerAbsolute", "BlowerToggle") },
-            { ControlType.Damper, new KeyMap(BaseKeyType.IncreaseDraft, BaseKeyType.DecreaseDraft,
-                "DraftIncremental", "DraftAbsolute", "DraftToggle") },
-            { ControlType.FireboxDoor, new KeyMap(BaseKeyType.OpenFireDoor, BaseKeyType.CloseFireDoor,
-                "FiredoorIncremental", "FiredoorAbsolute", "FiredoorToggle") },
-            { ControlType.CylinderCocks, new KeyMap(BaseKeyType.DecreaseCylCock, BaseKeyType.IncreaseCylCock,
-                "CylCockIncremental", "CylCockAbsolute", "CylCockToggle") },
-            { ControlType.Compressor, new KeyMap(BaseKeyType.AirPump, 0,
-                "AirPump", string.Empty, "AirPump") },
-            { ControlType.Dynamo, new KeyMap(BaseKeyType.Dynamo, 0,
-                "Dynamo", string.Empty, "Dynamo") },
-            { ControlType.Lubricator, new KeyMap(BaseKeyType.Lubricator, 0,
-                "Lubricator", string.Empty, "Lubricator") },
+            { ControlType.Injector, new KeyMap("InjectorIncremental", "InjectorAbsolute", "InjectorToggle") },
+            { ControlType.Blowdown, new KeyMap("BlowdownIncremental", "BlowdownAbsolute", "BlowdownToggle") },
+            { ControlType.Blower, new KeyMap("BlowerIncremental", "BlowerAbsolute", "BlowerToggle") },
+            { ControlType.Damper, new KeyMap("DraftIncremental", "DraftAbsolute", "DraftToggle") },
+            { ControlType.FireboxDoor, new KeyMap("FiredoorIncremental", "FiredoorAbsolute", "FiredoorToggle") },
+            { ControlType.CylinderCocks, new KeyMap("CylCockIncremental", "CylCockAbsolute", "CylCockToggle") },
+            { ControlType.Compressor, new KeyMap("AirPump", string.Empty, "AirPump") },
+            { ControlType.Dynamo, new KeyMap("Dynamo", string.Empty, "Dynamo") },
+            { ControlType.Lubricator, new KeyMap("Lubricator", string.Empty, "Lubricator") },
 
-            { ControlType.Starter, new KeyMap(BaseKeyType.Starter, 0,
-                "Starter", string.Empty, "Starter") },
-            { ControlType.FuelCutoff, new KeyMap(BaseKeyType.FuelCutoff, 0,
-                "FuelCutoff", string.Empty, "FuelCutoff") },
-            { ControlType.StarterFuse, new KeyMap(BaseKeyType.StarterFuse, 0,
-                string.Empty, string.Empty, "StarterFuse") },
-            { ControlType.TractionMotorFuse, new KeyMap(BaseKeyType.TractionMotorFuse, 0,
-                string.Empty, string.Empty, "TractionMotorFuse") },
-            { ControlType.ElectricsFuse, new KeyMap(BaseKeyType.ElectricsFuse, 0,
-                string.Empty, string.Empty, "ElectricsFuse") },
+            { ControlType.Starter, new KeyMap("Starter", string.Empty, "Starter") },
+            { ControlType.FuelCutoff, new KeyMap("FuelCutoff", string.Empty, "FuelCutoff") },
+            { ControlType.StarterFuse, new KeyMap(string.Empty, string.Empty, "StarterFuse") },
+            { ControlType.TractionMotorFuse, new KeyMap(string.Empty, string.Empty, "TractionMotorFuse") },
+            { ControlType.ElectricsFuse, new KeyMap(string.Empty, string.Empty, "ElectricsFuse") },
         };
 
         private static ControlControlsWizard s_window = null!;
@@ -250,8 +214,6 @@ namespace CCL.Creator.Wizards
             {
                 case InputType.MouseScroll:
                     var mouse = go.AddComponent<MouseScrollKeyboardInputProxy>();
-                    mouse.scrollUpKey = map.Up;
-                    mouse.scrollDownKey = map.Down;
                     mouse.scrollAction = new ActionReference(map.Incremental, flip);
                     break;
                 case InputType.ButtonUse:
@@ -261,12 +223,10 @@ namespace CCL.Creator.Wizards
                         return;
                     }
                     var buttonUse = go.AddComponent<ButtonUseKeyboardInputProxy>();
-                    buttonUse.useKey = map.Up;
                     buttonUse.useAction = new ActionReference(map.Toggle, flip);
                     break;
                 case InputType.ButtonSetFromAxis:
                     var buttonSet = go.AddComponent<ButtonSetValueFromAxisInputProxy>();
-                    buttonSet.useKey = map.Up;
                     buttonSet.useAction = new ActionReference(map.Incremental, flip);
                     break;
                 case InputType.ToggleValue:
@@ -276,7 +236,6 @@ namespace CCL.Creator.Wizards
                         return;
                     }
                     var toggleV = go.AddComponent<ToggleValueKeyboardInputProxy>();
-                    toggleV.toggleKey = map.Up;
                     toggleV.useAction = new ActionReference(map.Toggle, flip);
                     break;
                 case InputType.ToggleSwitch:
@@ -286,7 +245,6 @@ namespace CCL.Creator.Wizards
                         return;
                     }
                     var toggleS = go.AddComponent<ToggleSwitchUseKeyboardInputProxy>();
-                    toggleS.useKey = map.Up;
                     toggleS.useAction = new ActionReference(map.Toggle, flip);
                     break;
                 default:
@@ -315,7 +273,6 @@ namespace CCL.Creator.Wizards
             if (autoToggle && map.HasToggle && !IsToggleInput(input))
             {
                 var toggle = go.AddComponent<ToggleValueKeyboardInputProxy>();
-                toggle.toggleKey = 0;
                 toggle.useAction = new ActionReference(map.Toggle);
             }
 

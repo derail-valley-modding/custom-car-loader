@@ -16,7 +16,7 @@ namespace CCL.Types.Proxies.Audio
         public string cylinderCockControlPortId = string.Empty;
 
         // Using gameobjects to allow the audio replacer to work.
-        [Header("order matters, need to match with cylinder index")]
+        [Header("Order matters, must match with cylinder index")]
         public GameObject[] cylCockAudio = new GameObject[0];
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]

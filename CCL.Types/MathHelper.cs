@@ -60,6 +60,11 @@ namespace CCL.Types
             return (b - a).sqrMagnitude;
         }
 
+        public static float DistanceSqr(Vector3 a, Vector3 b)
+        {
+            return (b - a).sqrMagnitude;
+        }
+
         public static float MaxTransfer2Containers(float capacityA, float amountA, float capacityB, float amountB)
         {
             if (capacityA == 0 || capacityB == 0) return 0;

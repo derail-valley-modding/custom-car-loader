@@ -38,7 +38,7 @@ namespace CCL.Importer
             Instance.OnSaveGUI += Settings.Save;
 
             // Build caches before any car is loaded, to only get vanilla resources.
-            Processing.GrabberProcessor.BuildAllCaches(false);
+            Processing.GrabberProcessor.BuildAllCaches();
 
             // Load default translation data.
             Translations.AddTranslationsFromCsv(System.IO.Path.Combine(modEntry.Path, CCLPluginInfo.TranslationCsvFile));
@@ -50,7 +50,7 @@ namespace CCL.Importer
             var harmony = new Harmony(CCLPluginInfo.Guid);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
-            InfoDump(false);
+            InfoDump();
 
             return true;
         }
@@ -77,9 +77,9 @@ namespace CCL.Importer
             Instance.Logger.Warning(message);
         }
 
-        private static void InfoDump(bool print)
+        private static void InfoDump()
         {
-            if (!print) return;
+            if (!Settings.InfoDump) return;
 
             Write("Cargo IDs", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
             Write("General Licence IDs", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));

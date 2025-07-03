@@ -1,15 +1,19 @@
 ﻿using AutoMapper;
 using CCL.Importer.Components.Controllers;
+using CCL.Importer.Components.Controls;
 using CCL.Importer.Components.Headlights;
 using CCL.Importer.Components.Indicators;
 using CCL.Importer.Components.MultipleUnit;
 using CCL.Importer.Components.Simulation;
+using CCL.Importer.Implementations.Controls;
 using CCL.Types.Components;
 using CCL.Types.Components.Controllers;
+using CCL.Types.Components.Controls;
 using CCL.Types.Components.Headlights;
 using CCL.Types.Components.Indicators;
 using CCL.Types.Components.MultipleUnit;
 using CCL.Types.Components.Simulation;
+using DV.CabControls;
 
 namespace CCL.Importer.Components
 {
@@ -23,6 +27,7 @@ namespace CCL.Importer.Components
             MapSimulation();
             MapMultipleUnit();
             MapControllers();
+            MapControls();
 
             CreateMap<ControlNameTMPDisplay, ControlNameTMPDisplayInternal>().AutoCacheAndMap();
             CreateMap<HideObjectsOnCargoLoad, HideObjectsOnCargoLoadInternal>().AutoCacheAndMap();
@@ -72,6 +77,15 @@ namespace CCL.Importer.Components
             CreateMap<ResourceSharerController, ResourceSharerControllerInternal>().AutoCacheAndMap();
             CreateMap<WhistleDistanceController, WhistleDistanceControllerInternal>().AutoCacheAndMap();
             CreateMap<CoachLightsController, CoachLightsControllerInternal>().AutoCacheAndMap();
+        }
+
+        private void MapControls()
+        {
+            CreateMap<PullableRope, PullableRopeInternal>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+
+            ControlsInstantiator.TypeMap.Add(typeof(PullableRopeInternal),
+                new() { vr = typeof(PullableRopeVRTK), pc = typeof(PullableRopeNonVR) });
         }
 
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)

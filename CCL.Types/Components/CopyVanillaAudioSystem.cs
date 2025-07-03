@@ -30,6 +30,28 @@ namespace CCL.Types.Components
             PortId1,
             PortId2
         };
+
+        private void OnDrawGizmos()
+        {
+            bool drawAtSource = SourcePositions.Length == 0;
+
+            foreach (var source in SourcePositions)
+            {
+                if (source != null)
+                {
+                    Gizmos.DrawIcon(source.position, "AudioSource Gizmo");
+                }
+                else
+                {
+                    drawAtSource = true;
+                }
+            }
+
+            if (drawAtSource)
+            {
+                Gizmos.DrawIcon(transform.position, "AudioSource Gizmo");
+            }
+        }
     }
 
     public enum VanillaAudioSystem

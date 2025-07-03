@@ -212,7 +212,6 @@ namespace CCL.Importer.Processing
             controls.cabLight = prefab.GetComponentInChildren<CabLightControl>();
             controls.indCabLight = prefab.GetComponentInChildren<IndCabLightControl>();
             controls.wipers = prefab.GetComponentInChildren<WipersControl>();
-
             controls.engineOnReader = prefab.GetComponentInChildren<EngineOnReader>();
         }
 
@@ -236,6 +235,7 @@ namespace CCL.Importer.Processing
             simController.firebox = prefab.GetComponentInChildren<FireboxSimController>();
             simController.remoteController = prefab.GetComponentInChildren<RemoteControllerModule>();
             simController.environmentDamageController = prefab.GetComponentInChildren<EnvironmentDamageController>();
+
             simController.OnValidate();
         }
     }

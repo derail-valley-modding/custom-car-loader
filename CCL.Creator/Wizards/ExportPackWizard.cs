@@ -46,10 +46,15 @@ namespace CCL.Creator.Wizards
             // Get existing open window or if none, make a new one:
             _window = GetWindow<ExportPackWizard>();
             _window._pack = pack;
-            _window._requirements = OtherMods.GetModRequirements(pack).Select(x => new ModDependencyEntry(x)).ToArray();
+            _window._requirements = GetRequirements(pack);
             _window.titleContent = new GUIContent("CCL - Export Car Pack");
 
             _window.Show();
+        }
+
+        private static ModDependencyEntry[] GetRequirements(CustomCarPack pack)
+        {
+            return OtherMods.GetModRequirements(pack).Select(x => new ModDependencyEntry(x)).ToArray();
         }
 
         private void OnGUI()

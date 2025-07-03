@@ -5,7 +5,7 @@ namespace CCL.Types.Components
 {
     public class SoundGrabber : VanillaResourceGrabber<AudioClip>
     {
-        // Last update B99.4 Hotfix 7
+        // Last update B99.5
         public static HashSet<string> SoundNames = new HashSet<string>
         {
             "AirPressureExternal_01",

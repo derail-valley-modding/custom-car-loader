@@ -5,7 +5,7 @@ namespace CCL.Types.Components
 {
     public class MaterialGrabber : VanillaResourceGrabber<Material>
     {
-        // Last update B99.4 Hotfix 7
+        // Last update B99.5
         // Removed 1 (empty).
         public static HashSet<string> MaterialNames = new HashSet<string>
         {
@@ -465,6 +465,9 @@ namespace CCL.Types.Components
             "OilLanternGlass_NoEmissive",
             "OutlineSeeThrough",
             "OverheatingProtection",
+            "PaintBeige_InteriorUtil",
+            "PaintBeige_InteriorUtilDirty",
+            "PaintBlue_InteriorUtil",
             "PaintCan",
             "PaintCan_DVRT",
             "PaintCan_Relic",

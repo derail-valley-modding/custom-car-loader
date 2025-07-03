@@ -87,7 +87,7 @@ namespace CCL.Creator.Wizards
             var bogies = prefab.transform.FindSafe(BOGIE_COLLIDERS);
             if (bogies)
             {
-                var bogieColliders = bogies!.GetComponentsInChildren<CapsuleCollider>().OrderBy(c => c.center.z);
+                var bogieColliders = bogies!.GetComponentsInChildren<CapsuleCollider>(true).OrderBy(c => c.center.z);
                 return bogieColliders.LastOrDefault();
             }
             return null;

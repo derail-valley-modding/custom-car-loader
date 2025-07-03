@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types
@@ -20,6 +21,9 @@ namespace CCL.Types
         public PaintSubstitutions[] PaintSubstitutions = new PaintSubstitutions[0];
         public ProceduralMaterialDefinitions? ProceduralMaterials;
         public ExtraTranslations? ExtraTranslations;
+        [Tooltip("Additional mod dependencies go here\n" +
+            "CCL will automatically add Custom Cargo, Custom Licenses, and Passenger Jobs if needed")]
+        public List<string> AdditionalDependencies = new List<string>();
 
         [RenderMethodButtons, SerializeField]
         [MethodButton("CCL.Creator.Validators.CarPackValidator:ValidateExport", "Export Pack")]
@@ -40,6 +44,8 @@ namespace CCL.Types
             {
                 ExtraTranslations.OnValidate();
             }
+
+            AdditionalDependencies = AdditionalDependencies.Distinct().ToList();
         }
 
         public void AfterImport()

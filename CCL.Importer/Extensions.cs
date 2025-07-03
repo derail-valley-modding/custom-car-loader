@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using DV.Localization;
+using DV.Simulation.Cars;
 using DV.Simulation.Controllers;
 using DV.ThingTypes;
 using System;
@@ -238,6 +239,11 @@ namespace CCL.Importer
         public static bool TryGetTraincar(this CarSpawner instance, string id, out TrainCar car)
         {
             return instance.AllCars.TryFind(x => x.ID == id, out car);
+        }
+
+        public static void ForceTurnOffHeadlights(this HeadlightsMainController controller, bool front)
+        {
+            controller.UpdateHeadlights(controller.GetOffIndex(front), front, true);
         }
     }
 }

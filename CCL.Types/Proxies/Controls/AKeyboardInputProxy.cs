@@ -71,7 +71,6 @@ namespace CCL.Types.Proxies.Controls
     public class ButtonUseKeyboardInputProxy : AKeyboardInputProxy
     {
         public ActionReference useAction = new ActionReference();
-        public BaseKeyType useKey;
 
         [SerializeField, HideInInspector]
         private string? _json;
@@ -90,7 +89,7 @@ namespace CCL.Types.Proxies.Controls
     public class ButtonSetValueFromAxisInputProxy : AKeyboardInputProxy
     {
         public ActionReference useAction = new ActionReference();
-        public BaseKeyType useKey;
+        public bool useReturnToZero;
 
         [SerializeField, HideInInspector]
         private string? _json;
@@ -110,8 +109,6 @@ namespace CCL.Types.Proxies.Controls
     {
         public ActionReference lightFireAction = new ActionReference();
         public ActionReference shovelCoalAction = new ActionReference();
-        public BaseKeyType lightFireKey = BaseKeyType.LightFire;
-        public BaseKeyType shovelCoalKey = BaseKeyType.Shovel;
         
         [SerializeField, HideInInspector]
         private string? _jsonLight;
@@ -135,8 +132,6 @@ namespace CCL.Types.Proxies.Controls
     {
         public ActionReference scrollAction = new ActionReference();
         public bool onlyScrollOnce;
-        public BaseKeyType scrollUpKey;
-        public BaseKeyType scrollDownKey;
 
         [SerializeField, HideInInspector]
         private string? _json;
@@ -156,8 +151,6 @@ namespace CCL.Types.Proxies.Controls
     {
         public Vector3 forceVector;
         public ActionReference applyAction = new ActionReference();
-        public BaseKeyType positiveApplyKey;
-        public BaseKeyType negativeApplyKey;
 
         [SerializeField, HideInInspector]
         private string? _json;
@@ -177,7 +170,6 @@ namespace CCL.Types.Proxies.Controls
 
     public class ToggleSwitchUseKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType useKey;
         public ActionReference useAction = new ActionReference();
 
         [SerializeField, HideInInspector]
@@ -196,7 +188,6 @@ namespace CCL.Types.Proxies.Controls
 
     public class ToggleValueKeyboardInputProxy : AKeyboardInputProxy
     {
-        public BaseKeyType toggleKey;
         public ActionReference useAction = new ActionReference();
 
         [SerializeField, HideInInspector]
