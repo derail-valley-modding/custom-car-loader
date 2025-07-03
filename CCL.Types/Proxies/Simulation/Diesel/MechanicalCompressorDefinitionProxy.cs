@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Diesel/Mechanical Compressor Definition Proxy")]
     public class MechanicalCompressorDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults
     {
         public float loadTorque = 400f;

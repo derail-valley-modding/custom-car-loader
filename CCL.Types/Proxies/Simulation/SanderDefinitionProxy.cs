@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Sander Definition Proxy")]
     public class SanderDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields,
         IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults, IS060Defaults, IS282Defaults
     {
@@ -13,7 +14,7 @@ namespace CCL.Types.Proxies.Simulation
 
         [Header("Optional")]
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Steam/Firebox Definition Proxy")]
     public class FireboxDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
         IRecommendedDebugPorts
     {

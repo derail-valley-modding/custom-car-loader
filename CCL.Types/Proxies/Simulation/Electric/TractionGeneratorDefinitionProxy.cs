@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Electric/Traction Generator Definition Proxy")]
     public class TractionGeneratorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDE2Defaults, IDE6Defaults,
         IRecommendedDebugPorts
     {

@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Automatic Cooler Definition Proxy")]
     public class AutomaticCoolerDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IDH4Defaults
     {
         public float coolingRate = 12500f;
@@ -11,7 +13,7 @@ namespace CCL.Types.Proxies.Simulation
         public float easeTime = 2f;
 
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]

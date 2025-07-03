@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Electric/Traction Motor Set Definition Proxy")]
     public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized,
         IDE2Defaults, IDE6Defaults, IBE2Defaults,
         IRecommendedDebugPorts, IRecommendedDebugPortReferences

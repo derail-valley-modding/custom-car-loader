@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Lamp Logic Definition Proxy")]
     public class LampLogicDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IHasFuseIdFields
     {
         [Header("Behaviour setup")]

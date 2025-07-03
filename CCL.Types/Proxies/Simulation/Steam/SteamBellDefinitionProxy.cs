@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Steam/Steam Bell Definition Proxy")]
     public class SteamBellDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults
     {
         public float steamConsumption = 0.1f;

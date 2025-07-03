@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Diesel/Hydraulic Transmission Definition Proxy")]
     public class HydraulicTransmissionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
         IDH4Defaults, IDM3Defaults, IDM1UDefaults,
         IRecommendedDebugPorts

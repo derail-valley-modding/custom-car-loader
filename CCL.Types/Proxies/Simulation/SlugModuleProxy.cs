@@ -4,16 +4,17 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Slug Module Proxy")]
     public class SlugModuleProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, true)]
-        public string appliedVoltagePortId;
+        public string appliedVoltagePortId = string.Empty;
         [PortId(DVPortType.READONLY_OUT, DVPortValueType.OHMS, true)]
-        public string effectiveResistancePortId;
+        public string effectiveResistancePortId = string.Empty;
         [PortId(DVPortType.READONLY_OUT, DVPortValueType.AMPS, true)]
-        public string totalAmpsPortId;
+        public string totalAmpsPortId = string.Empty;
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Directional Cooler Definition Proxy")]
     public class DirectionalCoolerDefinitionProxy : SimComponentDefinitionProxy, IDM3Defaults
     {
         public float coolingRate = 12500f;

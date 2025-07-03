@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Steam/Manual Oiling Points Definition Proxy")]
     public class ManualOilingPointsDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IS060Defaults, IS282Defaults
     {
         [Serializable]

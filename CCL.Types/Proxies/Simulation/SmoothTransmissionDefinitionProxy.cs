@@ -4,12 +4,13 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Smooth Transmission Definition Proxy")]
     public class SmoothTransmissionDefinitionProxy : SimComponentDefinitionProxy, IDM1UDefaults
     {
         public float transitionTime = 1f;
-        public float[] gearRatios;
+        public float[] gearRatios = new float[0];
         public float transmissionEfficiency = 1f;
-        public AnimationCurve gearChangeEaseCurve;
+        public AnimationCurve gearChangeEaseCurve = null!;
 
         [Header("Damage")]
         public float powerShiftRpmThreshold = 400f;

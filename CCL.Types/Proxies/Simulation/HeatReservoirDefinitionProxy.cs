@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Heat Reservoir Definition Proxy")]
     public class HeatReservoirDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
         IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults,
         IRecommendedDebugPorts

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Fuse Controller Definition Proxy")]
     public class FuseControllerDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized
     {
         public float setThreshold = 0.5f;
