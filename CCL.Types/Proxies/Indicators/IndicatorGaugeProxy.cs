@@ -1,11 +1,11 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Indicator Gauge Proxy")]
     public class IndicatorGaugeProxy : IndicatorProxy
     {
-        public Transform needle;
+        public Transform needle = null!;
         public float minAngle = -180f;
         public float maxAngle = 180f;
         public bool unclamped;

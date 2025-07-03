@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Headlights
 {
+    [AddComponentMenu("CCL/Proxies/Headlights/Volumetric Light Beam Proxy")]
     public class VolumetricLightBeamProxy : MonoBehaviour
     {
         public enum ColorMode
@@ -32,7 +33,7 @@ namespace CCL.Types.Proxies.Headlights
         public ColorMode colorMode = ColorMode.Flat;
         [ColorUsage(false, true)]
         public Color color = Color.white;
-        public Gradient colorGradient;
+        public Gradient colorGradient = null!;
 
         public bool intensityFromLight = true;
         public bool intensityModeAdvanced = true;

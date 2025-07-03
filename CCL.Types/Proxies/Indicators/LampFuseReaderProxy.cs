@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Lamp Fuse Reader Proxy")]
     public class LampFuseReaderProxy : MonoBehaviour, IHasFuseIdFields
     {
         public enum Mode
@@ -15,11 +16,11 @@ namespace CCL.Types.Proxies.Indicators
         public Mode mode;
 
         [FuseId]
-        public string fuseId;
+        public string fuseId = string.Empty;
 
-        [FuseId]
         [Header("Optional")]
-        public string powerFuseId;
+        [FuseId]
+        public string powerFuseId = string.Empty;
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {

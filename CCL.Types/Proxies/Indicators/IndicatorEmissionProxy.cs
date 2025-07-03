@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Indicator Emission Proxy")]
     public class IndicatorEmissionProxy : IndicatorProxy
     {
         [Header("Behaviour")]

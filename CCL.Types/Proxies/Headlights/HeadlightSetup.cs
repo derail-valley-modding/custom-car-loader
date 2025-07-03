@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Headlights
 {
+    [AddComponentMenu("CCL/Proxies/Headlights/Headlight Setup Proxy")]
     [NotProxied]
     public class HeadlightSetup : MonoBehaviour
     {
@@ -27,7 +28,7 @@ namespace CCL.Types.Proxies.Headlights
         }
 
         public HeadlightSetting setting;
-        public HeadlightsSubControllerBaseProxy[] subControllers;
+        public HeadlightsSubControllerBaseProxy[] subControllers = new HeadlightsSubControllerBaseProxy[0];
         public bool mainOffSetup;
     }
 }

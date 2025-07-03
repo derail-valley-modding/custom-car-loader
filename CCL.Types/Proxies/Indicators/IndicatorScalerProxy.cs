@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Indicator Scaler Proxy")]
     public class IndicatorScalerProxy : IndicatorProxy
     {
         public Transform indicatorToScale = null!;

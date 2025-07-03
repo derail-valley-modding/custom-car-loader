@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Headlights
 {
+    [AddComponentMenu("CCL/Proxies/Headlights/Car Lights Optimizer Proxy")]
     public class CarLightsOptimizerProxy : MonoBehaviour
     {
         public GameObject[] cabLights = new GameObject[0];
