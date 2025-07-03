@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Audio
 {
+    [AddComponentMenu("CCL/Proxies/Audio/Cylinder Cock Layered Port Reader Proxy")]
     public class CylinderCockLayeredPortReaderProxy : MonoBehaviour, ICanReplaceInstanced, IHasPortIdFields
     {
         [PortId(DVPortValueType.STATE, false)]

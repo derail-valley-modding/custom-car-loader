@@ -4,38 +4,39 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Audio
 {
+    [AddComponentMenu("CCL/Proxies/Audio/Chuff Clips Sim Reader Proxy")]
     public class ChuffClipsSimReaderProxy : MonoBehaviour, ICanReplaceInstanced, IHasPortIdFields
     {
         [Header("Ports")]
         [PortId(DVPortValueType.STATE, false)]
-        public string chuffEventPortId;
+        public string chuffEventPortId = string.Empty;
         [PortId(DVPortValueType.PRESSURE, false)]
-        public string exhaustPressurePortId;
+        public string exhaustPressurePortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string chuffFrequencyPortId;
+        public string chuffFrequencyPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylinderWaterNormalizedPortId;
+        public string cylinderWaterNormalizedPortId = string.Empty;
         [PortId(DVPortValueType.CONTROL, false)]
-        public string cylinderCockControlPortId;
+        public string cylinderCockControlPortId = string.Empty;
 
         [Space]
         [Header("Individual chuffs - number of entries must match the number of chuffs per cycle")]
         public OrderedChuffClips[] lowPressureClips = new OrderedChuffClips[0];
         public OrderedChuffClips[] mediumPressureClips = new OrderedChuffClips[0];
         public OrderedChuffClips[] highPressureClips = new OrderedChuffClips[0];
-        public IndividualChuffAudioSourceConfig regularChuffConfig;
-        public AnimationCurve pressureToVolumeCurve;
+        public IndividualChuffAudioSourceConfig regularChuffConfig = null!;
+        public AnimationCurve pressureToVolumeCurve = null!;
         public float mediumPressureThreshold;
         public float highPressureThreshold;
 
         [Header("Individual water chuffs")]
         public AudioClip[] waterChuffClips = new AudioClip[0];
-        public IndividualChuffAudioSourceConfig waterChuffConfig;
+        public IndividualChuffAudioSourceConfig waterChuffConfig = null!;
 
         [Header("Individual ash chuffs")]
         public AudioClip[] ashChuffClips = new AudioClip[0];
-        public IndividualChuffAudioSourceConfig ashChuffConfig;
-        public AnimationCurve ashChuffPressureToVolumeCurve;
+        public IndividualChuffAudioSourceConfig ashChuffConfig = null!;
+        public AnimationCurve ashChuffPressureToVolumeCurve = null!;
 
         [Space]
         [Header("Loop chuffs")]
@@ -82,21 +83,21 @@ namespace CCL.Types.Proxies.Audio
 
     public class ChuffLoop : MonoBehaviour
     {
-        public GameObject chuffLoop;
-        public AnimationCurve chuffFrequencyToMasterVolume;
+        public GameObject chuffLoop = null!;
+        public AnimationCurve chuffFrequencyToMasterVolume = null!;
     }
 
     public class OrderedChuffClips : MonoBehaviour
     {
-        public AudioClip[] chuffVariations;
+        public AudioClip[] chuffVariations = new AudioClip[0];
     }
 
     public class IndividualChuffAudioSourceConfig : MonoBehaviour
     {
-        public Transform parent;
-        public AnimationCurve chuffFrequencyToMasterVolume;
+        public Transform parent = null!;
+        public AnimationCurve chuffFrequencyToMasterVolume = null!;
         public float pitch = 1f;
-        public AnimationCurve spatialCurve;
+        public AnimationCurve spatialCurve = null!;
         public float spread;
         public float minDistance = 1f;
         public float maxDistance = 500f;

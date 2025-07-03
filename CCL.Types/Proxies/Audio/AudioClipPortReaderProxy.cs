@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Audio
 {
+    [AddComponentMenu("CCL/Proxies/Audio/Audio Clip Port Reader Proxy")]
     public class AudioClipPortReaderProxy : MonoBehaviour, IHasPortIdFields
     {
-        public AudioClip[] clips;
-        public Transform positionAnchor;
+        public AudioClip[] clips = new AudioClip[0];
+        public Transform positionAnchor = null!;
 
         public float volume = 1f;
         public float pitch = 1f;
@@ -25,7 +26,7 @@ namespace CCL.Types.Proxies.Audio
         public float playAudioThreshold;
 
         [PortId]
-        public string portId;
+        public string portId = string.Empty;
 
         public float valueMultiplier = 1f;
         public float valueOffset;
