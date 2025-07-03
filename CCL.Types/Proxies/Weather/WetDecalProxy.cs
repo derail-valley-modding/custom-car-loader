@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
+    [AddComponentMenu("CCL/Proxies/Weather/Wet Decal Proxy")]
     public class WetDecalProxy : MonoBehaviour, ICustomSerialized
     {
         [SerializeField]

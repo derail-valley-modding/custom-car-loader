@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.VFX
 {
+    [AddComponentMenu("CCL/Proxies/VFX/Cylinder Cock Particle Port Reader Proxy")]
     public class CylinderCockParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, ICustomSerialized, IS060Defaults, IS282Defaults
     {
         public static AnimationCurve Curve0 => new AnimationCurve(

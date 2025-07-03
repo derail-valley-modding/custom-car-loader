@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
+    [AddComponentMenu("CCL/Proxies/Weather/Rotary Wiper Driver Proxy")]
     public class RotaryWiperDriverProxy : WiperDriverProxy
     {
         private const int Segments = 10;

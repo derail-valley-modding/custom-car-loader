@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
+    [AddComponentMenu("CCL/Proxies/Weather/Window Proxy")]
     public class WindowProxy : MonoBehaviour
     {
         public bool simulate = true;

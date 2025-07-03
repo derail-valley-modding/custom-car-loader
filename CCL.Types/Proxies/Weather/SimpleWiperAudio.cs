@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Weather
 {
+    [AddComponentMenu("CCL/Proxies/Weather/Wiper Audio (Simple)")]
     public class SimpleWiperAudio : MonoBehaviour
     {
         public enum WiperType

@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Weather
 {
+    [AddComponentMenu("CCL/Proxies/Weather/Wiper Audio Proxy")]
     public class WiperAudioProxy : MonoBehaviour
     {
         public WiperControllerProxy wiperController = null!;

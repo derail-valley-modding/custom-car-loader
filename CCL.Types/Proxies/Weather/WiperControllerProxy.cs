@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Weather
 {
+    [AddComponentMenu("CCL/Proxies/Weather/Wiper Controller Proxy")]
     public class WiperControllerProxy : MonoBehaviour
     {
         public float[] speeds = new float[]
