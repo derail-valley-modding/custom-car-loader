@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Sim Connections Definition Proxy")]
     public class SimConnectionsDefinitionProxy : MonoBehaviour, ICustomSerialized
     {
         public List<SimComponentDefinitionProxy> executionOrder = new List<SimComponentDefinitionProxy>();

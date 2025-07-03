@@ -3,13 +3,14 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Broadcast Port Value Consumer Proxy")]
     public class BroadcastPortValueConsumerProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(null, null, true)]
-        public string consumerPortId;
+        public string consumerPortId = string.Empty;
 
         public DVPortForwardConnectionType connection;
-        public string connectionTag;
+        public string connectionTag = string.Empty;
         public float disconnectedValue;
         public bool propagateConsumerValueChangeBackToProvider;
 

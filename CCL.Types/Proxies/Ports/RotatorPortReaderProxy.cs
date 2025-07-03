@@ -4,18 +4,19 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Rotator Port Reader Proxy")]
     public class RotatorPortReaderProxy : MonoBehaviour, IHasPortIdFields, ICustomSerialized
     {
         [Serializable]
         public class RotationData
         {
-            public Transform transformToRotate;
+            public Transform transformToRotate = null!;
             public Vector3 rotationAxis = Vector3.forward;
             public float maxRps = 10f;
         }
 
         [PortId(null, null, false)]
-        public string portId;
+        public string portId = string.Empty;
         public RotationData[] transformsToRotate = new RotationData[0];
 
         [SerializeField, HideInInspector]

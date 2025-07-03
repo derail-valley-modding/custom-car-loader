@@ -7,21 +7,15 @@ namespace CCL.Types.Proxies.Ports
     {
         public PortDefinition() { }
 
-        // Token: 0x0600000A RID: 10 RVA: 0x00002141 File Offset: 0x00000341
-        public PortDefinition(DVPortType type, DVPortValueType valueType, string iD)
+        public PortDefinition(DVPortType type, DVPortValueType valueType, string id)
         {
             this.type = type;
             this.valueType = valueType;
-            this.ID = iD;
+            this.ID = id;
         }
 
-        // Token: 0x04000014 RID: 20
         public DVPortType type;
-
-        // Token: 0x04000015 RID: 21
         public DVPortValueType valueType;
-
-        // Token: 0x04000016 RID: 22
-        public string ID;
+        public string ID = string.Empty;
     }
 }

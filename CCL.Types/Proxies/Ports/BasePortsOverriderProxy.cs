@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Base Ports Overrider Proxy")]
     public class BasePortsOverriderProxy : MonoBehaviour, IHasPortIdFields
     {
         [Header("Steamer")]

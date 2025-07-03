@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Animator Port Reader Proxy")]
     public class AnimatorPortReaderProxy : MonoBehaviour, IHasPortIdFields
     {
         public enum UpdateType
@@ -13,9 +14,9 @@ namespace CCL.Types.Proxies.Ports
 
         public UpdateType updateType;
         [PortId(null, null, false)]
-        public string portId;
-        //[ShowIf("updateType", UpdateType.SET_PARAMETER)]
-        public string parameterName;
+        public string portId = string.Empty;
+        [EnableIf(nameof(EnableParameter))]
+        public string parameterName = string.Empty;
 
         [Header("Value modifiers")]
         public float valueMultiplier = 1f;
@@ -25,5 +26,7 @@ namespace CCL.Types.Proxies.Ports
         {
             new PortIdField(this, nameof(portId), portId),
         };
+
+        private bool EnableParameter() => updateType == UpdateType.SET_PARAMETER;
     }
 }

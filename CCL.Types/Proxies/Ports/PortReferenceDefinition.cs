@@ -6,18 +6,16 @@ namespace CCL.Types.Proxies.Ports
     public class PortReferenceDefinition
     {
         public DVPortValueType valueType;
-
-        public string ID;
-
+        public string ID = string.Empty;
         public bool writeAllowed;
 
         public PortReferenceDefinition() { }
 
-        public PortReferenceDefinition(DVPortValueType valueType, string iD, bool writeAllowed = false)
+        public PortReferenceDefinition(DVPortValueType valueType, string id, bool writeAllowed = false)
         {
             this.valueType = valueType;
             this.writeAllowed = writeAllowed;
-            ID = iD;
+            ID = id;
         }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Configurable Port Definition Proxy")]
     public class ConfigurablePortDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
         public float value;

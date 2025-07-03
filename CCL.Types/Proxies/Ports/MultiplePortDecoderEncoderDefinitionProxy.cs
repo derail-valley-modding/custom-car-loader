@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Multiple Port Decoder Encoder Definition Proxy")]
     public class MultiplePortDecoderEncoderDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
         IDM1UDefaults, IS060Defaults, IS282Defaults, IBE2Defaults
     {

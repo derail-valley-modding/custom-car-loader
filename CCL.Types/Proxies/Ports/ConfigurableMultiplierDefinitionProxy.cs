@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Configurable Multiplier Definition Proxy")]
     public class ConfigurableMultiplierDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
         [Header("Leave as generic to show all options")]
