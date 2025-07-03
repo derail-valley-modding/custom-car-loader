@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Clapper Controller Proxy")]
     public class ClapperControllerProxy : MonoBehaviour, IHasPortIdFields
     {
-        public Transform clapperTransform;
+        public Transform clapperTransform = null!;
         [PortId(DVPortValueType.RPM, true)]
-        public string engineRpmNormalizedPortId;
+        public string engineRpmNormalizedPortId = string.Empty;
         [PortId(DVPortValueType.STATE, true)]
-        public string engineOnPortId;
+        public string engineOnPortId = string.Empty;
         public float highestMaxAngleAtPercentage = 0.33f;
         public float highestMinAngleAtPercentage = 0.66f;
 

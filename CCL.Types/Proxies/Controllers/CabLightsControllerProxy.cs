@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Cab Lights Controller Proxy")]
     public class CabLightsControllerProxy : PoweredControlHandlerBase
     {
         public Material lightsLit = null!;

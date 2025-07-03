@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Compressor Sim Controller Proxy")]
     public class CompressorSimControllerProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]

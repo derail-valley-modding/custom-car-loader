@@ -1,39 +1,41 @@
 ﻿using CCL.Types.Proxies.Ports;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Damage Controller Proxy")]
     public class DamageControllerProxy : MonoBehaviour, IHasPortIdFields
     {
-        public AnimationCurve speedToBrakeDamageCurve;
+        public AnimationCurve speedToBrakeDamageCurve = null!;
 
         //[Header("Windows - set to null if unused")]
         //public WindowsBreakingController windows;
 
         [Header("Body Damage")]
         [PortId(DVPortValueType.DAMAGE, false)]
-        public string[] bodyDamagerPortIds;
+        public string[] bodyDamagerPortIds = Array.Empty<string>();
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
-        public string[] bodyHealthStateExternalInPortIds;
+        public string[] bodyHealthStateExternalInPortIds = Array.Empty<string>();
 
         [Header("Mechanical Damage")]
         [PortId(DVPortValueType.DAMAGE, false)]
-        public string[] mechanicalPTDamagerPortIds;
+        public string[] mechanicalPTDamagerPortIds = Array.Empty<string>();
         [PortId(DVPortValueType.DAMAGE, false)]
-        public string[] mechanicalPTPercentualDamagerPortIds;
+        public string[] mechanicalPTPercentualDamagerPortIds = Array.Empty<string>();
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
-        public string[] mechanicalPTHealthStateExternalInPortIds;
+        public string[] mechanicalPTHealthStateExternalInPortIds = Array.Empty<string>();
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
-        public string[] mechanicalPTOffExternalInPortIds;
+        public string[] mechanicalPTOffExternalInPortIds = Array.Empty<string>();
 
         [Header("Electrical Damage")]
         [PortId(DVPortValueType.DAMAGE, false)]
-        public string[] electricalPTDamagerPortIds;
+        public string[] electricalPTDamagerPortIds = Array.Empty<string>();
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
-        public string[] electricalPTHealthStateExternalInPortIds;
+        public string[] electricalPTHealthStateExternalInPortIds = Array.Empty<string>();
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
-        public string[] electricalPTOffExternalInPortIds;
+        public string[] electricalPTOffExternalInPortIds = Array.Empty<string>();
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

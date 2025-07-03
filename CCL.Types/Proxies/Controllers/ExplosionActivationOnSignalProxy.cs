@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Explosion Activation On Signal Proxy")]
     public class ExplosionActivationOnSignalProxy : MonoBehaviour, IHasPortIdFields
     {
         public float bodyDamagePercentage;

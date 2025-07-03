@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Blowback Particle Port Reader Proxy")]
     public class BlowbackParticlePortReaderProxy : MonoBehaviourWithVehicleDefaults, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         public float blowbackAirflowThreshold = 1.5f;
