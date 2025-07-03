@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
+    [AddComponentMenu("CCL/Proxies/Wheels/Wheelslip Speaks Controller Proxy")]
     public class WheelslipSparksControllerProxy : MonoBehaviour, ICustomSerialized
     {
         [Serializable]

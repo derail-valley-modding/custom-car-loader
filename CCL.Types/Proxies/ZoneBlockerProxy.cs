@@ -4,6 +4,6 @@ namespace CCL.Types.Proxies
 {
     public abstract class ZoneBlockerProxy : MonoBehaviour
     {
-        public GameObject blockerObjectsParent;
+        public GameObject blockerObjectsParent = null!;
     }
 }

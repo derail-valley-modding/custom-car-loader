@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Cabin Render Ordering Proxy")]
     public class CabinRenderOrderingProxy : MonoBehaviour, ICustomSerialized
     {
         [Serializable, NotProxied]

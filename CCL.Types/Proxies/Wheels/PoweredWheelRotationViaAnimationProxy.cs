@@ -1,9 +1,9 @@
-﻿using CCL.Types.Json;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
+    [AddComponentMenu("CCL/Proxies/Wheels/Powered Wheel Rotation Via Animation Proxy")]
     public class PoweredWheelRotationViaAnimationProxy : PoweredWheelRotationBaseProxy, ICustomSerialized
     {
         [Serializable]

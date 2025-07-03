@@ -3,6 +3,7 @@ using static CCL.Types.Proxies.Wheels.PoweredWheelRotationViaAnimationProxy;
 
 namespace CCL.Types.Proxies.Wheels
 {
+    [AddComponentMenu("CCL/Proxies/Wheels/Wheel Rotation Via Animation")]
     public class WheelRotationViaAnimationProxy : WheelRotationBaseProxy, ICustomSerialized
     {
         public AnimatorStartTimeOffsetPair[] animatorSetups = new AnimatorStartTimeOffsetPair[0];

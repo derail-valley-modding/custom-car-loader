@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Player Distance GameObjects Disabler Proxy")]
     public class PlayerDistanceGameObjectsDisablerProxy : MonoBehaviour
     {
         public List<GameObject> optimizingGameObjects = new List<GameObject>();

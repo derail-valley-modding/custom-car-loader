@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Explosion Model Handler Proxy")]
     public class ExplosionModelHandlerProxy : MonoBehaviour, ICustomSerialized
     {
         [Serializable]

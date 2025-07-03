@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
-    [AddComponentMenu("CCL/Proxies/Indicators/Lamp Wheel Slip Slide Reader Proxy")]
+    [AddComponentMenu("CCL/Proxies/Indicators/Lamp Wheel Slip \u2215 Slide Reader Proxy")]
     public class LampWheelSlipSlideReaderProxy : MonoBehaviour, IHasFuseIdFields
     {
         public enum WheelslipDetectionMode

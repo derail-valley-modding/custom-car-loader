@@ -2,15 +2,16 @@
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Fire Proxy")]
     public class FireProxy : MonoBehaviour, ICanReplaceInstanced
     {
-        public GameObject fireObj;
-        public GameObject sparksObj;
-        public GameObject helperTriggerVR;
+        public GameObject fireObj = null!;
+        public GameObject sparksObj = null!;
+        public GameObject helperTriggerVR = null!;
         [SerializeField]
-        private SphereCollider ignitionCollider;
-        public Renderer[] emissiveRenderersAffectedByFire;
-        public Light fireLight;
+        private SphereCollider ignitionCollider = null!;
+        public Renderer[] emissiveRenderersAffectedByFire = new Renderer[0];
+        public Light fireLight = null!;
         public float minFireIntensity;
         public float maxFireIntensity = 1f;
 

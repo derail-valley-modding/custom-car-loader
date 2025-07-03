@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Teleport Arc Pass Through Proxy")]
     public class TeleportArcPassThroughProxy : MonoBehaviour
     {
         public bool twoSided = true;
