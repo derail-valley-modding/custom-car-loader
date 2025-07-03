@@ -29,6 +29,7 @@ namespace CCL.Types.Proxies.Controls
         public abstract void AfterImport();
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Analog Set Value Joystick Input Proxy")]
     public class AnalogSetValueJoystickInputProxy : AKeyboardInputProxy
     {
         public ActionReference action = new ActionReference();
@@ -48,6 +49,7 @@ namespace CCL.Types.Proxies.Controls
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Binary Decode Value Input Proxy")]
     public class BinaryDecodeValueInputProxy : AKeyboardInputProxy
     {
         public ActionReference action = new ActionReference();
@@ -68,6 +70,7 @@ namespace CCL.Types.Proxies.Controls
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Button Use Keyboard Input Proxy")]
     public class ButtonUseKeyboardInputProxy : AKeyboardInputProxy
     {
         public ActionReference useAction = new ActionReference();
@@ -86,6 +89,7 @@ namespace CCL.Types.Proxies.Controls
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Button Set Value From Axis Input Proxy")]
     public class ButtonSetValueFromAxisInputProxy : AKeyboardInputProxy
     {
         public ActionReference useAction = new ActionReference();
@@ -105,6 +109,7 @@ namespace CCL.Types.Proxies.Controls
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Firebox Keyboard Input Proxy")]
     public class FireboxKeyboardInputProxy : AKeyboardInputProxy
     {
         public ActionReference lightFireAction = new ActionReference();
@@ -127,7 +132,8 @@ namespace CCL.Types.Proxies.Controls
             JSONObject.FromJson(_jsonShovel, ref shovelCoalAction);
         }
     }
-    
+
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Mouse Scroll Keyboard Input Proxy")]
     public class MouseScrollKeyboardInputProxy : AKeyboardInputProxy
     {
         public ActionReference scrollAction = new ActionReference();
@@ -146,7 +152,8 @@ namespace CCL.Types.Proxies.Controls
             JSONObject.FromJson(_json, ref scrollAction);
         }
     }
-    
+
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Physics Force Input Proxy")]
     public class PhysicsForceKeyboardInputProxy : AKeyboardInputProxy
     {
         public Vector3 forceVector;
@@ -165,9 +172,11 @@ namespace CCL.Types.Proxies.Controls
             JSONObject.FromJson(_json, ref applyAction);
         }
     }
-    
+
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Physics Torque Keyboard Input Proxy")]
     public class PhysicsTorqueKeyboardInputProxy : PhysicsForceKeyboardInputProxy { }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Toggle Switch Use Keyboard Input Proxy")]
     public class ToggleSwitchUseKeyboardInputProxy : AKeyboardInputProxy
     {
         public ActionReference useAction = new ActionReference();
@@ -186,6 +195,7 @@ namespace CCL.Types.Proxies.Controls
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Input/Toggle Value Keyboard Input Proxy")]
     public class ToggleValueKeyboardInputProxy : AKeyboardInputProxy
     {
         public ActionReference useAction = new ActionReference();

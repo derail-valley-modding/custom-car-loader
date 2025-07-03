@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls.VR
 {
+    [AddComponentMenu("CCL/Proxies/Controls/VR/Circle Hand Snapper Proxy")]
     public class CircleHandSnapperProxy : MonoBehaviour
     {
         [Tooltip("This object should have its Y+ direction aligned with the wheel rotation axis, pointing outwards from the object, i.e. towards the player")]
@@ -18,6 +19,7 @@ namespace CCL.Types.Proxies.Controls.VR
                 Vector3 forward = centerUpward.forward;
                 Vector3 right = centerUpward.right;
                 Vector3 from = position + right * radius;
+
                 for (int i = 1; i <= 16; i++)
                 {
                     Vector3 vector = position + Mathf.Cos(i / 16f * (float)Math.PI * 2f) * radius * right + Mathf.Sin(i / 16f * (float)Math.PI * 2f) * radius * forward;

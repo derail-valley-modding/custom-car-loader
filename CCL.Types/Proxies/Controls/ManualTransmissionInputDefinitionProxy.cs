@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Manual Transmission Input Definition Proxy")]
     public class ManualTransmissionInputDefinitionProxy : SimComponentDefinitionProxy
     {
         public bool gear0IsNeutral;

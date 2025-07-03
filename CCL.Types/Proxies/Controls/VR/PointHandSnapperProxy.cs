@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls.VR
 {
+    [AddComponentMenu("CCL/Proxies/Controls/VR/Point Hand Snapper Proxy")]
     public class PointHandSnapperProxy : MonoBehaviour
     {
         [Tooltip("Position is used if an object is provided here, rotation is irrelevant. If nothing is assigned, this GameObject's transform will be used instead")]

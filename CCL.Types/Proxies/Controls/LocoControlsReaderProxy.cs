@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Loco Controls Reader Proxy")]
     public class LocoControlsReaderProxy : MonoBehaviour
     {
         public GameObject cabLight = null!;

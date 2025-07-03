@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Loco Lamp Reader Proxy")]
     public class LocoLampReaderProxy : MonoBehaviour
     {
         public LampControlProxy fuel = null!;

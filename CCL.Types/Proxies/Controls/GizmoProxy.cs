@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Gizmo Proxy")]
     public class GizmoProxy : ControlSpecProxy
     {
         public enum ItemCollisionSoundCategory

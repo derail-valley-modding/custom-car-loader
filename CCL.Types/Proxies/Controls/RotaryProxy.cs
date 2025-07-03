@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Rotary Proxy")]
     public class RotaryProxy : ControlSpecProxy
     {
         public float rigidbodyMass = 1f;
@@ -35,9 +36,9 @@ namespace CCL.Types.Proxies.Controls
         public float jointStartingPos;
 
         [Header("Audio")]
-        public AudioClip notch;
-        public AudioClip drag;
-        public AudioClip limitHit;
+        public AudioClip notch = null!;
+        public AudioClip drag = null!;
+        public AudioClip limitHit = null!;
 
 
         protected const int GIZMO_SLICE_SIZE = 10;

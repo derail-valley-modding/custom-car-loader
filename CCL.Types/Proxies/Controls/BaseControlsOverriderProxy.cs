@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Base Controls Overrider Proxy")]
     public class BaseControlsOverriderProxy : MonoBehaviour, ICustomSerialized, IHasPortIdFields
     {
         [Serializable]
@@ -33,10 +34,9 @@ namespace CCL.Types.Proxies.Controls
         public bool propagateNeutralStateToFront;
         public bool propagateNeutralStateToRear;
 
-        public PortSetter[] neutralStateSetters;
-        [SerializeField]
-        [HideInInspector]
-        private string _neutralStateSettersJson;
+        public PortSetter[] neutralStateSetters = new PortSetter[0];
+        [SerializeField, HideInInspector]
+        private string _neutralStateSettersJson = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields
         {

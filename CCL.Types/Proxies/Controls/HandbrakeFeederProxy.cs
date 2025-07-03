@@ -2,8 +2,6 @@
 
 namespace CCL.Types.Proxies.Controls
 {
-    public class HandbrakeFeederProxy : MonoBehaviour
-    {
-
-    }
+    [AddComponentMenu("CCL/Proxies/Controls/Handbrake Feeder Proxy")]
+    public class HandbrakeFeederProxy : MonoBehaviour { }
 }

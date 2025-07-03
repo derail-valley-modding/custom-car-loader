@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Reverser Definition Proxy")]
     public class ReverserDefinitionProxy : SimComponentDefinitionProxy
     {
         public bool isAnalog;
