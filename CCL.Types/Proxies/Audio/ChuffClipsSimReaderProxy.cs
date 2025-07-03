@@ -81,17 +81,20 @@ namespace CCL.Types.Proxies.Audio
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Audio/Chuff Loop")]
     public class ChuffLoop : MonoBehaviour
     {
         public GameObject chuffLoop = null!;
         public AnimationCurve chuffFrequencyToMasterVolume = null!;
     }
 
+    [AddComponentMenu("CCL/Proxies/Audio/Ordered Chuff Clips")]
     public class OrderedChuffClips : MonoBehaviour
     {
         public AudioClip[] chuffVariations = new AudioClip[0];
     }
 
+    [AddComponentMenu("CCL/Proxies/Audio/Individual Chuff Audio Source Config")]
     public class IndividualChuffAudioSourceConfig : MonoBehaviour
     {
         public Transform parent = null!;

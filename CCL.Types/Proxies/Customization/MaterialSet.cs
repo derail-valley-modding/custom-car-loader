@@ -75,6 +75,7 @@ namespace CCL.Types.Proxies.Customization
     }
 
     // To handle default bogies.
+    [AddComponentMenu("CCL/Proxies/Customization/Default Bogie Material Set")]
     [NotProxied]
     public class DefaultBogieMaterialSet : MaterialSet { }
 }

@@ -49,6 +49,7 @@ namespace CCL.Types.Proxies.Indicators
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Indicators/Indicator Gauge Lagging Proxy")]
     public class IndicatorGaugeLaggingProxy : IndicatorGaugeProxy
     {
         public float updateThreshold = 0.001f;
