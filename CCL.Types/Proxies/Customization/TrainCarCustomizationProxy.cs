@@ -12,6 +12,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Customization
 {
+    [AddComponentMenu("CCL/Proxies/Customization/Train Car Customization Proxy")]
     public class TrainCarCustomizationProxy : MonoBehaviour, ICustomSerialized, IHasFuseIdFields
     {
         public enum STDSimPort : byte

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Customization
 {
+    [AddComponentMenu("CCL/Proxies/Customization/Train Car Paint Proxy")]
     public class TrainCarPaintProxy : MonoBehaviour
     {
         public enum Target : byte

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Customization
 {
+    [AddComponentMenu("CCL/Proxies/Customization/Material Set")]
     [NotProxied]
     public class MaterialSet : MonoBehaviour, ICustomSerialized
     {
