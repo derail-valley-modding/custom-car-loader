@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CCL.Types.Proxies.Ports
 {
     [Serializable]
     public class FuseDefinition
     {
-        public string id;
-
+        public string id = string.Empty;
         public bool initialState;
-
         public float offValue;
 
         public FuseDefinition() { }

@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Devices
 {
+    [AddComponentMenu("CCL/Proxies/Devices/Career Manager Proxy")]
     public class CareerManagerProxy : MonoBehaviour
     {
         // career manager dimensions

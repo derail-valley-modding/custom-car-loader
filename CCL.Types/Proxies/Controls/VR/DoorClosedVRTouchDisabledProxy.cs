@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls.VR
 {
+    [AddComponentMenu("CCL/Proxies/Controls/VR/Door Closed VR Touch Disable Proxy")]
     public class DoorClosedVRTouchDisableProxy : MonoBehaviour
     {
         public GameObject door = null!;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Lamp Controller Temperature MU Proxy")]
     public class LampControllerTemperatureMUProxy : MonoBehaviour, IHasFuseIdFields
     {
         [FuseId]

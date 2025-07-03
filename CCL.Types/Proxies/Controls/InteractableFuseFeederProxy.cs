@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Interactable Fuse Feeder Proxy")]
     public class InteractableFuseFeederProxy : MonoBehaviour, IHasFuseIdFields
     {
         [FuseId]
-        public string fuseId;
+        public string fuseId = string.Empty;
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {

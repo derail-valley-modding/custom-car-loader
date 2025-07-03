@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Multiple Port Sum Definition Proxy")]
     public class MultiplePortSumDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IRecommendedDebugPorts
     {
         public PortReferenceDefinition[] inputs = new PortReferenceDefinition[0];

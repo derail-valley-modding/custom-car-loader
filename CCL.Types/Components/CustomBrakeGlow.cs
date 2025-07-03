@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Custom Brake Glow")]
     public class CustomBrakeGlow : MonoBehaviour
     {
         [GradientUsage(true)]

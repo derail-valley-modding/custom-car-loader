@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Electric/Slugs Power Provider Module Proxy")]
     public class SlugsPowerProviderModuleProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, true)]

@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Electric/Battery Definition Proxy")]
     public class BatteryDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IBE2Defaults
     {
         public readonly BatteryChemistry chemistry = BatteryChemistry.LeadAcid;
@@ -12,7 +14,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public float baseConsumptionMultiplier = 4f;
 
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {

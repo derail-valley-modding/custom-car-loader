@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Sim Data Display Sim Controller Proxy")]
     [NotExposed]
     public class SimDataDisplaySimControllerProxy : MonoBehaviour
     {

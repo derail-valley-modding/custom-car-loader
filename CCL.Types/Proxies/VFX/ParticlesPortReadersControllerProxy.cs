@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.VFX
 {
+    [AddComponentMenu("CCL/Proxies/VFX/Particle Port Readers Controller Proxy")]
     public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceInstanced
     {
         public enum ColorPropertyChange

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Lamp Control Proxy")]
     public class LampControlProxy : MonoBehaviour
     {
         public IndicatorEmissionProxy lampInd = null!;

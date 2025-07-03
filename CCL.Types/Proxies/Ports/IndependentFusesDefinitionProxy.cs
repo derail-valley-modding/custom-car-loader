@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Independent Fuses Definition Proxy")]
     public class IndependentFusesDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
         public FuseDefinition[] fuses = new FuseDefinition[0];

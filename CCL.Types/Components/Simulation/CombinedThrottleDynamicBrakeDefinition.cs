@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
+    [AddComponentMenu("CCL/Components/Simulation/Combined Throttle Dynamic Brake Definition")]
     public class CombinedThrottleDynamicBrakeDefinition : SimComponentDefinitionProxy
     {
         public bool UseToggleMode = false;

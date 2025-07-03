@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls.VR
 {
+    [AddComponentMenu("CCL/Proxies/Controls/VR/Line Hand Snapper Proxy")]
     public class LineHandSnapperProxy : MonoBehaviour
     {
         public Transform lineStart = null!;

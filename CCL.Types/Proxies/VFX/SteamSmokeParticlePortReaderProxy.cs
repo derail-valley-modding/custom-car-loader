@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.VFX
 {
+    [AddComponentMenu("CCL/Proxies/VFX/Steam Smoke Particle Port Reader Proxy")]
     public class SteamSmokeParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         [PortId(DVPortValueType.STATE, false)]

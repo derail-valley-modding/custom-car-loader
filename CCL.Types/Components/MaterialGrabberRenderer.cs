@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Grabbers/Material Grabber (Renderer)")]
     public class MaterialGrabberRenderer : MonoBehaviour, ICustomSerialized
     {
         [Serializable]

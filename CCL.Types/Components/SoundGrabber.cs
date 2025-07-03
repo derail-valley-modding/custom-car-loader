@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Grabbers/Sound Grabber")]
     public class SoundGrabber : VanillaResourceGrabber<AudioClip>
     {
         // Last update B99.5

@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/HJAF Driven Animation Proxy")]
     public class HJAFDrivenAnimationProxy : MonoBehaviour
     {
         [Tooltip("Optional")]

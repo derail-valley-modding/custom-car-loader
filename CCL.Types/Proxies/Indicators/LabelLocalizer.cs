@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Label Localizer")]
     [DisallowMultipleComponent]
     public class LabelLocalizer : MonoBehaviour
     {

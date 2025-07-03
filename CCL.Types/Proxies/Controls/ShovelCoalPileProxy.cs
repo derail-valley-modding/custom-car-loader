@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Shovel Coal Pile Proxy")]
     public class ShovelCoalPileProxy : MonoBehaviourWithVehicleDefaults, IS060Defaults, IS282Defaults
     {
         [Tooltip("Whether this coal pile supplies infinite coal")]

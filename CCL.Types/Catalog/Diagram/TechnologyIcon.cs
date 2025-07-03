@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Catalog.Diagram
 {
+    [AddComponentMenu("CCL/Catalog/Technology Icon")]
     public class TechnologyIcon : DiagramComponent
     {
         public const float SIZE = 45 / 2;

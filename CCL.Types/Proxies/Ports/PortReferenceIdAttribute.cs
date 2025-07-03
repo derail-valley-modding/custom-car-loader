@@ -2,8 +2,5 @@
 
 namespace CCL.Types.Proxies.Ports
 {
-    public class PortReferenceIdAttribute : PropertyAttribute
-    {
-
-    }
+    public class PortReferenceIdAttribute : PropertyAttribute { }
 }

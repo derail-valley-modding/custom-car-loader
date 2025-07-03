@@ -4,16 +4,15 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Traction Port Feeders Proxy")]
     public class TractionPortFeedersProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(null, null, true)]
-        public string forwardSpeedPortId;
-
+        public string forwardSpeedPortId = string.Empty;
         [PortId(null, null, true)]
-        public string wheelRpmPortId;
-
+        public string wheelRpmPortId = string.Empty;
         [PortId(null, null, true)]
-        public string wheelSpeedKmhPortId;
+        public string wheelSpeedKmhPortId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

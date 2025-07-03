@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Audio
 {
+    [AddComponentMenu("CCL/Proxies/Audio/Layered Audio Proxy")]
     public class LayeredAudioProxy : MonoBehaviour
     {
         public float masterVolume = 1.0f;
@@ -17,9 +18,9 @@ namespace CCL.Types.Proxies.Audio
         public bool randomizeStartTime = true;
         public List<AudioLayerProxy> layers = new List<AudioLayerProxy>();
 
+        [RenderMethodButtons, SerializeField]
         [MethodButton(nameof(AddLayer), "Add New Layer")]
-        [RenderMethodButtons]
-        public bool _renderButtons;
+        private bool _renderButtons;
 
         public void AddLayer()
         {
@@ -51,23 +52,19 @@ namespace CCL.Types.Proxies.Audio
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Audio/Audio Layer Proxy")]
     public class AudioLayerProxy : MonoBehaviour
     {
         public string name;
-
-        public AnimationCurve volumeCurve;
-
+        public AnimationCurve volumeCurve = null!;
         public bool usePitchCurve;
-
-        public AnimationCurve pitchCurve;
-
+        public AnimationCurve pitchCurve = null!;
         public float inertia;
-
         public bool inertialPitch;
 
         [Tooltip("For Continuous: AudioSource to play and set values to.")]
         // \nFor One Time: This source will be used as a template for automatically created individual sources
-        public AudioSource source;
+        public AudioSource source = null!;
 
         // Below used only for testing and the built in track joints audio
 

@@ -2,7 +2,6 @@
 
 namespace CCL.Types.Proxies
 {
-    public class GrabberRaycastPassThroughProxy : MonoBehaviour
-    {
-    }
+    [AddComponentMenu("CCL/Proxies/Grabber Raycast Pass Through Proxy")]
+    public class GrabberRaycastPassThroughProxy : MonoBehaviour { }
 }

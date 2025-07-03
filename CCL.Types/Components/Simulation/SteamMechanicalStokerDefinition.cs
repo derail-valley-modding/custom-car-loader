@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
+    [AddComponentMenu("CCL/Components/Simulation/Steam Mechanical Stoker Definition")]
     public class SteamMechanicalStokerDefinition : SimComponentDefinitionProxy, IRecommendedDebugPorts
     {
         [Min(0.0f)]

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Catalog.Diagram
 {
+    [AddComponentMenu("CCL/Catalog/Bogie Layout")]
     public class BogieLayout : DiagramComponent
     {
         public const float BOGIE_HEIGHT = -75;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Lamp Brake Issue Reader Proxy")]
     public class LampBrakeIssueReaderProxy : MonoBehaviour, IHasFuseIdFields
     {
         [FuseId]

@@ -4,18 +4,19 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Headlights
 {
+    [AddComponentMenu("CCL/Proxies/Headlights/Headlights Main Controller Proxy")]
     public class HeadlightsMainControllerProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(DVPortValueType.CONTROL, false)]
-        public string headlightControlFrontId;
+        public string headlightControlFrontId = string.Empty;
         [PortId(DVPortValueType.CONTROL, false)]
-        public string headlightControlRearId;
+        public string headlightControlRearId = string.Empty;
         [FuseId]
-        public string powerFuseId;
+        public string powerFuseId = string.Empty;
 
         public float damagedThresholdPercentage = 0.5f;
-        public HeadlightSetup[] headlightSetupsFront;
-        public HeadlightSetup[] headlightSetupsRear;
+        public HeadlightSetup[] headlightSetupsFront = new HeadlightSetup[0];
+        public HeadlightSetup[] headlightSetupsRear = new HeadlightSetup[0];
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

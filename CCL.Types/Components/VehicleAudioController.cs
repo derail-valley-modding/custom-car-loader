@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Vehicle Audio Controller")]
     public class VehicleAudioController : MonoBehaviour
     {
         public Transform? CustomWheelAudioPosition1;

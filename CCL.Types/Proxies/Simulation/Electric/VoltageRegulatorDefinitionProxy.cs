@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Electric/Voltage Regulator Definition Proxy")]
     public class VoltageRegulatorDefinitionProxy : SimComponentDefinitionProxy
     {
         public override IEnumerable<PortDefinition> ExposedPorts => new[]

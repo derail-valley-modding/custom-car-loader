@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Traction Definition Proxy")]
     public class TractionDefinitionProxy : SimComponentDefinitionProxy
     {
         public override IEnumerable<PortDefinition> ExposedPorts => new[]

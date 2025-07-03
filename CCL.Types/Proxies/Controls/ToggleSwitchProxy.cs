@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Toggle Switch Proxy")]
     public class ToggleSwitchProxy : ControlSpecProxy
     {
         [Header("Toggle switch")]
@@ -12,7 +13,7 @@ namespace CCL.Types.Proxies.Controls
         public float autoOffTimer;
 
         [Header("Audio")]
-        public AudioClip toggle;
+        public AudioClip toggle = null!;
 
         [Header("VR")]
         public Vector3 touchInteractionAxis = Vector3.up;

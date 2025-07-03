@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Steam/Boiler Definition Proxy")]
     public class BoilerDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
         IRecommendedDebugPorts
     {
@@ -36,7 +37,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public float crownSheetTempSmoothTime;
         public float crownSheetOverheatTemp;
         public float minimumExplosionPressure;
-        public AnimationCurve explosionPressureThreshold;
+        public AnimationCurve explosionPressureThreshold = null!;
         public float steamOutletNormalizedWaterLevel = 0.95f;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]

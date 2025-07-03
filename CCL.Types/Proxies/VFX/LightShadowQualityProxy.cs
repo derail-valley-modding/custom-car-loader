@@ -5,10 +5,11 @@ using UnityEngine.Rendering;
 
 namespace CCL.Types.Proxies.VFX
 {
+    [AddComponentMenu("CCL/Proxies/VFX/Light Shadow Quality Proxy")]
     [RequireComponent(typeof(Light)), DisallowMultipleComponent]
     public class LightShadowQualityProxy : MonoBehaviour, ICustomSerialized
     {
-        public LightShadowQualitySettings[] settings;
+        public LightShadowQualitySettings[] settings = new LightShadowQualitySettings[0];
 
         private string? _json = null;
 

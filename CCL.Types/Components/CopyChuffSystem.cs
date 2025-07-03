@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Copiers/Copy Chuff System")]
     public class CopyChuffSystem : MonoBehaviour, IInstancedObject<GameObject>, IHasPortIdFields
     {
         public enum Locomotive
@@ -16,17 +17,17 @@ namespace CCL.Types.Components
 
         [Header("Ports")]
         [PortId(DVPortValueType.STATE, false)]
-        public string chuffEventPortId;
+        public string chuffEventPortId = string.Empty;
         [PortId(DVPortValueType.PRESSURE, false)]
-        public string exhaustPressurePortId;
+        public string exhaustPressurePortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string chuffFrequencyPortId;
+        public string chuffFrequencyPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string cylinderWaterNormalizedPortId;
+        public string cylinderWaterNormalizedPortId = string.Empty;
         [PortId(DVPortValueType.CONTROL, false)]
-        public string cylinderCockControlPortId;
+        public string cylinderCockControlPortId = string.Empty;
         [PortId(DVPortValueType.STATE, false)]
-        public string ashesInPipesPortId;
+        public string ashesInPipesPortId = string.Empty;
 
         public GameObject? InstancedObject { get; set; }
         public bool CanReplace => InstancedObject != null;

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
+    [AddComponentMenu("CCL/Proxies/Wheels/Wheelslip Controller Proxy")]
     public class WheelslipControllerProxy : MonoBehaviourWithVehicleDefaults, IHasPortIdFields,
         IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults, IS060Defaults, IS282Defaults
     {

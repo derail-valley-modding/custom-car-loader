@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Transmission Fixed Gear Definition Proxy")]
     public class TransmissionFixedGearDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IBE2Defaults
     {
         public float gearRatio = 5.18f;

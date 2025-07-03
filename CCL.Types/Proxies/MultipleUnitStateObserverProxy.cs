@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Multiple Unit State Observer Proxy")]
     public class MultipleUnitStateObserverProxy : MonoBehaviour, IHasPortIdFields
     {
         [Header("optional")]
         [PortId(DVPortValueType.TEMPERATURE, false)]
-        public string temperaturePortId;
+        public string temperaturePortId = string.Empty;
         [SerializeField]
         private float overheatStandardThreshold = 90f;
         [SerializeField]

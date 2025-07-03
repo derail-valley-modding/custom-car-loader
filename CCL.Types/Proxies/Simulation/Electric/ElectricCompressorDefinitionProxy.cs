@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Electric
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Electric/Electric Compressor Definition Proxy")]
     public class ElectricCompressorDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IBE2Defaults
     {
         public float maxPower = 45000f;

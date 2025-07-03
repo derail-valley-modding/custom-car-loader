@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Custom Wheel Slide Sparks")]
     public class CustomWheelSlideSparks : MonoBehaviour
     {
         private const float TRACK_GAUGE_2 = 0.76f;

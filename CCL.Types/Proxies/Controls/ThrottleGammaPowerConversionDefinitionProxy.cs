@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Throttle Gamma Power Conversion Definition Proxy")]
     public class ThrottleGammaPowerConversionDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults
     {
         public int numberOfNotches = 8;

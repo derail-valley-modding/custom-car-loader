@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Control Blocker Proxy")]
     public class ControlBlockerProxy : MonoBehaviour, IHasPortIdFields, ICustomSerialized
     {
         [PortId]

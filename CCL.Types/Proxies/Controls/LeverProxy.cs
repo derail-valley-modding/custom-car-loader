@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Lever Proxy")]
     public class LeverProxy : ControlSpecProxy
     {
         [Header("Rigidbody")]
@@ -15,7 +16,7 @@ namespace CCL.Types.Proxies.Controls
         public bool invertDirection;
 
         [Tooltip("Optional")]
-        public Transform interactionPoint;
+        public Transform interactionPoint = null!;
 
         public float maxForceAppliedMagnitude = float.PositiveInfinity;
         public float pullingForceMultiplier = 1f;
@@ -42,9 +43,9 @@ namespace CCL.Types.Proxies.Controls
         public float jointLimitMax;
 
         [Header("Audio")]
-        public AudioClip notch;
-        public AudioClip drag;
-        public AudioClip limitHit;
+        public AudioClip notch = null!;
+        public AudioClip drag = null!;
+        public AudioClip limitHit = null!;
         public bool limitVibration;
 
         [Header("Editor visualization")]

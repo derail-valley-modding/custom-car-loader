@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.VFX
 {
+    [AddComponentMenu("CCL/Proxies/VFX/Tunnel Particle Dampening Proxy")]
     public class TunnelParticleDampeningProxy : MonoBehaviourWithVehicleDefaults, IS060Defaults, IS282Defaults
     {
         public enum Bogie

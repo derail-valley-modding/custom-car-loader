@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Configurable Add Definition Proxy")]
     public class ConfigurableAddDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
         [Header("Leave as generic to show all options")]
@@ -26,11 +27,11 @@ namespace CCL.Types.Proxies.Ports
         };
 
         [SerializeField, HideInInspector]
-        private string aJson;
+        private string? aJson;
         [SerializeField, HideInInspector]
-        private string bJson;
+        private string? bJson;
         [SerializeField, HideInInspector]
-        private string outJson;
+        private string? outJson;
 
         public void OnValidate()
         {

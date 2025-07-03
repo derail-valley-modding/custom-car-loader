@@ -7,11 +7,11 @@ namespace CCL.Types.Proxies.Controls
     {
         [Header("Common")]
         public bool disallowShortTriggerLockHold;
-        public GameObject[] colliderGameObjects;
-        public InteractionHandPosesProxy handPosesOverride;
+        public GameObject[] colliderGameObjects = new GameObject[0];
+        public InteractionHandPosesProxy handPosesOverride = null!;
 
         [Header("Static non-vr interaction area - optional")]
-        public StaticInteractionAreaProxy nonVrStaticInteractionArea;
+        public StaticInteractionAreaProxy nonVrStaticInteractionArea = null!;
 
         private string? _json = string.Empty;
 

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Util/Sim Port Plotter")]
     [NotExposed]
     public class SimPortPlotter : MonoBehaviour
     {

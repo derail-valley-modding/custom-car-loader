@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies
 {
+    [AddComponentMenu("CCL/Proxies/Resource Explosion Base Proxy")]
     public class ResourceExplosionBaseProxy : MonoBehaviour
     {
         [CargoField(false)]

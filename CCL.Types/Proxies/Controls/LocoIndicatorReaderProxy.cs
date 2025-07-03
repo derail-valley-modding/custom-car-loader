@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Loco Indicator Reader Proxy")]
     public class LocoIndicatorReaderProxy : MonoBehaviour
     {
         public IndicatorProxy speed = null!;

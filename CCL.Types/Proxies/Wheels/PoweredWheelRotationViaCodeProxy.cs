@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
+    [AddComponentMenu("CCL/Proxies/Wheels/Powered Wheel Rotation Via Code Proxy")]
     public class PoweredWheelRotationViaCodeProxy : PoweredWheelRotationBaseProxy, ICustomSerialized
     {
         [Serializable]

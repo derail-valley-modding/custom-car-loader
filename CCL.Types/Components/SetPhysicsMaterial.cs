@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Set Physics Material")]
     public class SetPhysicsMaterial : MonoBehaviour
     {
         public enum PhysicsMaterial

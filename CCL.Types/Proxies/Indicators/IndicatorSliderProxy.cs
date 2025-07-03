@@ -2,9 +2,10 @@
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Indicator Slider Proxy")]
     public class IndicatorSliderProxy : IndicatorProxy
     {
-        public Transform pointer;
+        public Transform pointer = null!;
         public Vector3 startPosition = -Vector3.right;
         public Vector3 endPosition = Vector3.right;
 

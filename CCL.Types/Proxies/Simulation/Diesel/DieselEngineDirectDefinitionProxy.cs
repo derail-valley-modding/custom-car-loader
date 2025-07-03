@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Diesel
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Diesel/Diesel Engine Direct Definition Proxy")]
     public class DieselEngineDirectDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields,
         IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults,
         IRecommendedDebugPorts

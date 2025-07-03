@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Button Proxy")]
     public class ButtonProxy : ControlSpecProxy
     {
         [Header("Button")]
@@ -14,9 +15,9 @@ namespace CCL.Types.Proxies.Controls
         public bool isTogglingBack;
 
         [Header("Audio")]
-        public AudioClip press;
-        public AudioClip toggleOn;
-        public AudioClip toggleOff;
+        public AudioClip press = null!;
+        public AudioClip toggleOn = null!;
+        public AudioClip toggleOff = null!;
         public bool play2DAudio;
 
         [Header("VR")]

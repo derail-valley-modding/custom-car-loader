@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Power Function Definition Proxy")]
     public class PowerFunctionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized, IBE2Defaults
     {
         public float multiplier = 1f;

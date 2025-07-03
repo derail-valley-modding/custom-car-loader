@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Audio
 {
+    [AddComponentMenu("CCL/Proxies/Audio/Doppler Proxy")]
     public class DopplerProxy : MonoBehaviour
     {
         // All fields appear to be same across instances in audio prefabs

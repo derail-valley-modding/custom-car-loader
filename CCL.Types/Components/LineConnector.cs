@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Line Connector")]
     [RequireComponent(typeof(LineRenderer))]
     public class LineConnector : MonoBehaviour
     {

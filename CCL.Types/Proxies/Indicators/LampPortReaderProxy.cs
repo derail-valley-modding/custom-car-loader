@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Lamp Port Reader Proxy")]
     public class LampPortReaderProxy : MonoBehaviour, IHasPortIdFields
     {
         [FormerlySerializedAs("portId")]

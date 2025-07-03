@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Configurable Function Definition Proxy")]
     public class ConfigurableFunctionDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
         public enum FunctionType

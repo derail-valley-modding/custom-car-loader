@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Customization
 {
+    [AddComponentMenu("CCL/Proxies/Customization/Material Set")]
     [NotProxied]
     public class MaterialSet : MonoBehaviour, ICustomSerialized
     {
@@ -74,6 +75,7 @@ namespace CCL.Types.Proxies.Customization
     }
 
     // To handle default bogies.
+    [AddComponentMenu("CCL/Proxies/Customization/Default Bogie Material Set")]
     [NotProxied]
     public class DefaultBogieMaterialSet : MaterialSet { }
 }

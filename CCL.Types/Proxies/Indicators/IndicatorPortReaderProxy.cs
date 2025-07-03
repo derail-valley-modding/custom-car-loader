@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
+    [AddComponentMenu("CCL/Proxies/Indicators/Indicator Port Reader Proxy")]
     public class IndicatorPortReaderProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(null, null, false)]

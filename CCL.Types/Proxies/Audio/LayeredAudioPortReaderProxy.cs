@@ -4,24 +4,20 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Audio
 {
+    [AddComponentMenu("CCL/Proxies/Audio/Layered Audio Port Reader Proxy")]
     public class LayeredAudioPortReaderProxy : MonoBehaviour, IHasPortIdFields
     {
         public UpdateType updateType;
 
         [PortId]
-        public string portId;
-
+        public string portId = string.Empty;
         public float valueMultiplier = 1f;
-
         public float valueOffset;
-
         public bool absoluteInputValue;
-
         public bool absoluteResultValue;
 
         [Header("Optional Custom Mapping")]
         public bool useValueMapper;
-
         public float inMapMin;
         public float inMapMax;
         public float outMapMin;

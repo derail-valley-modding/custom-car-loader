@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using CCL.Types.Proxies.Ports;
+﻿using CCL.Types.Proxies.Ports;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Resources
 {
+    [AddComponentMenu("CCL/Proxies/Resources/Resource Container Proxy")]
     public class ResourceContainerProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults,
         IBE2Defaults, IS060Defaults, IS282Defaults
     {

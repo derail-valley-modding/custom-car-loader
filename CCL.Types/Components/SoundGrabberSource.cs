@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Grabbers/Sound Grabber (Source)")]
     public class SoundGrabberSource : MonoBehaviour
     {
         public AudioSource Source = null!;

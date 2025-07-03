@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
+    [AddComponentMenu("CCL/Components/Simulation/Ticking Output Definition")]
     public class TickingOutputDefinition : SimComponentDefinitionProxy, IHasFuseIdFields
     {
         [Tooltip("How often the value updates")]

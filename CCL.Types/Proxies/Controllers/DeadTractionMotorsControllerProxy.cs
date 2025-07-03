@@ -4,14 +4,15 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Dead Traction Motors Controller Proxy")]
     public class DeadTractionMotorsControllerProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
     {
         [PortId(null, null, true)]
-        public string overheatFuseOffPortId;
+        public string overheatFuseOffPortId = string.Empty;
         [FuseId]
-        public string tmFuseId;
+        public string tmFuseId = string.Empty;
         [Space]
-        public Transform tmBlowAnchor;
+        public Transform tmBlowAnchor = null!;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {

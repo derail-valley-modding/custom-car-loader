@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Wheel Proxy")]
     public class WheelProxy : ControlSpecProxy
     {
         [Header("RigidBody")]
@@ -31,8 +32,8 @@ namespace CCL.Types.Proxies.Controls
         public float rotatorMaxForceMagnitude = 0.1f;
 
         [Header("Audio")]
-        public AudioClip drag;
-        public AudioClip limitHit;
+        public AudioClip drag = null!;
+        public AudioClip limitHit = null!;
 
         public float hitTolerance = 0.1f;
 

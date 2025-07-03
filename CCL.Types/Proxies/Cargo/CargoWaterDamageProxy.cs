@@ -2,8 +2,6 @@
 
 namespace CCL.Types.Proxies.Cargo
 {
-    public class CargoWaterDamageProxy : MonoBehaviour
-    {
-
-    }
+    [AddComponentMenu("CCL/Proxies/Cargo/Cargo Water Damage Proxy")]
+    public class CargoWaterDamageProxy : MonoBehaviour { }
 }

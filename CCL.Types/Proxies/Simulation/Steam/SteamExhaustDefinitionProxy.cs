@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Steam/Steam Exhaust Definition Proxy")]
     public class SteamExhaustDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
         IRecommendedDebugPorts
     {

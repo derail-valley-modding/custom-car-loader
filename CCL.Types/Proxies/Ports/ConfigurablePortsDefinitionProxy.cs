@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
+    [AddComponentMenu("CCL/Proxies/Ports/Configurable Ports Definition Proxy")]
     public class ConfigurablePortsDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized
     {
         [Serializable, NotProxied]
@@ -14,7 +15,7 @@ namespace CCL.Types.Proxies.Ports
             public PortDefinition Port;
             public float StartingValue;
 
-            public PortStartValue() { }
+            public PortStartValue() : this(new PortDefinition(), 0) { }
 
             public PortStartValue(PortDefinition port, float startingValue)
             {

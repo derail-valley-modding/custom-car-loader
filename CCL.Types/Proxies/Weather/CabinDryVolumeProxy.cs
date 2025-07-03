@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
+    [AddComponentMenu("CCL/Proxies/Weather/Cabin Dry Volume Proxy")]
     [RequireComponent(typeof(WetDecalProxy))]
     public class CabinDryVolumeProxy : MonoBehaviour
     {

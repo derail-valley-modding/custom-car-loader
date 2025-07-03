@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components.Controllers
 {
+    [AddComponentMenu("CCL/Components/Controllers/Coach Lights Controller")]
     public class CoachLightsController : MonoBehaviour
     {
         [Header("Interior Lights")]

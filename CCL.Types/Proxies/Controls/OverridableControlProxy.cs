@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
+    [AddComponentMenu("CCL/Proxies/Controls/Overridable Control Proxy")]
     public class OverridableControlProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
@@ -36,6 +37,7 @@ namespace CCL.Types.Proxies.Controls
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Horn Control Proxy")]
     public class HornControlProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
@@ -58,6 +60,7 @@ namespace CCL.Types.Proxies.Controls
         }
     }
 
+    [AddComponentMenu("CCL/Proxies/Controls/Power Off Control Proxy")]
     public class PowerOffControlProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]

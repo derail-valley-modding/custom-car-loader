@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Copiers/Copy Vanilla Audio System")]
     public class CopyVanillaAudioSystem : MonoBehaviour, IInstancedObject<GameObject>, IHasPortIdFields
     {
         public VanillaAudioSystem AudioSystem;

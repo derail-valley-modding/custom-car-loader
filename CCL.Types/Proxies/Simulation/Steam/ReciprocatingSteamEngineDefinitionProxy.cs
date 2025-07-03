@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation.Steam
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Steam/Reciprocating Steam Engine Definition Proxy")]
     public class ReciprocatingSteamEngineDefinitionProxy : SimComponentDefinitionProxy, IS060Defaults, IS282Defaults,
         IRecommendedDebugPorts, IRecommendedDebugPortReferences
     {

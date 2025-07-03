@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Cargo
 {
+    [AddComponentMenu("CCL/Proxies/Cargo/Cargo Reaction To Damage Proxy")]
     public class CargoReactionToDamageProxy : MonoBehaviour
     {
         [Header("Model - optional")]

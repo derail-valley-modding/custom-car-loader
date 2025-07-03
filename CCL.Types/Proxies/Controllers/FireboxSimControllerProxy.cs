@@ -1,9 +1,11 @@
 ﻿using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Simulation.Steam;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Firebox Sim Controller Proxy")]
     public class FireboxSimControllerProxy : MonoBehaviourWithVehicleDefaults, IHasPortIdFields, IS060Defaults, IS282Defaults
     {
         public float coalConsumptionMultiplier = 1f;

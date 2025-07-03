@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Smoothed Output Definition Proxy")]
     public class SmoothedOutputDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields
     {
         [Header("0 is treated as instant change")]

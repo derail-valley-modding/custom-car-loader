@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Headlights
 {
+    [AddComponentMenu("CCL/Proxies/Headlights/Headlight Proxy")]
     public class HeadlightProxy : MonoBehaviour, ICustomSerialized
     {
         public VolumetricBeamControllerBaseProxy.VolumetricBeamData beamData = new VolumetricBeamControllerBaseProxy.VolumetricBeamData();
