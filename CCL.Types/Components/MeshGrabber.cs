@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Grabbers/Mesh Grabber")]
     public class MeshGrabber : VanillaResourceGrabber<Mesh>
     {
         // Last update B99.5

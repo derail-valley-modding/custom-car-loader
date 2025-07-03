@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components.Materials
 {
+    [AddComponentMenu("CCL/Components/Materials/Generate Sight Glass")]
     public class GenerateSightGlass : GeneratedMaterial<GenerateSightGlass>
     {
         public Vector2 BackgroundTextureTiling = new Vector2(1.0f, 6.0f);

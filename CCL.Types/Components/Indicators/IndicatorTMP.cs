@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Indicators;
 using TMPro;
+using UnityEngine;
 
 namespace CCL.Types.Components.Indicators
 {
+    [AddComponentMenu("CCL/Components/Indicators/Indicator TMP")]
     public class IndicatorTMP : IndicatorProxy
     {
         public enum Mode

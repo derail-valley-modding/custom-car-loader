@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Copiers/Copy Vanilla Particle System")]
     public class CopyVanillaParticleSystem : MonoBehaviour, IInstancedObject<GameObject>
     {
         public VanillaParticleSystem SystemToCopy;

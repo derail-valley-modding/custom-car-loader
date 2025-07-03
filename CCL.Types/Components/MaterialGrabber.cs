@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Grabbers/Material Grabber")]
     public class MaterialGrabber : VanillaResourceGrabber<Material>
     {
         // Last update B99.5

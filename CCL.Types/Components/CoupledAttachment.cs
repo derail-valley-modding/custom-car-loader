@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Coupled Attachment")]
     public class CoupledAttachment : MonoBehaviour
     {
         [Tooltip("The object that will move/rotate")]

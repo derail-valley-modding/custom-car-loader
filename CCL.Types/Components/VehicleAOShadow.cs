@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Vehicle AO Shadow")]
     public class VehicleAOShadow : MonoBehaviour
     {
         private void OnDrawGizmosSelected()

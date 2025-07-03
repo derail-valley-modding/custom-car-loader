@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Car Auto Coupler")]
     public class CarAutoCoupler : MonoBehaviour, IHasPortIdFields
     {
         [Tooltip("The coupler of this car to connect")]

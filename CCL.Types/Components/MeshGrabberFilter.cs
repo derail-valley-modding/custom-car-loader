@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Grabbers/Mesh Grabber (Filter)")]
     public class MeshGrabberFilter : MonoBehaviour
     {
         public MeshFilter Filter = null!;

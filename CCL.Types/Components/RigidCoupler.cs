@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Rigid Coupler")]
     public class RigidCoupler : MonoBehaviour
     {
         public CouplerDirection Direction;

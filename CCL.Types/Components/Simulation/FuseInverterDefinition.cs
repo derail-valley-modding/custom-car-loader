@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
+    [AddComponentMenu("CCL/Components/Simulation/Fuse Inverter Definition")]
     public class FuseInverterDefinition : SimComponentDefinitionProxy, ICustomSerialized
     {
         [Serializable]

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Random Prefab Picker")]
     public class RandomPrefabPicker : MonoBehaviour, ICustomSerialized
     {
         private static System.Random s_random = new System.Random();

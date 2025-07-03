@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Joint Reparenter")]
     [RequireComponent(typeof(Joint))]
     public class JointReparenter : MonoBehaviour
     {

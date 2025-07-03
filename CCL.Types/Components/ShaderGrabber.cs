@@ -1,13 +1,10 @@
 ﻿using CCL.Types.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Grabbers/Shader Grabber")]
     public class ShaderGrabber : MonoBehaviour, ICustomSerialized
     {
         public enum GrabbableShader

@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Manual Oiling Point")]
     public class ManualOilingPoint : MonoBehaviour
     {
         public enum Model

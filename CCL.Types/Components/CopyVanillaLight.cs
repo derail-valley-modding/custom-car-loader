@@ -5,6 +5,7 @@ using static CCL.Types.Proxies.VFX.LightShadowQualityProxy;
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Copiers/Copy Vanilla Light")]
     [RequireComponent(typeof(Light))]
     public class CopyVanillaLight : MonoBehaviour
     {
@@ -12,7 +13,7 @@ namespace CCL.Types.Components
 
         private void Start()
         {
-            Debug.Log($"CopyVanillaLight was not deleted from '{name}'!");
+            Debug.Log($"{nameof(CopyVanillaLight)} was not deleted from '{name}'!");
             Destroy(this);
         }
 

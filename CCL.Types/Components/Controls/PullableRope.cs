@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Controls
 {
+    [AddComponentMenu("CCL/Components/Controls/Pullable Rope")]
     public class PullableRope : ControlSpecProxy
     {
         [Header("Rope")]

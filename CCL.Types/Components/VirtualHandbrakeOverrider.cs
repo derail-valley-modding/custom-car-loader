@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Components
 {
+    [AddComponentMenu("CCL/Components/Virtual Handbrake Overrider")]
     [DisallowMultipleComponent]
     public class VirtualHandbrakeOverrider : MonoBehaviour
     {
