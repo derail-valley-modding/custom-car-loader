@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.Cargo
 {
+    [AddComponentMenu("CCL/Proxies/Cargo/Cargo Bounds Proxy")]
     public class CargoBoundsProxy : MonoBehaviour
     {
         public Vector3 center;
