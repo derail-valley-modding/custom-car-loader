@@ -81,7 +81,7 @@ namespace CCL.Importer.Processing
                         }
                         else
                         {
-                            _cachedResources.Add($"{group.Key} ({newGroup.Key})", group.First());
+                            _cachedResources.Add($"{group.Key} ({newGroup.Key})", newGroup.First());
                         }
                     }
                 }
