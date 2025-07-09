@@ -1,4 +1,5 @@
 ﻿using CCL.Importer.Components;
+using CCL.Importer.Components.Controllers;
 using CCL.Types.Components;
 using DV.CabControls;
 using DV.Damage;
@@ -18,8 +19,8 @@ using LocoSim.Definitions;
 using LocoSim.DVExtensions.Test;
 using LocoSim.Implementations.Wheels;
 using System.ComponentModel.Composition;
-using System.Linq;
 using UnityEngine;
+using VerletRope;
 
 namespace CCL.Importer.Processing
 {
@@ -146,6 +147,7 @@ namespace CCL.Importer.Processing
             AddController<ControlsBlockController, ControlBlocker>(prefab);
 
             AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
+            AddController<RopeInitialiseController, RopeBehaviour>(prefab);
 
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
         }

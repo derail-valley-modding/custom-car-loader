@@ -5,7 +5,7 @@ namespace CCL.Importer
 {
     internal static class ReflectionExtensions
     {
-        private const BindingFlags AllInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        public const BindingFlags AllInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         public static Port GetPort(this PortReference portRef)
         {
