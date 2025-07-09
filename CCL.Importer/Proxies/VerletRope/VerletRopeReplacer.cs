@@ -28,8 +28,6 @@ namespace CCL.Importer.Proxies.VerletRope
             {
                 Object.Destroy(item);
             }
-
-            rope.ropeParams.floorLevel = proxy.ropeParams.floorLevel;
         }
     }
 }
