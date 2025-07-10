@@ -179,6 +179,8 @@ namespace CCL.Importer.Implementations.Controls
             _audio = gameObject.AddComponent<RopeAudio>();
             _audio.Rope = this;
 
+            ValueChanged += OnValueChanged;
+
             _initialised = true;
         }
 
@@ -201,14 +203,23 @@ namespace CCL.Importer.Implementations.Controls
             }
             else
             {
-                _normalised = (Mathf.InverseLerp(Spec.MinLength, Spec.MaxLength, distance));
+                _normalised = Mathf.InverseLerp(Spec.MinLength, Spec.MaxLength, distance);
             }
 
             RequestValueUpdate(_normalised);
 
+            // Prevent it from trying to move away.
+            if (IsGrabbed())
+            {
+                _rb.velocity = _joint.connectedBody.velocity;
+            }
+        }
+
+        private void OnValueChanged(ValueChangedEventArgs args)
+        {
             if (Spec.AudioNotches > 1)
             {
-                var notch = Mathf.RoundToInt(_normalised * (Spec.AudioNotches - 1));
+                var notch = Mathf.RoundToInt(args.newValue * (Spec.AudioNotches - 1));
 
                 if (notch != _notch && notch > 0)
                 {
@@ -216,12 +227,6 @@ namespace CCL.Importer.Implementations.Controls
                 }
 
                 _notch = notch;
-            }
-
-            // Prevent it from trying to move away.
-            if (IsGrabbed())
-            {
-                _rb.velocity = _joint.connectedBody.velocity;
             }
         }
 
@@ -285,11 +290,12 @@ namespace CCL.Importer.Implementations.Controls
             // While it is longer than rest length...
             while (DistanceSqr >= Spec.RestLength * Spec.RestLength)
             {
+                yield return WaitFor.FixedUpdate;
+
                 // Apply a spring force towards the origin.
                 // Also reduce gravity by a bit to help.
                 _rb.AddForce(Direction * -20.0f, ForceMode.Acceleration);
                 _rb.AddForce(Physics.gravity * -0.2f, ForceMode.Acceleration);
-                yield return new WaitForFixedUpdate();
             }
 
             // Once under rest length, reset limit so it doesn't reactivate.
@@ -310,10 +316,10 @@ namespace CCL.Importer.Implementations.Controls
 
             // Set joint limit to max length.
             // Move the rigidbody away from the origin when scrolling is positive.
-            // Reduce velocity a bit to prevent going too fast.
+            // Set the velocity to the connected velocity so it "stops" moving.
             _joint.linearLimit = GetJointLimit(true);
             _rb.MovePosition(transform.position + Direction.normalized * (action.IsPositive() ? ScrollMultiplier : -ScrollMultiplier) * Time.deltaTime);
-            _rb.velocity = Vector3.LerpUnclamped(_rb.velocity, _joint.connectedBody.velocity, 0.5f);
+            _rb.velocity = _joint.connectedBody.velocity;
         }
 
         public bool IsAtEnd(ScrollAction action) => _normalised <= 0 || _normalised >= 1;
