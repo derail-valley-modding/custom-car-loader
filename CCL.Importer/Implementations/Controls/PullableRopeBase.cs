@@ -290,7 +290,7 @@ namespace CCL.Importer.Implementations.Controls
             // While it is longer than rest length...
             while (DistanceSqr >= Spec.RestLength * Spec.RestLength)
             {
-                yield return new WaitForFixedUpdate();
+                yield return WaitFor.FixedUpdate;
 
                 // Apply a spring force towards the origin.
                 // Also reduce gravity by a bit to help.

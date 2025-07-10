@@ -67,27 +67,6 @@ namespace CCL.Importer.Components
             CreateMap<SteamMechanicalStokerDefinition, SteamMechanicalStokerDefinitionInternal>().AutoCacheAndMap();
         }
 
-        private void MapMultipleUnit()
-        {
-            CreateMap<MultipleUnitCombinedThrottleDynamicBrakeMode, MultipleUnitCombinedThrottleDynamicBrakeModeInternal>().AutoCacheAndMap();
-        }
-
-        private void MapControllers()
-        {
-            CreateMap<ResourceSharerController, ResourceSharerControllerInternal>().AutoCacheAndMap();
-            CreateMap<WhistleDistanceController, WhistleDistanceControllerInternal>().AutoCacheAndMap();
-            CreateMap<CoachLightsController, CoachLightsControllerInternal>().AutoCacheAndMap();
-        }
-
-        private void MapControls()
-        {
-            CreateMap<PullableRope, PullableRopeInternal>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
-
-            ControlsInstantiator.TypeMap.Add(typeof(PullableRopeInternal),
-                new() { vr = typeof(PullableRopeVRTK), pc = typeof(PullableRopeNonVR) });
-        }
-
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)
         {
             int length = fake.FusesToInvert.Length;
@@ -99,6 +78,31 @@ namespace CCL.Importer.Components
                 real.SourceFuses[i] = fake.FusesToInvert[i].SourceFuseId;
                 real.InvertedFuses[i] = fake.FusesToInvert[i].InvertedFuseId;
             }
+        }
+
+        private void MapMultipleUnit()
+        {
+            CreateMap<MultipleUnitCombinedThrottleDynamicBrakeMode, MultipleUnitCombinedThrottleDynamicBrakeModeInternal>().AutoCacheAndMap();
+        }
+
+        private void MapControllers()
+        {
+            CreateMap<ResourceSharerController, ResourceSharerControllerInternal>().AutoCacheAndMap();
+            CreateMap<WhistleDistanceController, WhistleDistanceControllerInternal>().AutoCacheAndMap();
+            CreateMap<CoachLightsController, CoachLightsControllerInternal>().AutoCacheAndMap();
+            CreateMap<RopeBehaviourOptimiser, RopeBehaviourOptimiserInternal>().AutoCacheAndMap()
+                .ForMember(d => d.Ropes, o => o.MapFrom(s => Mapper.GetFromCache(s.Ropes)))
+                .ForMember(d => d.DistanceSlowSqr, o => o.MapFrom(s => s.DistanceSlow * s.DistanceSlow))
+                .ForMember(d => d.DistanceDisableSqr, o => o.MapFrom(s => s.DistanceDisable * s.DistanceDisable));
+        }
+
+        private void MapControls()
+        {
+            CreateMap<PullableRope, PullableRopeInternal>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+
+            ControlsInstantiator.TypeMap.Add(typeof(PullableRopeInternal),
+                new() { vr = typeof(PullableRopeVRTK), pc = typeof(PullableRopeNonVR) });
         }
     }
 }

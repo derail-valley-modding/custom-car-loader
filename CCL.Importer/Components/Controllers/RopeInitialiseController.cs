@@ -14,7 +14,7 @@ namespace CCL.Importer.Components.Controllers
                 item.enabled = false;
             }
 
-            yield return new WaitForSeconds(1);
+            yield return WaitFor.Seconds(1);
 
             foreach (var item in entries)
             {

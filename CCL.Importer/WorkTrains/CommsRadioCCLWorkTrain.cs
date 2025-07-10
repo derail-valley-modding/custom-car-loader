@@ -309,7 +309,7 @@ namespace CCL.Importer.WorkTrains
 
         private System.Collections.IEnumerator ReturnToStartRoutine()
         {
-            yield return new WaitForSeconds(ReturnToMainScreenTime);
+            yield return WaitFor.Seconds(ReturnToMainScreenTime);
             SetStartingDisplay();
             SetState(State.EnterMode);
         }
