@@ -179,6 +179,8 @@ namespace CCL.Importer.Implementations.Controls
             _audio = gameObject.AddComponent<RopeAudio>();
             _audio.Rope = this;
 
+            ValueChanged += OnValueChanged;
+
             _initialised = true;
         }
 
@@ -201,14 +203,23 @@ namespace CCL.Importer.Implementations.Controls
             }
             else
             {
-                _normalised = (Mathf.InverseLerp(Spec.MinLength, Spec.MaxLength, distance));
+                _normalised = Mathf.InverseLerp(Spec.MinLength, Spec.MaxLength, distance);
             }
 
             RequestValueUpdate(_normalised);
 
+            // Prevent it from trying to move away.
+            if (IsGrabbed())
+            {
+                _rb.velocity = _joint.connectedBody.velocity;
+            }
+        }
+
+        private void OnValueChanged(ValueChangedEventArgs args)
+        {
             if (Spec.AudioNotches > 1)
             {
-                var notch = Mathf.RoundToInt(_normalised * (Spec.AudioNotches - 1));
+                var notch = Mathf.RoundToInt(args.newValue * (Spec.AudioNotches - 1));
 
                 if (notch != _notch && notch > 0)
                 {
@@ -216,12 +227,6 @@ namespace CCL.Importer.Implementations.Controls
                 }
 
                 _notch = notch;
-            }
-
-            // Prevent it from trying to move away.
-            if (IsGrabbed())
-            {
-                _rb.velocity = _joint.connectedBody.velocity;
             }
         }
 
