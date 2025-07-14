@@ -22,6 +22,8 @@ namespace CCL.Importer.Components
 
             _car.CargoLoaded += Hide;
             _car.CargoUnloaded += Show;
+
+            Hide(_car.LoadedCargo);
         }
 
         private void OnDestroy()
