@@ -1,6 +1,5 @@
 ﻿using CCL.Types;
 using DV.Simulation.Controllers;
-using DV.ThingTypes;
 using LocoSim.Attributes;
 using LocoSim.Definitions;
 using LocoSim.Implementations;
