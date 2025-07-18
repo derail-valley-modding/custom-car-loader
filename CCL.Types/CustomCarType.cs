@@ -59,6 +59,9 @@ namespace CCL.Types
         [Header("Wheels")]
         public float wheelRadius;
         public bool useDefaultWheelRotation = true;
+        public bool UseCustomGauge = false;
+        [Tooltip("Value in millimetres")]
+        public int Gauge = 1435;
 
         [Header("Cargo")]
         public CargoSetup? CargoSetup;

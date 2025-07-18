@@ -12,6 +12,9 @@ namespace CCL.Importer.Types
     {
         public IEnumerable<CCL_CarVariant> Variants => liveries.OfType<CCL_CarVariant>();
 
+        public bool UseCustomGauge = false;
+        public int Gauge = 1435;
+
         public DVTrainCarKind KindSelection;
         public TranslationData NameTranslations = new();
         public CargoSetup? CargoSetup;

@@ -9,6 +9,7 @@ namespace CCL.Creator.Utility
         public const string PASSENGER_JOBS = "PassengerJobs";
         public const string CUSTOM_CARGO = "DVCustomCargo";
         public const string CUSTOM_LICENSES = "DVCustomLicenses";
+        public const string GAUGE = "Gauge";
 
         public static List<string> GetModRequirements(CustomCarPack pack)
         {
@@ -27,6 +28,11 @@ namespace CCL.Creator.Utility
             if (pack.Cars.Any(x => RequiresCustomLicenseMod(x)))
             {
                 requirements.Add(CUSTOM_LICENSES);
+            }
+
+            if (pack.Cars.Any(x => x.UseCustomGauge))
+            {
+                requirements.Add(GAUGE);
             }
 
             foreach (var item in pack.AdditionalDependencies)

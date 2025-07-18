@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
-    [AddComponentMenu("CCL/Proxies/Player Distance Multiple GameObjects Optimizer Proxy")]
+    [AddComponentMenu("CCL/Proxies/Optimizers/Player Distance Multiple GameObjects Optimizer Proxy")]
     public class PlayerDistanceMultipleGameObjectsOptimizerProxy : MonoBehaviour
     {
         public GameObject gameObjectToCheckDistance = null!;

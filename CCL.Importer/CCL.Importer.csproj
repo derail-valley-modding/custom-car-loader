@@ -60,6 +60,7 @@
 		<Reference Include="DV.WeatherSystem" />
 		<Reference Include="CommandTerminal" />
 		<Reference Include="VerletRope" />
+		<Reference Include="VRTK" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
