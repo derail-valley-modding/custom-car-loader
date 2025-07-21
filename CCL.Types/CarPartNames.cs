@@ -167,5 +167,11 @@
         public const string GRABPASS_HACK = "[grabpass hack]";
         public const string INTERIOR_LOD = "[interior LOD]";
         public const string PERSISTENT_INTERIOR = "[persistent interior]";
+
+        public static class Tags
+        {
+            public const string LADDERS = "Ladders";
+            public const string MAIN_TRIGGER_COLLIDER = "MainTriggerCollider";
+        }
     }
 }

@@ -244,7 +244,7 @@ namespace CCL.Creator
                 txC = EditorHelpers.Colors.WARNING;
             }
 
-            Rect FullWidth(Rect rect)
+            static Rect FullWidth(Rect rect)
             {
                 var rect2 = new Rect(rect);
                 rect2.position -= OffsetFull;
