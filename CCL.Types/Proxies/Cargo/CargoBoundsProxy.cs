@@ -10,12 +10,9 @@ namespace CCL.Types.Proxies.Cargo
 
         private void OnDrawGizmos()
         {
-            if (!Application.isPlaying)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.matrix = transform.localToWorldMatrix;
-                Gizmos.DrawCube(center, size);
-            }
+            Gizmos.color = Color.green;
+            Gizmos.matrix = transform.localToWorldMatrix;
+            Gizmos.DrawCube(center, size);
         }
     }
 }

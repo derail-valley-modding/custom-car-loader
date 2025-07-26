@@ -120,12 +120,7 @@ namespace CCL.Importer
         {
             value = Array.Find(array, match);
 
-            if (value == null)
-            {
-                return false;
-            }
-
-            return true;
+            return value != null;
         }
 
         public static float Mapf(float fromMin, float fromMax, float toMin, float toMax, float value)

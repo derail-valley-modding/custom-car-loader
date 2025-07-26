@@ -142,10 +142,10 @@ namespace CCL.Types.Proxies.VFX
         [Serializable]
         public class CylinderSetup
         {
-            public GameObject frontParticlesParent;
-            public AnimationCurve frontActivityCurve;
-            public GameObject rearParticlesParent;
-            public AnimationCurve rearActivityCurve;
+            public GameObject frontParticlesParent = null!;
+            public AnimationCurve frontActivityCurve = null!;
+            public GameObject rearParticlesParent = null!;
+            public AnimationCurve rearActivityCurve = null!;
         }
     }
 }
