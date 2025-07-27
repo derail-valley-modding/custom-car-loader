@@ -6,7 +6,7 @@ namespace CCL.Types.Components
     [AddComponentMenu("CCL/Components/Grabbers/Material Grabber")]
     public class MaterialGrabber : VanillaResourceGrabber<Material>
     {
-        // Last update B99.5
+        // Last update B99.6
         // Removed 1 (empty).
         public static HashSet<string> MaterialNames = new HashSet<string>
         {
@@ -483,6 +483,7 @@ namespace CCL.Types.Components
             "PlasticMatteYellow",
             "PlasticRoughBlack",
             "PlasticRoughGray",
+            "PlasticShinyBlack",
             "PlayIconAlpha",
             "ProximityReader",
             "ProximitySensor",
@@ -572,6 +573,7 @@ namespace CCL.Types.Components
             "UniversalControlStand",
             "VehicleWheels",
             "wallet_brown",
+            "White",
             "WindowDropletMaterialHigh",
             "windows_broken",
             "windows_broken_scalex10",

@@ -7,7 +7,7 @@ namespace CCL.Importer.Components.MultipleUnit
     public class MultipleUnitCombinedThrottleDynamicBrakeModeInternal :
         MultipleUnitExtraControlInternal<MultipleUnitCombinedThrottleDynamicBrakeModeInternal>
     {
-        [PortId()]
+        [PortId]
         public string ModePortId = string.Empty;
 
         private Port _modePort = null!;

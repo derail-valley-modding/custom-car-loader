@@ -27,7 +27,6 @@ namespace CCL.Creator
         private static readonly Color ColourPrefab = new Color32(125, 173, 243, 255);
 
         private static bool DarkMode => EditorGUIUtility.isProSkin;
-        private static bool LightMode => !DarkMode;
         private static Color BackgroundColour => DarkMode ? new Color32(56, 56, 56, 255) : new Color32(194, 194, 194, 255);
         private static Color SelectedBackgroundColour => DarkMode ? new Color32(44, 93, 135, 255) : new Color32(58, 114, 176, 255);
         private static Color HoveredBackgroundColour => DarkMode ? new Color32(68, 68, 68, 255) : new Color32(178, 178, 178, 255);
@@ -224,7 +223,7 @@ namespace CCL.Creator
 
             void TrySetContentToTexture(string name, string tooltip = "")
             {
-                if (TryGetValidTexture(name, out var texture))
+                if (TryGetTexture(name, out var texture))
                 {
                     content = new GUIContent(texture, tooltip);
                 }
@@ -244,7 +243,7 @@ namespace CCL.Creator
                 txC = EditorHelpers.Colors.WARNING;
             }
 
-            Rect FullWidth(Rect rect)
+            static Rect FullWidth(Rect rect)
             {
                 var rect2 = new Rect(rect);
                 rect2.position -= OffsetFull;
@@ -318,11 +317,6 @@ namespace CCL.Creator
 
         private static bool TryGetValidTexture(string name, out Texture2D texture)
         {
-            if (LightMode && TryGetValidTextureLightMode(name, out texture))
-            {
-                return true;
-            }
-
             if (s_icons.TryGetValue(name, out texture!))
             {
                 return texture;
@@ -335,20 +329,13 @@ namespace CCL.Creator
             return false;
         }
 
-        private static bool TryGetValidTextureLightMode(string name, out Texture2D texture)
+        private static bool TryGetTexture(string name, out Texture2D texture)
         {
-            name = $"L_{name}";
+            // Check for a dark mode texture first.
+            if (DarkMode && TryGetValidTexture($"D_{name}", out texture)) return true;
 
-            if (s_icons.TryGetValue(name, out texture!))
-            {
-                return texture;
-            }
-            else
-            {
-                s_icons[name] = LoadTexture(name);
-            }
-
-            return false;
+            // Fallback to light mode.
+            return TryGetValidTexture(name, out texture);
         }
 
         private static bool IsUnderRoot(GameObject go) => go.transform.parent == go.transform.root;

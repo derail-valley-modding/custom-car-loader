@@ -113,24 +113,14 @@ namespace CCL.Importer
         {
             value = list.Find(match);
 
-            if (value == null)
-            {
-                return false;
-            }
-
-            return true;
+            return value != null;
         }
 
         public static bool TryFind<T>(this T[] array, Predicate<T> match, out T value)
         {
             value = Array.Find(array, match);
 
-            if (value == null)
-            {
-                return false;
-            }
-
-            return true;
+            return value != null;
         }
 
         public static float Mapf(float fromMin, float fromMax, float toMin, float toMax, float value)

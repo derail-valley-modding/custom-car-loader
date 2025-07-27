@@ -8,16 +8,13 @@ namespace CCL.Types.Proxies.Weather
     public class CabinDryVolumeProxy : MonoBehaviour
     {
         public WetDecalProxy[] subVolumes = new WetDecalProxy[0];
-
         public float distance;
-
         public float edgeFadeOffInside = 0.05f;
-
         public float edgeFadeOffOutside = 1f;
 
-        [RenderMethodButtons]
+        [RenderMethodButtons, SerializeField]
         [MethodButton(nameof(AutoAssignSubVolumes), "Auto assign children as subvolumes")]
-        public bool buttonRender;
+        private bool _buttons;
 
         private void AutoAssignSubVolumes()
         {

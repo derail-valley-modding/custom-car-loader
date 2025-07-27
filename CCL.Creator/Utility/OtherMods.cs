@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CCL.Types;
+using CCL.Types.Components;
 
 namespace CCL.Creator.Utility
 {
@@ -9,6 +10,7 @@ namespace CCL.Creator.Utility
         public const string PASSENGER_JOBS = "PassengerJobs";
         public const string CUSTOM_CARGO = "DVCustomCargo";
         public const string CUSTOM_LICENSES = "DVCustomLicenses";
+        public const string GAUGE = "Gauge";
 
         public static List<string> GetModRequirements(CustomCarPack pack)
         {
@@ -27,6 +29,11 @@ namespace CCL.Creator.Utility
             if (pack.Cars.Any(x => RequiresCustomLicenseMod(x)))
             {
                 requirements.Add(CUSTOM_LICENSES);
+            }
+
+            if (pack.Cars.Any(x => RequiresGaugeMod(x)))
+            {
+                requirements.Add(GAUGE);
             }
 
             foreach (var item in pack.AdditionalDependencies)
@@ -65,6 +72,11 @@ namespace CCL.Creator.Utility
             }
 
             return false;
+        }
+
+        public static bool RequiresGaugeMod(CustomCarType carType)
+        {
+            return carType.UseCustomGauge /*|| carType.liveries.Any(x => x.prefab != null && x.prefab.TryGetComponent<RegaugeableMeshes>(out _))*/;
         }
     }
 }

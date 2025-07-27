@@ -19,6 +19,7 @@ namespace CCL.Types.Proxies.Weather
         {
             _json = JSONObject.ToJson(_settings);
         }
+
         public void AfterImport()
         {
             if (!string.IsNullOrEmpty(_json))

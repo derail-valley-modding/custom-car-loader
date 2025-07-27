@@ -2,7 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using System.ComponentModel.Composition;
-using CCL.Types.Proxies;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
 
@@ -45,7 +44,7 @@ namespace CCL.Importer.Processing
             // Ensure PitStop detects this as a serviceable car
             foreach (Transform item in collision.GetComponentsInChildren<Transform>())
             {
-                item.tag = "MainTriggerCollider";
+                item.tag = CarPartNames.Tags.MAIN_TRIGGER_COLLIDER;
             }
 
             // find [walkable]

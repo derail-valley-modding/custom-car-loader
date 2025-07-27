@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Controllers
 {
-    [AddComponentMenu("CCL/Components/Controllers/Resourcec Sharer Controller")]
+    [AddComponentMenu("CCL/Components/Controllers/Resource Sharer Controller")]
     public class ResourceSharerController : MonoBehaviour, IHasPortIdFields
     {
         public ResourceContainerType Type = ResourceContainerType.Water;
