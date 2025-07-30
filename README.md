@@ -20,19 +20,26 @@ Below is an example of the necessary structure. When creating your targets file,
 ```xml
 <Project>
 	<PropertyGroup>
+		<DvInstallDir>C:\Program Files (x86)\Steam\steamapps\common\Derail Valley\</DvInstallDir>
+		<UnityInstallDir>C:\Program Files\Unity\2019.4.40f1\Editor</UnityInstallDir>
 		<ReferencePath>
-			P:\SteamLibrary\steamapps\common\Derail Valley\DerailValley_Data\Managed\;
-			P:\SteamLibrary\steamapps\common\Derail Valley\DerailValley_Data\Managed\UnityModManager\;
-			C:\Program Files\Unity\Hub\Editor\2019.4.22f1\Editor\Data\Managed
+			$(DvInstallDir)\DerailValley_Data\Managed\;
+			$(DvInstallDir)\DerailValley_Data\Managed\UnityModManager\;
+			$(DvInstallDir)\Mods\LangHelper\;
+			$(UnityInstallDir)\Data\Managed\
 		</ReferencePath>
 		<AssemblySearchPaths>$(AssemblySearchPaths);$(ReferencePath);</AssemblySearchPaths>
 	</PropertyGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<!-- Copy to game folder -->
+		<Copy SourceFiles="$(TargetPath);../README.md;../LICENSE;../info.json" DestinationFolder="$(DvInstallDir)/Mods/DVCustomCarLoader" />
+	</Target>
 </Project>
 ```
 
 ### Build Output
 
-The output DLLs will need to be copied into `Derail Valley install directory > Mods > DVCustomCarLoader` each time the solution is built. Copy them from `bin\Debug` or `bin\Release` depending on the selected build configuration.
+The output DLLs will automatically be copied into `Derail Valley install directory > Mods > DVCustomCarLoader` each time the solution is built.
 
 ### Proxy Configuration
 
