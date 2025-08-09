@@ -12,7 +12,6 @@ namespace CCL.Importer
 
         // Don't show these in the settings screen.
         public bool InfoDump = false;
-        public bool CacheDump = false;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

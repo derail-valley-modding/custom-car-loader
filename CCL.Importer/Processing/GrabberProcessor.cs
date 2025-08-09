@@ -121,7 +121,7 @@ namespace CCL.Importer.Processing
             // Used for debug.
             public void PrintCache(string separator = ", ")
             {
-                CCLPlugin.Log($"\"{string.Join(separator, Cache.Keys)}\"");
+                CCLPlugin.Log($"{typeof(T)}\n\"{string.Join(separator, Cache.Keys)}\"");
             }
         }
 
@@ -297,9 +297,10 @@ namespace CCL.Importer.Processing
             s_soundCache.BuildCache();
             s_materialCache.BuildCache();
             s_meshCache.BuildCache();
+        }
 
-            if (!CCLPlugin.Settings.CacheDump) return;
-
+        public static void PrintCaches()
+        {
             s_soundCache.PrintCache("\",\n\"");
             s_materialCache.PrintCache("\",\n\"");
             s_meshCache.PrintCache("\",\n\"");
