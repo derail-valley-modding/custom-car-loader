@@ -1,12 +1,18 @@
 ﻿using CCL.Importer.Types;
+using DV.Common;
+using DV.JObjectExtstensions;
+using DV.UserManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace CCL.Importer.WorkTrains
 {
     internal class WorkTrainPurchaseHandler
     {
+        private static Coroutine? _popupCoro;
+
         public static readonly List<CCL_CarVariant> WorkTrainLiveries = new();
         public static Action<CCL_CarVariant>? LiveryUnlocked;
 
@@ -88,6 +94,28 @@ namespace CCL.Importer.WorkTrains
         {
             data.SetStringArray(SaveConstants.UNLOCKED_WORK_TRAINS, s_ids.Distinct().ToArray());
             data.SetStringArray(SaveConstants.SUMMONED_WORK_TRAINS, s_alreadySummoned.ToArray());
+        }
+
+        public static void ShowPopupIfNeeded()
+        {
+            if (_popupCoro != null) return;
+
+            var result = UserManager.Instance.CurrentUser.GameData.GetBool(SaveConstants.WORK_TRAIN_WARNING);
+
+            if (result != null && result.HasValue && result.Value) return;
+
+            _popupCoro = CoroutineManager.Instance.StartCoroutine(PopupCoro());
+        }
+
+        private static System.Collections.IEnumerator PopupCoro()
+        {
+            yield return WaitFor.Seconds(3f);
+
+            while (PopupHelper.CanvasBlockers) yield return null;
+
+            UserManager.Instance.CurrentUser.GameData.SetBool(SaveConstants.WORK_TRAIN_WARNING, true);
+            UserManager.Instance.CurrentUser.Save(UserSavingMode.JustUser);
+            PopupHelper.ShowOk(Localization.WorkTrains.WarningPopup);
         }
     }
 }

@@ -56,6 +56,8 @@
 		<Reference Include="DV.ThingTypes" />
 		<Reference Include="DV.TimeBasedEvents" />
 		<Reference Include="DV.UI" />
+		<Reference Include="DV.UIFramework" />
+		<Reference Include="DV.UserManagement" />
 		<Reference Include="DV.Utils" />
 		<Reference Include="DV.WeatherSystem" />
 		<Reference Include="CommandTerminal" />
