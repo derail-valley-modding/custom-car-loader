@@ -192,7 +192,7 @@ namespace CCL.Creator.Utility
                     if (GUILayout.Button(item, EditorStyles.toggle))
                     {
                         property.stringValue = item;
-                        GUI.FocusControl("");
+                        GUI.FocusControl(string.Empty);
                         break;
                     }
                 }

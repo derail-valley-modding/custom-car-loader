@@ -139,5 +139,13 @@ namespace CCL.Importer
 
             Debug.Log(sb.ToString());
         }
+
+        [RegisterCommand("CCL.ResourceCaches",
+            Help = "Prints CCL's resource caches",
+            MinArgCount = 0, MaxArgCount = 0)]
+        public static void PrintResourceCaches()
+        {
+            Processing.GrabberProcessor.PrintCaches();
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace CCL.Importer
             public static string ExitSelection => LocalizationAPI.L("ccl/comms/work_train_purchase_exit");
             public static string NoneForPurchase => LocalizationAPI.L("ccl/comms/no_work_train_available");
             public static string PurchaseComplete => LocalizationAPI.L("ccl/comms/purchase_complete");
+            public static string WarningPopup => LocalizationAPI.L("ccl/popups/work_train_warning");
 
             public static string SelectedCarDisplay(string car, float price)
             {

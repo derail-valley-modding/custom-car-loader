@@ -2,6 +2,7 @@
 using DV.Simulation.Cars;
 using LocoSim.Definitions;
 using LocoSim.Implementations;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -372,7 +373,7 @@ namespace CCL.Importer.Components
 
             if (_dummyPower != null)
             {
-                _dummyPower.Value = _drivingForce.generatedForce * _drivingForce.train.GetAbsSpeed();
+                _dummyPower.Value = _drivingForce.generatedForce * _drivingForce.train.GetForwardSpeed();
             }
 
             if (_dummyTrainsetForce == null || _dummyTrainsetPower == null) return;
@@ -387,7 +388,7 @@ namespace CCL.Importer.Components
                 if (driving == null) continue;
 
                 force += driving.generatedForce;
-                power += driving.generatedForce * loco.GetAbsSpeed();
+                power += driving.generatedForce * loco.GetForwardSpeed();
             }
 
             _dummyTrainsetForce.Value = force;
@@ -595,6 +596,11 @@ namespace CCL.Importer.Components
                 }
             }
 
+            var angle = ProcessAngle(_car.transform.eulerAngles.x);
+            var grade = Mathf.Tan(angle * Mathf.Deg2Rad);
+            var multiplier = 1f - Mathf.Clamp(5f * Mathf.Clamp01(angle / 90f), 0f, 0.9999999f);
+            GUI.Label(new(GetSideOffset(4), LowerButtonsPosY2, SideOffset * 2, 20f), $"Grade: {grade:P2} (effect: {multiplier:F3})");
+
             // X offset based on button count.
             static float GetSideOffset(int count)
             {
@@ -603,11 +609,17 @@ namespace CCL.Importer.Components
 
             static Color DerailDangerColour(bool canDerail, float chance)
             {
-                return !canDerail ?
-                    // When derail is not possible, show a slight blue.
-                    new Color(0.7f, 0.8f, 1.0f) :
+                return canDerail ?
                     // Start changing colour at 75%, maximum red at 95%.
-                    Color.Lerp(Color.white, Color.red, Extensions.Mapf(0.75f, 0.95f, 0.0f, 1.0f, chance));
+                    Color.Lerp(Color.white, Color.red, Extensions.Mapf(0.75f, 0.95f, 0.0f, 1.0f, chance)) :
+                    // When derail is not possible, show a slight blue.
+                    new Color(0.7f, 0.8f, 1.0f);
+            }
+
+            static float ProcessAngle(float angle)
+            {
+                angle %= 360.0f;
+                return angle > 180.0f ? Mathf.Abs(angle - 360.0f) : angle;
             }
         }
 

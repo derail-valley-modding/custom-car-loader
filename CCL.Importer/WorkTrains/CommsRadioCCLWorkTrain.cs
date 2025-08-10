@@ -3,9 +3,7 @@ using CCL.Types;
 using DV;
 using DV.InventorySystem;
 using DV.Localization;
-using DV.ServicePenalty.UI;
 using System.Collections.Generic;
-using UnityEditor.Localization.Editor;
 using UnityEngine;
 
 namespace CCL.Importer.WorkTrains
@@ -146,6 +144,7 @@ namespace CCL.Importer.WorkTrains
                         SetDisplayToCompletePurchase();
                         Play2DSound(MoneySound);
                         Play2DSound(QuickAccess.Audio.WinSound);
+                        WorkTrainPurchaseHandler.ShowPopupIfNeeded();
                     }
                     SetState(State.ReturnToEnter);
                     return;
