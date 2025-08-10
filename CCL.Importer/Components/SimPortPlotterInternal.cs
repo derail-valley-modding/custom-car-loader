@@ -599,8 +599,7 @@ namespace CCL.Importer.Components
             var angle = ProcessAngle(_car.transform.eulerAngles.x);
             var grade = Mathf.Tan(angle * Mathf.Deg2Rad);
             var multiplier = 1f - Mathf.Clamp(5f * Mathf.Clamp01(angle / 90f), 0f, 0.9999999f);
-            GUI.Label(new(GetSideOffset(4), LowerButtonsPosY2, SideOffset, 20f), $"Grade: {grade:P2}");
-            GUI.Label(new(GetSideOffset(5), LowerButtonsPosY2, SideOffset, 20f), $"Grade mult: {multiplier:F3}");
+            GUI.Label(new(GetSideOffset(4), LowerButtonsPosY2, SideOffset * 2, 20f), $"Grade: {grade:P2} (effect: {multiplier:F3})");
 
             // X offset based on button count.
             static float GetSideOffset(int count)
