@@ -3,7 +3,7 @@
 namespace CCL.Types.Proxies
 {
     [AddComponentMenu("CCL/Proxies/Fire Proxy")]
-    public class FireProxy : MonoBehaviour, ICanReplaceInstanced
+    public class FireProxy : MonoBehaviourWithVehicleDefaults, ICanReplaceInstanced, IS060Defaults, IS282Defaults
     {
         public GameObject fireObj = null!;
         public GameObject sparksObj = null!;
@@ -14,6 +14,11 @@ namespace CCL.Types.Proxies
         public Light fireLight = null!;
         public float minFireIntensity;
         public float maxFireIntensity = 1f;
+        public Light fillLight = null!;
+        public float fillLightMultiplier = 0.5f;
+        public Light bounceLight = null!;
+        public float bounceLightMultiplier = 0.25f;
+        public AnimationCurve fireboxDoorCurve = AnimationCurve.Linear(0f, 0.05f, 1f, 1f);
 
         public void DoFieldReplacing()
         {
@@ -26,6 +31,30 @@ namespace CCL.Types.Proxies
             {
                 sparksObj = go.InstancedObject!;
             }
+        }
+
+        public void ApplyS060Defaults()
+        {
+            fireboxDoorCurve = new AnimationCurve
+            {
+                keys = new Keyframe[]
+                {
+                    new Keyframe(0.0f, 0.05f, 2f, 2f, 0, 0),
+                    new Keyframe(1.0f, 1.0f, 0f, 0f, 0, 0)
+                }
+            };
+        }
+
+        public void ApplyS282Defaults()
+        {
+            fireboxDoorCurve = new AnimationCurve
+            {
+                keys = new Keyframe[]
+                {
+                    new Keyframe(0.0f, 0.05f, 2f, 2f, 0, 0),
+                    new Keyframe(1.0f, 1.0f, 0f, 0f, 0, 0)
+                }
+            };
         }
     }
 }

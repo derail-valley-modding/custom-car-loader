@@ -12,6 +12,10 @@ namespace CCL.Types
         public string PackName = string.Empty;
         public string Author = string.Empty;
         public string Version = "1.0.0";
+        [Tooltip("Optional")]
+        public string HomePage = string.Empty;
+        [Tooltip("Optional")]
+        public string Repository = string.Empty;
 
         [Header("Custom Cars")]
         public CustomCarType[] Cars = new CustomCarType[0];
