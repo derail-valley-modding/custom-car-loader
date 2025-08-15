@@ -247,15 +247,6 @@ namespace CCL.Creator.Wizards
                 { "LoadAfter", JSONObject.CreateFromObject(optional) },
             };
 
-            if (!string.IsNullOrEmpty(pack.HomePage))
-            {
-            }
-
-            if (!string.IsNullOrEmpty(pack.Repository))
-            {
-                jsonFile.Add("Repository", pack.Repository);
-            }
-
             using StreamWriter stream = new StreamWriter(outFilePath, false);
             stream.Write(jsonFile.ToString(true));
         }
