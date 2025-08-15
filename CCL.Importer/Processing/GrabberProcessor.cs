@@ -61,6 +61,9 @@ namespace CCL.Importer.Processing
                 
                 foreach (var group in groups)
                 {
+                    // Don't add null values to the cache.
+                    if (group.Key == null) continue;
+
                     // If the group has only 1 member or there's no further discriminator,
                     // add the first item to the cache.
                     if (group.Count() == 1 || _discriminator == null)
@@ -306,7 +309,16 @@ namespace CCL.Importer.Processing
             s_meshCache.PrintCache("\",\n\"");
         }
 
-        private static string MaterialDiscriminator(Material mat) => mat.HasProperty("_MainTex") ? mat.mainTexture.name : string.Empty;
+        private static string MaterialDiscriminator(Material mat)
+        {
+            if (mat.HasProperty("_MainTex"))
+            {
+                var tex = mat.mainTexture;
+                return tex != null ? mat.mainTexture.name : string.Empty;
+            }
+
+            return string.Empty;
+        }
 
         private static string MeshDiscriminator(Mesh mesh) => mesh.vertexCount.ToString();
     }

@@ -47,7 +47,7 @@ namespace CCL.Types
         public List<CustomCarVariant> liveries = new List<CustomCarVariant>();
 
         [Header("Physics")]
-        public float mass;
+        public float mass = 25000;
         public float bogieSuspensionMultiplier = 1;
         public float rollingResistanceCoefficient = ROLLING_RESISTANCE_COEFFICIENT;
         public float wheelSlidingFrictionCoefficient = WHEELSLIDE_FRICTION_COEFFICIENT;
@@ -57,7 +57,7 @@ namespace CCL.Types
         public DamageSetup damage;
 
         [Header("Wheels")]
-        public float wheelRadius;
+        public float wheelRadius = 0.459f;
         public bool useDefaultWheelRotation = true;
         public bool UseCustomGauge = false;
         [Tooltip("Value in millimetres")]

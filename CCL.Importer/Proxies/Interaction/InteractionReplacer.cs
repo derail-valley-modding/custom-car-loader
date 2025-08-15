@@ -11,6 +11,8 @@ namespace CCL.Importer.Proxies.Interaction
             CreateMap<NonPhysicsCoalTargetProxy, NonPhysicsCoalTarget>().AutoCacheAndMap();
 
             CreateMap<ItemUseTargetProxy, ItemUseTarget>().AutoCacheAndMap();
+            CreateMap<ItemUseRedirectProxy, ItemUseRedirect>().AutoCacheAndMap()
+                .ForMember(d => d.target, o => o.MapFrom(s => Mapper.GetFromCache(s.target)));
         }
     }
 }

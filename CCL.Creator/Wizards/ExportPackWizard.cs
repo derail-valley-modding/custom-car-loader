@@ -240,6 +240,8 @@ namespace CCL.Creator.Wizards
                 { "DisplayName", pack.PackName },
                 { "Version", pack.Version },
                 { "Author", pack.Author },
+                { "HomePage", pack.HomePage },
+                { "Repository", pack.Repository },
                 { "ManagerVersion", "0.27.3" },
                 { "Requirements", JSONObject.CreateFromObject(requirements) },
                 { "LoadAfter", JSONObject.CreateFromObject(optional) },

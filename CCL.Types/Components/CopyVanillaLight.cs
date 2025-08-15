@@ -151,10 +151,10 @@ namespace CCL.Types.Components
                     break;
 
                 case VanillaLight.S060Fire:
-                case VanillaLight.S282Fire:
-                    light.type = LightType.Point;
-                    light.range = 3.0f;
+                    light.type = LightType.Spot;
+                    light.range = 2.32f;
                     light.color = new Color32(255, 124, 50, 255);
+                    light.spotAngle = 61.5f;
 
                     // Mode missing...
                     light.intensity = 0.0f;
@@ -164,11 +164,64 @@ namespace CCL.Types.Components
                     light.shadowResolution = LightShadowResolution.FromQualitySettings;
                     light.shadowBias = 0.05f;
                     light.shadowNormalBias = 0.4f;
+                    light.shadowNearPlane = 0.3f;
+
+                    light.cullingMask = ~0;
+
+                    AddItem(light);
+                    break;
+
+                case VanillaLight.S282Fire:
+                    light.type = LightType.Spot;
+                    light.range = 3.0f;
+                    light.color = new Color32(255, 124, 50, 255);
+                    light.spotAngle = 43.0f;
+
+                    // Mode missing...
+                    light.intensity = 0.0f;
+
+                    light.shadows = LightShadows.Soft;
+                    light.shadowStrength = 1.0f;
+                    light.shadowResolution = LightShadowResolution.FromQualitySettings;
+                    light.shadowBias = 0.05f;
+                    light.shadowNormalBias = 0.4f;
                     light.shadowNearPlane = 0.1f;
 
                     light.cullingMask = ~0;
 
-                    AddQuality(light, LightShadowQualitySettings.DefaultConfig);
+                    AddItem(light);
+                    break;
+
+                case VanillaLight.S060FireFill:
+                case VanillaLight.S282FireFill:
+                    light.type = LightType.Point;
+                    light.range = source == VanillaLight.S060FireFill ? 0.76f : 0.85f;
+                    light.color = new Color32(255, 124, 50, 255);
+
+                    // Mode missing...
+                    light.intensity = 0.0f;
+
+                    light.shadows = LightShadows.None;
+
+                    light.cullingMask = ~0;
+
+                    RemoveQuality(light);
+                    RemoveItem(light);
+                    break;
+
+                case VanillaLight.S060FireBounce:
+                case VanillaLight.S282FireBounce:
+                    light.type = LightType.Spot;
+                    light.range = 3.5f;
+                    light.color = new Color32(255, 124, 50, 255);
+                    light.spotAngle = 140.0f;
+
+                    // Mode missing...
+                    light.intensity = 0.5f;
+
+                    light.shadows = LightShadows.None;
+
+                    light.cullingMask = ~0;
                     break;
 
                 case VanillaLight.S282GearLight:
@@ -200,6 +253,8 @@ namespace CCL.Types.Components
 
         private static void AddQuality(Light light, LightShadowQualitySettings[] config)
         {
+            RemoveItem(light);
+
             if (!light.TryGetComponent(out LightShadowQualityProxy quality))
             {
                 quality = light.gameObject.AddComponent<LightShadowQualityProxy>();
@@ -213,6 +268,26 @@ namespace CCL.Types.Components
             if (light.TryGetComponent(out LightShadowQualityProxy quality))
             {
                 DestroyImmediate(quality);
+            }
+        }
+
+        private static void AddItem(Light light)
+        {
+            RemoveQuality(light);
+
+            if (!light.TryGetComponent(out ItemLightProxy item))
+            {
+                item = light.gameObject.AddComponent<ItemLightProxy>();
+            }
+
+            item.light = light;
+        }
+
+        private static void RemoveItem(Light light)
+        {
+            if (light.TryGetComponent(out ItemLightProxy item))
+            {
+                DestroyImmediate(item);
             }
         }
     }
@@ -230,7 +305,11 @@ namespace CCL.Types.Components
         S060Cablights,
 
         S060Fire = 200,
+        S060FireFill,
+        S060FireBounce,
         S282Fire,
+        S282FireFill,
+        S282FireBounce,
 
         S282GearLight = 250
     }
