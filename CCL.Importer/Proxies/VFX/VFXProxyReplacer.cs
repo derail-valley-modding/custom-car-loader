@@ -41,6 +41,7 @@ namespace CCL.Importer.Proxies.VFX
 
             CreateMap<LightShadowQualityProxy, LightShadowQuality>().AutoCacheAndMap();
             CreateMap<LightShadowQualityProxy.LightShadowQualitySettings, LightShadowQuality.LightShadowQualitySettings>();
+            CreateMap<ItemLightProxy, ItemLight>().AutoCacheAndMap();
 
             CreateMap<WindowDropletsGrabPassProxy, WindowDropletsGrabPass>().AutoCacheAndMap()
                 .ForMember(d => d.trigger, o => o.MapFrom(s => Mapper.GetFromCache(s.trigger)))

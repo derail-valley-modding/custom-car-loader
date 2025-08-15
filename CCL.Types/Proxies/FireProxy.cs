@@ -39,7 +39,7 @@ namespace CCL.Types.Proxies
             {
                 keys = new Keyframe[]
                 {
-                    new Keyframe(0.0f, 0.05f, 2f, 2f, 0, 0),
+                    new Keyframe(0.0f, 0.0f, 2f, 2f, 0, 0),
                     new Keyframe(1.0f, 1.0f, 0f, 0f, 0, 0)
                 }
             };
@@ -53,7 +53,7 @@ namespace CCL.Types.Proxies
                 {
                     new Keyframe(0.0f, 0.05f, 2f, 2f, 0, 0),
                     new Keyframe(1.0f, 1.0f, 0f, 0f, 0, 0)
-                }
+                },
             };
         }
     }
