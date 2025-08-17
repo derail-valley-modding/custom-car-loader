@@ -72,7 +72,7 @@ namespace CCL.Importer
             if (loaded > 0)
             {
                 CCLPlugin.LogVerbose($"Loaded {loaded} cars from {mod.Path}");
-                DV.Globals.G.Types.RecalculateCaches();
+                Globals.G.Types.RecalculateCaches();
             }
         }
 

@@ -34,6 +34,9 @@ namespace CCL.Importer
                 {
                     livery.CatalogPage.AfterImport();
                     CatalogGenerator.PageInfos.Add(livery, livery.CatalogPage);
+
+                    CCLPlugin.Translations.AddTranslations(livery.CatalogPageNameTranslationKey, livery.CatalogPage.PageName);
+                    CCLPlugin.Translations.AddTranslations(livery.CatalogNicknameTranslationKey, livery.CatalogPage.Nickname);
                 }
             }
 

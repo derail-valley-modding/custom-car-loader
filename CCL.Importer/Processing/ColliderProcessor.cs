@@ -4,6 +4,7 @@ using UnityEngine;
 using System.ComponentModel.Composition;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
+using CCL.Types.Components;
 
 namespace CCL.Importer.Processing
 {
@@ -27,7 +28,7 @@ namespace CCL.Importer.Processing
                 // collider should be initialized in prefab, but make sure
                 CCLPlugin.Warning("Adding collision root to car, should have been part of prefab!");
 
-                GameObject colliders = new GameObject(CarPartNames.Colliders.ROOT);
+                var colliders = new GameObject(CarPartNames.Colliders.ROOT);
                 colliderRoot = colliders.transform;
                 colliderRoot.parent = newFab.transform;
             }
@@ -41,10 +42,16 @@ namespace CCL.Importer.Processing
                 collision.parent = colliderRoot.transform;
             }
 
-            // Ensure PitStop detects this as a serviceable car
-            foreach (Transform item in collision.GetComponentsInChildren<Transform>())
+            // Ensure PitStop detects this as a serviceable for anything not a default car.
+            if (context.Car.parentType.kind.id != "Car")
             {
-                item.tag = CarPartNames.Tags.MAIN_TRIGGER_COLLIDER;
+                if (collision.GetComponentsInChildren<ServiceCollider>().Length == 0)
+                {
+                    foreach (Transform item in collision.GetComponentsInChildren<Transform>())
+                    {
+                        item.tag = CarPartNames.Tags.MAIN_TRIGGER_COLLIDER;
+                    }
+                }
             }
 
             // find [walkable]
@@ -89,7 +96,7 @@ namespace CCL.Importer.Processing
             {
                 CCLPlugin.LogVerbose("Adding bogie collider root");
 
-                GameObject bogiesRoot = new GameObject(CarPartNames.Colliders.BOGIES);
+                var bogiesRoot = new GameObject(CarPartNames.Colliders.BOGIES);
                 NewBogieColliderRoot = bogiesRoot.transform;
                 NewBogieColliderRoot.parent = colliderRoot.transform;
             }

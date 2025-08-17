@@ -20,8 +20,6 @@ namespace CCL.Creator.Inspector
                 case VanillaParticleSystem.SteamerEmberSparks:
                     Gizmos.DrawLine(Vector3.zero, Vector3.up);
                     break;
-                    Gizmos.DrawLine(Vector3.zero, Vector3.down);
-                    break;
                 default:
                     Gizmos.DrawLine(Vector3.zero, Vector3.forward);
                     break;

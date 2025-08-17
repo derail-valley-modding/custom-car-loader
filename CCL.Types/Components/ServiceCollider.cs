@@ -8,10 +8,7 @@ namespace CCL.Types.Components
     {
         private void Start()
         {
-            var col = GetComponent<Collider>();
-            col.isTrigger = true;
             tag = CarPartNames.Tags.MAIN_TRIGGER_COLLIDER;
-
             Destroy(this);
         }
     }

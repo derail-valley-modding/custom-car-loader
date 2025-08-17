@@ -8,9 +8,6 @@ namespace CCL.Types.Catalog
     [CreateAssetMenu(menuName = "CCL/Vehicle Catalog Page", order = MenuOrdering.Catalog)]
     public class CatalogPage : ScriptableObject, ICustomSerialized
     {
-        public const string PageNameKeyPrefix = "ccl/vc/pagename/";
-        public const string NicknameKeyPrefix = "ccl/vc/nickname/";
-
         [Header("Header")]
         public Color HeaderColour = Color.yellow;
         public TranslationData PageName = new TranslationData();
@@ -42,6 +39,10 @@ namespace CCL.Types.Catalog
         public HaulingScore Hauling = new HaulingScore();
         public ShuntingScore Shunting = new ShuntingScore();
 
+        [SerializeField, HideInInspector]
+        private string? _pageNameJson;
+        [SerializeField, HideInInspector]
+        private string? _nicknameJson;
         [SerializeField, HideInInspector]
         private string? _loadJson;
         [SerializeField, HideInInspector]
@@ -83,6 +84,9 @@ namespace CCL.Types.Catalog
 
         public void OnValidate()
         {
+            _pageNameJson = JSONObject.ToJson(PageName);
+            _nicknameJson = JSONObject.ToJson(Nickname);
+
             _loadJson = JSONObject.ToJson(LoadFlat);
             _loadInclineJson = JSONObject.ToJson(LoadIncline);
             _loadInclineWetJson = JSONObject.ToJson(LoadInclineWet);
@@ -99,6 +103,9 @@ namespace CCL.Types.Catalog
 
         public void AfterImport()
         {
+            PageName = JSONObject.FromJson(_pageNameJson, () => new TranslationData());
+            Nickname = JSONObject.FromJson(_nicknameJson, () => new TranslationData());
+
             LoadFlat = JSONObject.FromJson(_loadJson, () => new LoadRating());
             LoadIncline = JSONObject.FromJson(_loadInclineJson, () => new LoadRating());
             LoadInclineWet = JSONObject.FromJson(_loadInclineWetJson, () => new LoadRating());

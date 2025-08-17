@@ -1,7 +1,6 @@
 ﻿using CCL.Importer.Types;
 using DV.Common;
 using DV.JObjectExtstensions;
-using DV.ThingTypes;
 using DV.UserManagement;
 using System;
 using System.Collections.Generic;

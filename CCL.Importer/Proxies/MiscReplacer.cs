@@ -114,7 +114,7 @@ namespace CCL.Importer.Proxies
 
         private void InvalidTeleportLocationReactionAfter(InvalidTeleportLocationReactionProxy src, InvalidTeleportLocationReaction dest)
         {
-            dest.gameObject.tag = "NO_TELEPORT";
+            dest.gameObject.tag = CarPartNames.Tags.NO_TELEPORT;
             dest.gameObject.SetLayer(DVLayer.Teleport_Destination);
 
             var instance = Object.Instantiate(dest, dest.transform.parent);
