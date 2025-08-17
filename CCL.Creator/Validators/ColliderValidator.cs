@@ -41,7 +41,7 @@ namespace CCL.Creator.Validators
                 !collisionComp.Any(x => x.GetComponent<ServiceCollider>()))
             {
                 result.Warning($"{livery.id} - No collider with the {nameof(ServiceCollider)} component found, " +
-                    $"all colliders will be set to serviceable", collidersRoot);
+                    $"vehicle cannot be serviced!", collidersRoot);
             }
             if (collision != null && collision.transform.localPosition != Vector3.zero)
             {
