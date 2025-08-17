@@ -25,8 +25,6 @@ namespace CCL.Importer
         internal static readonly Dictionary<string, int> CurrentMapping = new();
         internal static readonly HashSet<TrainCarType> AddedValues = new();
 
-        internal static Version? ProcessingVersion;
-
         private static int s_tempId = IdMappingStart;
 
         public static void ScanLoadedMods()
@@ -97,8 +95,6 @@ namespace CCL.Importer
                 return 0;
             }
 
-            ProcessingVersion = version;
-
             pack.AfterImport();
 
             // Generate procedural materials.
@@ -135,8 +131,6 @@ namespace CCL.Importer
             }
 
             InjectTranslations(pack);
-
-            ProcessingVersion = null;
 
             return loaded;
         }

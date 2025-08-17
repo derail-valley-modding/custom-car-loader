@@ -42,21 +42,6 @@ namespace CCL.Importer.Processing
                 collision.parent = colliderRoot.transform;
             }
 
-            // FOR OLDER VERSIONS ONLY
-            // REMOVE ONCE MINIMUM VERSION >= 3.0.3!!!
-            // Ensure PitStop detects this as a serviceable for anything not a default car.
-            if (CarManager.ProcessingVersion != null && CarManager.ProcessingVersion < new System.Version(3, 0, 0) &&
-                context.Car.parentType.kind.id != "Car")
-            {
-                if (collision.GetComponentsInChildren<ServiceCollider>().Length == 0)
-                {
-                    foreach (Transform item in collision.GetComponentsInChildren<Transform>())
-                    {
-                        item.tag = CarPartNames.Tags.MAIN_TRIGGER_COLLIDER;
-                    }
-                }
-            }
-
             // find [walkable]
             // copy walkable to items if items doesn't exist
             Transform walkable = colliderRoot.Find(CarPartNames.Colliders.WALKABLE);
