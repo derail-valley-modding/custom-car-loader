@@ -75,18 +75,19 @@ namespace CCL.Importer
         private static void ProcessHeader(Transform page, CCL_CarVariant livery, CatalogPage layout)
         {
             Paths.GetImage(page, Paths.PageColor).color = layout.HeaderColour;
-            Paths.GetText(page, Paths.PageName).SetTextAndUpdate(layout.PageName);
+            Paths.GetText(page, Paths.PageName).gameObject.AddComponent<Localize>().SetKeyAndUpdate($"{CatalogPage.PageNameKeyPrefix}{livery.id}");
             Paths.GetText(page, Paths.Units).SetTextAndUpdate(layout.ConsistUnits);
 
-            if (string.IsNullOrEmpty(layout.Nickname))
+            var nick = Paths.GetLocalize(page, Paths.Nickname);
+
+            if (layout.HasNickname)
             {
-                page.Find(Paths.Nickname).gameObject.SetActive(false);
+                nick.SetKeyAndUpdate($"{CatalogPage.NicknameKeyPrefix}{livery.id}");
+                nick.gameObject.SetActive(true);
             }
             else
             {
-                var nick = Paths.GetText(page, Paths.Nickname);
-                nick.gameObject.SetActive(true);
-                nick.SetTextAndUpdate(layout.Nickname);
+                nick.gameObject.SetActive(false);
             }
 
             Paths.GetImage(page, Paths.Icon).sprite = livery.icon;

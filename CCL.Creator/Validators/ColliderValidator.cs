@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using CCL.Types.Components;
 using CCL.Types.Proxies;
 using System;
 using System.Linq;
@@ -9,8 +10,6 @@ namespace CCL.Creator.Validators
     [RequiresStep(typeof(LiverySettingsValidator))]
     internal class ColliderValidator : LiveryValidator
     {
-        private const string ServiceTag = "MainTriggerCollider";
-
         public override string TestName => "Colliders";
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
@@ -38,10 +37,10 @@ namespace CCL.Creator.Validators
             }
             // For anything that isn't a generic car, check if it can be serviced.
             if (collisionComp.Length > 0 && livery.parentType != null &&
-                livery.parentType.KindSelection != DVTrainCarKind.Car && 
-                !collisionComp.Any(x => x.tag == ServiceTag))
+                livery.parentType.KindSelection != DVTrainCarKind.Car &&
+                !collisionComp.Any(x => x.GetComponent<ServiceCollider>()))
             {
-                result.Warning($"{livery.id} - No collider in {CarPartNames.Colliders.COLLISION} with the tag \"{ServiceTag}\" found, " +
+                result.Warning($"{livery.id} - No collider with the {nameof(ServiceCollider)} component found, " +
                     $"it won't be possible to service this vehicle", collidersRoot);
             }
             if (collision != null && collision.transform.localPosition != Vector3.zero)

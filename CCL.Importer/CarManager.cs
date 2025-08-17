@@ -159,7 +159,7 @@ namespace CCL.Importer
             try
             {
                 // Ensure no duplicate IDs ever load, entire game dies otherwise.
-                if (DV.Globals.G.Types.carTypes.Any(x => x.id == car.id))
+                if (Globals.G.Types.carTypes.Any(x => x.id == car.id))
                 {
                     CCLPlugin.Error($"Failed to load car {car.id}, car ID already ingame");
                     return false;
@@ -167,7 +167,7 @@ namespace CCL.Importer
 
                 foreach (var livery in car.liveries)
                 {
-                    if (DV.Globals.G.Types.Liveries.Any(x => x.id == livery.id))
+                    if (Globals.G.Types.Liveries.Any(x => x.id == livery.id))
                     {
                         CCLPlugin.Error($"Failed to load car {car.id}, livery ID '{livery.id}' already ingame");
                         return false;
@@ -260,7 +260,7 @@ namespace CCL.Importer
         {
             if (!string.IsNullOrEmpty(car.GeneralLicense))
             {
-                if (DV.Globals.G.Types.TryGetGeneralLicense(car.GeneralLicense, out var license))
+                if (Globals.G.Types.TryGetGeneralLicense(car.GeneralLicense, out var license))
                 {
                     foreach (var item in carType.liveries)
                     {
@@ -277,7 +277,7 @@ namespace CCL.Importer
 
             foreach (var id in car.JobLicenses)
             {
-                if (DV.Globals.G.Types.TryGetJobLicense(id, out var license))
+                if (Globals.G.Types.TryGetJobLicense(id, out var license))
                 {
                     jobLicenses.Add(license);
                 }

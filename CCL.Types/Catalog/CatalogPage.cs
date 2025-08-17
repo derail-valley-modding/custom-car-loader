@@ -1,4 +1,5 @@
 ﻿using CCL.Types.Json;
+using DVLangHelper.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,12 +8,16 @@ namespace CCL.Types.Catalog
     [CreateAssetMenu(menuName = "CCL/Vehicle Catalog Page", order = MenuOrdering.Catalog)]
     public class CatalogPage : ScriptableObject, ICustomSerialized
     {
+        public const string PageNameKeyPrefix = "ccl/vc/pagename/";
+        public const string NicknameKeyPrefix = "ccl/vc/nickname/";
+
         [Header("Header")]
         public Color HeaderColour = Color.yellow;
-        public string PageName = string.Empty;
+        public TranslationData PageName = new TranslationData();
         public string ConsistUnits = "1/1";
         [Tooltip("Optional")]
-        public string Nickname = string.Empty;
+        public bool HasNickname = false;
+        public TranslationData Nickname = new TranslationData();
         public string ProductionYears = "1900-1999";
 
         [Header("Vehicle Type")]
