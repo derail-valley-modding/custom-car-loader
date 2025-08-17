@@ -5,24 +5,24 @@ using UnityEngine;
 
 namespace CCL.Creator.Inspector
 {
-    [CustomEditor(typeof(MeshGrabberFilter))]
-    internal class MeshGrabberFilterEditor : Editor
+    [CustomEditor(typeof(MeshGrabberCollider))]
+    internal class MeshGrabberColliderEditor : Editor
     {
-        private MeshGrabberFilter _grabber = null!;
-        private SerializedProperty _filter = null!;
+        private MeshGrabberCollider _grabber = null!;
+        private SerializedProperty _collider = null!;
         private SerializedProperty _name = null!;
 
         private void OnEnable()
         {
-            _filter = serializedObject.FindProperty(nameof(MeshGrabberFilter.Filter));
-            _name = serializedObject.FindProperty(nameof(MeshGrabberFilter.ReplacementName));
+            _collider = serializedObject.FindProperty(nameof(MeshGrabberCollider.Collider));
+            _name = serializedObject.FindProperty(nameof(MeshGrabberCollider.ReplacementName));
         }
 
         public override void OnInspectorGUI()
         {
-            _grabber = (MeshGrabberFilter)target;
+            _grabber = (MeshGrabberCollider)target;
 
-            EditorGUILayout.PropertyField(_filter);
+            EditorGUILayout.PropertyField(_collider);
             EditorHelpers.StringWithSearchField(_name, MeshGrabber.MeshNames, EditorGUIUtility.singleLineHeight * 4, 40);
 
             serializedObject.ApplyModifiedProperties();
@@ -33,7 +33,7 @@ namespace CCL.Creator.Inspector
                 EditorGUILayout.HelpBox($"Name '{_name.stringValue}' does not exist!", MessageType.Error);
             }
 
-            if (GUILayout.Button("Pick Filter In Object"))
+            if (GUILayout.Button("Pick Collider In Object"))
             {
                 _grabber.PickSame();
                 AssetHelper.SaveAsset(_grabber);
@@ -46,14 +46,14 @@ namespace CCL.Creator.Inspector
                 AssetHelper.SaveAsset(_grabber);
             }
 
-            // Remove the mesh in the filter if it will be replaced anyways.
-            using (new EditorGUI.DisabledScope(!_grabber.Filter))
+            // Remove the mesh in the collider if it will be replaced anyways.
+            using (new EditorGUI.DisabledScope(!_grabber.Collider))
             {
-                if (GUILayout.Button("Set Mesh In Filter To None"))
+                if (GUILayout.Button("Set Mesh In Collider To None"))
                 {
-                    if (_grabber.Filter != null)
+                    if (_grabber.Collider != null)
                     {
-                        _grabber.Filter.mesh = null;
+                        _grabber.Collider.sharedMesh = null;
                         AssetHelper.SaveAsset(_grabber);
                     }
                 }

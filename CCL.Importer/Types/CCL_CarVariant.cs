@@ -10,7 +10,7 @@ namespace CCL.Importer.Types
 {
     public class CCL_CarVariant : TrainCarLivery
     {
-        public TranslationData NameTranslations = new TranslationData();
+        public TranslationData NameTranslations = new();
 
         public BogieType FrontBogie;
         public BogieType RearBogie;
@@ -33,6 +33,8 @@ namespace CCL.Importer.Types
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
         public bool UseCustomBuffers => BufferType == BufferType.Custom;
+        public string CatalogPageNameTranslationKey => $"ccl/vc/pagename/{id}";
+        public string CatalogNicknameTranslationKey => $"ccl/vc/nickname/{id}";
 
         public IEnumerable<GameObject> AllPrefabs
         {

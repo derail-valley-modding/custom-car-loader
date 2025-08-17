@@ -8,6 +8,11 @@ namespace CCL.Types.Components
         public AudioSource Source = null!;
         public string ReplacementName = string.Empty;
 
+        private void Reset()
+        {
+            PickSame();
+        }
+
         public void PickSame()
         {
             Source = GetComponent<AudioSource>();

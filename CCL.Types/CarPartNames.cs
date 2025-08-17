@@ -172,6 +172,7 @@
         {
             public const string LADDERS = "Ladders";
             public const string MAIN_TRIGGER_COLLIDER = "MainTriggerCollider";
+            public const string NO_TELEPORT = "NO_TELEPORT";
         }
     }
 }

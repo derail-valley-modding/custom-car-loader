@@ -58,6 +58,8 @@ namespace CCL.Importer.WorkTrains
 
         public static void Load(SaveGameData data)
         {
+            ResetGarageless();
+
             s_unlocked.Clear();
             s_ids.Clear();
             s_alreadySummoned.Clear();
@@ -116,6 +118,13 @@ namespace CCL.Importer.WorkTrains
             UserManager.Instance.CurrentUser.GameData.SetBool(SaveConstants.WORK_TRAIN_WARNING, true);
             UserManager.Instance.CurrentUser.Save(UserSavingMode.JustUser);
             PopupHelper.ShowOk(Localization.WorkTrains.WarningPopup);
+        }
+
+        private static void ResetGarageless()
+        {
+            var list = CarSpawner.Instance.vehiclesWithoutGarage.ToList();
+            list.RemoveAll(s_unlocked.Contains);
+            CarSpawner.Instance.vehiclesWithoutGarage = list.ToArray();
         }
     }
 }

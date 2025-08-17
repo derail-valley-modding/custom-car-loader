@@ -2,10 +2,10 @@
 
 namespace CCL.Types.Components
 {
-    [AddComponentMenu("CCL/Components/Grabbers/Mesh Grabber (Filter)")]
-    public class MeshGrabberFilter : MonoBehaviour
+    [AddComponentMenu("CCL/Components/Grabbers/Mesh Grabber (Collider)")]
+    public class MeshGrabberCollider : MonoBehaviour
     {
-        public MeshFilter Filter = null!;
+        public MeshCollider Collider = null!;
         public string ReplacementName = string.Empty;
 
         private void Reset()
@@ -15,7 +15,7 @@ namespace CCL.Types.Components
 
         public void PickSame()
         {
-            Filter = GetComponent<MeshFilter>();
+            Collider = GetComponent<MeshCollider>();
         }
     }
 }

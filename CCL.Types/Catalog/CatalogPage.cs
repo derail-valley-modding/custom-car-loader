@@ -1,4 +1,5 @@
 ﻿using CCL.Types.Json;
+using DVLangHelper.Data;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,10 +10,11 @@ namespace CCL.Types.Catalog
     {
         [Header("Header")]
         public Color HeaderColour = Color.yellow;
-        public string PageName = string.Empty;
+        public TranslationData PageName = new TranslationData();
         public string ConsistUnits = "1/1";
         [Tooltip("Optional")]
-        public string Nickname = string.Empty;
+        public bool HasNickname = false;
+        public TranslationData Nickname = new TranslationData();
         public string ProductionYears = "1900-1999";
 
         [Header("Vehicle Type")]
@@ -37,6 +39,10 @@ namespace CCL.Types.Catalog
         public HaulingScore Hauling = new HaulingScore();
         public ShuntingScore Shunting = new ShuntingScore();
 
+        [SerializeField, HideInInspector]
+        private string? _pageNameJson;
+        [SerializeField, HideInInspector]
+        private string? _nicknameJson;
         [SerializeField, HideInInspector]
         private string? _loadJson;
         [SerializeField, HideInInspector]
@@ -78,6 +84,9 @@ namespace CCL.Types.Catalog
 
         public void OnValidate()
         {
+            _pageNameJson = JSONObject.ToJson(PageName);
+            _nicknameJson = JSONObject.ToJson(Nickname);
+
             _loadJson = JSONObject.ToJson(LoadFlat);
             _loadInclineJson = JSONObject.ToJson(LoadIncline);
             _loadInclineWetJson = JSONObject.ToJson(LoadInclineWet);
@@ -94,6 +103,9 @@ namespace CCL.Types.Catalog
 
         public void AfterImport()
         {
+            PageName = JSONObject.FromJson(_pageNameJson, () => new TranslationData());
+            Nickname = JSONObject.FromJson(_nicknameJson, () => new TranslationData());
+
             LoadFlat = JSONObject.FromJson(_loadJson, () => new LoadRating());
             LoadIncline = JSONObject.FromJson(_loadInclineJson, () => new LoadRating());
             LoadInclineWet = JSONObject.FromJson(_loadInclineWetJson, () => new LoadRating());

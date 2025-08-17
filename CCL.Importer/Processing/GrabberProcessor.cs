@@ -148,6 +148,7 @@ namespace CCL.Importer.Processing
 
             ProcessMaterialGrabberRenderer(prefab);
             ProcessMeshGrabberFilter(prefab);
+            ProcessMeshGrabberCollider(prefab);
             ProcessSoundGrabberSource(prefab);
         }
 
@@ -264,7 +265,31 @@ namespace CCL.Importer.Processing
                 }
                 else
                 {
-                    CCLPlugin.Error($"No filter in this MeshGrabberFilter ({grabber.name})!");
+                    CCLPlugin.Error($"No filter in this {nameof(MeshGrabberFilter)} ({grabber.name})!");
+                }
+
+                UnityEngine.Object.Destroy(grabber);
+            }
+        }
+
+        private static void ProcessMeshGrabberCollider(GameObject prefab)
+        {
+            foreach (var grabber in prefab.GetComponentsInChildren<MeshGrabberCollider>(true))
+            {
+                if (grabber.Collider != null)
+                {
+                    if (s_meshCache.Cache.TryGetValue(grabber.ReplacementName, out Mesh mesh))
+                    {
+                        grabber.Collider.sharedMesh = mesh;
+                    }
+                    else
+                    {
+                        CCLPlugin.Error($"Could not find cached key '{grabber.ReplacementName}'!");
+                    }
+                }
+                else
+                {
+                    CCLPlugin.Error($"No collider in this {nameof(MeshGrabberCollider)} ({grabber.name})!");
                 }
 
                 UnityEngine.Object.Destroy(grabber);
