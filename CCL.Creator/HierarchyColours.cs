@@ -59,6 +59,7 @@ namespace CCL.Creator
                         SetBadEntry("This object must be a child of the root");
                         break;
                     }
+                    if (!CheckOrigin(go)) break;
                     if (go.transform.Find(CarPartNames.Colliders.COLLISION) &&
                         go.transform.Find(CarPartNames.Colliders.WALKABLE))
                     {
@@ -75,11 +76,13 @@ namespace CCL.Creator
                 case CarPartNames.Colliders.WALKABLE:
                 case CarPartNames.Colliders.ITEMS:
                 case CarPartNames.Colliders.CAMERA_DAMPENING:
+                    if (!CheckOrigin(go)) break;
                     content = EditorGUIUtility.IconContent("BoxCollider Icon");
                     content.tooltip = "A collider group root";
                     txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     break;
                 case CarPartNames.Colliders.BOGIES:
+                    if (!CheckOrigin(go)) break;
                     if (go.GetComponentsInChildren<CapsuleCollider>().Length == 2)
                     {
                         TrySetContentToTexture("BogieCollider", "The bogie colliders");
@@ -117,7 +120,7 @@ namespace CCL.Creator
                 case CarPartNames.Bogies.BRAKE_PADS:
                 case CarPartNames.Bogies.CONTACT_POINTS:
                 case CarPartNames.Bogies.AXLE:
-                    TrySetContentToTexture("Bogie");
+                    TrySetContentToTexture("Bogie", "This is a special CCL, part of the bogies");
                     txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     break;
 
@@ -133,7 +136,7 @@ namespace CCL.Creator
                 case CarPartNames.Buffers.CHAIN_REGULAR:
                 case CarPartNames.Buffers.PLATE_FRONT:
                 case CarPartNames.Buffers.PLATE_REAR:
-                    TrySetContentToTexture("Coupler");
+                    TrySetContentToTexture("Coupler", "This is a special CCL name, part of the couplers");
                     txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     break;
 
@@ -145,14 +148,14 @@ namespace CCL.Creator
                 case "[BufferStems]":
                 case "buffer anchor left":
                 case "buffer anchor right":
-                    TrySetContentToTexture("Buffers");
+                    TrySetContentToTexture("Buffers", "This is a special CCL name, part of the buffers");
                     txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     break;
 
                 // Car plates.
                 case "[car plate anchor1]":
                 case "[car plate anchor2]":
-                    TrySetContentToTexture("CarPlate");
+                    TrySetContentToTexture("CarPlate", "This is one of the car plates");
                     txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     break;
 
@@ -241,6 +244,17 @@ namespace CCL.Creator
                 content = EditorGUIUtility.IconContent("Warning@2x");
                 content.tooltip = string.IsNullOrEmpty(reason) ? "This object might be incorrectly set up" : reason;
                 txC = EditorHelpers.Colors.WARNING;
+            }
+
+            bool CheckOrigin(GameObject go)
+            {
+                if (go.transform.localPosition != Vector3.zero)
+                {
+                    SetBadEntry("Transform is not at the local origin");
+                    return false;
+                }
+
+                return true;
             }
 
             static Rect FullWidth(Rect rect)

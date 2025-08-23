@@ -32,6 +32,7 @@ namespace CCL.Types.Catalog
         public GameObject DiagramLayout = null!;
         public VehicleDiagramExtras DiagramExtras = new VehicleDiagramExtras();
         public TechList TechList = new TechList();
+        public bool HidePrice = false;
 
         [Header("Scores")]
         public EaseOfOperationScore EaseOfOperation = new EaseOfOperationScore();

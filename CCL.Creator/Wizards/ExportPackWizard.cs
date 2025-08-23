@@ -108,7 +108,8 @@ namespace CCL.Creator.Wizards
 
             EditorHelpers.WordWrappedLabel(
                 "This button will open a window that allows you to select a folder to export your car. " +
-                "If a CCL asset bundle already exists, it will be written over.");
+                "If a CCL asset bundle already exists, it will be written over.\n" +
+                $"Exporter version: {ExporterConstants.ExporterVersion}");
 
             EditorGUILayout.Space();
             EditorGUILayout.EndVertical();

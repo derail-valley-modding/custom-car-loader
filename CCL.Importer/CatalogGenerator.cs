@@ -44,7 +44,7 @@ namespace CCL.Importer
 
         private static VehicleCatalogPageTemplatePaper? ProcessPage(CCL_CarVariant livery, CatalogPage layout)
         {
-            CCLPlugin.Log($"Generating catalog page '{layout.PageName}'...");
+            CCLPlugin.Log($"Generating catalog page for '{livery.id}'...");
 
             var page = ModelProcessor.CreateModifiablePrefab(TransformDE2.gameObject).transform;
             page.gameObject.SetActive(true);
@@ -133,19 +133,6 @@ namespace CCL.Importer
         {
             LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
 
-            // If unlocked by a garage, don't show spawn bar.
-            if (livery.UnlockableAsWorkTrain)
-            {
-                Object.DestroyImmediate(spawner);
-                // Move icons up to avoid blank space.
-                // Which doesn't work who knows why.
-                var rect = (RectTransform)locations.GetChild(0);
-                rect.sizeDelta = Vector2.zero;
-                Object.DestroyImmediate(rect.GetComponent<Image>());
-                rect.localPosition += new Vector3(0, -34, 0);
-                return;
-            }
-
             // Cache the children so they can be deleted without causing loop issues.
             // These are the original spawn chance icons.
             List<GameObject> children = new();
@@ -161,6 +148,19 @@ namespace CCL.Importer
                 {
                     Object.DestroyImmediate(item);
                 }
+            }
+
+            // If vehicle has no spawn locations available, hide the spawn bar (delete it).
+            if (livery.UnlockableAsWorkTrain && livery.LocoSpawnGroups.Length == 0)
+            {
+                Object.DestroyImmediate(spawner);
+                // Move icons up to avoid blank space.
+                // Which doesn't work who knows why.
+                var rect = (RectTransform)locations.GetChild(0);
+                rect.sizeDelta = Vector2.zero;
+                Object.DestroyImmediate(rect.GetComponent<Image>());
+                rect.localPosition += new Vector3(0, -34, 0);
+                return;
             }
 
             var og = PageDE2.GetComponentInChildren<LocoSpawnRateRenderer>();
@@ -262,6 +262,12 @@ namespace CCL.Importer
 
             ProcessDiagramExtras(diagram, paper, layout.DiagramExtras);
             ProcessDiagramIcons(diagram, layout.DiagramLayout.transform);
+
+            if (layout.HidePrice)
+            {
+                paper.price.gameObject.SetActive(false);
+                paper.price = null!;
+            }
         }
 
         private static void ProcessDiagramExtras(Transform root, VehicleCatalogPageTemplatePaper paper, VehicleDiagramExtras extras)

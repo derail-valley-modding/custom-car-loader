@@ -57,6 +57,15 @@ namespace CCL.Creator.Validators
 
         private void CheckMaterialGrabberRenderer(MaterialGrabberRenderer grabber, ValidationResult result)
         {
+            foreach (var item in grabber.RenderersToAffect)
+            {
+                if (item == null)
+                {
+                    result.Fail($"MaterialGrabberRenderer in {grabber.gameObject.GetPath()} has null entries.", grabber);
+                    break;
+                }
+            }
+
             foreach (var item in grabber.Replacements)
             {
                 if (!MaterialGrabber.MaterialNames.Contains(item.ReplacementName))
