@@ -11,6 +11,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public float oilLeakageRate;
         public float oilConsumptionPerRev;
         public float refillPerRev;
+        public float manualRefillTime = 10f;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
@@ -34,17 +35,19 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public void ApplyS060Defaults()
         {
             oilCapacity = 1.0f;
-            oilLeakageRate = 0.001f;
+            oilLeakageRate = 0.00015f;
             oilConsumptionPerRev = 0.001f;
             refillPerRev = 0.002f;
+            manualRefillTime = 10f;
         }
 
         public void ApplyS282Defaults()
         {
             oilCapacity = 1.0f;
-            oilLeakageRate = 0.001f;
+            oilLeakageRate = 0.00015f;
             oilConsumptionPerRev = 0.001f;
             refillPerRev = 0.002f;
+            manualRefillTime = 10f;
         }
 
         #endregion

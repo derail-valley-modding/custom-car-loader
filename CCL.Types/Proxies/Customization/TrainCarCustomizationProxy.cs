@@ -98,8 +98,8 @@ namespace CCL.Types.Proxies.Customization
             TryAddPortForComp<TractionDefinitionProxy>(STDSimPort.WheelSpeedKMH, "WHEEL_SPEED_KMH_EXT_IN");
             TryAddPortForComp<TractionMotorSetDefinitionProxy>(STDSimPort.TractionMotorAmps, "AMPS_PER_TM");
             TryAddPortForComp<TractionMotorSetDefinitionProxy>(STDSimPort.TractionMotorAmpsMax, "MAX_AMPS_PER_TM");
-            TryAddPortForComp<TractionGeneratorDefinitionProxy>(STDSimPort.TractionMotorAmpLimit, "EXTERNAL_CURRENT_LIMIT_EXT_IN");
-            TryAddPortForComp<TractionGeneratorDefinitionProxy>(STDSimPort.TractionMotorAmpLimitEffect, "EXTERNAL_CURRENT_LIMIT_ACTIVE", readOnly: false);
+            TryAddPortForComp<TractionGeneratorDefinitionProxy>(STDSimPort.TractionMotorAmpLimit, "EXTERNAL_CURRENT_LIMIT_EXT_IN", readOnly: false);
+            TryAddPortForComp<TractionGeneratorDefinitionProxy>(STDSimPort.TractionMotorAmpLimitEffect, "EXTERNAL_CURRENT_LIMIT_ACTIVE");
             TryAddPortForComp<HeatReservoirDefinitionProxy>(STDSimPort.Temperature, "TEMPERATURE");
             TryAddPortForComp<DieselEngineDirectDefinitionProxy>(STDSimPort.EngineOn, "ENGINE_ON");
             TryAddPortForComp<DieselEngineDirectDefinitionProxy>(STDSimPort.EngineRPM, "RPM");

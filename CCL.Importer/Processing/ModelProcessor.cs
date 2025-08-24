@@ -91,6 +91,7 @@ namespace CCL.Importer.Processing
         {
             var go = new GameObject("[CCL HOLDER]");
             go.SetActive(false);
+            go.AddComponent<DummyScriptToInspectNonObjects>();
             Object.DontDestroyOnLoad(go);
 
             return go.transform;

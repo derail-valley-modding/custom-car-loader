@@ -16,7 +16,6 @@ namespace CCL.Importer
     {
         public static Dictionary<CCL_CarVariant, CatalogPage> PageInfos = new();
         public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
-        public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
         private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
         private static Transform TransformDE2 { get; set; } = null!;
 
@@ -44,7 +43,7 @@ namespace CCL.Importer
 
         private static VehicleCatalogPageTemplatePaper? ProcessPage(CCL_CarVariant livery, CatalogPage layout)
         {
-            CCLPlugin.Log($"Generating catalog page '{layout.PageName}'...");
+            CCLPlugin.Log($"Generating catalog page for '{livery.id}'...");
 
             var page = ModelProcessor.CreateModifiablePrefab(TransformDE2.gameObject).transform;
             page.gameObject.SetActive(true);
@@ -133,19 +132,6 @@ namespace CCL.Importer
         {
             LocoSpawnRateRenderer spawner = locations.gameObject.GetComponent<LocoSpawnRateRenderer>();
 
-            // If unlocked by a garage, don't show spawn bar.
-            if (livery.UnlockableAsWorkTrain)
-            {
-                Object.DestroyImmediate(spawner);
-                // Move icons up to avoid blank space.
-                // Which doesn't work who knows why.
-                var rect = (RectTransform)locations.GetChild(0);
-                rect.sizeDelta = Vector2.zero;
-                Object.DestroyImmediate(rect.GetComponent<Image>());
-                rect.localPosition += new Vector3(0, -34, 0);
-                return;
-            }
-
             // Cache the children so they can be deleted without causing loop issues.
             // These are the original spawn chance icons.
             List<GameObject> children = new();
@@ -163,6 +149,19 @@ namespace CCL.Importer
                 }
             }
 
+            // If vehicle has no spawn locations available, hide the spawn bar (delete it).
+            if (livery.UnlockableAsWorkTrain && livery.LocoSpawnGroups.Length == 0)
+            {
+                Object.DestroyImmediate(spawner);
+                // Move icons up to avoid blank space.
+                // Which doesn't work who knows why.
+                var rect = (RectTransform)locations.GetChild(0);
+                rect.sizeDelta = Vector2.zero;
+                Object.DestroyImmediate(rect.GetComponent<Image>());
+                rect.localPosition += new Vector3(0, -34, 0);
+                return;
+            }
+
             var og = PageDE2.GetComponentInChildren<LocoSpawnRateRenderer>();
             spawner.loco = livery.parentType;
             spawner.spawnRateIndicatorPrefab = og.spawnRateIndicatorPrefab;
@@ -170,11 +169,12 @@ namespace CCL.Importer
 
             foreach (var item in spawner.stationData.stationsData)
             {
-                if (SpawnChances.TryGetValue(item.id, out var chances))
+                if (StationSpawnChanceData.Data.TryGetValue(item.id, out var chances))
                 {
                     // Get the chance for this ID.
-                    // Need to invert since it's storing the chance to NOT spawn. Math.
-                    if (chances.TryGetValue(livery.parentType.id, out var chance))
+                    var chance = chances.GetChance(livery);
+
+                    if (chance > 0)
                     {
                         item.locoSpawnChances.Add(new(livery.parentType, chance));
                     }
@@ -262,6 +262,12 @@ namespace CCL.Importer
 
             ProcessDiagramExtras(diagram, paper, layout.DiagramExtras);
             ProcessDiagramIcons(diagram, layout.DiagramLayout.transform);
+
+            if (layout.HidePrice)
+            {
+                paper.price.gameObject.SetActive(false);
+                paper.price = null!;
+            }
         }
 
         private static void ProcessDiagramExtras(Transform root, VehicleCatalogPageTemplatePaper paper, VehicleDiagramExtras extras)
@@ -620,8 +626,8 @@ namespace CCL.Importer
             PageDE2 = null!;
             PageDE2 = null!;
             TransformDE2 = null!;
-            SpawnChances.Clear();
             Icons.ClearCache();
+            StationSpawnChanceData.FlagForClearing();
         }
 
         public static string FormatPrice(float price) => "$" + price.ToString("N0", LocalizationAPI.CC);

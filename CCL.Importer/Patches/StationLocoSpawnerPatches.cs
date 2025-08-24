@@ -4,6 +4,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace CCL.Importer.Patches
@@ -11,9 +12,13 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(StationLocoSpawner))]
     internal class StationLocoSpawnerPatches
     {
+        private static Regex s_regex = new("\\[Y\\]_\\[([a-z0-9]*)\\]_\\[(.*)]", RegexOptions.IgnoreCase);
+
         [HarmonyPostfix, HarmonyPatch(nameof(StationLocoSpawner.Start))]
         private static void StartPostfix(StationLocoSpawner __instance)
         {
+            StationSpawnChanceData.ClearDataIfNeeded();
+
             CCLPlugin.Log($"Finding loco spawn groups to inject into '{__instance.name}'");
             PrintSpawnerInfo(__instance);
 
@@ -35,6 +40,7 @@ namespace CCL.Importer.Patches
                             {
                                 CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}]");
                             }
+
                             __instance.locoTypeGroupsToSpawn.Add(FromGroup(variant, group));
                         }
                     }
@@ -46,52 +52,30 @@ namespace CCL.Importer.Patches
 
             // Calculate spawn chances for this spawner to use in the catalog.
             // If the ID is not from a vanilla station, skip.
-            if (!TryToVanillaStationId(__instance.name, out string id)) return;
+            //if (!TryToVanillaStationId(__instance.name, out string id)) return;
+            if (!TryMatchName(__instance.locoSpawnTrackName, out string id)) return;
 
-            // Get the station chances instead of spawner chances.
-            if (!CatalogGenerator.SpawnChances.TryGetValue(id, out var chances))
-            {
-                chances = new();
-                CatalogGenerator.SpawnChances.Add(id, chances);
-            }
-
-            // Get how many spawn groups each car type is in.
-            Dictionary<string, int> groupCounts = new();
-
-            foreach (var group in __instance.locoTypeGroupsToSpawn)
-            {
-                foreach (var livery in group.liveries)
-                {
-                    string parentId = livery.parentType.id;
-
-                    // Add a count if it doesn't exist.
-                    if (!groupCounts.ContainsKey(parentId))
-                    {
-                        groupCounts.Add(parentId, 1);
-                    }
-                    else
-                    {
-                        groupCounts[parentId]++;
-                    }
-                }
-            }
-
-            foreach (var count in groupCounts)
-            {
-                // Add the chance for this type if it doesn't yet exist.
-                if (!chances.ContainsKey(count.Key))
-                {
-                    chances.Add(count.Key, 0);
-                }
-
-                // Actual chance is the maximum of all chances at each spawner of the station.
-                chances[count.Key] = Mathf.Max(chances[count.Key], (float)count.Value / __instance.locoTypeGroupsToSpawn.Count);
-            }
+            //var id = RailTrackRegistry.RailTrackToLogicTrack[__instance.locoSpawnTrack].ID.yardId;
+            StationSpawnChanceData.AddData(id, __instance);
         }
 
         private static bool TryToVanillaStationId(string name, out string id)
         {
             return LocoSpawnGroup.SpawnerNameToId.TryGetValue(name, out id);
+        }
+
+        private static bool TryMatchName(string name, out string id)
+        {
+            var match = s_regex.Match(name);
+
+            if (match.Success)
+            {
+                id = match.Groups[1].Value;
+                return true;
+            }
+
+            id = string.Empty;
+            return false;
         }
 
         private static ListTrainCarTypeWrapper FromGroup(TrainCarLivery variant, LocoSpawnGroup group)

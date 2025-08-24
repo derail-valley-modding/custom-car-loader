@@ -57,21 +57,46 @@ namespace CCL.Creator.Validators
 
         private void CheckModelVariant(ValidationResult result, GameObject model)
         {
-            // check colliders
+            // Check colliders.
             var collidersRoot = model.transform.FindSafe(CarPartNames.Colliders.ROOT);
-            if (!collidersRoot)
+            if (collidersRoot == null)
             {
-                result.Fail($"Cargo {model.name} model {CarPartNames.Colliders.ROOT} root is missing", model);
+                result.Fail($"Cargo {model.name} - {CarPartNames.Colliders.ROOT} root is missing", model);
                 return;
             }
 
-            // bounding collider
+            if (collidersRoot.localPosition != Vector3.zero)
+            {
+                result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.ROOT} is not at the local origin ({Vector3.zero})", model);
+            }
+
+            // Bounding collider.
             var collision = collidersRoot.FindSafe(CarPartNames.Colliders.COLLISION);
             var collisionComp = collision ? collision!.GetComponentInChildren<Collider>() : null;
 
             if (!(collision && collisionComp))
             {
                 result.Warning($"Cargo {model.name} bounding {CarPartNames.Colliders.COLLISION} collider is missing", collidersRoot);
+            }
+            else if (collision != null && collision.localPosition != Vector3.zero)
+            {
+                result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.COLLISION} is not at the local origin ({Vector3.zero})", model);
+            }
+
+            // Walkable collider.
+            var walkable = collidersRoot.FindSafe(CarPartNames.Colliders.WALKABLE);
+
+            if (walkable != null && walkable.localPosition != Vector3.zero)
+            {
+                result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.WALKABLE} is not at the local origin ({Vector3.zero})", model);
+            }
+
+            // Item collider.
+            var items = collidersRoot.FindSafe(CarPartNames.Colliders.ITEMS);
+
+            if (items != null && items.localPosition != Vector3.zero)
+            {
+                result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.ITEMS} is not at the local origin ({Vector3.zero})", model);
             }
         }
     }
