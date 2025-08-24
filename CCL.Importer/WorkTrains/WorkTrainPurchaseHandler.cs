@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace CCL.Importer.WorkTrains
 {
-    internal class WorkTrainPurchaseHandler
+    public class WorkTrainPurchaseHandler
     {
         private static Coroutine? _popupCoro;
 

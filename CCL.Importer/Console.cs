@@ -14,6 +14,7 @@ namespace CCL.Importer
 
         [RegisterCommand("CCL.AllLoadedTypes",
             Help = "Prints all custom car types added by CCL, optionally with liveries",
+            Hint = "CCL.AllLoadedTypes L",
             MinArgCount = 0, MaxArgCount = 1)]
         public static void PrintLoadedTypes(CommandArg[] args)
         {
@@ -143,9 +144,38 @@ namespace CCL.Importer
         [RegisterCommand("CCL.ResourceCaches",
             Help = "Prints CCL's resource caches",
             MinArgCount = 0, MaxArgCount = 0)]
-        public static void PrintResourceCaches()
+        public static void PrintResourceCaches(CommandArg[] args)
         {
             Processing.GrabberProcessor.PrintCaches();
+        }
+
+        [RegisterCommand("CCL.SpawnChance",
+            Help = "Calculates the spawn chance of a locomotive spawning at a station",
+            Hint = "CCL.SpawnChance HB LocoS282B",
+            MinArgCount = 2, MaxArgCount = 2)]
+        public static void CalculateSpawnChance(CommandArg[] args)
+        {
+            if (args.Length < 2)
+            {
+                Debug.LogError("Missing arguments!");
+                return;
+            }
+
+            if (StationSpawnChanceData.Data.TryGetValue(args[0].String, out var data))
+            {
+                if (DV.Globals.G.Types.TryGetLivery(args[1].String, out var livery))
+                {
+                    Debug.Log($"Spawn chance for livery '{args[1].String}' at '{args[0].String}' is {data.GetChance(livery):P1}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Could not find livery '{args[1].String}'");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find station '{args[0].String}'");
+            }
         }
     }
 }

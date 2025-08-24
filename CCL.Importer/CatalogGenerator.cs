@@ -16,7 +16,6 @@ namespace CCL.Importer
     {
         public static Dictionary<CCL_CarVariant, CatalogPage> PageInfos = new();
         public static List<VehicleCatalogPageTemplatePaper> NewCatalogPages = new();
-        public static Dictionary<string, Dictionary<string, float>> SpawnChances = new();
         private static VehicleCatalogPageTemplatePaper PageDE2 { get; set; } = null!;
         private static Transform TransformDE2 { get; set; } = null!;
 
@@ -170,11 +169,12 @@ namespace CCL.Importer
 
             foreach (var item in spawner.stationData.stationsData)
             {
-                if (SpawnChances.TryGetValue(item.id, out var chances))
+                if (StationSpawnChanceData.Data.TryGetValue(item.id, out var chances))
                 {
                     // Get the chance for this ID.
-                    // Need to invert since it's storing the chance to NOT spawn. Math.
-                    if (chances.TryGetValue(livery.parentType.id, out var chance))
+                    var chance = chances.GetChance(livery);
+
+                    if (chance > 0)
                     {
                         item.locoSpawnChances.Add(new(livery.parentType, chance));
                     }
@@ -626,8 +626,8 @@ namespace CCL.Importer
             PageDE2 = null!;
             PageDE2 = null!;
             TransformDE2 = null!;
-            SpawnChances.Clear();
             Icons.ClearCache();
+            StationSpawnChanceData.FlagForClearing();
         }
 
         public static string FormatPrice(float price) => "$" + price.ToString("N0", LocalizationAPI.CC);

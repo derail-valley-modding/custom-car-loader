@@ -14,6 +14,8 @@ namespace CCL.Importer.Patches
         [HarmonyPostfix, HarmonyPatch(nameof(StationLocoSpawner.Start))]
         private static void StartPostfix(StationLocoSpawner __instance)
         {
+            StationSpawnChanceData.ClearDataIfNeeded();
+
             CCLPlugin.Log($"Finding loco spawn groups to inject into '{__instance.name}'");
             PrintSpawnerInfo(__instance);
 
@@ -48,45 +50,8 @@ namespace CCL.Importer.Patches
             // If the ID is not from a vanilla station, skip.
             if (!TryToVanillaStationId(__instance.name, out string id)) return;
 
-            // Get the station chances instead of spawner chances.
-            if (!CatalogGenerator.SpawnChances.TryGetValue(id, out var chances))
-            {
-                chances = new();
-                CatalogGenerator.SpawnChances.Add(id, chances);
-            }
-
-            // Get how many spawn groups each car type is in.
-            Dictionary<string, int> groupCounts = new();
-
-            foreach (var group in __instance.locoTypeGroupsToSpawn)
-            {
-                foreach (var livery in group.liveries)
-                {
-                    string parentId = livery.parentType.id;
-
-                    // Add a count if it doesn't exist.
-                    if (!groupCounts.ContainsKey(parentId))
-                    {
-                        groupCounts.Add(parentId, 1);
-                    }
-                    else
-                    {
-                        groupCounts[parentId]++;
-                    }
-                }
-            }
-
-            foreach (var count in groupCounts)
-            {
-                // Add the chance for this type if it doesn't yet exist.
-                if (!chances.ContainsKey(count.Key))
-                {
-                    chances.Add(count.Key, 0);
-                }
-
-                // Actual chance is the maximum of all chances at each spawner of the station.
-                chances[count.Key] = Mathf.Max(chances[count.Key], (float)count.Value / __instance.locoTypeGroupsToSpawn.Count);
-            }
+            //var id = RailTrackRegistry.RailTrackToLogicTrack[__instance.locoSpawnTrack].ID.yardId;
+            StationSpawnChanceData.AddData(id, __instance);
         }
 
         private static bool TryToVanillaStationId(string name, out string id)
