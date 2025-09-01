@@ -26,6 +26,8 @@ namespace CCL.Importer
         internal static readonly HashSet<TrainCarType> AddedValues = new();
 
         private static int s_tempId = IdMappingStart;
+        private static Dictionary<TrainCarType, CarDamageProperties>? s_ogDamageProps;
+        private static readonly Dictionary<CCL_CarType, CarDamageProperties> s_customDamageProps = new();
 
         public static void ScanLoadedMods()
         {
@@ -212,6 +214,7 @@ namespace CCL.Importer
                     }
                 }
 
+                // Set up steam locomotive for fast startup.
                 if (car.IsActualSteamLocomotive)
                 {
                     foreach (var item in car.liveries)
@@ -219,6 +222,16 @@ namespace CCL.Importer
                         CarTypesPatches.SteamLocomotiveIds.Add(item.id);
                     }
                 }
+
+                // Add custom damage properties.
+                s_customDamageProps.Add(carType, new CarDamageProperties(
+                    car.damage.maxHealth,
+                    car.damage.damageResistance,
+                    car.damage.damageMultiplier,
+                    car.damage.fireResistance,
+                    car.damage.fireDamageMultiplier,
+                    car.damage.damageTolerance,
+                    car.damage.ignoreDamage));
 
                 CustomCarTypes.Add(carType);
                 CCLPlugin.Log($"Successfully loaded car type {car.id}");
@@ -413,6 +426,30 @@ namespace CCL.Importer
 
             Globals.G.Types.RecalculateCaches();
             CCLPlugin.Log($"Mappings applied: {AddedValues.Count}/{CurrentMapping.Count} (new: {newTypes}), lowest value is {lowest}");
+        }
+
+        internal static void ApplyDamageProperties()
+        {
+            if (s_ogDamageProps == null)
+            {
+                // Create a copy for restoring the state.
+                s_ogDamageProps = new(TrainCarAndCargoDamageProperties.carDamageProperties);
+            }
+            else
+            {
+                TrainCarAndCargoDamageProperties.carDamageProperties = new(s_ogDamageProps);
+            }
+
+            // Since these are mapped to the livery v1 values, gotta loop from the type.
+            foreach (var prop in s_customDamageProps)
+            {
+                foreach (var livery in prop.Key.liveries)
+                {
+                    TrainCarAndCargoDamageProperties.carDamageProperties.Add(livery.v1, prop.Value);
+                }
+            }
+
+            CCLPlugin.Log($"Car damage properties applied.");
         }
 
         /// <summary>
