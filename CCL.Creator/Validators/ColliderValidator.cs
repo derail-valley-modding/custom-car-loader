@@ -23,9 +23,9 @@ namespace CCL.Creator.Validators
 
             var result = Pass();
 
-            if (collidersRoot.transform.localPosition != Vector3.zero)
+            if (InvalidOrigin(collidersRoot))
             {
-                result.Warning($"{livery.id} - {CarPartNames.Colliders.ROOT} is not at the local origin ({Vector3.zero})");
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.ROOT} is not at the local origin");
             }
 
             // Bounding collider.
@@ -43,9 +43,9 @@ namespace CCL.Creator.Validators
                 result.Warning($"{livery.id} - No collider with the {nameof(ServiceCollider)} component found, " +
                     $"vehicle cannot be serviced!", collidersRoot);
             }
-            if (collision != null && collision.transform.localPosition != Vector3.zero)
+            if (collision != null && InvalidOrigin(collision))
             {
-                result.Warning($"{livery.id} - {CarPartNames.Colliders.COLLISION} is not at the local origin ({Vector3.zero})");
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.COLLISION} is not at the local origin");
             }
 
             // Walkable.
@@ -58,9 +58,9 @@ namespace CCL.Creator.Validators
 
             if (walkable != null)
             {
-                if (walkable.transform.localPosition != Vector3.zero)
+                if (InvalidOrigin(walkable))
                 {
-                    result.Warning($"{livery.id} - {CarPartNames.Colliders.WALKABLE} is not at the local origin ({Vector3.zero})");
+                    result.Warning($"{livery.id} - {CarPartNames.Colliders.WALKABLE} is not at the local origin");
                 }
 
                 // Fall safeties.
@@ -89,16 +89,16 @@ namespace CCL.Creator.Validators
 
             // Items.
             var items = collidersRoot.FindSafe(CarPartNames.Colliders.ITEMS);
-            if (items != null && items.transform.localPosition != Vector3.zero)
+            if (items != null && InvalidOrigin(items))
             {
-                result.Warning($"{livery.id} - {CarPartNames.Colliders.ITEMS} is not at the local origin ({Vector3.zero})");
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.ITEMS} is not at the local origin");
             }
 
             // Camera dampening.
             var cameraDampening = collidersRoot.FindSafe(CarPartNames.Colliders.CAMERA_DAMPENING);
-            if (cameraDampening != null && cameraDampening.transform.localPosition != Vector3.zero)
+            if (cameraDampening != null && InvalidOrigin(cameraDampening))
             {
-                result.Warning($"{livery.id} - {CarPartNames.Colliders.CAMERA_DAMPENING} is not at the local origin ({Vector3.zero})");
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.CAMERA_DAMPENING} is not at the local origin");
             }
 
             // Bogies.
@@ -110,6 +110,11 @@ namespace CCL.Creator.Validators
             }
 
             return result;
+        }
+
+        private static bool InvalidOrigin(Transform t)
+        {
+            return t.localPosition != Vector3.zero || t.localRotation != Quaternion.identity || t.localScale != Vector3.one;
         }
     }
 }

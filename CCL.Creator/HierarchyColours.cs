@@ -248,7 +248,7 @@ namespace CCL.Creator
 
             bool CheckOrigin(GameObject go)
             {
-                if (go.transform.localPosition != Vector3.zero)
+                if (go.transform.localPosition != Vector3.zero || go.transform.localRotation != Quaternion.identity || go.transform.localScale != Vector3.one)
                 {
                     SetBadEntry("Transform is not at the local origin");
                     return false;

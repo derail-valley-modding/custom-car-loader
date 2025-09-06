@@ -25,14 +25,14 @@ namespace CCL.Creator.Wizards
             string prefabPath = AssetDatabase.GetAssetPath(carType.prefab);
             var tempPrefab = PrefabUtility.LoadPrefabContents(prefabPath);
 
-            // align front collider
+            // Align front collider.
             var frontCollider = GetFrontBogieCollider(tempPrefab);
             var frontBogie = GetFrontBogie(tempPrefab);
             var axles = GetAxles(frontBogie);
-            if (frontCollider && frontBogie)
+            if (frontCollider != null && frontBogie != null)
             {
                 // Bogie centre
-                float z = frontBogie!.localPosition.z;
+                float z = frontBogie.localPosition.z;
 
                 if (!carType.UseCustomFrontBogie)
                 {
@@ -46,17 +46,18 @@ namespace CCL.Creator.Wizards
                 }
 
                 var frontCenter = new Vector3(0, wheelRadius, z);
-                frontCollider!.center = frontCenter;
                 frontCollider.radius = wheelRadius;
+                frontCollider.center = Vector3.zero;
+                frontCollider.transform.localPosition = frontCenter;
             }
 
-            // align rear collider
+            // Align rear collider.
             var rearCollider = GetRearBogieCollider(tempPrefab);
             var rearBogie = GetRearBogie(tempPrefab);
             axles = GetAxles(rearBogie);
-            if (rearCollider)
+            if (rearCollider != null && rearBogie != null)
             {
-                float z = rearBogie!.localPosition.z;
+                float z = rearBogie.localPosition.z;
 
                 if (!carType.UseCustomRearBogie)
                 {
@@ -69,8 +70,9 @@ namespace CCL.Creator.Wizards
                 }
 
                 var rearCenter = new Vector3(0, wheelRadius, z);
-                rearCollider!.center = rearCenter;
                 rearCollider.radius = wheelRadius;
+                rearCollider.center = Vector3.zero;
+                rearCollider.transform.localPosition = rearCenter;
             }
 
             PrefabUtility.SaveAsPrefabAsset(tempPrefab, prefabPath);

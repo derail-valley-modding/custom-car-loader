@@ -109,6 +109,11 @@ namespace CCL.Creator.Validators
                 overallResult.Fail("Car ID is empty");
             }
 
+            if (car.liveries.Count == 0)
+            {
+                overallResult.Fail("Car has no liveries");
+            }
+
             foreach (var livery in car.liveries)
             {
                 if (livery == null)

@@ -1,4 +1,5 @@
-﻿using UnityModManagerNet;
+﻿using System.Collections.Generic;
+using UnityModManagerNet;
 
 namespace CCL.Importer
 {
@@ -12,6 +13,7 @@ namespace CCL.Importer
 
         // Don't show these in the settings screen.
         public bool InfoDump = false;
+        public HashSet<string> DisabledIds = new();
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

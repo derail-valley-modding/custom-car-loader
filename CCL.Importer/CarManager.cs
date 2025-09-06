@@ -50,7 +50,7 @@ namespace CCL.Importer
 
         private static void LoadCarDefinitions(UnityModManager.ModEntry mod)
         {
-            int loaded = 0;
+            var loaded = new List<string>();
 
             foreach (string file in Directory.EnumerateFiles(mod.Path, ExporterConstants.EXPORTED_BUNDLE_NAME, SearchOption.AllDirectories))
             {
@@ -64,22 +64,27 @@ namespace CCL.Importer
 
                 foreach (var pack in bundle.LoadAllAssets<CustomCarPack>())
                 {
-                    loaded += LoadPack(pack);
+                    loaded.AddRange(LoadPack(pack));
                 }
 
                 bundle.Unload(false);
                 Mapper.ClearComponentCache();
             }
 
-            if (loaded > 0)
+            if (loaded.Count > 0)
             {
-                CCLPlugin.LogVerbose($"Loaded {loaded} cars from {mod.Path}");
+                var settings = new LoadedModSettings(loaded);
+                mod.OnGUI += settings.Draw;
+                mod.OnSaveGUI += settings.Save;
+
+                CCLPlugin.LogVerbose($"Loaded {loaded.Count} cars from {mod.Path}");
                 Globals.G.Types.RecalculateCaches();
             }
         }
 
-        private static int LoadPack(CustomCarPack pack)
+        private static List<string> LoadPack(CustomCarPack pack)
         {
+            var loaded = new List<string>();
             var version = new Version(pack.ExporterVersion);
 
             if (version > ExporterConstants.ExporterVersion)
@@ -88,7 +93,7 @@ namespace CCL.Importer
                     $"Current Version = {ExporterConstants.ExporterVersion}\n" +
                     $"Pack Version = {version}");
                 LoadFailures.Add($"[Pack] {pack.PackId}");
-                return 0;
+                return loaded;
             }
             else if (version < ExporterConstants.MinimumCompatibleVersion)
             {
@@ -96,7 +101,7 @@ namespace CCL.Importer
                     $"Minimum Version = {ExporterConstants.MinimumCompatibleVersion}\n" +
                     $"Pack Version = {version}");
                 LoadFailures.Add($"[Pack] {pack.PackId}");
-                return 0;
+                return loaded;
             }
 
             pack.AfterImport();
@@ -114,13 +119,11 @@ namespace CCL.Importer
                 PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
             }
 
-            int loaded = 0;
-
             foreach (var car in pack.Cars)
             {
                 if (LoadCar(car))
                 {
-                    loaded++;
+                    loaded.Add(car.id);
                 }
                 else
                 {

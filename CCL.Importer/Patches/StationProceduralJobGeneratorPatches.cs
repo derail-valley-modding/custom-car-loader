@@ -45,10 +45,58 @@ namespace CCL.Importer.Patches
 
             return 1.0f;
         }
+
+        // ======
+        // Removing cargo groups for disabled car types.
+        // ======
+
+        [HarmonyPrefix, HarmonyPatch(nameof(StationProceduralJobGenerator.GenerateEmptyHaulBaseData))]
+        private static void GenerateEmptyHaulBaseDataPrefix(ref List<CargoGroup> availableCargoTypeGroups)
+        {
+            availableCargoTypeGroups = CreateNewList(availableCargoTypeGroups);
+        }
+
+        [HarmonyPrefix, HarmonyPatch(nameof(StationProceduralJobGenerator.GenerateBaseCargoTrainData))]
+        private static void GenerateBaseCargoTrainDataPrefix(ref List<CargoGroup> availableCargoGroups)
+        {
+            availableCargoGroups = CreateNewList(availableCargoGroups);
+        }
+
+        private static List<CargoGroup> CreateNewList(List<CargoGroup> original)
+        {
+            var list = original.ToList();
+
+            // For each cargo group...
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i] == null || list[i].cargoTypes == null) continue;
+
+                // For each cargo type in the group...
+                foreach (var cargoType in list[i].cargoTypes)
+                {
+                    var cargo = cargoType.ToV2();
+
+                    if (cargo == null) continue;
+
+                    // If all wagons that load the cargo are disabled...
+                    if (DV.Globals.G.Types.CargoToLoadableCarTypes.TryGetValue(cargo, out var loadables) &&
+                        loadables.Count > 0 &&
+                        loadables.All(x => CCLPlugin.Settings.DisabledIds.Contains(x.id)))
+                    {
+
+                        CCLPlugin.LogVerbose($"Removed group [{string.Join(", ", list[i].cargoTypes)}] due to '{cargo.id}' only being loaded on disabled car types");
+                        list.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            return list;
+        }
     }
 
     [HarmonyPatch(typeof(StationProceduralJobGenerator))]
-    internal class StationProceduralJobGeneratorRandomFromListPatches
+    internal class StationProceduralJobGeneratorRandomFromListTrainCarPatches
     {
         private static MethodBase TargetMethod()
         {
@@ -59,6 +107,8 @@ namespace CCL.Importer.Patches
         [HarmonyPrefix, HarmonyPatch]
         private static void OverrideInput(ref List<TrainCarType_v2> list)
         {
+            list.RemoveAll(carType => CCLPlugin.Settings.DisabledIds.Contains(carType.id));
+
             if (!CCLPlugin.Settings.PreferCCLInJobs) return;
 
             if (GetCCLTypesOnlyIfAny(list, out var modified))

@@ -191,6 +191,11 @@ namespace CCL.Creator.Validators
                 _packResult.Fail("Author is empty", pack);
             }
 
+            if (pack.Cars.Length == 0)
+            {
+                _packResult.Fail("Pack has no cars", pack);
+            }
+
             if (pack.Cars.Any(x => x is null))
             {
                 _packResult.Fail("There are missing cars in the pack", pack);
