@@ -1,0 +1,42 @@
+﻿using CCL.Types;
+using CCL.Types.Proxies.Controls;
+using UnityEngine;
+
+namespace CCL.Creator.Validators
+{
+    [RequiresStep(typeof(LiverySettingsValidator))]
+    internal class ControlsValidator : LiveryValidator
+    {
+        public override string TestName => "Controls";
+
+        protected override ValidationResult ValidateLivery(CustomCarVariant livery)
+        {
+            var hasControls = false;
+            var result = Pass();
+
+            if (livery.interiorPrefab != null) hasControls |= CheckPrefab(livery.interiorPrefab, result);
+            if (livery.explodedInteriorPrefab != null) hasControls |= CheckPrefab(livery.explodedInteriorPrefab, result);
+            if (livery.externalInteractablesPrefab != null) hasControls |= CheckPrefab(livery.externalInteractablesPrefab, result);
+            if (livery.explodedExternalInteractablesPrefab != null) hasControls |= CheckPrefab(livery.explodedExternalInteractablesPrefab, result);
+
+            return hasControls ? result : Skip();
+        }
+
+        private static bool CheckPrefab(GameObject prefab, ValidationResult result)
+        {
+            var controls = prefab.GetComponentsInChildren<ControlSpecProxy>();
+
+            if (controls.Length == 0) return false;
+
+            foreach (var control in controls)
+            {
+                if (control.colliderGameObjects.Length == 0)
+                {
+                    result.Warning($"Controls {control.name} does not have any colliders, physical interaction might not work", control);
+                }
+            }
+
+            return true;
+        }
+    }
+}

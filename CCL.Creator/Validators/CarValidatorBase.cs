@@ -122,6 +122,12 @@ namespace CCL.Creator.Validators
                     break;
                 }
 
+                if (livery.parentType == null)
+                {
+                    overallResult.CriticalFail($"Livery '{livery.id}' has no parent type set!");
+                    break;
+                }
+
                 var curResult = ValidateLivery(livery);
                 overallResult.Merge(curResult);
             }

@@ -9,7 +9,7 @@ namespace CCL.Creator.Validators
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
         {
-            if (!livery.prefab)
+            if (livery.prefab == null)
             {
                 return CriticalFail("Livery must have a prefab assigned!");
             }

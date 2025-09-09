@@ -14,7 +14,8 @@ namespace CCL.Importer.Patches
             if (!__instance.assumeIsPaused && Mathf.Abs(dif) > __instance.updateThreshold)
             {
                 var smoothDif = Mathf.Clamp(dif / __instance.smoothTime * Time.deltaTime, -dif, dif);
-                __instance.previousValue = __instance.value += smoothDif;
+                __instance.previousValue = __instance.value;
+                __instance.value += smoothDif;
                 __instance.SetNeedleRotation(__instance.value);
                 __instance.FireValueChanged();
             }

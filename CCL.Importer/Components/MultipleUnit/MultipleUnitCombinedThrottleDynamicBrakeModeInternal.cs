@@ -30,5 +30,10 @@ namespace CCL.Importer.Components.MultipleUnit
         {
             _modePort.Value = source._modePort.Value;
         }
+
+        protected override void ConnectionChanged(bool connected, bool playAudio)
+        {
+            _modePort.Value = 0;
+        }
     }
 }
