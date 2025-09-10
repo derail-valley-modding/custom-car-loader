@@ -16,6 +16,21 @@ namespace CCL.Importer
 {
     public static class CarManager
     {
+        /// <summary>
+        /// The status of a trainset.
+        /// </summary>
+        public enum TrainSetCompleteness
+        {
+            /// <summary>The <see cref="TrainCar"/> is not part of CCL.</summary>
+            NotCCL,
+            /// <summary>The <see cref="TrainCar"/> is not part of a trainset.</summary>
+            NotPartOfTrainset,
+            /// <summary>The trainset is not complete.</summary>
+            NotComplete,
+            /// <summary>The trainset is complete.</summary>
+            Complete
+        }
+
         private const int IdMappingStart = -1000;
 
         public static readonly List<CCL_CarType> CustomCarTypes = new();
@@ -92,7 +107,7 @@ namespace CCL.Importer
                 CCLPlugin.Error($"Pack {pack.PackId} was built with a newer version of CCL:\n" +
                     $"Current Version = {ExporterConstants.ExporterVersion}\n" +
                     $"Pack Version = {version}");
-                LoadFailures.Add($"[Pack] {pack.PackId}");
+                LoadFailures.Add($"[Pack] {pack.PackId} ({version} > {ExporterConstants.ExporterVersion})");
                 return loaded;
             }
             else if (version < ExporterConstants.MinimumCompatibleVersion)
@@ -100,7 +115,7 @@ namespace CCL.Importer
                 CCLPlugin.Error($"Pack {pack.PackId} was built with an incompatible version of CCL:\n" +
                     $"Minimum Version = {ExporterConstants.MinimumCompatibleVersion}\n" +
                     $"Pack Version = {version}");
-                LoadFailures.Add($"[Pack] {pack.PackId}");
+                LoadFailures.Add($"[Pack] {pack.PackId} ({version} < {ExporterConstants.MinimumCompatibleVersion})");
                 return loaded;
             }
 
@@ -472,14 +487,37 @@ namespace CCL.Importer
         /// Returns an array of ordered train cars that belong together (i.e. loco + tender).
         /// </summary>
         /// <param name="car">The car instance that may or may not belong to a trainset.</param>
-        /// <returns>An array of train cars if there is a trainset, or an empty array if there is not.</returns>
+        /// <returns>An array of train cars if there is a complete trainset, or an empty array otherwise.</returns>
         /// <remarks>Base game car liveries are ignored by this method.</remarks>
         public static TrainCar[] GetInstancedTrainset(TrainCar car)
         {
+            TryGetInstancedTrainset(car, out var set);
+            return set;
+        }
+
+        /// <summary>
+        /// Tries to get the instanced trainset of a <see cref="TrainCar"/> instance.
+        /// </summary>
+        /// <param name="car">The car instance that may or may not belong to a trainset.</param>
+        /// <param name="set">An array of ordered train cars that belong together (i.e. loco + tender), or
+        /// an empty array otherwise.</param>
+        /// <returns>Information about trainset.</returns>
+        public static TrainSetCompleteness TryGetInstancedTrainset(TrainCar car, out TrainCar[] set)
+        {
+            if (car.carLivery is not CCL_CarVariant)
+            {
+                set = Array.Empty<TrainCar>();
+                return TrainSetCompleteness.NotCCL;
+            }
+
             var trainset = GetTrainsetForLivery(car.carLivery);
 
             // Same rules as the other method.
-            if (trainset.Length < 2) return Array.Empty<TrainCar>();
+            if (trainset.Length < 2)
+            {
+                set = Array.Empty<TrainCar>();
+                return TrainSetCompleteness.NotPartOfTrainset;
+            }
 
             int check = trainset.Length;
 
@@ -510,10 +548,12 @@ namespace CCL.Importer
                     car = car.rearCoupler.coupledTo.train;
                 }
 
-                return result;
+                set = result;
+                return TrainSetCompleteness.Complete;
             }
 
-            return Array.Empty<TrainCar>();
+            set = Array.Empty<TrainCar>();
+            return TrainSetCompleteness.NotComplete;
 
             static bool MatchingLiverySequence(TrainCar? car, TrainCarLivery[] liveries)
             {
