@@ -111,6 +111,7 @@ namespace CCL.Creator.Validators
         private List<CarResults> _results = new List<CarResults>();
         private bool _needsCorrections = false;
         private bool _failed = false;
+        private bool _exception = false;
         private Vector2 _scroll = Vector2.zero;
         private TableWidths _widths = null!;
 
@@ -136,12 +137,22 @@ namespace CCL.Creator.Validators
             _pack = pack;
             _needsCorrections = false;
             _failed = false;
+            _exception = false;
 
             ValidatePack(pack);
 
             foreach (var car in pack.Cars)
             {
-                ValidateCar(car);
+                try
+                {
+                    ValidateCar(car);
+                }
+                catch (Exception e)
+                {
+                    _exception = true;
+                    Debug.LogException(e, car);
+                    break;
+                }
             }
 
             _widths = new TableWidths();
@@ -240,6 +251,23 @@ namespace CCL.Creator.Validators
         private void OnGUI()
         {
             if (_pack == null || _packResult == null) return;
+
+            if (_exception)
+            {
+                GUILayout.BeginVertical("box");
+                EditorHelpers.DrawHeader("Critical failure!");
+                EditorGUILayout.LabelField("Something went wrong and the pack could not be validated.\n" +
+                    "Please check the Unity Console for more information.");
+                EditorGUILayout.Space();
+                EditorGUILayout.EndVertical();
+
+                if (GUILayout.Button("OK"))
+                {
+                    Close();
+                }
+
+                return;
+            }
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             EditorGUILayout.BeginVertical();

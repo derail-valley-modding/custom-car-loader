@@ -23,7 +23,7 @@ namespace CCL.Types.Proxies.Controls
             }
         }
 
-        public void OnValidate()
+        public virtual void OnValidate()
         {
             _json = JSONObject.ToJson(handPosesOverride);
 

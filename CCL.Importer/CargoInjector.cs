@@ -35,6 +35,7 @@ namespace CCL.Importer
 
                         if (entry.Models[i].transform.TryFind(CarPartNames.Colliders.ROOT, out var colliderRoot))
                         {
+                            AddItemColliderIfNeeded(colliderRoot);
                             ColliderProcessor.FixLayers(colliderRoot);
                         }
                     }
@@ -58,6 +59,16 @@ namespace CCL.Importer
             if (ccl.CargoSetup == null || !ccl.CargoSetup.Entries.TryFind(x => x.CargoId == cargo.id, out var entry)) return null!;
 
             return entry.OverrideLoadedIcon ? entry.LoadedIcon : cargo.icon;
+        }
+
+        private static void AddItemColliderIfNeeded(Transform root)
+        {
+            // If there's no walkable to copy or an [items] object already exists...
+            if (root.TryFind(CarPartNames.Colliders.ITEMS, out var items) ||
+                !root.TryFind(CarPartNames.Colliders.WALKABLE, out var walkable)) return;
+
+            items = Object.Instantiate(walkable, root);
+            items.name = CarPartNames.Colliders.ITEMS;
         }
     }
 }

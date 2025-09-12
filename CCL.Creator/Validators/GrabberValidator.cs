@@ -18,7 +18,7 @@ namespace CCL.Creator.Validators
                 CheckGenericGrabber(grabber, result);
             }
 
-            foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<MaterialGrabberRenderer>(true))
+            foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<ICustomGrabberValidation>(true))
             {
                 CheckMaterialGrabberRenderer(grabber, result);
             }
@@ -35,7 +35,7 @@ namespace CCL.Creator.Validators
                 CheckGenericGrabber(grabber, result);
             }
 
-            foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<MaterialGrabberRenderer>(true))
+            foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<ICustomGrabberValidation>(true))
             {
                 CheckMaterialGrabberRenderer(grabber, result);
             }
@@ -47,6 +47,12 @@ namespace CCL.Creator.Validators
         {
             foreach (var item in grabber.GetReplacements())
             {
+                if (grabber.GetScript() == null)
+                {
+                    result.Fail($"{grabber.GetType().Name} in {grabber.gameObject.GetPath()} does not have a valid script.",
+                        grabber is Object obj ? obj : null);
+                }
+
                 if (!grabber.GetNames().Contains(item.ReplacementName))
                 {
                     result.Fail($"{grabber.GetType().Name} in {grabber.gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).",
@@ -55,24 +61,11 @@ namespace CCL.Creator.Validators
             }
         }
 
-        private void CheckMaterialGrabberRenderer(MaterialGrabberRenderer grabber, ValidationResult result)
+        private void CheckMaterialGrabberRenderer(ICustomGrabberValidation grabber, ValidationResult result)
         {
-            foreach (var item in grabber.RenderersToAffect)
+            if (!grabber.IsValid(out var error))
             {
-                if (item == null)
-                {
-                    result.Fail($"MaterialGrabberRenderer in {grabber.gameObject.GetPath()} has null entries.", grabber);
-                    break;
-                }
-            }
-
-            foreach (var item in grabber.Replacements)
-            {
-                if (!MaterialGrabber.MaterialNames.Contains(item.ReplacementName))
-                {
-                    result.Fail($"MaterialGrabberRenderer in {grabber.gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).",
-                        grabber);
-                }
+                result.Fail(error);
             }
         }
     }
