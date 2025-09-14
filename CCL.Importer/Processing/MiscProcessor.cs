@@ -1,5 +1,4 @@
-﻿using CCL.Importer.Components;
-using CCL.Types;
+﻿using CCL.Types;
 using CCL.Types.Components;
 using System.ComponentModel.Composition;
 using UnityEngine;

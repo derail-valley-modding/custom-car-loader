@@ -52,6 +52,7 @@ namespace CCL.Types.Proxies.Indicators
     [AddComponentMenu("CCL/Proxies/Indicators/Indicator Gauge Lagging Proxy")]
     public class IndicatorGaugeLaggingProxy : IndicatorGaugeProxy
     {
+        [Header("Smooth properties")]
         public float updateThreshold = 0.001f;
         public float smoothTime = 0.5f;
     }

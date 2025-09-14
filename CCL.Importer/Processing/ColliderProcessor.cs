@@ -4,7 +4,6 @@ using UnityEngine;
 using System.ComponentModel.Composition;
 using DV.ThingTypes;
 using DV.ThingTypes.TransitionHelpers;
-using CCL.Types.Components;
 
 namespace CCL.Importer.Processing
 {

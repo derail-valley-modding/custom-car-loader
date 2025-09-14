@@ -31,6 +31,8 @@ namespace CCL.Importer
                 {
                     for (int i = 0; i < entry.Models.Length; i++)
                     {
+                        // This might cost some performance but also allows other mods to modify the prefabs if needed.
+                        entry.Models[i] = ModelProcessor.CreateModifiableCargoPrefab(entry.Models[i]);
                         ModelProcessor.DoBasicProcessing(entry.Models[i]);
 
                         if (entry.Models[i].transform.TryFind(CarPartNames.Colliders.ROOT, out var colliderRoot))

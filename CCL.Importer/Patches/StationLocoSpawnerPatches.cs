@@ -25,6 +25,8 @@ namespace CCL.Importer.Patches
             // Get the groups from the liveries.
             foreach (var car in CarManager.CustomCarTypes)
             {
+                if (!CarManager.IsCarTypeEnabled(car)) continue;
+
                 foreach (var variant in car.Variants)
                 {
                     foreach (var group in variant.LocoSpawnGroups)
@@ -34,11 +36,11 @@ namespace CCL.Importer.Patches
                         {
                             if (group.AdditionalLiveries.Length > 0)
                             {
-                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.AdditionalLiveries)}]");
+                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.AdditionalLiveries)}]...");
                             }
                             else
                             {
-                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}]");
+                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}]...");
                             }
 
                             __instance.locoTypeGroupsToSpawn.Add(FromGroup(variant, group));
@@ -53,9 +55,11 @@ namespace CCL.Importer.Patches
             // Calculate spawn chances for this spawner to use in the catalog.
             // If the ID is not from a vanilla station, skip.
             //if (!TryToVanillaStationId(__instance.name, out string id)) return;
-            if (!TryMatchName(__instance.locoSpawnTrackName, out string id)) return;
-
             //var id = RailTrackRegistry.RailTrackToLogicTrack[__instance.locoSpawnTrack].ID.yardId;
+
+            // Try to match the track name to a station ID.
+            // If successful, add it to the spawn chance data calculation.
+            if (!TryMatchName(__instance.locoSpawnTrackName, out string id)) return;
             StationSpawnChanceData.AddData(id, __instance);
         }
 
@@ -101,10 +105,10 @@ namespace CCL.Importer.Patches
         {
             var length = (float)RailTrackRegistry.RailTrackToLogicTrack[spawner.locoSpawnTrack].length;
             var sb = new StringBuilder("Additional info:\n");
-            sb.AppendLine($"Length (usable/total): {Mathf.FloorToInt(length) - 3}m/{length:F4}m");
+            sb.Append($"Length (usable/total): {Mathf.FloorToInt(length) - 3}m/{length:F4}m\n");
 
             var groups = spawner.locoTypeGroupsToSpawn.Select(x => string.Join(", ", x.liveries.Select(l => l.id)));
-            sb.AppendLine($"Default spawns:\n    [{string.Join("],\n    [", groups)}]");
+            sb.Append($"Default spawns:\n    [{string.Join("],\n    [", groups)}]");
 
             CCLPlugin.LogVerbose(sb.ToString());
         }

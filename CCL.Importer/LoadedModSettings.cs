@@ -23,7 +23,8 @@ namespace CCL.Importer
             var disabled = CCLPlugin.Settings.DisabledIds;
 
             GUILayout.Label(new GUIContent("Enabled CCL Rolling Stock",
-                "Allows toggling individual car types from spawning in jobs"), UnityModManager.UI.h2);
+                "Allows toggling individual car types from spawning in jobs\n" +
+                "Trainset types must have all types disabled"), UnityModManager.UI.bold);
 
             foreach (var item in CarIds)
             {

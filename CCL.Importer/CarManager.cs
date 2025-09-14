@@ -569,5 +569,33 @@ namespace CCL.Importer
                 return true;
             }
         }
+
+        public static bool IsCarTypeEnabled(TrainCarType_v2 type)
+        {
+            return !CCLPlugin.Settings.DisabledIds.Contains(type.id);
+        }
+
+        public static bool IsCarLiveryEnabled(TrainCarLivery livery)
+        {
+            return IsCarTypeEnabled(livery.parentType);
+        }
+
+        public static bool IsTrainsetEnabled(TrainCarLivery[] trainset)
+        {
+            return trainset.Any(x => IsCarLiveryEnabled(x));
+        }
+
+        public static bool IsAnyLiveryEnabled(IEnumerable<string> liveryIds)
+        {
+            foreach (string id in liveryIds)
+            {
+                if (Globals.G.Types.TryGetLivery(id, out var livery) && !IsCarLiveryEnabled(livery))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

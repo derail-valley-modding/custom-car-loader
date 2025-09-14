@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CCL.Types;
-using CCL.Types.Components;
 
 namespace CCL.Creator.Utility
 {

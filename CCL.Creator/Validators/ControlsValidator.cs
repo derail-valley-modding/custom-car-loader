@@ -32,7 +32,7 @@ namespace CCL.Creator.Validators
             {
                 if (control.colliderGameObjects.Length == 0)
                 {
-                    result.Warning($"Controls {control.name} does not have any colliders, physical interaction might not work", control);
+                    result.Warning($"Control '{control.name}' does not have any colliders, physical interaction will not work", control);
                 }
             }
 

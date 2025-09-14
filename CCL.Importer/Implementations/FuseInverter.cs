@@ -1,6 +1,5 @@
 ﻿using CCL.Importer.Components.Simulation;
 using LocoSim.Implementations;
-using System.Linq;
 
 namespace CCL.Importer.Implementations
 {

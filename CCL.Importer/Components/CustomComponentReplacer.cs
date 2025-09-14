@@ -55,6 +55,7 @@ namespace CCL.Importer.Components
         {
             CreateMap<IndicatorShaderCustomValue, IndicatorShaderCustomValueInternal>().AutoCacheAndMap();
             CreateMap<IndicatorTMP, IndicatorTMPInternal>().AutoCacheAndMap();
+            CreateMap<IndicatorGaugeDelta, IndicatorGaugeDeltaInternal>().AutoCacheAndMap();
         }
 
         private void MapSimulation()
