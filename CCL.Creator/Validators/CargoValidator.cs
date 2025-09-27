@@ -47,6 +47,8 @@ namespace CCL.Creator.Validators
                 {
                     foreach (var model in cargo.Models)
                     {
+                        if (model == null) continue;
+
                         CheckModelVariant(result, model);
                     }
                 }
@@ -97,6 +99,11 @@ namespace CCL.Creator.Validators
             if (items != null && InvalidOrigin(items))
             {
                 result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.ITEMS} is not at the local origin", model);
+            }
+
+            if (walkable != null && items == null)
+            {
+                result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.WALKABLE} exist but {CarPartNames.Colliders.ITEMS} is missing", model);
             }
         }
 

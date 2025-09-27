@@ -271,7 +271,7 @@ namespace CCL.Creator.Validators
                     ResultStatus.Warning => EditorHelpers.Colors.WARNING,
                     ResultStatus.Failed => EditorHelpers.Colors.DELETE_ACTION,
                     ResultStatus.Critical => EditorHelpers.Colors.DELETE_ACTION,
-                    _ => Color.black,
+                    _ => Color.grey,
                 };
             }
         }

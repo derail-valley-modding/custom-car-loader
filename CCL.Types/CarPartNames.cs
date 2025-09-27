@@ -107,6 +107,7 @@
         public static class Caboose
         {
             public const string CAREER_MANAGER = PERSISTENT_INTERIOR + "/CareerManagerTrainInterior";
+            public const string JOB_TRASH_BIN = "JobTrashBin";
         }
 
         public static class Interactables

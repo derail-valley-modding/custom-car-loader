@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
@@ -7,6 +8,7 @@ namespace CCL.Types.Proxies
     {
         [Tooltip("Optional, leave empty to use this gameObject")]
         public GameObject targetObject = null!;
+        public List<Renderer> renderers = new List<Renderer>();
         public float overrideDistance;
     }
 }

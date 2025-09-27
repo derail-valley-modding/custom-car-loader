@@ -363,6 +363,12 @@ namespace CCL.Creator.Utility
         {
             return new GUIStyle() { normal = new GUIStyleState() { textColor = c } };
         }
+
+        // This allows fitting with other styles properly, instead of defaulting to GUIStyle.none.
+        public static GUIStyle StyleWithTextColour(Color c, GUIStyle original)
+        {
+            return new GUIStyle(original) { normal = new GUIStyleState() { textColor = c } };
+        }
     }
 
     internal class WordWrapScope : IDisposable

@@ -13,9 +13,7 @@ namespace CCL.Importer.Processing
     {
         private static readonly AggregateCatalog _catalog;
         private static Transform? s_holder;
-        private static Transform? s_cargoHolder;
         private static Transform Holder => Extensions.GetCached(ref s_holder, CreateHolder);
-        private static Transform CargoHolder => Extensions.GetCached(ref s_cargoHolder, CreateCargoHolder);
 
         static ModelProcessor()
         {
@@ -99,30 +97,11 @@ namespace CCL.Importer.Processing
             return go.transform;
         }
 
-        private static Transform CreateCargoHolder()
-        {
-            var go = new GameObject("[CARGO HOLDER]");
-            go.SetActive(false);
-            go.transform.parent = Holder;
-            Object.DontDestroyOnLoad(go);
-
-            return go.transform;
-        }
-
         public static GameObject CreateModifiablePrefab(GameObject gameObject)
         {
             GameObject newFab = Object.Instantiate(gameObject, Holder);
 
             // No (Clone), makes it look bad.
-            newFab.name = gameObject.name;
-            return newFab;
-        }
-
-        // This is the same as the other but groups the cargo elsewhere, to make it easier to
-        // browse the objects ingame (there's a lot more cargo models).
-        public static GameObject CreateModifiableCargoPrefab(GameObject gameObject)
-        {
-            GameObject newFab = Object.Instantiate(gameObject, CargoHolder);
             newFab.name = gameObject.name;
             return newFab;
         }

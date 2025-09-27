@@ -60,6 +60,12 @@ namespace CCL.Types.Components
                     error = $"MaterialGrabberRenderer in {gameObject.GetPath()} does not have a valid replacement ({item.ReplacementName}).";
                     return false;
                 }
+
+                if (RenderersToAffect.Any(x => x.sharedMaterials.Length < item.RendererIndex))
+                {
+                    error = $"MaterialGrabberRenderer in {gameObject.GetPath()} has an index ({item.RendererIndex} out of range.";
+                    return false;
+                }
             }
 
             error = string.Empty;

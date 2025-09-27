@@ -345,12 +345,12 @@ namespace CCL.Creator.Validators
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUILayout.LabelField(GetName(result), options[0]);
-                
-                GUILayout.Label(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor), options[1]);
+
+                EditorGUILayout.LabelField(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor, GUI.skin.label), options[1]);
 
                 DrawContextButton(result, options[2]);
 
-                GUILayout.Label(GetMessage(result), options[3]);
+                EditorGUILayout.LabelField(GetMessage(result), options[3]);
 
                 EditorGUILayout.EndHorizontal();
             }

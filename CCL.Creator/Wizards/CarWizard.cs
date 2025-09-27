@@ -361,50 +361,28 @@ namespace CCL.Creator.Wizards
             }
         }
 
-        private static string GetDesignationId(CargoRole role)
+        private static string GetDesignationId(CargoRole role) => role switch
         {
-            switch (role)
-            {
-                case CargoRole.BulkMaterial:
-                    return "BK";
-                case CargoRole.Flatbed:
-                    return "FF";
-                case CargoRole.FlatbedStakes:
-                    return "FS";
-                case CargoRole.FlatbedCenterbeam:
-                    return "FC";
-                case CargoRole.FlatbedBulkhead:
-                    return "FB";
-                case CargoRole.Enclosed:
-                    return "BX";
-                case CargoRole.Refrigerated:
-                    return "RF";
-                case CargoRole.LiquidOilDerivatives:
-                    return "OL";
-                case CargoRole.GasOilDerivatives:
-                    return "GS";
-                case CargoRole.LiquidChemicals:
-                    return "CH";
-                case CargoRole.LiquidFood:
-                    return "FD";
-                case CargoRole.Powders:
-                    return "PD";
-                case CargoRole.RoadVehicles:
-                    return "VT";
-                case CargoRole.Livestock:
-                    return "LS";
-                case CargoRole.Passenger:
-                    return "PS";
-                case CargoRole.MilitaryEnclosed:
-                    return "XB";
-                case CargoRole.MilitaryFlatbed:
-                    return "XF";
-                case CargoRole.MilitaryNuclearFlasks:
-                    return "XN";
-                default:
-                    return string.Empty;
-            }
-        }
+            CargoRole.BulkMaterial => "BK",
+            CargoRole.Flatbed => "FF",
+            CargoRole.FlatbedStakes => "FS",
+            CargoRole.FlatbedCenterbeam => "FC",
+            CargoRole.FlatbedBulkhead => "FB",
+            CargoRole.Enclosed => "BX",
+            CargoRole.Refrigerated => "RF",
+            CargoRole.LiquidOilDerivatives => "OL",
+            CargoRole.GasOilDerivatives => "GS",
+            CargoRole.LiquidChemicals => "CH",
+            CargoRole.LiquidFood => "FD",
+            CargoRole.Powders => "PD",
+            CargoRole.RoadVehicles => "VT",
+            CargoRole.Livestock => "LS",
+            CargoRole.Passenger => "PS",
+            CargoRole.MilitaryEnclosed => "XB",
+            CargoRole.MilitaryFlatbed => "XF",
+            CargoRole.MilitaryNuclearFlasks => "XN",
+            _ => string.Empty,
+        };
 
         private class CarSettings
         {
