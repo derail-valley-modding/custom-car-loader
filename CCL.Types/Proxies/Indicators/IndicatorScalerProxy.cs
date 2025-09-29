@@ -27,7 +27,7 @@ namespace CCL.Types.Proxies.Indicators
             if (drawAsBox)
             {
                 // Bleh
-                Gizmos.color = Color.blue;
+                Gizmos.color = MID_COLOR;
                 Gizmos.DrawLine(new Vector3(startScale.x, startScale.y, startScale.z) * 0.5f, new Vector3(endScale.x, endScale.y, endScale.z) * 0.5f);
                 Gizmos.DrawLine(new Vector3(startScale.x, startScale.y, -startScale.z) * 0.5f, new Vector3(endScale.x, endScale.y, -endScale.z) * 0.5f);
                 Gizmos.DrawLine(new Vector3(startScale.x, -startScale.y, startScale.z) * 0.5f, new Vector3(endScale.x, -endScale.y, endScale.z) * 0.5f);
@@ -37,19 +37,19 @@ namespace CCL.Types.Proxies.Indicators
                 Gizmos.DrawLine(new Vector3(-startScale.x, -startScale.y, startScale.z) * 0.5f, new Vector3(-endScale.x, -endScale.y, endScale.z) * 0.5f);
                 Gizmos.DrawLine(new Vector3(-startScale.x, -startScale.y, -startScale.z) * 0.5f, new Vector3(-endScale.x, -endScale.y, -endScale.z) * 0.5f);
 
-                Gizmos.color = Color.red;
+                Gizmos.color = START_COLOR;
                 Gizmos.DrawWireCube(Vector3.zero, startScale);
-                Gizmos.color = Color.green;
+                Gizmos.color = END_COLOR;
                 Gizmos.DrawWireCube(Vector3.zero, endScale);
             }
             else
             {
-                Gizmos.color = Color.blue;
+                Gizmos.color = MID_COLOR;
                 Gizmos.DrawLine(new Vector3(-endScale.x, 0, 0) * 0.5f, new Vector3(endScale.x, 0, 0) * 0.5f);
                 Gizmos.DrawLine(new Vector3(0, -endScale.y, 0) * 0.5f, new Vector3(0, endScale.y, 0) * 0.5f);
                 Gizmos.DrawLine(new Vector3(0, 0, -endScale.z) * 0.5f, new Vector3(0, 0, endScale.z) * 0.5f);
 
-                Gizmos.color = Color.red;
+                Gizmos.color = START_COLOR;
                 Gizmos.DrawLine(new Vector3(startScale.x, -0.1f, 0) * 0.5f, new Vector3(startScale.x, 0.1f, 0) * 0.5f);
                 Gizmos.DrawLine(new Vector3(-startScale.x, -0.1f, 0) * 0.5f, new Vector3(-startScale.x, 0.1f, 0) * 0.5f);
                 Gizmos.DrawLine(new Vector3(0, -0.1f, startScale.z) * 0.5f, new Vector3(0, 0.1f, startScale.z) * 0.5f);
@@ -57,7 +57,7 @@ namespace CCL.Types.Proxies.Indicators
                 Gizmos.DrawWireCube(Vector3.up * startScale.y * 0.5f, s_flatCube);
                 Gizmos.DrawWireCube(Vector3.down * startScale.y * 0.5f, s_flatCube);
 
-                Gizmos.color = Color.green;
+                Gizmos.color = END_COLOR;
                 Gizmos.DrawLine(new Vector3(endScale.x, -0.1f, 0) * 0.5f, new Vector3(endScale.x, 0.1f, 0) * 0.5f);
                 Gizmos.DrawLine(new Vector3(-endScale.x, -0.1f, 0) * 0.5f, new Vector3(-endScale.x, 0.1f, 0) * 0.5f);
                 Gizmos.DrawLine(new Vector3(0, -0.1f, endScale.z) * 0.5f, new Vector3(0, 0.1f, endScale.z) * 0.5f);

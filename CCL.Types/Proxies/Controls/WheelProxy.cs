@@ -44,10 +44,9 @@ namespace CCL.Types.Proxies.Controls
 
         [Header("Editor visualization")]
         public float gizmoScale = 0.5f;
+        public float angleOffset = 0;
 
         protected const int GIZMO_SEGMENTS = 40;
-        protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
-        protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
 
         public override void OnValidate()
         {
@@ -59,41 +58,15 @@ namespace CCL.Types.Proxies.Controls
 
         private void OnDrawGizmos()
         {
-            Gizmos.matrix = transform.localToWorldMatrix;
-
-            Gizmos.DrawLine(Vector3.zero, jointAxis * gizmoScale);
-
-            var cross = Vector3.Cross(jointAxis, Quaternion.Euler(90, 0, 0) * jointAxis).normalized * gizmoScale;
-
             if (useLimits)
             {
-                cross = Quaternion.AngleAxis(jointLimitMin, jointAxis) * cross;
-                Gizmos.color = START_COLOR;
-                Gizmos.DrawLine(Vector3.zero, cross);
+                GizmoUtil.DrawLocalRotationArc(transform, jointLimitMin, jointLimitMax, jointAxis,
+                    START_COLOR, END_COLOR, MID_COLOR, gizmoScale, angleOffset);
             }
-
-            var prev = cross;
-            var rot = Quaternion.AngleAxis((useLimits ? jointLimitMax - jointLimitMin : 360.0f) / GIZMO_SEGMENTS, jointAxis);
-
-            for (int i = 0; i < GIZMO_SEGMENTS; i++)
+            else
             {
-                var normal = (float)i / GIZMO_SEGMENTS;
-
-                cross = rot * cross;
-
-                Gizmos.color = Color.Lerp(START_COLOR, END_COLOR, normal);
-                Gizmos.DrawLine(prev, cross);
-
-                prev = cross;
+                GizmoUtil.DrawLocalCircle(transform, jointAxis, START_COLOR, END_COLOR, MID_COLOR, gizmoScale, angleOffset);
             }
-
-            if (useLimits)
-            {
-                Gizmos.color = END_COLOR;
-                Gizmos.DrawLine(Vector3.zero, cross);
-            }
-
-            Gizmos.matrix = Matrix4x4.identity;
         }
     }
 }

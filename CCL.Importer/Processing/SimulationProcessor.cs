@@ -100,11 +100,16 @@ namespace CCL.Importer.Processing
             }
 
             // In the event we have a sim controller and *not* a damage controller, we need to add a dummy damage controller
-            var needsDamageController = simController &&
-                !livery.prefab.GetComponentInChildren<DamageController>(true);
-            if (needsDamageController)
+            var damageController = livery.prefab.GetComponentInChildren<DamageController>(true);
+            if (simController && !damageController)
             {
-                AttachDummyDamageController(livery.prefab);
+                damageController = AttachDummyDamageController(livery.prefab);
+            }
+
+            // Add the windows breaking controller manually now.
+            if (damageController)
+            {
+                damageController.windows = livery.prefab.GetComponentInChildren<WindowsBreakingController>(true);
             }
 
             if (livery.prefab.TryGetComponent<MultipleUnitModule>(out var mum))
@@ -113,11 +118,13 @@ namespace CCL.Importer.Processing
             }
         }
 
-        private static void AttachDummyDamageController(GameObject prefab)
+        private static DamageController AttachDummyDamageController(GameObject prefab)
         {
-            if (!prefab.GetComponentInChildren<DamageController>())
+            var damageController = prefab.GetComponentInChildren<DamageController>(true);
+
+            if (damageController == null)
             {
-                var damageController = prefab.AddComponent<DamageController>();
+                damageController = prefab.AddComponent<DamageController>();
                 damageController.windows = null;
                 damageController.bodyDamagerPortIds = new string[0];
                 damageController.bodyHealthStateExternalInPortIds = new string[0];
@@ -129,6 +136,8 @@ namespace CCL.Importer.Processing
                 damageController.electricalPTHealthStateExternalInPortIds = new string[0];
                 damageController.electricalPTOffExternalInPortIds = new string[0];
             }
+
+            return damageController;
         }
 
         private static void AddAdditionalControllers(GameObject prefab)

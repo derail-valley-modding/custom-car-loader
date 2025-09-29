@@ -28,8 +28,10 @@ namespace CCL.Types.Proxies.Controls
         {
             Vector3 pressedOffset = transform.TransformPoint(Vector3.back * linearLimit);
 
-            Gizmos.color = Color.green;
+            Gizmos.color = END_COLOR;
             Gizmos.DrawLine(transform.position, pressedOffset);
+            Gizmos.color = START_COLOR;
+            Gizmos.DrawWireSphere(transform.position, 0.005f);
         }
     }
 }

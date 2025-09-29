@@ -19,11 +19,8 @@ namespace CCL.Types.Proxies.Controls
         public Vector3 touchInteractionAxis = Vector3.up;
         public bool disableTouchUse;
 
-
         protected const float GIZMO_RADIUS = 0.05f;
         protected const int GIZMO_SEGMENTS = 10;
-        protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
-        protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
 
         private void OnDrawGizmos()
         {
