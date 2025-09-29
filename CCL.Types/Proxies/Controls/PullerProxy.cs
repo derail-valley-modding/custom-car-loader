@@ -30,7 +30,7 @@ namespace CCL.Types.Proxies.Controls
 
         private void OnDrawGizmos()
         {
-            Vector3 movedOffset = transform.TransformPoint(Vector3.up * linearLimit * 2.0f);
+            Vector3 movedOffset = transform.TransformPoint(Vector3.up * linearLimit * -2.0f);
 
             Gizmos.color = START_COLOR;
             Gizmos.DrawWireSphere(transform.position, 0.01f);

@@ -26,12 +26,12 @@ namespace CCL.Types.Proxies.Controls
 
         private void OnDrawGizmos()
         {
-            Vector3 pressedOffset = transform.TransformPoint(Vector3.back * linearLimit);
+            Vector3 pressedOffset = transform.TransformPoint(Vector3.forward * linearLimit);
 
             Gizmos.color = END_COLOR;
             Gizmos.DrawLine(transform.position, pressedOffset);
             Gizmos.color = START_COLOR;
-            Gizmos.DrawWireSphere(transform.position, 0.005f);
+            Gizmos.DrawWireSphere(transform.position, 0.0025f);
         }
     }
 }
