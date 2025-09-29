@@ -1,5 +1,7 @@
 ﻿using CCL.Types;
+using CCL.Types.Components;
 using CCL.Types.Proxies;
+using CCL.Types.Proxies.Controls;
 using UnityEditor;
 using UnityEngine;
 
@@ -69,6 +71,35 @@ namespace CCL.Creator.Wizards
 
         [MenuItem("GameObject/CCL/Add License Blocker", true, MenuOrdering.Body.LicenseBlocker)]
         public static bool CreateLicenseBlockerValidate()
+        {
+            return Selection.activeGameObject;
+        }
+
+        [MenuItem("GameObject/CCL/Add Bed", false, MenuOrdering.Interior.Bed)]
+        public static void CreateBed(MenuCommand command)
+        {
+            var target = (GameObject)command.context;
+
+            var bed = new GameObject("Bed");
+            bed.transform.parent = target.transform;
+
+            var comp = bed.AddComponent<BedSleepingProxy>();
+
+            var button = new GameObject("Button").AddComponent<ButtonProxy>();
+            button.transform.parent = bed.transform;
+            button.gameObject.AddComponent<BedButtonProperties>();
+
+            var pillow = new GameObject("Pillow");
+            pillow.transform.parent = bed.transform;
+            pillow.transform.localEulerAngles = new Vector3(29.387f, 82.06f, -7.238f);
+
+            comp.fadeTime = 1.3f;
+            comp.waitBeforeUnfade = 1.5f;
+            comp.pillowTarget = pillow.transform;
+        }
+
+        [MenuItem("GameObject/CCL/Add Bed", true, MenuOrdering.Interior.Bed)]
+        public static bool CreateBedValidate()
         {
             return Selection.activeGameObject;
         }

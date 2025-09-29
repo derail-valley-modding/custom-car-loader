@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
+using DV.CabControls.VRTK;
 using System.ComponentModel.Composition;
 using UnityEngine;
 
@@ -20,6 +21,11 @@ namespace CCL.Importer.Processing
             foreach (var prefab in context.Car.AllPrefabs)
             {
                 ProcessSetPhysicsMaterial(prefab);
+            }
+
+            if (context.Car.interiorPrefab != null)
+            {
+
             }
         }
 
@@ -62,6 +68,18 @@ namespace CCL.Importer.Processing
 
             Object.Instantiate(AORectangle, comp.transform).transform.ResetLocal();
             Object.Destroy(comp);
+        }
+
+        private static void ProcessBedButtonProperties(GameObject prefab)
+        {
+            var comps = prefab.GetComponentsInChildren<BedButtonProperties>();
+
+            foreach (var comp in comps)
+            {
+                comp.gameObject.AddComponent<VRTK_InteractablePriorityOverride>().priority = -1;
+                comp.gameObject.AddComponent<InfoAreaBed>().infoType = InteractionInfoType.Bed;
+                Object.Destroy(comp);
+            }
         }
     }
 }

@@ -26,6 +26,11 @@
             public const int LicenseBlocker = 202;
         }
 
+        public static class Interior
+        {
+            public const int Bed = 300;
+        }
+
         public static class Particles
         {
             public const int Diesel = 0;
