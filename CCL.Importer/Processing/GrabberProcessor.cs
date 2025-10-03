@@ -74,10 +74,18 @@ namespace CCL.Importer.Processing
 
                     var organised = group.GroupBy(x => _discriminator(x), StringComparer.Ordinal);
 
+                    // If the new group only has 1 entry still, ignore the discriminator,
+                    // as it is likely a duplicate.
+                    if (organised.Count() < 2)
+                    {
+                        _cachedResources.Add(group.Key, group.First());
+                        continue;
+                    }
+
                     foreach (var newGroup in organised)
                     {
                         // If there is no discriminator key, just add with the original name,
-                        // else
+                        // else add the discriminator to the name.
                         if (string.IsNullOrEmpty(newGroup.Key))
                         {
                             _cachedResources.Add(group.Key, group.First());

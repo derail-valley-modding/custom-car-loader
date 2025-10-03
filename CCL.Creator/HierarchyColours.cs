@@ -206,6 +206,16 @@ namespace CCL.Creator
                     }
                     break;
 
+                // Lights.
+                case "FrontSide":
+                case "RearSide":
+                    if (go.transform.parent != null && go.transform.parent.name == "[headlights]")
+                    {
+                        content = EditorGUIUtility.IconContent("Lighting");
+                        txC = EditorHelpers.Colors.CONFIRM_ACTION;
+                    }
+                    break;
+
                 // Ignore this entirely for everything else.
                 default:
                     return;

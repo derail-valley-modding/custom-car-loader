@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static CCL.Types.GizmoUtil;
 
 namespace CCL.Types.Proxies
 {
@@ -9,18 +10,18 @@ namespace CCL.Types.Proxies
         public float waitBeforeUnfade = 1.5f;
         public Transform pillowTarget = null!;
 
-        private void OnDrawGizmosSelected()
+        private void OnDrawGizmos()
         {
             if (pillowTarget == null) return;
 
-            var pos = pillowTarget.position;
-            Gizmos.DrawSphere(pos, 0.11f);
-            Gizmos.DrawLine(pos, pos + pillowTarget.up);
-            Gizmos.DrawSphere(pos + pillowTarget.right * 0.15f, 0.05f);
-            Gizmos.DrawSphere(pos + pillowTarget.right * 0.30f, 0.05f);
-            Gizmos.DrawSphere(pos + pillowTarget.right * 0.45f, 0.05f);
-            Gizmos.DrawSphere(pos + pillowTarget.right * 0.60f, 0.05f);
-            Gizmos.DrawSphere(pos, 0.11f);
+            using (new MatrixScope(pillowTarget.localToWorldMatrix))
+            {
+                Gizmos.DrawLine(Vector3.zero, new Vector3(0, 0.3f, 0));
+                Gizmos.DrawWireCube(new Vector3(0.4f, 0, 0), new Vector3(0.6f, 0.1f, 0.2f));
+                Gizmos.DrawWireCube(new Vector3(0.3f, 0, 0.2f), new Vector3(0.4f, 0.1f, 0.1f));
+                Gizmos.DrawWireCube(new Vector3(0.3f, 0, -0.2f), new Vector3(0.4f, 0.1f, 0.1f));
+                Gizmos.DrawWireSphere(Vector3.zero, 0.11f);
+            }
         }
     }
 }

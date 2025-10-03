@@ -22,7 +22,7 @@ namespace CCL.Types.Proxies.Controls
 
         [Header("VR")]
         public bool disableTouchUse;
-        public VRButtonAlias overrideUseButton;
+        public VRControllerButton overrideUseButton;
 
         private void OnDrawGizmos()
         {

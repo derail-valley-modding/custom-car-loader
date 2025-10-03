@@ -87,7 +87,14 @@ namespace CCL.Creator.Wizards
 
             var button = new GameObject("Button").AddComponent<ButtonProxy>();
             button.transform.parent = bed.transform;
+            button.gameObject.AddComponent<BoxCollider>();
+            button.gameObject.AddComponent<HighlightTagProxy>();
             button.gameObject.AddComponent<BedButtonProperties>();
+            button.colliderGameObjects = new[] { button.gameObject };
+            button.createRigidbody = false;
+            button.useJoints = false;
+            button.disableTouchUse = true;
+            button.overrideUseButton = VRControllerButton.Grip;
 
             var pillow = new GameObject("Pillow");
             pillow.transform.parent = bed.transform;
@@ -96,6 +103,8 @@ namespace CCL.Creator.Wizards
             comp.fadeTime = 1.3f;
             comp.waitBeforeUnfade = 1.5f;
             comp.pillowTarget = pillow.transform;
+
+            EditorUtility.DisplayDialog("Bed Wizard", "Don't forget to add a mesh highlight", "OK");
         }
 
         [MenuItem("GameObject/CCL/Add Bed", true, MenuOrdering.Interior.Bed)]

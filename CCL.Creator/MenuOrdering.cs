@@ -9,6 +9,7 @@
             public const int CarWizard = 100;
             public const int CargoWizard = 101;
             public const int LanguagePreview = 200;
+            public const int Calculator = 300;
         }
 
         public static class Cab
