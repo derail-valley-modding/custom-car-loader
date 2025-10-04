@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
+using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace CCL.Creator.Wizards
@@ -13,14 +16,16 @@ namespace CCL.Creator.Wizards
             window.titleContent = new GUIContent("CCL - Calculator");
         }
 
-        private static GUIContent[] s_modes = new[]
+        private static readonly GUIContent[] s_modes = new[]
         {
             new GUIContent("Speed/RPM",
                 "Convert between speed and RPM"),
             new GUIContent("Power/Force",
                 "Convert between power and force"),
             new GUIContent("Steam Tractive Effort",
-                "Approximate tractive effort for steam locomotives")
+                "Approximate tractive effort for steam locomotives"),
+            new GUIContent("Adhesion Limit",
+                "Adhesion limit")
         };
 
         private SerializedObject _editor = null!;
@@ -48,13 +53,16 @@ namespace CCL.Creator.Wizards
                 switch (_mode)
                 {
                     case 0:
-                        DrawSpeedRPM();
+                        _speedRpm.Draw();
                         break;
                     case 1:
-                        DrawPowerForce();
+                        _powerForce.Draw();
                         break;
                     case 2:
-                        DrawSteamTE();
+                        _steamTE.Draw();
+                        break;
+                    case 3:
+                        _adhesionLimit.Draw();
                         break;
                     default:
                         EditorGUILayout.HelpBox("Please select an option above!", MessageType.Info);
@@ -63,114 +71,168 @@ namespace CCL.Creator.Wizards
             }
 
             EditorGUILayout.EndScrollView();
+            _editor.ApplyModifiedProperties();
         }
 
         #region Speed/RPM
 
-        private float _wheelRadius = 0.459f;
-        private float _speed;
-        private float _rpm = 0.0f;
-        private float _gearRatio = 1.0f;
-
-        private void DrawSpeedRPM()
+        [Serializable]
+        private class SpeedRPM
         {
-            EditorGUILayout.HelpBox("Fill in 3 values to calculate the 4th", MessageType.Info);
+            public float WheelRadius = 0.459f;
+            public float Speed;
+            public float RPM = 0.0f;
+            public float GearRatio = 1.0f;
 
-            float circumference = 2.0f * Mathf.PI * _wheelRadius;
-            float speedMS = _speed / 3.6f;
-
-            _wheelRadius = EditorGUILayout.FloatField("Wheel Radius (m)", _wheelRadius);
-            circumference = 2.0f * Mathf.PI * _wheelRadius;
-
-            if (GUILayout.Button("Calculate Radius"))
+            public void Draw()
             {
-                circumference = speedMS * 60.0f / (_rpm / _gearRatio);
-                _wheelRadius = circumference / (2.0f  * Mathf.PI);
-            }
+                EditorGUILayout.HelpBox("Fill in 3 values to calculate the 4th", MessageType.Info);
 
-            _speed = EditorGUILayout.FloatField("Speed (km/h)", _speed);
-            speedMS = _speed / 3.6f;
+                WheelRadius = EditorGUILayout.FloatField("Wheel Radius (m)", WheelRadius);
+                float circumference = MathHelper.Tau * WheelRadius;
+                float speedMS = Speed * Units.KMHtoMS;
 
-            if (GUILayout.Button("Calculate Speed"))
-            {
-                speedMS = _rpm / _gearRatio * circumference / 60.0f;
-                _speed = speedMS * 3.6f;
-            }
+                if (GUILayout.Button("Calculate Radius"))
+                {
+                    circumference = speedMS * 60.0f / (RPM / GearRatio);
+                    WheelRadius = circumference / MathHelper.Tau;
+                }
 
-            _rpm = EditorGUILayout.FloatField("RPM", _rpm);
+                Speed = EditorGUILayout.FloatField("Speed (km/h)", Speed);
+                speedMS = Speed * Units.KMHtoMS;
 
-            if (GUILayout.Button("Calculate RPM"))
-            {
-                _rpm = speedMS * 60.0f / circumference * _gearRatio;
-            }
+                if (GUILayout.Button("Calculate Speed"))
+                {
+                    speedMS = RPM / GearRatio * circumference / 60.0f;
+                    Speed = speedMS * Units.MSToKMH;
+                }
 
-            _gearRatio = EditorGUILayout.FloatField("Gear Ratio", _gearRatio);
+                RPM = EditorGUILayout.FloatField("RPM", RPM);
 
-            if (GUILayout.Button("Calculate Gear Ratio"))
-            {
-                _gearRatio = speedMS * 60.0f / circumference * (1.0f / _rpm);
-                _gearRatio = 1.0f / _gearRatio;
+                if (GUILayout.Button("Calculate RPM"))
+                {
+                    RPM = speedMS * 60.0f / circumference * GearRatio;
+                }
+
+                GearRatio = EditorGUILayout.FloatField("Gear Ratio", GearRatio);
+
+                if (GUILayout.Button("Calculate Gear Ratio"))
+                {
+                    GearRatio = speedMS * 60.0f / circumference * (1.0f / RPM);
+                    GearRatio = 1.0f / GearRatio;
+                }
             }
         }
+
+        [SerializeField]
+        private SpeedRPM _speedRpm = new SpeedRPM();
 
         #endregion
 
         #region Power/Force
 
-        private float _power;
-        private float _force;
-
-        private void DrawPowerForce()
+        [Serializable]
+        private class PowerForce
         {
-            EditorGUILayout.HelpBox("Fill in 2 values to calculate the 3rd", MessageType.Info);
+            public float Power;
+            public MetricPrefix PowerPrefix = MetricPrefix.Kilo;
+            public float Force;
+            public MetricPrefix ForcePrefix = MetricPrefix.Kilo;
+            public float Speed;
 
-            float speedMS = _speed / 3.6f;
-
-            _power = EditorGUILayout.FloatField("Power (W)", _power);
-
-            if (GUILayout.Button("Calculate Power"))
+            public void Draw()
             {
-                _power = _force * speedMS;
-            }
+                EditorGUILayout.HelpBox("Fill in 2 values to calculate the 3rd", MessageType.Info);
 
-            _force = EditorGUILayout.FloatField("Force (N)", _force);
+                float speedMS = Speed * Units.KMHtoMS;
 
-            if (GUILayout.Button("Calculate Force"))
-            {
-                _force = _power / speedMS;
-            }
+                Power = EditorHelpers.FloatFieldWithPrefix("Power (W)", Power, ref PowerPrefix);
 
-            _speed = EditorGUILayout.FloatField("Speed (km/h)", _speed);
+                if (GUILayout.Button("Calculate Power"))
+                {
+                    Power = Force * speedMS;
+                }
 
-            if (GUILayout.Button("Calculate Speed"))
-            {
-                speedMS = _power / _force;
-                _speed = speedMS * 3.6f;
+                Force = EditorHelpers.FloatFieldWithPrefix("Force (N)", Force, ref ForcePrefix);
+
+                if (GUILayout.Button("Calculate Force"))
+                {
+                    Force = Power / speedMS;
+                }
+
+                Speed = EditorGUILayout.FloatField("Speed (km/h)", Speed);
+
+                if (GUILayout.Button("Calculate Speed"))
+                {
+                    speedMS = Power / Force;
+                    Speed = speedMS * Units.MSToKMH;
+                }
             }
         }
+
+        [SerializeField]
+        private PowerForce _powerForce = new PowerForce();
 
         #endregion
 
         #region Steam TE
 
-        private float _pressure = 14;
-        private float _cylinderBore = 0.61f;
-        private float _pistonStroke = 0.711f;
-        private float _driverRadius = 0.712f;
-        private int _cylCount = 2;
-
-        private void DrawSteamTE()
+        [Serializable]
+        private class SteamTE
         {
-            _pressure = EditorGUILayout.FloatField("Boiler Pressure (bar)", _pressure);
-            _cylinderBore = EditorGUILayout.FloatField("Cylinder Bore (m)", _cylinderBore);
-            _pistonStroke = EditorGUILayout.FloatField("Piston Stroke (m)", _pistonStroke);
-            _driverRadius = EditorGUILayout.FloatField("Driver Radius (m)", _driverRadius);
-            _cylCount = Mathf.Max(1, EditorGUILayout.IntField("Number Of Cylinders", _cylCount));
+            public float Pressure = 14;
+            public float CylinderBore = 0.61f;
+            public float PistonStroke = 0.711f;
+            public float DriverRadius = 0.712f;
+            public float Cutoff = 85.0f;
+            public int CylCount = 2;
 
-            float result = 0.85f * _cylCount * _pressure * _cylinderBore * _cylinderBore * _pistonStroke / (_driverRadius * 4.0f);
+            public void Draw()
+            {
+                Pressure = EditorGUILayout.FloatField("Boiler Pressure (bar)", Pressure);
+                CylinderBore = EditorGUILayout.FloatField("Cylinder Bore (m)", CylinderBore);
+                PistonStroke = EditorGUILayout.FloatField("Piston Stroke (m)", PistonStroke);
+                DriverRadius = EditorGUILayout.FloatField("Driver Radius (m)", DriverRadius);
+                Cutoff = EditorGUILayout.Slider("Cutoff (%)", Cutoff, 0, 100);
+                CylCount = Mathf.Max(1, EditorGUILayout.IntField("Number Of Cylinders", CylCount));
 
-            EditorGUILayout.LabelField("Tractive Effort", $"{result * 100000.0f:F0} N");
+                var result = Cutoff * CylCount * Pressure * CylinderBore * CylinderBore * PistonStroke / (DriverRadius * 400.0f);
+
+                EditorGUILayout.LabelField("Tractive Effort", $"{result * Units.BarToPascal:F0} N");
+
+                // TODO: Compounding?
+            }
         }
+
+        [SerializeField]
+        private SteamTE _steamTE = new SteamTE();
+
+        #endregion
+
+        #region Adhesion Limit
+
+        [Serializable]
+        private class AdhesionLimit
+        {
+            private float TotalWeight = 38200;
+            private float FrictionCoeff = 0.2f;
+            private int TotalAxles = 2;
+            private int PoweredAxles = 2;
+
+            public void Draw()
+            {
+                TotalWeight = EditorGUILayout.FloatField("Total Weight (kg)", TotalWeight);
+                FrictionCoeff = EditorGUILayout.FloatField("Friction Coefficient", FrictionCoeff);
+                TotalAxles = EditorGUILayout.IntField("Total Axles", TotalAxles);
+                PoweredAxles = EditorGUILayout.IntField("Powered Axles", PoweredAxles);
+
+                var result = TotalWeight * Units.Gravity / TotalAxles * PoweredAxles * FrictionCoeff;
+                EditorGUILayout.LabelField("Adhesion Limit", $"{result:F0} N");
+            }
+        }
+
+        [SerializeField]
+        private AdhesionLimit _adhesionLimit = new AdhesionLimit();
 
         #endregion
     }

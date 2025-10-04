@@ -12,6 +12,7 @@ namespace CCL.Importer.Components
         public string FormatString = string.Empty;
         public int Offset = 0;
         public CopyId CopyIdFrom;
+        public int TrainsetIndex;
 
         private IEnumerator Start()
         {
@@ -64,7 +65,14 @@ namespace CCL.Importer.Components
                                 break;
                             case CarManager.TrainSetCompleteness.Complete:
                                 found = true;
-                                car = set[0];
+
+                                if (TrainsetIndex < 0 || TrainsetIndex >= set.Length)
+                                {
+                                    Debug.LogWarning($"Trainset index in VehicleIdToTMP is out of range, clamping to range: {TrainsetIndex} - {set.Length}");
+                                    TrainsetIndex = Mathf.Clamp(TrainsetIndex, 0, set.Length - 1);
+                                }
+
+                                car = set[TrainsetIndex];
                                 break;
                             default:
                                 break;
@@ -107,6 +115,8 @@ namespace CCL.Importer.Components
             var number = int.Parse(partId) + Offset;
 
             SetTexts($"{(string.IsNullOrWhiteSpace(FormatString) ? number : string.Format(FormatString, number))}");
+
+            Destroy(this);
         }
 
         private void SetTexts(string text)

@@ -18,5 +18,9 @@ namespace CCL.Types.Components
         public string FormatString = string.Empty;
         public int Offset = 0;
         public CopyId CopyIdFrom;
+        [Min(0), EnableIf(nameof(EnableIndex))]
+        public int TrainsetIndex;
+
+        private bool EnableIndex() => CopyIdFrom == CopyId.Trainset;
     }
 }
