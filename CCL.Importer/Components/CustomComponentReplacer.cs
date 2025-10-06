@@ -57,6 +57,8 @@ namespace CCL.Importer.Components
             CreateMap<IndicatorShaderCustomValue, IndicatorShaderCustomValueInternal>().AutoCacheAndMap();
             CreateMap<IndicatorTMP, IndicatorTMPInternal>().AutoCacheAndMap();
             CreateMap<IndicatorGaugeDelta, IndicatorGaugeDeltaInternal>().AutoCacheAndMap();
+
+            CreateMap<IndicatorHandbrakeReader, IndicatorHandbrakeReaderInternal>().AutoCacheAndMap();
         }
 
         private void MapSimulation()
@@ -100,6 +102,9 @@ namespace CCL.Importer.Components
 
         private void MapControls()
         {
+            CreateMap<ControlConstantFeeder, ControlConstantFeederInternal>().AutoCacheAndMap();
+            CreateMap<ControlRatchetFeeder, ControlRatchetFeederInternal>().AutoCacheAndMap();
+
             CreateMap<PullableRope, PullableRopeInternal>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
 

@@ -36,6 +36,14 @@ namespace CCL.Creator.Validators
                 }
             }
 
+            foreach (var feeder in prefab.GetComponentsInChildren<InteractablePortFeederProxy>())
+            {
+                if (string.IsNullOrEmpty(feeder.portId))
+                {
+                    result.Warning($"Missing Port ID in InteractablePortFeeder '{feeder.name}'", feeder);
+                }
+            }
+
             return true;
         }
     }

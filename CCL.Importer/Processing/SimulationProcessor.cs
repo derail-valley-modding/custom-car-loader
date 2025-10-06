@@ -44,9 +44,21 @@ namespace CCL.Importer.Processing
                     livery.interiorPrefab.AddComponent<InteriorControlsManager>();
                 }
             }
+            if (livery.explodedInteriorPrefab)
+            {
+                AddAdditionalControllers(livery.explodedInteriorPrefab);
+                if (!livery.explodedInteriorPrefab.GetComponent<InteriorControlsManager>())
+                {
+                    livery.explodedInteriorPrefab.AddComponent<InteriorControlsManager>();
+                }
+            }
             if (livery.externalInteractablesPrefab)
             {
                 AddAdditionalControllers(livery.externalInteractablesPrefab);
+            }
+            if (livery.explodedExternalInteractablesPrefab)
+            {
+                AddAdditionalControllers(livery.explodedExternalInteractablesPrefab);
             }
 
             // Add Control Override components
