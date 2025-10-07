@@ -121,6 +121,13 @@ namespace CCL.Importer
 
             pack.AfterImport();
 
+            if (pack.Cars.ContainsDuplicates(x => x.id))
+            {
+                CCLPlugin.Error($"Pack {pack.PackId} contains duplicate car IDs");
+                LoadFailures.Add($"[Pack] {pack.PackId} (duplicate car IDs)");
+                return loaded;
+            }
+
             // Generate procedural materials.
             if (pack.ProceduralMaterials != null)
             {
@@ -181,6 +188,12 @@ namespace CCL.Importer
             try
             {
                 // Ensure no duplicate IDs ever load, entire game dies otherwise.
+                if (car.liveries.ContainsDuplicates(x => x.id))
+                {
+                    CCLPlugin.Error($"Failed to load car {car.id}, liveries contain duplicate IDs");
+                    return false;
+                }
+
                 if (Globals.G.Types.carTypes.Any(x => x.id == car.id))
                 {
                     CCLPlugin.Error($"Failed to load car {car.id}, car ID already ingame");
@@ -570,21 +583,35 @@ namespace CCL.Importer
             }
         }
 
+        /// <summary>
+        /// Returns <see langword="true"/> if the <see cref="TrainCarType_v2"/> is enabled in CCL's settings.
+        /// </summary>
         public static bool IsCarTypeEnabled(TrainCarType_v2 type)
         {
             return !CCLPlugin.Settings.DisabledIds.Contains(type.id);
         }
 
+        /// <summary>
+        /// Returns <see langword="true"/> if the parent type of the <see cref="TrainCarLivery"/> is enabled in CCL's settings.
+        /// </summary>
         public static bool IsCarLiveryEnabled(TrainCarLivery livery)
         {
             return IsCarTypeEnabled(livery.parentType);
         }
 
-        public static bool IsTrainsetEnabled(TrainCarLivery[] trainset)
+        /// <summary>
+        /// Returns <see langword="true"/> if the trainset is enabled in CCL's settings.
+        /// </summary>
+        /// <param name="trainset">The livery array of the trainset.</param>
+        /// <param name="requireAll">Whether all liveries must be enabled or just a single one.</param>
+        public static bool IsTrainsetEnabled(TrainCarLivery[] trainset, bool requireAll = true)
         {
-            return trainset.Any(x => IsCarLiveryEnabled(x));
+            return requireAll ? trainset.All(x => IsCarLiveryEnabled(x)) : trainset.Any(x => IsCarLiveryEnabled(x));
         }
 
+        /// <summary>
+        /// Returns <see langword="true"/> if any livery with the provided ID is enabled.
+        /// </summary>
         public static bool IsAnyLiveryEnabled(IEnumerable<string> liveryIds)
         {
             foreach (string id in liveryIds)

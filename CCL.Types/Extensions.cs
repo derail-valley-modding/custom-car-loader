@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types
@@ -110,6 +111,19 @@ namespace CCL.Types
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
         {
             (list[indexB], list[indexA]) = (list[indexA], list[indexB]);
+        }
+
+        // https://stackoverflow.com/a/23797795
+        public static bool ContainsDuplicates<T>(this IEnumerable<T> enumerable)
+        {
+            var knownKeys = new HashSet<T>();
+            return enumerable.Any(item => !knownKeys.Add(item));
+        }
+
+        public static bool ContainsDuplicates<T, TIdentifier>(this IEnumerable<T> enumerable, Func<T, TIdentifier> discriminator)
+        {
+            var knownKeys = new HashSet<TIdentifier>();
+            return enumerable.Any(item => !knownKeys.Add(discriminator(item)));
         }
     }
 }

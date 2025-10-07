@@ -114,6 +114,12 @@ namespace CCL.Creator.Validators
                 overallResult.Fail("Car has no liveries");
             }
 
+            if (car.liveries.ContainsDuplicates(x => x.id))
+            {
+                overallResult.CriticalFail("Car has duplicate livery IDs!");
+                return overallResult;
+            }
+
             foreach (var livery in car.liveries)
             {
                 if (livery == null)

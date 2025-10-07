@@ -141,17 +141,21 @@ namespace CCL.Creator.Validators
 
             ValidatePack(pack);
 
-            foreach (var car in pack.Cars)
+            // No need to check cars if it already failed.
+            if (!_failed)
             {
-                try
+                foreach (var car in pack.Cars)
                 {
-                    ValidateCar(car);
-                }
-                catch (Exception e)
-                {
-                    _exception = true;
-                    Debug.LogException(e, car);
-                    break;
+                    try
+                    {
+                        ValidateCar(car);
+                    }
+                    catch (Exception e)
+                    {
+                        _exception = true;
+                        Debug.LogException(e, car);
+                        break;
+                    }
                 }
             }
 
@@ -210,6 +214,10 @@ namespace CCL.Creator.Validators
             if (pack.Cars.Any(x => x is null))
             {
                 _packResult.Fail("There are missing cars in the pack", pack);
+            }
+            else if (pack.Cars.ContainsDuplicates(x => x.id))
+            {
+                _packResult.Fail("Pack has duplicate car IDs", pack);
             }
 
             if (pack.ExtraModels.Any(x => x is null))
