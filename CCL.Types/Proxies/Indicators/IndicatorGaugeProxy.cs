@@ -3,7 +3,7 @@
 namespace CCL.Types.Proxies.Indicators
 {
     [AddComponentMenu("CCL/Proxies/Indicators/Indicator Gauge Proxy")]
-    public class IndicatorGaugeProxy : IndicatorProxy
+    public class IndicatorGaugeProxy : IndicatorProxy, ISelfValidation
     {
         public Transform needle = null!;
         public float minAngle = -180f;
@@ -14,6 +14,16 @@ namespace CCL.Types.Proxies.Indicators
         [Header("Editor visualization")]
         public float gizmoRadius = 0.1f;
         public float angleOffset = 0;
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (needle == null)
+            {
+                return this.FailForNull(nameof(needle), out message);
+            }
+
+            return this.Pass(out message);
+        }
 
         private void OnDrawGizmos()
         {

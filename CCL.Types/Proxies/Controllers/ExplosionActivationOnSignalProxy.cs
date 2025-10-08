@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Controllers
 {
     [AddComponentMenu("CCL/Proxies/Controllers/Explosion Activation On Signal Proxy")]
-    public class ExplosionActivationOnSignalProxy : MonoBehaviour, IHasPortIdFields
+    public class ExplosionActivationOnSignalProxy : MonoBehaviour, IHasPortIdFields, ISelfValidation
     {
         public float bodyDamagePercentage;
         public float wheelsDamagePercentage;
@@ -23,5 +23,15 @@ namespace CCL.Types.Proxies.Controllers
         {
             new PortIdField(this, nameof(explosionSignalPortId), explosionSignalPortId),
         };
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (explosionAnchor == null)
+            {
+                return this.FailForNull(nameof(explosionAnchor), out message);
+            }
+
+            return this.Pass(out message);
+        }
     }
 }

@@ -46,6 +46,7 @@
             public const string BOGIES = "[bogies]";
             public const string CAMERA_DAMPENING = "[camera dampening]";
             public const string FALL_SAFETY = "[fall safety]";
+            public const string DRILLING_DISABLERS = "[drilling disablers]";
         }
 
         public static class Bogies

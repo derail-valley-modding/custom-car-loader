@@ -111,6 +111,17 @@ namespace CCL.Creator
                         SetBadEntry(col ? "The collider in this object is not set as trigger" : "This object has no collider");
                     }
                     break;
+                case CarPartNames.Colliders.DRILLING_DISABLERS:
+                    if (go.transform.parent != null && go.transform.parent.name == CarPartNames.Colliders.ITEMS)
+                    {
+                        TrySetContentToTexture("DrillDisablers", "This object destroys drill disabler colliders");
+                        txC = EditorHelpers.Colors.CONFIRM_ACTION;
+                    }
+                    else
+                    {
+                        SetWarning($"This object must be under {CarPartNames.Colliders.ITEMS} to work");
+                    }
+                    break;
 
                 // Bogies.
                 case CarPartNames.Bogies.FRONT:

@@ -11,6 +11,6 @@ namespace CCL.Types.Proxies.Customization
         public MeshFilter[] drillDisableMeshes = new MeshFilter[0];
 
         [Header("Optional")]
-        public bool generateFromTrainInteriorCols;
+        public bool generateFromTrainInteriorCols = true;
     }
 }

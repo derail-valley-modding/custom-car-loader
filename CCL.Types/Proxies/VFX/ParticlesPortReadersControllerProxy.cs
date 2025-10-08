@@ -8,7 +8,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.VFX
 {
     [AddComponentMenu("CCL/Proxies/VFX/Particle Port Readers Controller Proxy")]
-    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceInstanced
+    public class ParticlesPortReadersControllerProxy : MonoBehaviour, ICustomSerialized, ICanReplaceInstanced, ISelfValidation
     {
         public enum ColorPropertyChange
         {
@@ -95,6 +95,29 @@ namespace CCL.Types.Proxies.VFX
                     item.particlesParent = go.InstancedObject!;
                 }
             }
+        }
+
+        public SelfValidationResult Validate(out string message)
+        {
+            for (int i = 0; i < particlePortReaders.Count; i++)
+            {
+                if (particlePortReaders[i].particlesParent == null)
+                {
+                    message = $"port reader at index {i} has no parent";
+                    return SelfValidationResult.Fail;
+                }
+            }
+
+            for (int i = 0; i < particleColorPortReaders.Count; i++)
+            {
+                if (particleColorPortReaders[i].particlesParent == null)
+                {
+                    message = $"color port reader at index {i} has no parent";
+                    return SelfValidationResult.Fail;
+                }
+            }
+
+            return this.Pass(out message);
         }
 
         [Serializable]

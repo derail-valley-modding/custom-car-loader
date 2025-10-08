@@ -1,6 +1,7 @@
 ﻿using CCL.Types;
 using CCL.Types.Components;
 using CCL.Types.Proxies;
+using CCL.Types.Proxies.Customization;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -89,9 +90,20 @@ namespace CCL.Creator.Validators
 
             // Items.
             var items = collidersRoot.FindSafe(CarPartNames.Colliders.ITEMS);
-            if (items != null && InvalidOrigin(items))
+            if (items != null)
             {
-                result.Warning($"{livery.id} - {CarPartNames.Colliders.ITEMS} is not at the local origin");
+                if (InvalidOrigin(items))
+                {
+                    result.Warning($"{livery.id} - {CarPartNames.Colliders.ITEMS} is not at the local origin");
+                }
+
+                foreach (var disabler in items.GetComponentsInChildren<DrillingDisablerProxy>(true))
+                {
+                    if (!HasDrillDisablerParent(disabler))
+                    {
+                        result.Warning($"{livery.id} - Drill disabler {disabler.name} is not under {CarPartNames.Colliders.DRILLING_DISABLERS}");
+                    }
+                }
             }
 
             // Camera dampening.
@@ -115,6 +127,20 @@ namespace CCL.Creator.Validators
         private static bool InvalidOrigin(Transform t)
         {
             return t.localPosition != Vector3.zero || t.localRotation != Quaternion.identity || t.localScale != Vector3.one;
+        }
+
+        private static bool HasDrillDisablerParent(DrillingDisablerProxy disabler)
+        {
+            var t = disabler.transform;
+
+            while (t.parent != null)
+            {
+                t = t.parent;
+
+                if (t.name == CarPartNames.Colliders.DRILLING_DISABLERS) return true;
+            }
+
+            return false;
         }
     }
 }

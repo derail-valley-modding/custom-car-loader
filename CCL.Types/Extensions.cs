@@ -62,16 +62,6 @@ namespace CCL.Types
             return closest;
         }
 
-        public static Vector3 Flattened(this Vector3 vector)
-        {
-            return new Vector3(vector.x, 0, vector.z);
-        }
-
-        public static Vector2 FlattenedVector2(this Vector3 vector)
-        {
-            return new Vector2(vector.x, vector.z);
-        }
-
         public static void ResetLocal(this Transform transform)
         {
             transform.localPosition = Vector3.zero;
@@ -124,6 +114,23 @@ namespace CCL.Types
         {
             var knownKeys = new HashSet<TIdentifier>();
             return enumerable.Any(item => !knownKeys.Add(discriminator(item)));
+        }
+
+        public static SelfValidationResult Pass(this ISelfValidation component, out string message)
+        {
+            message = string.Empty;
+            return SelfValidationResult.Pass;
+        }
+
+        public static SelfValidationResult FailForNull(this ISelfValidation component, string name, out string message)
+        {
+            message = $"{name} cannot be null";
+            return SelfValidationResult.Fail;
+        }
+
+        public static Component Self(this ISelfValidation component)
+        {
+            return (Component)component;
         }
     }
 }
