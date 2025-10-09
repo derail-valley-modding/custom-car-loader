@@ -127,10 +127,5 @@ namespace CCL.Types
             message = $"{name} cannot be null";
             return SelfValidationResult.Fail;
         }
-
-        public static Component Self(this ISelfValidation component)
-        {
-            return (Component)component;
-        }
     }
 }

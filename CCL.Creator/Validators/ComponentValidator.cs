@@ -10,20 +10,19 @@ namespace CCL.Creator.Validators
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
         {
-            if (livery.prefab == null) return Skip();
-
             int count = 0;
             var result = Pass();
 
             foreach (var prefab in livery.AllPrefabs)
             {
-                var components = livery.prefab.GetComponentsInChildren<ISelfValidation>();
+                var components = prefab.GetComponentsInChildren<ISelfValidation>();
 
                 count += components.Length;
 
                 foreach (var comp in components)
                 {
-                    var self = comp.Self();
+                    if (!(comp is Component self)) continue;
+
                     switch (comp.Validate(out var message))
                     {
                         case SelfValidationResult.Warning:

@@ -1,4 +1,6 @@
-﻿using DVLangHelper.Runtime;
+﻿using CCL.Types;
+using DV;
+using DVLangHelper.Runtime;
 using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "3.0.0";
+        public const string Version = "3.1.2";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
@@ -51,6 +53,12 @@ namespace CCL.Importer
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             InfoDump();
+
+            if (!VersionCheck())
+            {
+                Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
+                return false;
+            }
 
             return true;
         }
@@ -107,5 +115,7 @@ namespace CCL.Importer
                 Log($"{title}:\n{string.Join("\n", values)}");
             }
         }
+
+        private static bool VersionCheck() => int.Parse(BuildInfo.BUILDBOT_INFO.Substring(5)) >= ExporterConstants.BUILD_INT;
     }
 }

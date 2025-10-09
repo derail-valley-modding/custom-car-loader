@@ -9,6 +9,17 @@ namespace CCL.Creator.Wizards
 {
     internal class WizardlessWizards
     {
+        // This one is definitely not a wizard but oh well...
+        [MenuItem("CCL/About", false, MenuOrdering.MenuBar.About)]
+        public static void About(MenuCommand command)
+        {
+            EditorUtility.DisplayDialog("About CCL",
+                $"Custom Car Loader version {ExporterConstants.ExporterVersion}\n" +
+                $"Minimum compatible CCL editor version: {ExporterConstants.MinimumCompatibleVersion}\n" +
+                $"Minimum DV version: {ExporterConstants.MINIMUM_DV_BUILD}",
+                "Good Stuff");
+        }
+
         [MenuItem("GameObject/CCL/Add Cab", false, MenuOrdering.Body.Cab)]
         public static void CreateCab(MenuCommand command)
         {

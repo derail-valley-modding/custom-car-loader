@@ -43,6 +43,7 @@
 		<Reference Include="DVLangHelper.Data" />
 		<Reference Include="DVLangHelper.Runtime" />
 		<Reference Include="DV.BrakeSystem" />
+		<Reference Include="DV.BuildInfo" />
 		<Reference Include="DV.CabControls.Spec" />
 		<Reference Include="DV.CharacterController" />
 		<Reference Include="DV.Common" />

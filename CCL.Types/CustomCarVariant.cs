@@ -75,13 +75,13 @@ namespace CCL.Types
         {
             get
             {
-                if (prefab) yield return prefab!;
+                if (prefab != null) yield return prefab;
 
-                if (interiorPrefab) yield return interiorPrefab!;
-                if (explodedInteriorPrefab) yield return explodedInteriorPrefab!;
+                if (interiorPrefab != null) yield return interiorPrefab;
+                if (explodedInteriorPrefab != null) yield return explodedInteriorPrefab;
 
-                if (externalInteractablesPrefab) yield return externalInteractablesPrefab!;
-                if (explodedExternalInteractablesPrefab) yield return explodedExternalInteractablesPrefab!;
+                if (externalInteractablesPrefab != null) yield return externalInteractablesPrefab;
+                if (explodedExternalInteractablesPrefab != null) yield return explodedExternalInteractablesPrefab;
             }
         }
 

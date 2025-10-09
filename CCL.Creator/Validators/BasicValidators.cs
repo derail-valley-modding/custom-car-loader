@@ -25,7 +25,7 @@ namespace CCL.Creator.Validators
             if (livery.prefab.GetComponent<CustomizationPlacementMeshesProxy>() == null)
             {
                 result.Warning("Livery prefab does not have CustomizationPlacementMeshesProxy, " +
-                    "gadgets will not be able to be attached to this prefab");
+                    "gadgets will not be able to be attached to this prefab", livery.prefab);
             }
 
             return result;

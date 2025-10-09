@@ -121,45 +121,53 @@ namespace CCL.Importer
 
             pack.AfterImport();
 
-            if (pack.Cars.ContainsDuplicates(x => x.id))
+            try
             {
-                CCLPlugin.Error($"Pack {pack.PackId} contains duplicate car IDs");
-                LoadFailures.Add($"[Pack] {pack.PackId} (duplicate car IDs)");
-                return loaded;
-            }
-
-            // Generate procedural materials.
-            if (pack.ProceduralMaterials != null)
-            {
-                CCLPlugin.Log("Generating materials...");
-                ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
-            }
-            // Load paints.
-            if (pack.PaintSubstitutions.Length > 0)
-            {
-                CCLPlugin.Log("Loading paints...");
-                PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
-            }
-
-            foreach (var car in pack.Cars)
-            {
-                if (LoadCar(car))
+                if (pack.Cars.ContainsDuplicates(x => x.id))
                 {
-                    loaded.Add(car.id);
+                    CCLPlugin.Error($"Pack {pack.PackId} contains duplicate car IDs");
+                    LoadFailures.Add($"[Pack] {pack.PackId} (duplicate car IDs)");
+                    return loaded;
                 }
-                else
+
+                // Generate procedural materials.
+                if (pack.ProceduralMaterials != null)
                 {
-                    LoadFailures.Add($"[Car] {car.id} ({pack.PackId})");
+                    CCLPlugin.Log("Generating materials...");
+                    ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
                 }
-            }
+                // Load paints.
+                if (pack.PaintSubstitutions.Length > 0)
+                {
+                    CCLPlugin.Log("Loading paints...");
+                    PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
+                }
 
-            CCLPlugin.Log("Processing extra models...");
-            foreach (var model in pack.ExtraModels)
+                foreach (var car in pack.Cars)
+                {
+                    if (LoadCar(car))
+                    {
+                        loaded.Add(car.id);
+                    }
+                    else
+                    {
+                        LoadFailures.Add($"[Car] {car.id} ({pack.PackId})");
+                    }
+                }
+
+                CCLPlugin.Log("Processing extra models...");
+                foreach (var model in pack.ExtraModels)
+                {
+                    ModelProcessor.DoBasicProcessing(model);
+                }
+
+                InjectTranslations(pack);
+            }
+            catch (Exception e)
             {
-                ModelProcessor.DoBasicProcessing(model);
+                CCLPlugin.Error($"Error loading pack {pack.PackId}:\n{e}");
+                LoadFailures.Add($"[Pack] {pack.PackId} (exception)");
             }
-
-            InjectTranslations(pack);
 
             return loaded;
         }
