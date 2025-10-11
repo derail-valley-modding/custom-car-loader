@@ -1,6 +1,4 @@
-﻿using Microsoft.SqlServer.Server;
-using System;
-using System.Security.Cryptography;
+﻿using System;
 using UnityEngine;
 
 namespace CCL.Types
@@ -59,6 +57,15 @@ namespace CCL.Types
 
                     prev = cross;
                 }
+            }
+        }
+
+        public static void DrawLocalDirection(Transform pivot, Vector3 direction, Color c)
+        {
+            using (new MatrixScope(pivot.localToWorldMatrix))
+            {
+                Gizmos.color = c;
+                Gizmos.DrawLine(Vector3.zero, direction);
             }
         }
 

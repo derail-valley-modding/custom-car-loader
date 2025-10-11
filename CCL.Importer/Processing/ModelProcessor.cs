@@ -89,7 +89,11 @@ namespace CCL.Importer.Processing
 
         private static Transform CreateHolder()
         {
-            var go = new GameObject("[CCL HOLDER]");
+            var go = new GameObject("[CCL FAILURES]");
+            go.AddComponent<ScriptForLoadFailures>();
+            Object.DontDestroyOnLoad(go);
+
+            go = new GameObject("[CCL HOLDER]");
             go.SetActive(false);
             go.AddComponent<DummyScriptToInspectNonObjects>();
             Object.DontDestroyOnLoad(go);

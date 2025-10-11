@@ -36,22 +36,6 @@ namespace CCL.Importer.Processing
 
             // Map additional controllers for all prefab parts
             AddAdditionalControllers(livery.prefab);
-            if (livery.interiorPrefab)
-            {
-                AddAdditionalControllers(livery.interiorPrefab);
-                if (!livery.interiorPrefab.GetComponent<InteriorControlsManager>())
-                {
-                    livery.interiorPrefab.AddComponent<InteriorControlsManager>();
-                }
-            }
-            if (livery.explodedInteriorPrefab)
-            {
-                AddAdditionalControllers(livery.explodedInteriorPrefab);
-                if (!livery.explodedInteriorPrefab.GetComponent<InteriorControlsManager>())
-                {
-                    livery.explodedInteriorPrefab.AddComponent<InteriorControlsManager>();
-                }
-            }
             if (livery.externalInteractablesPrefab)
             {
                 AddAdditionalControllers(livery.externalInteractablesPrefab);
@@ -128,6 +112,25 @@ namespace CCL.Importer.Processing
             {
                 mum.controlsOverrider = baseOverrider;
             }
+
+            // Same as was done for the external interactables, but check if there's a BaseControlsOverrider,
+            // and add the InteriorControlsManager then.
+            if (livery.interiorPrefab)
+            {
+                AddAdditionalControllers(livery.interiorPrefab);
+                if (simController.controlsOverrider != null && !livery.interiorPrefab.GetComponent<InteriorControlsManager>())
+                {
+                    livery.interiorPrefab.AddComponent<InteriorControlsManager>();
+                }
+            }
+            if (livery.explodedInteriorPrefab)
+            {
+                AddAdditionalControllers(livery.explodedInteriorPrefab);
+                if (simController.controlsOverrider != null && !livery.explodedInteriorPrefab.GetComponent<InteriorControlsManager>())
+                {
+                    livery.explodedInteriorPrefab.AddComponent<InteriorControlsManager>();
+                }
+            }
         }
 
         private static DamageController AttachDummyDamageController(GameObject prefab)
@@ -166,6 +169,7 @@ namespace CCL.Importer.Processing
             AddController<PositionSyncConsumerController, PositionSyncConsumer>(prefab);
             AddController<OilingPointsPortController, OilingPointPortFeederReader>(prefab);
             AddController<ControlsBlockController, ControlBlocker>(prefab);
+            AddController<HandbrakeFeedersController, HandbrakeFeeder>(prefab);
 
             AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
             AddController<RopeInitialiseController, RopeBehaviour>(prefab);

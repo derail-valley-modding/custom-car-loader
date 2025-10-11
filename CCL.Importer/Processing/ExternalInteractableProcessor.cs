@@ -74,15 +74,6 @@ namespace CCL.Importer.Processing
 
             SetupFreightInteractables(interactables);
 
-            var brakeFeeders = interactables.AddComponent<HandbrakeFeedersController>();
-            brakeFeeders.RefreshChildren();
-
-            // Car has no handbrakes, delete controller.
-            if (brakeFeeders.entries.Length == 0)
-            {
-                Object.Destroy(brakeFeeders);
-            }
-
             var keyboardCtrl = interactables.AddComponent<InteractablesKeyboardControl>();
             keyboardCtrl.RefreshChildren();
 

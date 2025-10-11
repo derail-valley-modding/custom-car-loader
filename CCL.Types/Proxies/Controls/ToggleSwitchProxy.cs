@@ -27,6 +27,11 @@ namespace CCL.Types.Proxies.Controls
         {
             GizmoUtil.DrawLocalRotationArc(transform, jointLimitMin, jointLimitMax, jointAxis,
                 START_COLOR, END_COLOR, MID_COLOR, gizmoRadius, angleOffset);
+
+            if (!disableTouchUse)
+            {
+                GizmoUtil.DrawLocalDirection(transform, touchInteractionAxis * gizmoRadius, Color.Lerp(START_COLOR, END_COLOR, 0.5f));
+            }
         }
     }
 }

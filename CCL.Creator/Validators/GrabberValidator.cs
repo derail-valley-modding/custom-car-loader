@@ -65,7 +65,7 @@ namespace CCL.Creator.Validators
         {
             if (!grabber.IsValid(out var error))
             {
-                result.Fail(error);
+                result.Fail(error, grabber is Object obj ? obj : null);
             }
         }
     }

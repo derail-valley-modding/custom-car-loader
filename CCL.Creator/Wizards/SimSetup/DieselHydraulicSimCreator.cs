@@ -95,7 +95,6 @@ namespace CCL.Creator.Wizards.SimSetup
             poweredAxles.value = 4;
             poweredAxles.port = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "NUM");
 
-            var transmission = CreateSimComponent<TransmissionFixedGearDefinitionProxy>("transmission");
             var traction = CreateSimComponent<TractionDefinitionProxy>("traction");
             var tractionFeeders = CreateTractionFeeders(traction);
             var wheelslip = CreateSibling<WheelslipControllerProxy>(traction);
