@@ -69,6 +69,15 @@ namespace CCL.Types
             }
         }
 
+        public static void DrawLocalDirection(Transform pivot, Vector3 direction, Vector3 offset, Color c)
+        {
+            using (new MatrixScope(pivot.localToWorldMatrix))
+            {
+                Gizmos.color = c;
+                Gizmos.DrawLine(offset, offset + direction);
+            }
+        }
+
         public static void DrawLocalRotationArc(Transform pivot, float min, float max, Vector3 axis, Color start, Color end, Color neutral, float radius,
             float angleOffset = 0)
         {

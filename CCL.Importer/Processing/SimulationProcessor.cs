@@ -114,11 +114,12 @@ namespace CCL.Importer.Processing
             }
 
             // Same as was done for the external interactables, but check if there's a BaseControlsOverrider,
-            // and add the InteriorControlsManager then.
+            // and add the InteriorControlsManager if that is the case.
             if (livery.interiorPrefab)
             {
                 AddAdditionalControllers(livery.interiorPrefab);
-                if (simController.controlsOverrider != null && !livery.interiorPrefab.GetComponent<InteriorControlsManager>())
+                if (simController != null && simController.controlsOverrider != null &&
+                    !livery.interiorPrefab.GetComponent<InteriorControlsManager>())
                 {
                     livery.interiorPrefab.AddComponent<InteriorControlsManager>();
                 }
@@ -126,7 +127,8 @@ namespace CCL.Importer.Processing
             if (livery.explodedInteriorPrefab)
             {
                 AddAdditionalControllers(livery.explodedInteriorPrefab);
-                if (simController.controlsOverrider != null && !livery.explodedInteriorPrefab.GetComponent<InteriorControlsManager>())
+                if (simController != null && simController.controlsOverrider != null &&
+                    !livery.explodedInteriorPrefab.GetComponent<InteriorControlsManager>())
                 {
                     livery.explodedInteriorPrefab.AddComponent<InteriorControlsManager>();
                 }

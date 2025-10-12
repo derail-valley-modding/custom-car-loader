@@ -31,7 +31,6 @@ namespace CCL.Importer
         {
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUILayout.BeginVertical();
-            GUILayout.Space(20);
 
             foreach (var item in CarManager.LoadFailures)
             {

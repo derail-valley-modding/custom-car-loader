@@ -30,7 +30,8 @@ namespace CCL.Types.Proxies.Controls
 
             if (!disableTouchUse)
             {
-                GizmoUtil.DrawLocalDirection(transform, touchInteractionAxis * gizmoRadius, Color.Lerp(START_COLOR, END_COLOR, 0.5f));
+                GizmoUtil.DrawLocalDirection(transform, touchInteractionAxis * gizmoRadius,
+                    touchInteractionAxis * gizmoRadius * -0.5f, Color.Lerp(START_COLOR, END_COLOR, 0.5f));
             }
         }
     }

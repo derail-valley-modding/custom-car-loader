@@ -148,6 +148,7 @@ namespace CCL.Importer
         public static void PrintResourceCaches(CommandArg[] args)
         {
             Processing.GrabberProcessor.PrintCaches();
+            Debug.Log("Done!");
         }
 
         [RegisterCommand("CCL.SpawnChance",
