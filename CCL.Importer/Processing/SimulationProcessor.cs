@@ -36,17 +36,13 @@ namespace CCL.Importer.Processing
 
             // Map additional controllers for all prefab parts
             AddAdditionalControllers(livery.prefab);
-            if (livery.interiorPrefab)
-            {
-                AddAdditionalControllers(livery.interiorPrefab);
-                if (!livery.interiorPrefab.GetComponent<InteriorControlsManager>())
-                {
-                    livery.interiorPrefab.AddComponent<InteriorControlsManager>();
-                }
-            }
             if (livery.externalInteractablesPrefab)
             {
                 AddAdditionalControllers(livery.externalInteractablesPrefab);
+            }
+            if (livery.explodedExternalInteractablesPrefab)
+            {
+                AddAdditionalControllers(livery.explodedExternalInteractablesPrefab);
             }
 
             // Add Control Override components
@@ -100,24 +96,52 @@ namespace CCL.Importer.Processing
             }
 
             // In the event we have a sim controller and *not* a damage controller, we need to add a dummy damage controller
-            var needsDamageController = simController &&
-                !livery.prefab.GetComponentInChildren<DamageController>(true);
-            if (needsDamageController)
+            var damageController = livery.prefab.GetComponentInChildren<DamageController>(true);
+            if (simController && !damageController)
             {
-                AttachDummyDamageController(livery.prefab);
+                damageController = AttachDummyDamageController(livery.prefab);
+            }
+
+            // Add the windows breaking controller manually now.
+            if (damageController)
+            {
+                damageController.windows = livery.prefab.GetComponentInChildren<WindowsBreakingController>(true);
             }
 
             if (livery.prefab.TryGetComponent<MultipleUnitModule>(out var mum))
             {
                 mum.controlsOverrider = baseOverrider;
             }
+
+            // Same as was done for the external interactables, but check if there's a BaseControlsOverrider,
+            // and add the InteriorControlsManager if that is the case.
+            if (livery.interiorPrefab)
+            {
+                AddAdditionalControllers(livery.interiorPrefab);
+                if (simController != null && simController.controlsOverrider != null &&
+                    !livery.interiorPrefab.GetComponent<InteriorControlsManager>())
+                {
+                    livery.interiorPrefab.AddComponent<InteriorControlsManager>();
+                }
+            }
+            if (livery.explodedInteriorPrefab)
+            {
+                AddAdditionalControllers(livery.explodedInteriorPrefab);
+                if (simController != null && simController.controlsOverrider != null &&
+                    !livery.explodedInteriorPrefab.GetComponent<InteriorControlsManager>())
+                {
+                    livery.explodedInteriorPrefab.AddComponent<InteriorControlsManager>();
+                }
+            }
         }
 
-        private static void AttachDummyDamageController(GameObject prefab)
+        private static DamageController AttachDummyDamageController(GameObject prefab)
         {
-            if (!prefab.GetComponentInChildren<DamageController>())
+            var damageController = prefab.GetComponentInChildren<DamageController>(true);
+
+            if (damageController == null)
             {
-                var damageController = prefab.AddComponent<DamageController>();
+                damageController = prefab.AddComponent<DamageController>();
                 damageController.windows = null;
                 damageController.bodyDamagerPortIds = new string[0];
                 damageController.bodyHealthStateExternalInPortIds = new string[0];
@@ -129,6 +153,8 @@ namespace CCL.Importer.Processing
                 damageController.electricalPTHealthStateExternalInPortIds = new string[0];
                 damageController.electricalPTOffExternalInPortIds = new string[0];
             }
+
+            return damageController;
         }
 
         private static void AddAdditionalControllers(GameObject prefab)
@@ -145,6 +171,7 @@ namespace CCL.Importer.Processing
             AddController<PositionSyncConsumerController, PositionSyncConsumer>(prefab);
             AddController<OilingPointsPortController, OilingPointPortFeederReader>(prefab);
             AddController<ControlsBlockController, ControlBlocker>(prefab);
+            AddController<HandbrakeFeedersController, HandbrakeFeeder>(prefab);
 
             AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
             AddController<RopeInitialiseController, RopeBehaviour>(prefab);

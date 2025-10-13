@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types
@@ -61,16 +62,6 @@ namespace CCL.Types
             return closest;
         }
 
-        public static Vector3 Flattened(this Vector3 vector)
-        {
-            return new Vector3(vector.x, 0, vector.z);
-        }
-
-        public static Vector2 FlattenedVector2(this Vector3 vector)
-        {
-            return new Vector2(vector.x, vector.z);
-        }
-
         public static void ResetLocal(this Transform transform)
         {
             transform.localPosition = Vector3.zero;
@@ -110,6 +101,31 @@ namespace CCL.Types
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
         {
             (list[indexB], list[indexA]) = (list[indexA], list[indexB]);
+        }
+
+        // https://stackoverflow.com/a/23797795
+        public static bool ContainsDuplicates<T>(this IEnumerable<T> enumerable)
+        {
+            var knownKeys = new HashSet<T>();
+            return enumerable.Any(item => !knownKeys.Add(item));
+        }
+
+        public static bool ContainsDuplicates<T, TIdentifier>(this IEnumerable<T> enumerable, Func<T, TIdentifier> discriminator)
+        {
+            var knownKeys = new HashSet<TIdentifier>();
+            return enumerable.Any(item => !knownKeys.Add(discriminator(item)));
+        }
+
+        public static SelfValidationResult Pass(this ISelfValidation component, out string message)
+        {
+            message = string.Empty;
+            return SelfValidationResult.Pass;
+        }
+
+        public static SelfValidationResult FailForNull(this ISelfValidation component, string name, out string message)
+        {
+            message = $"{name} cannot be null";
+            return SelfValidationResult.Fail;
         }
     }
 }

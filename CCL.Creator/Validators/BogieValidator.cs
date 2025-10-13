@@ -94,7 +94,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            if (livery.parentType != null && livery.parentType.UseCustomGauge && (livery.UseCustomFrontBogie || livery.UseCustomRearBogie))
+            if (livery.parentType != null && livery.parentType.UseCustomGauge && !livery.UseCustomFrontBogie && !livery.UseCustomRearBogie)
             {
                 result.Warning($"{livery.id} - Car uses custom gauge but livery uses default bogies", livery);
             }

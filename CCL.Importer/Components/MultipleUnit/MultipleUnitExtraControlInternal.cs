@@ -21,6 +21,9 @@ namespace CCL.Importer.Components.MultipleUnit
                 Destroy(this);
                 return;
             }
+
+            _module.frontCable.ConnectionChanged += ConnectionChanged;
+            _module.rearCable.ConnectionChanged += ConnectionChanged;
         }
 
         public abstract void SetValue(T source);
@@ -71,5 +74,7 @@ namespace CCL.Importer.Components.MultipleUnit
                 comp.SetValue((T)this);
             }
         }
+
+        protected abstract void ConnectionChanged(bool connected, bool playAudio);
     }
 }

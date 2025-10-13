@@ -6,6 +6,9 @@ namespace CCL.Importer.Implementations
 {
     internal class CombinedThrottleDynamicBrake : SimComponent
     {
+        private const int ThrottleMode = 1;
+        private const int BrakeMode = -1;
+
         public readonly bool UseToggleMode;
         public readonly Port ThrottleIn;
         public readonly Port DynBrakeIn;
@@ -38,7 +41,7 @@ namespace CCL.Importer.Implementations
 
         private void ThrottleUpdated(float value)
         {
-            if (_mode == 1)
+            if (_mode == ThrottleMode)
             {
                 CombinedIn.Value = value;
             }
@@ -46,7 +49,7 @@ namespace CCL.Importer.Implementations
 
         private void DynBrakeUpdated(float value)
         {
-            if (_mode == -1)
+            if (_mode == BrakeMode)
             {
                 CombinedIn.Value = value;
             }
@@ -56,11 +59,11 @@ namespace CCL.Importer.Implementations
         {
             switch (_mode)
             {
-                case 1:
+                case ThrottleMode:
                     ThrottleIn.Value = value;
                     DynBrakeIn.Value = 0;
                     break;
-                case -1:
+                case BrakeMode:
                     ThrottleIn.Value = 0;
                     DynBrakeIn.Value = value;
                     break;
@@ -81,18 +84,18 @@ namespace CCL.Importer.Implementations
                 {
                     _mode++;
 
-                    if (_mode > 1)
+                    if (_mode > ThrottleMode)
                     {
-                        _mode = 1;
+                        _mode = ThrottleMode;
                     }
                 }
                 else if (value < 0.25f)
                 {
                     _mode--;
 
-                    if (_mode < -1)
+                    if (_mode < BrakeMode)
                     {
-                        _mode = -1;
+                        _mode = BrakeMode;
                     }
                 }
             }
@@ -100,11 +103,11 @@ namespace CCL.Importer.Implementations
             {
                 if (value > 0.75f)
                 {
-                    _mode = 1;
+                    _mode = ThrottleMode;
                 }
                 else if (value < 0.25f)
                 {
-                    _mode = -1;
+                    _mode = BrakeMode;
                 }
                 else
                 {
@@ -117,7 +120,7 @@ namespace CCL.Importer.Implementations
 
         private void ModeUpdated(float value)
         {
-            int mode = Mathf.RoundToInt(Mathf.Clamp(value, -1, 1));
+            int mode = Mathf.RoundToInt(Mathf.Clamp(value, BrakeMode, ThrottleMode));
 
             if (mode == _mode) return;
 
@@ -125,7 +128,7 @@ namespace CCL.Importer.Implementations
 
             if (!UseToggleMode)
             {
-                SelectorIn.Value = _mode + 1.0f / 2.0f;
+                SelectorIn.Value = (_mode + 1.0f) / 2.0f;
             }
         }
     }

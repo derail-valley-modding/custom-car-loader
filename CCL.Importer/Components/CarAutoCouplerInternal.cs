@@ -91,7 +91,7 @@ namespace CCL.Importer.Components
             }
         }
 
-        private IEnumerator CheckTenderAutoCouple(bool longStartWait)
+        private IEnumerator CheckForCouple(bool longStartWait)
         {
             yield return WaitFor.Seconds(longStartWait ? START_CHECKING_WAIT_TIME_LONG : START_CHECKING_WAIT_TIME_SHORT);
 
@@ -141,7 +141,7 @@ namespace CCL.Importer.Components
 
             if (!_coupler.train.derailed && !_coupler.IsCoupled())
             {
-                _checkAutoCoupleCoro = StartCoroutine(CheckTenderAutoCouple(longStartWait));
+                _checkAutoCoupleCoro = StartCoroutine(CheckForCouple(longStartWait));
             }
         }
 

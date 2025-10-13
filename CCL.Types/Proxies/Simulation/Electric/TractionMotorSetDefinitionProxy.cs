@@ -10,7 +10,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
     [AddComponentMenu("CCL/Proxies/Simulation/Electric/Traction Motor Set Definition Proxy")]
     public class TractionMotorSetDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized,
         IDE2Defaults, IDE6Defaults, IBE2Defaults,
-        IRecommendedDebugPorts, IRecommendedDebugPortReferences
+        IRecommendedDebugPorts, IRecommendedDebugPortReferences, ISelfValidation
     {
         [Header("Motor")]
         public float maxMotorRpm;
@@ -149,6 +149,16 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public void AfterImport()
         {
             configurations = JSONObject.FromJson(_configs, () => configurations);
+        }
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (poweredWheelsManager == null)
+            {
+                return this.FailForNull(nameof(poweredWheelsManager), out message);
+            }
+
+            return this.Pass(out message);
         }
 
         #region Defaults

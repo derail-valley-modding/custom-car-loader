@@ -1,15 +1,5 @@
 ﻿namespace CCL.Types.Proxies.Controls
 {
-    public enum DVControlClass
-    {
-        Lever,
-        Button,
-        Rotary,
-        Puller,
-        ToggleSwitch,
-        Wheel,
-    }
-
     public enum OverridableControlType
     {
         None,

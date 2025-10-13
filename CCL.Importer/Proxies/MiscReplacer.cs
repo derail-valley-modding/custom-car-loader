@@ -55,7 +55,7 @@ namespace CCL.Importer.Proxies
             CreateMap<TeleportHoverGlowProxy, TeleportHoverGlow>().AutoCacheAndMap()
                 .AfterMap(TeleportHoverGlowAfter);
             CreateMap<GrabberRaycastPassThroughProxy, GrabberRaycastPassThrough>().AutoCacheAndMap();
-            CreateMap<HighlightTagProxy, HighlightTagProxy>().AutoCacheAndMap();
+            CreateMap<HighlightTagProxy, HighlightTag>().AutoCacheAndMap();
             CreateMap<CabinRenderOrderingProxy, CabinRenderOrdering>().AutoCacheAndMap()
                 .ForMember(d => d.triggerNullable, o => o.MapFrom(s => Mapper.GetFromCache(s.triggerNullable)))
                 .ForMember(d => d.ordering, o => o.MapFrom(s => s.ordering.Select(
@@ -73,6 +73,7 @@ namespace CCL.Importer.Proxies
                 .ForMember(d => d.blocker, o => o.MapFrom(s => Mapper.GetFromCache(s.blocker)))
                 .AfterMap(InvalidTeleportLocationReactionAfter);
 
+            CreateMap<BedSleepingProxy, BedSleeping>().AutoCacheAndMap();
             CreateMap<IgnoreCharacterHeadCollisionTagProxy, IgnoreCharacterHeadCollisionTag>().AutoCacheAndMap();
 
             CreateMap<HJAFDrivenAnimationProxy, HJAFDrivenAnimation>().AutoCacheAndMap();

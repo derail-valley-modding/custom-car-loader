@@ -385,9 +385,9 @@ namespace CCL.Importer
                     break;
                 case Cab.Slot23B.DM3Headlights:
                     newHUD.headlightsFront.gameObject.SetActive(false);
-                    newHUD.indHeadlightsTypeFront = Object.Instantiate(HudDM3.cab.indHeadlightsTypeFront);
-                    newHUD.indHeadlights1Front = Object.Instantiate(HudDM3.cab.indHeadlights1Front);
-                    newHUD.indHeadlights2Front = Object.Instantiate(HudDM3.cab.indHeadlights2Front);
+                    newHUD.indHeadlightsTypeFront = Object.Instantiate(HudDM3.cab.indHeadlightsTypeFront, newHUD.headlightsFront.transform.parent);
+                    newHUD.indHeadlights1Front = Object.Instantiate(HudDM3.cab.indHeadlights1Front, newHUD.headlightsFront.transform.parent);
+                    newHUD.indHeadlights2Front = Object.Instantiate(HudDM3.cab.indHeadlights2Front, newHUD.headlightsFront.transform.parent);
                     newHUD.indHeadlightsTypeFront.gameObject.SetActive(true);
                     newHUD.indHeadlights1Front.gameObject.SetActive(true);
                     newHUD.indHeadlights2Front.gameObject.SetActive(true);
@@ -419,9 +419,9 @@ namespace CCL.Importer
                     break;
                 case Cab.Slot24B.DM3Headlights:
                     newHUD.headlightsRear.gameObject.SetActive(false);
-                    newHUD.indHeadlightsTypeRear = Object.Instantiate(HudDM3.cab.indHeadlightsTypeRear);
-                    newHUD.indHeadlights1Rear = Object.Instantiate(HudDM3.cab.indHeadlights1Rear);
-                    newHUD.indHeadlights2Rear = Object.Instantiate(HudDM3.cab.indHeadlights2Rear);
+                    newHUD.indHeadlightsTypeRear = Object.Instantiate(HudDM3.cab.indHeadlightsTypeRear, newHUD.headlightsRear.transform.parent);
+                    newHUD.indHeadlights1Rear = Object.Instantiate(HudDM3.cab.indHeadlights1Rear, newHUD.headlightsRear.transform.parent);
+                    newHUD.indHeadlights2Rear = Object.Instantiate(HudDM3.cab.indHeadlights2Rear, newHUD.headlightsRear.transform.parent);
                     newHUD.indHeadlightsTypeRear.gameObject.SetActive(true);
                     newHUD.indHeadlights1Rear.gameObject.SetActive(true);
                     newHUD.indHeadlights2Rear.gameObject.SetActive(true);

@@ -46,6 +46,7 @@
             public const string BOGIES = "[bogies]";
             public const string CAMERA_DAMPENING = "[camera dampening]";
             public const string FALL_SAFETY = "[fall safety]";
+            public const string DRILLING_DISABLERS = "[drilling disablers]";
         }
 
         public static class Bogies
@@ -107,6 +108,7 @@
         public static class Caboose
         {
             public const string CAREER_MANAGER = PERSISTENT_INTERIOR + "/CareerManagerTrainInterior";
+            public const string JOB_TRASH_BIN = "JobTrashBin";
         }
 
         public static class Interactables

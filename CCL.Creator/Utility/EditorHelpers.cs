@@ -102,6 +102,12 @@ namespace CCL.Creator.Utility
             return (T)EditorGUILayout.EnumPopup(label, selected, options);
         }
 
+        public static T EnumPopup<T>(T selected, params GUILayoutOption[] options)
+            where T : Enum
+        {
+            return (T)EditorGUILayout.EnumPopup(selected, options);
+        }
+
         public static string? GetSelectionPath()
         {
             if (Selection.activeGameObject)
@@ -362,6 +368,32 @@ namespace CCL.Creator.Utility
         public static GUIStyle StyleWithTextColour(Color c)
         {
             return new GUIStyle() { normal = new GUIStyleState() { textColor = c } };
+        }
+
+        // This allows fitting with other styles properly, instead of defaulting to GUIStyle.none.
+        public static GUIStyle StyleWithTextColour(Color c, GUIStyle original)
+        {
+            return new GUIStyle(original) { normal = new GUIStyleState() { textColor = c } };
+        }
+
+        public static float FloatFieldWithPrefix(string label, float value, ref MetricPrefix prefix)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            using (var change = new EditorGUI.ChangeCheckScope())
+            {
+                var converted = Units.ToPrefix(value, prefix);
+                converted = Units.FromPrefix(EditorGUILayout.FloatField(label, converted), prefix);
+
+                if (change.changed)
+                {
+                    value = converted;
+                }
+            }
+
+            prefix = EnumPopup(prefix, GUILayout.Width(80.0f));
+            EditorGUILayout.EndHorizontal();
+            return value;
         }
     }
 

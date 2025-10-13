@@ -19,6 +19,7 @@ namespace CCL.Importer.Patches
             WorkTrainPurchaseHandler.Load(__instance.data);
             CarManager.LoadMapping(__instance.data);
             CarManager.ApplyMapping();
+            CarManager.ApplyDamageProperties();
         }
     }
 }

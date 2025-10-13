@@ -1,6 +1,7 @@
 ﻿using CCL.Creator.Inspector;
 using CCL.Creator.Utility;
 using CCL.Types;
+using CCL.Types.Components.Controls;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
 using System;
@@ -37,6 +38,7 @@ namespace CCL.Creator.Wizards
 
             public bool AddStaticInteractionArea = true;
             public bool IsFuseControl = false;
+            public bool IsHandbrake = false;
             public bool AutomaticReparenting = false;
 
             [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)]
@@ -67,8 +69,25 @@ namespace CCL.Creator.Wizards
                 EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AddStaticInteractionArea)));
 
                 var fuseProp = serialized.FindProperty(nameof(Settings.IsFuseControl));
+                var handbrakeProp = serialized.FindProperty(nameof(Settings.IsHandbrake));
+
+                EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(fuseProp);
                 bool isFuse = fuseProp.boolValue;
+
+                if (isFuse && EditorGUI.EndChangeCheck())
+                {
+                    handbrakeProp.boolValue = false;
+                }
+
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(handbrakeProp);
+                bool isHandbrake = handbrakeProp.boolValue;
+
+                if (isHandbrake && EditorGUI.EndChangeCheck())
+                {
+                    fuseProp.boolValue = false;
+                }
 
                 var idRect = EditorGUILayout.GetControlRect();
                 if (isFuse)
@@ -79,7 +98,7 @@ namespace CCL.Creator.Wizards
                         new GUIContent("Controlled Fuse"),
                         _settings.TargetObject.transform);
                 }
-                else
+                else if (!isHandbrake)
                 {
                     var filter = new PortIdAttribute(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL);
 
@@ -107,19 +126,19 @@ namespace CCL.Creator.Wizards
             }
         }
 
-        private static Type GetSpecType(DVControlClass type)
+        private static Type GetSpecType(DVControlClass type) => type switch
         {
-            return type switch
-            {
-                DVControlClass.Lever => typeof(LeverProxy),
-                DVControlClass.Button => typeof(ButtonProxy),
-                DVControlClass.Rotary => typeof(RotaryProxy),
-                DVControlClass.Puller => typeof(PullerProxy),
-                DVControlClass.ToggleSwitch => typeof(ToggleSwitchProxy),
-                DVControlClass.Wheel => typeof(WheelProxy),
-                _ => throw new NotImplementedException(),
-            };
-        }
+            DVControlClass.Lever => typeof(LeverProxy),
+            DVControlClass.Button => typeof(ButtonProxy),
+            DVControlClass.Rotary => typeof(RotaryProxy),
+            DVControlClass.Puller => typeof(PullerProxy),
+            DVControlClass.ToggleSwitch => typeof(ToggleSwitchProxy),
+            DVControlClass.Wheel => typeof(WheelProxy),
+
+            DVControlClass.PullableRope => typeof(PullableRope),
+
+            _ => throw new NotImplementedException(),
+        };
 
         private static void CreateControl(Settings settings)
         {
@@ -132,8 +151,12 @@ namespace CCL.Creator.Wizards
 
             var specType = GetSpecType(settings.ControlType);
             var spec = (ControlSpecProxy)newControl.AddComponent(specType);
-
-            if (settings.IsFuseControl)
+            
+            if (settings.IsHandbrake)
+            {
+                newControl.AddComponent<HandbrakeFeederProxy>();
+            }
+            else if (settings.IsFuseControl)
             {
                 var feeder = newControl.AddComponent<InteractableFuseFeederProxy>();
                 feeder.fuseId = settings.ControlledFuseId;
@@ -176,6 +199,17 @@ namespace CCL.Creator.Wizards
             EditorHelpers.SaveAndRefresh();
 
             DestroyImmediate(settings);
+        }
+        internal enum DVControlClass
+        {
+            Lever,
+            Button,
+            Rotary,
+            Puller,
+            ToggleSwitch,
+            Wheel,
+            // Custom.
+            PullableRope = 1000,
         }
     }
 }

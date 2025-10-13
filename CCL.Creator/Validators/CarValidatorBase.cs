@@ -109,11 +109,28 @@ namespace CCL.Creator.Validators
                 overallResult.Fail("Car ID is empty");
             }
 
+            if (car.liveries.Count == 0)
+            {
+                overallResult.Fail("Car has no liveries");
+            }
+
+            if (car.liveries.ContainsDuplicates(x => x.id))
+            {
+                overallResult.CriticalFail("Car has duplicate livery IDs!");
+                return overallResult;
+            }
+
             foreach (var livery in car.liveries)
             {
                 if (livery == null)
                 {
                     overallResult.CriticalFail("Livery is null!");
+                    break;
+                }
+
+                if (livery.parentType == null)
+                {
+                    overallResult.CriticalFail($"Livery '{livery.id}' has no parent type set!");
                     break;
                 }
 
@@ -260,7 +277,7 @@ namespace CCL.Creator.Validators
                     ResultStatus.Warning => EditorHelpers.Colors.WARNING,
                     ResultStatus.Failed => EditorHelpers.Colors.DELETE_ACTION,
                     ResultStatus.Critical => EditorHelpers.Colors.DELETE_ACTION,
-                    _ => Color.black,
+                    _ => Color.grey,
                 };
             }
         }

@@ -1,5 +1,7 @@
 ﻿using CCL.Types;
+using CCL.Types.Components;
 using CCL.Types.Proxies;
+using CCL.Types.Proxies.Controls;
 using UnityEditor;
 using UnityEngine;
 
@@ -7,6 +9,17 @@ namespace CCL.Creator.Wizards
 {
     internal class WizardlessWizards
     {
+        // This one is definitely not a wizard but oh well...
+        [MenuItem("CCL/About", false, MenuOrdering.MenuBar.About)]
+        public static void About(MenuCommand command)
+        {
+            EditorUtility.DisplayDialog("About CCL",
+                $"Custom Car Loader version {ExporterConstants.ExporterVersion}\n" +
+                $"Minimum compatible CCL editor version: {ExporterConstants.MinimumCompatibleVersion}\n" +
+                $"Minimum DV version: {ExporterConstants.MINIMUM_DV_BUILD}",
+                "Good Stuff");
+        }
+
         [MenuItem("GameObject/CCL/Add Cab", false, MenuOrdering.Body.Cab)]
         public static void CreateCab(MenuCommand command)
         {
@@ -69,6 +82,44 @@ namespace CCL.Creator.Wizards
 
         [MenuItem("GameObject/CCL/Add License Blocker", true, MenuOrdering.Body.LicenseBlocker)]
         public static bool CreateLicenseBlockerValidate()
+        {
+            return Selection.activeGameObject;
+        }
+
+        [MenuItem("GameObject/CCL/Add Bed", false, MenuOrdering.Interior.Bed)]
+        public static void CreateBed(MenuCommand command)
+        {
+            var target = (GameObject)command.context;
+
+            var bed = new GameObject("Bed");
+            bed.transform.parent = target.transform;
+
+            var comp = bed.AddComponent<BedSleepingProxy>();
+
+            var button = new GameObject("Button").AddComponent<ButtonProxy>();
+            button.transform.parent = bed.transform;
+            button.gameObject.AddComponent<BoxCollider>();
+            button.gameObject.AddComponent<HighlightTagProxy>();
+            button.gameObject.AddComponent<BedButtonProperties>();
+            button.colliderGameObjects = new[] { button.gameObject };
+            button.createRigidbody = false;
+            button.useJoints = false;
+            button.disableTouchUse = true;
+            button.overrideUseButton = VRControllerButton.Grip;
+
+            var pillow = new GameObject("Pillow");
+            pillow.transform.parent = bed.transform;
+            pillow.transform.localEulerAngles = new Vector3(29.387f, 82.06f, -7.238f);
+
+            comp.fadeTime = 1.3f;
+            comp.waitBeforeUnfade = 1.5f;
+            comp.pillowTarget = pillow.transform;
+
+            EditorUtility.DisplayDialog("Bed Wizard", "Don't forget to add a mesh highlight", "OK");
+        }
+
+        [MenuItem("GameObject/CCL/Add Bed", true, MenuOrdering.Interior.Bed)]
+        public static bool CreateBedValidate()
         {
             return Selection.activeGameObject;
         }

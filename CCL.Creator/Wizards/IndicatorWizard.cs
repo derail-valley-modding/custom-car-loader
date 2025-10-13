@@ -1,5 +1,7 @@
 ﻿using CCL.Creator.Inspector;
 using CCL.Creator.Utility;
+using CCL.Types;
+using CCL.Types.Components.Indicators;
 using CCL.Types.Proxies.Indicators;
 using CCL.Types.Proxies.Ports;
 using System;
@@ -34,6 +36,7 @@ namespace CCL.Creator.Wizards
             public string IndicatorName = "newIndicator";
             public IndicatorType IndicatorType;
             public IndicatorValueType ValueType;
+            public bool AutomaticReparenting = false;
 
             public DVPortValueType PortFilter;
             [PortId]
@@ -85,6 +88,7 @@ namespace CCL.Creator.Wizards
                         filter);
                 }
 
+                EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AutomaticReparenting)));
                 EditorGUILayout.Space();
 
                 var fuseRect = EditorGUILayout.GetControlRect();
@@ -109,31 +113,27 @@ namespace CCL.Creator.Wizards
             }
         }
 
-        private static IndicatorProxy AddIndicatorScript(IndicatorType type, GameObject location)
+        private static IndicatorProxy AddIndicatorScript(IndicatorType type, GameObject location) => type switch
         {
-            switch (type)
-            {
-                case IndicatorType.Gauge:
-                    return location.AddComponent<IndicatorGaugeProxy>();
-                case IndicatorType.LaggingGauge:
-                    return location.AddComponent<IndicatorGaugeLaggingProxy>();
-                case IndicatorType.Emission:
-                    return location.AddComponent<IndicatorEmissionProxy>();
-                case IndicatorType.Scaler:
-                    return location.AddComponent<IndicatorScalerProxy>();
-                case IndicatorType.Slider:
-                    return location.AddComponent<IndicatorSliderProxy>();
-                case IndicatorType.ModelChanger:
-                    return location.AddComponent<IndicatorModelChangerProxy>();
-                default:
-                    throw new NotImplementedException();
-            }
-        }
+            IndicatorType.Gauge => location.AddComponent<IndicatorGaugeProxy>(),
+            IndicatorType.LaggingGauge => location.AddComponent<IndicatorGaugeLaggingProxy>(),
+            IndicatorType.Emission => location.AddComponent<IndicatorEmissionProxy>(),
+            IndicatorType.Scaler => location.AddComponent<IndicatorScalerProxy>(),
+            IndicatorType.Slider => location.AddComponent<IndicatorSliderProxy>(),
+            IndicatorType.ModelChanger => location.AddComponent<IndicatorModelChangerProxy>(),
+            IndicatorType.Shader => location.AddComponent<IndicatorShaderValueProxy>(),
+
+            IndicatorType.DeltaGauge => location.AddComponent<IndicatorGaugeDelta>(),
+            IndicatorType.CustomShader => location.AddComponent<IndicatorShaderCustomValue>(),
+            IndicatorType.TMP => location.AddComponent<IndicatorTMP>(),
+
+            _ => throw new NotImplementedException(),
+        };
 
         private static void CreateIndicator(Settings settings)
         {
+            var parent = settings.TargetObject.transform.parent;
             var holder = new GameObject(settings.IndicatorName);
-            holder.transform.SetParent(settings.TargetObject.transform, false);
 
             AddIndicatorScript(settings.IndicatorType, holder);
 
@@ -161,6 +161,18 @@ namespace CCL.Creator.Wizards
                     break;
             }
 
+            if (parent != null && settings.AutomaticReparenting)
+            {
+                holder.transform.SetParent(parent, false);
+                Utilities.CopyTransform(settings.TargetObject.transform, holder.transform);
+                settings.TargetObject.transform.SetParent(holder.transform);
+                settings.TargetObject.transform.ResetLocal();
+            }
+            else
+            {
+                holder.transform.SetParent(settings.TargetObject.transform, false);
+            }
+
             EditorUtility.SetDirty(settings.TargetObject);
             Selection.activeObject = holder;
             EditorHelpers.SaveAndRefresh();
@@ -175,6 +187,11 @@ namespace CCL.Creator.Wizards
         Scaler,
         Slider,
         ModelChanger,
+        Shader,
+        // Custom.
+        DeltaGauge = 1000,
+        CustomShader,
+        TMP
     }
 
     internal enum IndicatorValueType

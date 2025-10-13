@@ -111,6 +111,7 @@ namespace CCL.Creator.Validators
         private List<CarResults> _results = new List<CarResults>();
         private bool _needsCorrections = false;
         private bool _failed = false;
+        private bool _exception = false;
         private Vector2 _scroll = Vector2.zero;
         private TableWidths _widths = null!;
 
@@ -136,12 +137,26 @@ namespace CCL.Creator.Validators
             _pack = pack;
             _needsCorrections = false;
             _failed = false;
+            _exception = false;
 
             ValidatePack(pack);
 
-            foreach (var car in pack.Cars)
+            // No need to check cars if it already failed.
+            if (!_failed)
             {
-                ValidateCar(car);
+                foreach (var car in pack.Cars)
+                {
+                    try
+                    {
+                        ValidateCar(car);
+                    }
+                    catch (Exception e)
+                    {
+                        _exception = true;
+                        Debug.LogException(e, car);
+                        break;
+                    }
+                }
             }
 
             _widths = new TableWidths();
@@ -191,9 +206,18 @@ namespace CCL.Creator.Validators
                 _packResult.Fail("Author is empty", pack);
             }
 
+            if (pack.Cars.Length == 0)
+            {
+                _packResult.Fail("Pack has no cars", pack);
+            }
+
             if (pack.Cars.Any(x => x is null))
             {
                 _packResult.Fail("There are missing cars in the pack", pack);
+            }
+            else if (pack.Cars.ContainsDuplicates(x => x.id))
+            {
+                _packResult.Fail("Pack has duplicate car IDs", pack);
             }
 
             if (pack.ExtraModels.Any(x => x is null))
@@ -235,6 +259,23 @@ namespace CCL.Creator.Validators
         private void OnGUI()
         {
             if (_pack == null || _packResult == null) return;
+
+            if (_exception)
+            {
+                GUILayout.BeginVertical("box");
+                EditorHelpers.DrawHeader("Critical failure!");
+                EditorGUILayout.LabelField("Something went wrong and the pack could not be validated.\n" +
+                    "Please check the Unity Console for more information.");
+                EditorGUILayout.Space();
+                EditorGUILayout.EndVertical();
+
+                if (GUILayout.Button("OK"))
+                {
+                    Close();
+                }
+
+                return;
+            }
 
             _scroll = EditorGUILayout.BeginScrollView(_scroll);
             EditorGUILayout.BeginVertical();
@@ -312,12 +353,12 @@ namespace CCL.Creator.Validators
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUILayout.LabelField(GetName(result), options[0]);
-                
-                GUILayout.Label(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor), options[1]);
+
+                EditorGUILayout.LabelField(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor, GUI.skin.label), options[1]);
 
                 DrawContextButton(result, options[2]);
 
-                GUILayout.Label(GetMessage(result), options[3]);
+                EditorGUILayout.LabelField(GetMessage(result), options[3]);
 
                 EditorGUILayout.EndHorizontal();
             }

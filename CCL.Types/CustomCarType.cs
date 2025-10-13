@@ -236,6 +236,15 @@ namespace CCL.Types
         [Serializable]
         public class DamageSetup : IWagonDefaults
         {
+            [Header("Properties")]
+            public float maxHealth = 8000.0f;
+            public float damageResistance = 50.0f;
+            public float damageMultiplier = 1.0f;
+            public float fireResistance = 7.5f;
+            public float fireDamageMultiplier = 1.0f;
+            public float damageTolerance = 0.01f;
+            public bool ignoreDamage = false;
+
             [Header("HP - leave at 0 if unused")]
             public float wheelsHP;
             public float mechanicalPowertrainHP;
@@ -249,6 +258,14 @@ namespace CCL.Types
 
             public void ApplyWagonDefaults()
             {
+                maxHealth = 8000.0f;
+                damageResistance = 50.0f;
+                damageMultiplier = 1.0f;
+                fireResistance = 7.5f;
+                fireDamageMultiplier = 1.0f;
+                damageTolerance = 0.01f;
+                ignoreDamage = false;
+
                 wheelsHP = 0.0f;
                 mechanicalPowertrainHP = 0.0f;
                 electricalPowertrainHP = 0.0f;

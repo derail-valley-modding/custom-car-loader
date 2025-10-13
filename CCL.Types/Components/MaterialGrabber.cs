@@ -6,7 +6,7 @@ namespace CCL.Types.Components
     [AddComponentMenu("CCL/Components/Grabbers/Material Grabber")]
     public class MaterialGrabber : VanillaResourceGrabber<Material>
     {
-        // Last update B99.6
+        // Last update B99.7
         // Removed 1 (empty).
         public static HashSet<string> MaterialNames = new HashSet<string>
         {
@@ -19,7 +19,7 @@ namespace CCL.Types.Components
             "BallastMed",
             "BallastNew",
             "BallastOld",
-            "Barlow-SemiBold SDF Material (Barlow-SemiBold SDF Atlas)",
+            "Barlow-SemiBold SDF Material",
             "BeaconAmber",
             "BeaconBlue",
             "BeaconRed",

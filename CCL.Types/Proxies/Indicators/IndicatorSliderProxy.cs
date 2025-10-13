@@ -20,11 +20,11 @@ namespace CCL.Types.Proxies.Indicators
             Vector3 axis = (worldEnd - worldStart).normalized;
             Vector3 perpendicular = (axis.z < axis.x) ? new Vector3(axis.y, -axis.x, 0) : new Vector3(0, -axis.z, axis.y);
 
-            Gizmos.color = Color.blue;
+            Gizmos.color = MID_COLOR;
             Gizmos.DrawLine(worldStart, worldEnd);
-            Gizmos.color = Color.red;
+            Gizmos.color = START_COLOR;
             Gizmos.DrawLine(worldStart + perpendicular * tickScale, worldStart + perpendicular * -tickScale);
-            Gizmos.color = Color.green;
+            Gizmos.color = END_COLOR;
             Gizmos.DrawLine(worldEnd + perpendicular * tickScale, worldEnd + perpendicular * -tickScale);
         }
     }

@@ -3,7 +3,7 @@
 namespace CCL.Types.Proxies.Indicators
 {
     [AddComponentMenu("CCL/Proxies/Indicators/Indicator Emission Proxy")]
-    public class IndicatorEmissionProxy : IndicatorProxy
+    public class IndicatorEmissionProxy : IndicatorProxy, ISelfValidation
     {
         [Header("Behaviour")]
         [Tooltip("If enabled, the lamp can only be fully on or fully off.")]
@@ -23,5 +23,25 @@ namespace CCL.Types.Proxies.Indicators
         [Header("Glare")]
         public Color glareColor = Color.white;
         public Renderer glareRenderer = null!;
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (renderers.Length == 0 && GetComponentsInChildren<Renderer>().Length == 0)
+            {
+                message = "no renderers assigned.";
+                return SelfValidationResult.Fail;
+            }
+
+            foreach (var renderer in renderers)
+            {
+                if (renderer == null)
+                {
+                    message = "renderer is null.";
+                    return SelfValidationResult.Fail;
+                }
+            }
+
+            return this.Pass(out message);
+        }
     }
 }

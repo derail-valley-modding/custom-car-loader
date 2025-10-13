@@ -22,14 +22,16 @@ namespace CCL.Types.Proxies.Controls
 
         [Header("VR")]
         public bool disableTouchUse;
-        public VRButtonAlias overrideUseButton;
+        public VRControllerButton overrideUseButton;
 
         private void OnDrawGizmos()
         {
-            Vector3 pressedOffset = transform.TransformPoint(Vector3.back * linearLimit);
+            Vector3 pressedOffset = transform.TransformPoint(Vector3.forward * linearLimit);
 
-            Gizmos.color = Color.green;
+            Gizmos.color = END_COLOR;
             Gizmos.DrawLine(transform.position, pressedOffset);
+            Gizmos.color = START_COLOR;
+            Gizmos.DrawWireSphere(transform.position, 0.0025f);
         }
     }
 }

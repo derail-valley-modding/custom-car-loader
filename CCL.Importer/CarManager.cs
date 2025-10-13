@@ -16,6 +16,21 @@ namespace CCL.Importer
 {
     public static class CarManager
     {
+        /// <summary>
+        /// The status of a trainset.
+        /// </summary>
+        public enum TrainSetCompleteness
+        {
+            /// <summary>The <see cref="TrainCar"/> is not part of CCL.</summary>
+            NotCCL,
+            /// <summary>The <see cref="TrainCar"/> is not part of a trainset.</summary>
+            NotPartOfTrainset,
+            /// <summary>The trainset is not complete.</summary>
+            NotComplete,
+            /// <summary>The trainset is complete.</summary>
+            Complete
+        }
+
         private const int IdMappingStart = -1000;
 
         public static readonly List<CCL_CarType> CustomCarTypes = new();
@@ -26,6 +41,8 @@ namespace CCL.Importer
         internal static readonly HashSet<TrainCarType> AddedValues = new();
 
         private static int s_tempId = IdMappingStart;
+        private static Dictionary<TrainCarType, CarDamageProperties>? s_ogDamageProps;
+        private static readonly Dictionary<CCL_CarType, CarDamageProperties> s_customDamageProps = new();
 
         public static void ScanLoadedMods()
         {
@@ -48,7 +65,7 @@ namespace CCL.Importer
 
         private static void LoadCarDefinitions(UnityModManager.ModEntry mod)
         {
-            int loaded = 0;
+            var loaded = new List<string>();
 
             foreach (string file in Directory.EnumerateFiles(mod.Path, ExporterConstants.EXPORTED_BUNDLE_NAME, SearchOption.AllDirectories))
             {
@@ -62,22 +79,27 @@ namespace CCL.Importer
 
                 foreach (var pack in bundle.LoadAllAssets<CustomCarPack>())
                 {
-                    loaded += LoadPack(pack);
+                    loaded.AddRange(LoadPack(pack));
                 }
 
                 bundle.Unload(false);
                 Mapper.ClearComponentCache();
             }
 
-            if (loaded > 0)
+            if (loaded.Count > 0)
             {
-                CCLPlugin.LogVerbose($"Loaded {loaded} cars from {mod.Path}");
+                var settings = new LoadedModSettings(loaded);
+                mod.OnGUI += settings.Draw;
+                mod.OnSaveGUI += settings.Save;
+
+                CCLPlugin.LogVerbose($"Loaded {loaded.Count} cars from {mod.Path}");
                 Globals.G.Types.RecalculateCaches();
             }
         }
 
-        private static int LoadPack(CustomCarPack pack)
+        private static List<string> LoadPack(CustomCarPack pack)
         {
+            var loaded = new List<string>();
             var version = new Version(pack.ExporterVersion);
 
             if (version > ExporterConstants.ExporterVersion)
@@ -85,54 +107,67 @@ namespace CCL.Importer
                 CCLPlugin.Error($"Pack {pack.PackId} was built with a newer version of CCL:\n" +
                     $"Current Version = {ExporterConstants.ExporterVersion}\n" +
                     $"Pack Version = {version}");
-                LoadFailures.Add($"[Pack] {pack.PackId}");
-                return 0;
+                LoadFailures.Add($"[Pack] {pack.PackId} ({version} > {ExporterConstants.ExporterVersion})");
+                return loaded;
             }
             else if (version < ExporterConstants.MinimumCompatibleVersion)
             {
                 CCLPlugin.Error($"Pack {pack.PackId} was built with an incompatible version of CCL:\n" +
                     $"Minimum Version = {ExporterConstants.MinimumCompatibleVersion}\n" +
                     $"Pack Version = {version}");
-                LoadFailures.Add($"[Pack] {pack.PackId}");
-                return 0;
+                LoadFailures.Add($"[Pack] {pack.PackId} ({version} < {ExporterConstants.MinimumCompatibleVersion})");
+                return loaded;
             }
 
             pack.AfterImport();
 
-            // Generate procedural materials.
-            if (pack.ProceduralMaterials != null)
+            try
             {
-                CCLPlugin.Log("Generating materials...");
-                ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
-            }
-            // Load paints.
-            if (pack.PaintSubstitutions.Length > 0)
-            {
-                CCLPlugin.Log("Loading paints...");
-                PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
-            }
-
-            int loaded = 0;
-
-            foreach (var car in pack.Cars)
-            {
-                if (LoadCar(car))
+                if (pack.Cars.ContainsDuplicates(x => x.id))
                 {
-                    loaded++;
+                    CCLPlugin.Error($"Pack {pack.PackId} contains duplicate car IDs");
+                    LoadFailures.Add($"[Pack] {pack.PackId} (duplicate car IDs)");
+                    return loaded;
                 }
-                else
+
+                // Generate procedural materials.
+                if (pack.ProceduralMaterials != null)
                 {
-                    LoadFailures.Add($"[Car] {car.id} ({pack.PackId})");
+                    CCLPlugin.Log("Generating materials...");
+                    ProceduralMaterialGenerator.Generate(pack.ProceduralMaterials);
                 }
-            }
+                // Load paints.
+                if (pack.PaintSubstitutions.Length > 0)
+                {
+                    CCLPlugin.Log("Loading paints...");
+                    PaintLoader.LoadSubstitutions(pack.PaintSubstitutions);
+                }
 
-            CCLPlugin.Log("Processing extra models...");
-            foreach (var model in pack.ExtraModels)
+                foreach (var car in pack.Cars)
+                {
+                    if (LoadCar(car))
+                    {
+                        loaded.Add(car.id);
+                    }
+                    else
+                    {
+                        LoadFailures.Add($"[Car] {car.id} ({pack.PackId})");
+                    }
+                }
+
+                CCLPlugin.Log("Processing extra models...");
+                foreach (var model in pack.ExtraModels)
+                {
+                    ModelProcessor.DoBasicProcessing(model);
+                }
+
+                InjectTranslations(pack);
+            }
+            catch (Exception e)
             {
-                ModelProcessor.DoBasicProcessing(model);
+                CCLPlugin.Error($"Error loading pack {pack.PackId}:\n{e}");
+                LoadFailures.Add($"[Pack] {pack.PackId} (exception)");
             }
-
-            InjectTranslations(pack);
 
             return loaded;
         }
@@ -161,6 +196,12 @@ namespace CCL.Importer
             try
             {
                 // Ensure no duplicate IDs ever load, entire game dies otherwise.
+                if (car.liveries.ContainsDuplicates(x => x.id))
+                {
+                    CCLPlugin.Error($"Failed to load car {car.id}, liveries contain duplicate IDs");
+                    return false;
+                }
+
                 if (Globals.G.Types.carTypes.Any(x => x.id == car.id))
                 {
                     CCLPlugin.Error($"Failed to load car {car.id}, car ID already ingame");
@@ -212,6 +253,7 @@ namespace CCL.Importer
                     }
                 }
 
+                // Set up steam locomotive for fast startup.
                 if (car.IsActualSteamLocomotive)
                 {
                     foreach (var item in car.liveries)
@@ -219,6 +261,16 @@ namespace CCL.Importer
                         CarTypesPatches.SteamLocomotiveIds.Add(item.id);
                     }
                 }
+
+                // Add custom damage properties.
+                s_customDamageProps.Add(carType, new CarDamageProperties(
+                    car.damage.maxHealth,
+                    car.damage.damageResistance,
+                    car.damage.damageMultiplier,
+                    car.damage.fireResistance,
+                    car.damage.fireDamageMultiplier,
+                    car.damage.damageTolerance,
+                    car.damage.ignoreDamage));
 
                 CustomCarTypes.Add(carType);
                 CCLPlugin.Log($"Successfully loaded car type {car.id}");
@@ -415,6 +467,30 @@ namespace CCL.Importer
             CCLPlugin.Log($"Mappings applied: {AddedValues.Count}/{CurrentMapping.Count} (new: {newTypes}), lowest value is {lowest}");
         }
 
+        internal static void ApplyDamageProperties()
+        {
+            if (s_ogDamageProps == null)
+            {
+                // Create a copy for restoring the state.
+                s_ogDamageProps = new(TrainCarAndCargoDamageProperties.carDamageProperties);
+            }
+            else
+            {
+                TrainCarAndCargoDamageProperties.carDamageProperties = new(s_ogDamageProps);
+            }
+
+            // Since these are mapped to the livery v1 values, gotta loop from the type.
+            foreach (var prop in s_customDamageProps)
+            {
+                foreach (var livery in prop.Key.liveries)
+                {
+                    TrainCarAndCargoDamageProperties.carDamageProperties.Add(livery.v1, prop.Value);
+                }
+            }
+
+            CCLPlugin.Log($"Car damage properties applied.");
+        }
+
         /// <summary>
         /// Returns an array of ordered liveries that should always be together (i.e. loco + tender).
         /// </summary>
@@ -432,14 +508,37 @@ namespace CCL.Importer
         /// Returns an array of ordered train cars that belong together (i.e. loco + tender).
         /// </summary>
         /// <param name="car">The car instance that may or may not belong to a trainset.</param>
-        /// <returns>An array of train cars if there is a trainset, or an empty array if there is not.</returns>
+        /// <returns>An array of train cars if there is a complete trainset, or an empty array otherwise.</returns>
         /// <remarks>Base game car liveries are ignored by this method.</remarks>
         public static TrainCar[] GetInstancedTrainset(TrainCar car)
         {
+            TryGetInstancedTrainset(car, out var set);
+            return set;
+        }
+
+        /// <summary>
+        /// Tries to get the instanced trainset of a <see cref="TrainCar"/> instance.
+        /// </summary>
+        /// <param name="car">The car instance that may or may not belong to a trainset.</param>
+        /// <param name="set">An array of ordered train cars that belong together (i.e. loco + tender), or
+        /// an empty array otherwise.</param>
+        /// <returns>Information about trainset.</returns>
+        public static TrainSetCompleteness TryGetInstancedTrainset(TrainCar car, out TrainCar[] set)
+        {
+            if (car.carLivery is not CCL_CarVariant)
+            {
+                set = Array.Empty<TrainCar>();
+                return TrainSetCompleteness.NotCCL;
+            }
+
             var trainset = GetTrainsetForLivery(car.carLivery);
 
             // Same rules as the other method.
-            if (trainset.Length < 2) return Array.Empty<TrainCar>();
+            if (trainset.Length < 2)
+            {
+                set = Array.Empty<TrainCar>();
+                return TrainSetCompleteness.NotPartOfTrainset;
+            }
 
             int check = trainset.Length;
 
@@ -470,10 +569,12 @@ namespace CCL.Importer
                     car = car.rearCoupler.coupledTo.train;
                 }
 
-                return result;
+                set = result;
+                return TrainSetCompleteness.Complete;
             }
 
-            return Array.Empty<TrainCar>();
+            set = Array.Empty<TrainCar>();
+            return TrainSetCompleteness.NotComplete;
 
             static bool MatchingLiverySequence(TrainCar? car, TrainCarLivery[] liveries)
             {
@@ -488,6 +589,48 @@ namespace CCL.Importer
 
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if the <see cref="TrainCarType_v2"/> is enabled in CCL's settings.
+        /// </summary>
+        public static bool IsCarTypeEnabled(TrainCarType_v2 type)
+        {
+            return !CCLPlugin.Settings.DisabledIds.Contains(type.id);
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if the parent type of the <see cref="TrainCarLivery"/> is enabled in CCL's settings.
+        /// </summary>
+        public static bool IsCarLiveryEnabled(TrainCarLivery livery)
+        {
+            return IsCarTypeEnabled(livery.parentType);
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if the trainset is enabled in CCL's settings.
+        /// </summary>
+        /// <param name="trainset">The livery array of the trainset.</param>
+        /// <param name="requireAll">Whether all liveries must be enabled or just a single one.</param>
+        public static bool IsTrainsetEnabled(TrainCarLivery[] trainset, bool requireAll = true)
+        {
+            return requireAll ? trainset.All(x => IsCarLiveryEnabled(x)) : trainset.Any(x => IsCarLiveryEnabled(x));
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if any livery with the provided ID is enabled.
+        /// </summary>
+        public static bool IsAnyLiveryEnabled(IEnumerable<string> liveryIds)
+        {
+            foreach (string id in liveryIds)
+            {
+                if (Globals.G.Types.TryGetLivery(id, out var livery) && !IsCarLiveryEnabled(livery))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

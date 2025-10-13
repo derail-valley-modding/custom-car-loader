@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using CCL.Types.Proxies.Customization;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -9,7 +10,7 @@ namespace CCL.Creator.Validators
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
         {
-            if (!livery.prefab)
+            if (livery.prefab == null)
             {
                 return CriticalFail("Livery must have a prefab assigned!");
             }
@@ -19,7 +20,15 @@ namespace CCL.Creator.Validators
                 return Fail("Livery has no ID set");
             }
 
-            return Pass();
+            var result = Pass();
+
+            if (livery.prefab.GetComponent<CustomizationPlacementMeshesProxy>() == null)
+            {
+                result.Warning("Livery prefab does not have CustomizationPlacementMeshesProxy, " +
+                    "gadgets will not be able to be attached to this prefab", livery.prefab);
+            }
+
+            return result;
         }
     }
 

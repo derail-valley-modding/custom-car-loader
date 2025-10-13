@@ -19,7 +19,7 @@ namespace CCL.Types.Devices
             Vector3 center = new Vector3(0, CM_BOTTOM_HEIGHT / 2, 0);
             GizmoUtil.DrawLocalPrism(transform, center, new Vector3(CM_DEPTH, CM_BOTTOM_HEIGHT, CM_WIDTH));
 
-            center = new Vector3((CM_TOP_DEPTH / 2) - (CM_DEPTH / 2), CM_HEIGHT - (CM_TOP_HEIGHT / 2), 0);
+            center = new Vector3((CM_DEPTH / 2) - (CM_TOP_DEPTH / 2), CM_HEIGHT - (CM_TOP_HEIGHT / 2), 0);
             GizmoUtil.DrawLocalPrism(transform, center, new Vector3(CM_TOP_DEPTH, CM_TOP_HEIGHT, CM_WIDTH));
         }
     }

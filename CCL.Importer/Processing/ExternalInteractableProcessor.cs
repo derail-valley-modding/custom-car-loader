@@ -62,29 +62,23 @@ namespace CCL.Importer.Processing
 
         public override void ExecuteStep(ModelProcessor context)
         {
-            var interactables = context.Car.externalInteractablesPrefab;
-
-            if (interactables)
-            {
-                SetupFreightInteractables(interactables);
-
-                var brakeFeeders = interactables.AddComponent<HandbrakeFeedersController>();
-                brakeFeeders.RefreshChildren();
-
-                // Car has no handbrakes, delete controller.
-                if (brakeFeeders.entries.Length == 0)
-                {
-                    Object.Destroy(brakeFeeders);
-                }
-
-                var keyboardCtrl = interactables.AddComponent<InteractablesKeyboardControl>();
-                keyboardCtrl.RefreshChildren();
-
-                var optimizer = interactables.AddComponent<PlayerOnCarScriptsOptimizer>();
-                optimizer.scriptsToDisable = new MonoBehaviour[] { keyboardCtrl };
-            }
+            ProcessInteractablesIfPrefabExists(context.Car.externalInteractablesPrefab);
+            ProcessInteractablesIfPrefabExists(context.Car.explodedExternalInteractablesPrefab);
 
             SetupExternalConnectors(context.Car.prefab);
+        }
+
+        private static void ProcessInteractablesIfPrefabExists(GameObject interactables)
+        {
+            if (interactables == null) return;
+
+            SetupFreightInteractables(interactables);
+
+            var keyboardCtrl = interactables.AddComponent<InteractablesKeyboardControl>();
+            keyboardCtrl.RefreshChildren();
+
+            var optimizer = interactables.AddComponent<PlayerOnCarScriptsOptimizer>();
+            optimizer.scriptsToDisable = new MonoBehaviour[] { keyboardCtrl };
         }
 
         private static void Replace(Transform parent, Transform current, GameObject newModel)

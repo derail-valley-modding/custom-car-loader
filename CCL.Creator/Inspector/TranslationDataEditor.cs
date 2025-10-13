@@ -1,5 +1,4 @@
-﻿using CCL.Types;
-using DVLangHelper.Data;
+﻿using DVLangHelper.Data;
 using UnityEditor;
 using UnityEngine;
 

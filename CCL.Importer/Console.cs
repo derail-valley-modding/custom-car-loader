@@ -1,5 +1,4 @@
 ﻿using CCL.Importer.Components;
-using CCL.Importer.Types;
 using CommandTerminal;
 using System;
 using System.Linq;
@@ -108,37 +107,39 @@ namespace CCL.Importer
                 }
             }
 
-            if (car.carLivery is not CCL_CarVariant)
+            switch (CarManager.TryGetInstancedTrainset(car, out var trainset))
             {
-                Debug.LogWarning($"Car is not a CCL car, ignoring command");
-                return;
+                case CarManager.TrainSetCompleteness.NotCCL:
+                    Debug.LogWarning($"Car is not a CCL car, ignoring command");
+                    return;
+                case CarManager.TrainSetCompleteness.NotPartOfTrainset:
+                    Debug.Log($"Car {car.ID} does not belong to a trainset");
+                    return;
+                case CarManager.TrainSetCompleteness.NotComplete:
+                    Debug.Log($"The set for car {car.ID} is incomplete");
+                    return;
+                case CarManager.TrainSetCompleteness.Complete:
+                    StringBuilder sb = new();
+
+                    foreach (var instance in trainset)
+                    {
+                        sb.Append($"{instance.ID} ({instance.carLivery.id})");
+
+                        if (instance.ID == car.ID)
+                        {
+                            sb.AppendLine(" [#]");
+                        }
+                        else
+                        {
+                            sb.AppendLine();
+                        }
+                    }
+
+                    Debug.Log(sb.ToString());
+                    return;
+                default:
+                    return;
             }
-
-            var trainset = CarManager.GetInstancedTrainset(car);
-
-            if (trainset.Length < 2)
-            {
-                Debug.Log($"Car {car.ID} does not belong to a trainset, or it is incomplete");
-                return;
-            }
-
-            StringBuilder sb = new();
-
-            foreach (var instance in trainset)
-            {
-                sb.Append($"{instance.ID} ({instance.carLivery.id})");
-
-                if (instance.ID == car.ID)
-                {
-                    sb.AppendLine(" [#]");
-                }
-                else
-                {
-                    sb.AppendLine();
-                }
-            }
-
-            Debug.Log(sb.ToString());
         }
 
         [RegisterCommand("CCL.ResourceCaches",
@@ -147,6 +148,7 @@ namespace CCL.Importer
         public static void PrintResourceCaches(CommandArg[] args)
         {
             Processing.GrabberProcessor.PrintCaches();
+            Debug.Log("Done!");
         }
 
         [RegisterCommand("CCL.SpawnChance",

@@ -41,5 +41,32 @@ namespace CCL.Types.Proxies.Controls
         public bool useHaptics = true;
         public float notchAngle = 1f;
         public bool enableWhenTouching;
+
+        [Header("Editor visualization")]
+        public float gizmoScale = 0.5f;
+        public float angleOffset = 0;
+
+        protected const int GIZMO_SEGMENTS = 40;
+
+        public override void OnValidate()
+        {
+            jointLimitMin = Mathf.Clamp(jointLimitMin, -177f, 177f);
+            jointLimitMax = Mathf.Clamp(jointLimitMax, -177f, 177f);
+
+            base.OnValidate();
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (useLimits)
+            {
+                GizmoUtil.DrawLocalRotationArc(transform, jointLimitMin, jointLimitMax, jointAxis,
+                    START_COLOR, END_COLOR, MID_COLOR, gizmoScale, angleOffset);
+            }
+            else
+            {
+                GizmoUtil.DrawLocalCircle(transform, jointAxis, START_COLOR, END_COLOR, MID_COLOR, gizmoScale, angleOffset);
+            }
+        }
     }
 }
