@@ -8,6 +8,7 @@ namespace CCL.Types.Proxies.Controls
         public GameObject cabLight = null!;
         public GameObject wipers = null!;
         public GameObject fuelCutoff = null!;
+        public GameObject indHeadlightsTypeFront = null!;
         public GameObject indHeadlights1Front = null!;
         public GameObject indHeadlights2Front = null!;
         public GameObject indHeadlightsTypeRear = null!;

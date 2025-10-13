@@ -28,10 +28,16 @@ namespace CCL.Types.Proxies.Controls
             GizmoUtil.DrawLocalRotationArc(transform, jointLimitMin, jointLimitMax, jointAxis,
                 START_COLOR, END_COLOR, MID_COLOR, gizmoRadius, angleOffset);
 
-            if (!disableTouchUse)
+            if (disableTouchUse) return;
+
+            using (new GizmoUtil.MatrixScope(transform.localToWorldMatrix * Matrix4x4.Rotate(Quaternion.FromToRotation(Vector3.up, touchInteractionAxis))))
             {
-                GizmoUtil.DrawLocalDirection(transform, touchInteractionAxis * gizmoRadius,
-                    touchInteractionAxis * gizmoRadius * -0.5f, Color.Lerp(START_COLOR, END_COLOR, 0.5f));
+                var up = Vector3.up * gizmoRadius * 0.5f;
+                var right = Vector3.right * gizmoRadius * 0.2f;
+
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(up, -up + right);
+                Gizmos.DrawLine(up, -up - right);
             }
         }
     }

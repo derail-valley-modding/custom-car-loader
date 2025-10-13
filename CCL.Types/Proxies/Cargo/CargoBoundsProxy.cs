@@ -11,8 +11,7 @@ namespace CCL.Types.Proxies.Cargo
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;
-            Gizmos.matrix = transform.localToWorldMatrix;
-            Gizmos.DrawCube(center, size);
+            GizmoUtil.DrawLocalPrismSolid(transform, center, size);
         }
     }
 }

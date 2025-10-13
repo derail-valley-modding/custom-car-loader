@@ -34,6 +34,32 @@ namespace CCL.Creator.Validators
                 {
                     result.Warning($"Control '{control.name}' does not have any colliders, physical interaction will not work", control);
                 }
+
+                switch (control)
+                {
+                    case LeverProxy lever:
+                        LimitWarning(control, lever.jointLimitMin, lever.jointLimitMax, "Lever");
+                        break;
+                    case RotaryProxy rotary:
+                        LimitWarning(control, rotary.jointLimitMin, rotary.jointLimitMax, "Rotary");
+                        break;
+                    case ToggleSwitchProxy toggleSwitch:
+                        LimitWarning(control, toggleSwitch.jointLimitMin, toggleSwitch.jointLimitMax, "Toggle Switch");
+                        break;
+                    case WheelProxy wheel:
+                        LimitWarning(control, wheel.jointLimitMin, wheel.jointLimitMax, "Wheel");
+                        break;
+                    default:
+                        break;
+                }
+
+                void LimitWarning(ControlSpecProxy control, float min, float max, string name)
+                {
+                    if (min > max)
+                    {
+                        result.Warning($"{name} '{control.name}' limits bad setup: jointLimitMin must not be larger than jointLimitMax ", control);
+                    }
+                }
             }
 
             foreach (var feeder in prefab.GetComponentsInChildren<InteractablePortFeederProxy>())
