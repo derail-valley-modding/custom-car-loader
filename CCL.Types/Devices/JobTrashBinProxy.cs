@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Devices
 {
+    [AddComponentMenu("CCL/Proxies/Devices/Job Trash Bin Proxy")]
     public class JobTrashBinProxy : MonoBehaviour
     {
         private void OnDrawGizmos()

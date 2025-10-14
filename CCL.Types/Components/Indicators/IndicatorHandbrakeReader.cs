@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Indicators
 {
+    [AddComponentMenu("CCL/Components/Indicators/Indicator Handbrake Reader")]
     public class IndicatorHandbrakeReader : MonoBehaviour
     {
         [FuseId]
