@@ -131,7 +131,7 @@ namespace CCL.Creator
                 case CarPartNames.Bogies.BRAKE_PADS:
                 case CarPartNames.Bogies.CONTACT_POINTS:
                 case CarPartNames.Bogies.AXLE:
-                    TrySetContentToTexture("Bogie", "This is a special CCL, part of the bogies");
+                    TrySetContentToTexture("Bogie", "This is a special CCL name, part of the bogies");
                     txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     break;
 
