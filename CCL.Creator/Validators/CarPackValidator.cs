@@ -265,7 +265,7 @@ namespace CCL.Creator.Validators
                 GUILayout.BeginVertical("box");
                 EditorHelpers.DrawHeader("Critical failure!");
                 EditorGUILayout.LabelField("Something went wrong and the pack could not be validated.\n" +
-                    "Please check the Unity Console for more information.");
+                    "Please check the Unity console for more information.");
                 EditorGUILayout.Space();
                 EditorGUILayout.EndVertical();
 

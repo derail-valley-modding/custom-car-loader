@@ -225,7 +225,12 @@ namespace CCL.Creator.Wizards
 
             if (GUILayout.Button("Add Combination"))
             {
-                _values.Add(new int[_inputCount + 1]);
+                // Copy the last entry.
+                var array = new int[_inputCount + 1];
+                var last = _values[_values.Count - 1];
+                last.CopyTo(array, 0);
+
+                _values.Add(array);
                 _combinations++;
             }
 

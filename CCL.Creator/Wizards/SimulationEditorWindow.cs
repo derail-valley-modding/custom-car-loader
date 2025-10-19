@@ -133,6 +133,8 @@ namespace CCL.Creator.Wizards
             Rect sectionRect = new Rect(H_PADDING, H_PADDING, compWidth, LINE_HEIGHT);
             GUI.Label(sectionRect, "Sim Components (Execution Order)");
 
+            EditorGUI.BeginChangeCheck();
+
             float yOffset = LINE_HEIGHT + H_PADDING;
             foreach (var component in componentInfos)
             {
@@ -148,6 +150,11 @@ namespace CCL.Creator.Wizards
             foreach (var hasIds in haveIds)
             {
                 hasIds.Draw(SimConnections, ref yOffset, compBoxWidth, _unfoldedState);
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                ConnectionCacheHandler.InvalidateCache();
             }
 
             GUI.EndScrollView();
@@ -260,8 +267,15 @@ namespace CCL.Creator.Wizards
 
         private static ConnectionResult TryFindInputConnection(SimConnectionsDefinitionProxy connections, string targetId)
         {
-            var result = new ConnectionResult();
-            
+            ConnectionCacheHandler.ConnectionsCheck(connections);
+
+            if (ConnectionCacheHandler.Inputs.TryGetValue(targetId, out var result))
+            {
+                return result;
+            }
+
+            result = new ConnectionResult();
+
             foreach (var conn in connections.connections.Where(c => c.fullPortIdIn == targetId))
             {
                 result.AddMatch(new ConnectionDescriptor(connections, PortIdOrWarning(conn.fullPortIdOut), conn, PortDirection.Input));
@@ -281,12 +295,20 @@ namespace CCL.Creator.Wizards
                 }
             }
 
+            ConnectionCacheHandler.Inputs.Add(targetId, result);
             return result;
         }
 
         private static ConnectionResult TryFindOutputConnection(SimConnectionsDefinitionProxy connections, string sourceId)
         {
-            var result = new ConnectionResult();
+            ConnectionCacheHandler.ConnectionsCheck(connections);
+
+            if (ConnectionCacheHandler.Outputs.TryGetValue(sourceId, out var result))
+            {
+                return result;
+            }
+
+            result = new ConnectionResult();
 
             foreach (var conn in connections.connections.Where(c => c.fullPortIdOut == sourceId))
             {
@@ -307,6 +329,7 @@ namespace CCL.Creator.Wizards
                 }
             }
 
+            ConnectionCacheHandler.Outputs.Add(sourceId, result);
             return result;
         }
 
