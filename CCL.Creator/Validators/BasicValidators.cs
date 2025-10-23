@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using CCL.Types.Proxies.Customization;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -26,6 +27,15 @@ namespace CCL.Creator.Validators
             {
                 result.Warning("Livery prefab does not have CustomizationPlacementMeshesProxy, " +
                     "gadgets will not be able to be attached to this prefab", livery.prefab);
+            }
+
+            if (livery.TrainsetLiveries.Any(string.IsNullOrWhiteSpace))
+            {
+                result.Warning("Livery trainset has blank entries");
+            }
+            else if (livery.TrainsetLiveries.ContainsDuplicates())
+            {
+                result.Warning("Livery trainset has duplicates");
             }
 
             return result;

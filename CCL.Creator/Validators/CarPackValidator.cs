@@ -108,6 +108,7 @@ namespace CCL.Creator.Validators
 
         private CustomCarPack? _pack;
         private ValidationResult _packResult = null!;
+        private ValidationResult _settingsResult = null!;
         private List<CarResults> _results = new List<CarResults>();
         private bool _needsCorrections = false;
         private bool _failed = false;
@@ -139,6 +140,7 @@ namespace CCL.Creator.Validators
             _failed = false;
             _exception = false;
 
+            ValidateSettings();
             ValidatePack(pack);
 
             // No need to check cars if it already failed.
@@ -166,6 +168,12 @@ namespace CCL.Creator.Validators
             foreach (var name in Enum.GetNames(typeof(ResultStatus)))
             {
                 _widths.ResizeResult(name);
+            }
+
+            foreach (var entry in _settingsResult.Entries)
+            {
+                _widths.ResizeName(GetName(entry));
+                _widths.ResizeMessage(GetMessage(entry));
             }
 
             foreach (var entry in _packResult.Entries)
@@ -234,6 +242,49 @@ namespace CCL.Creator.Validators
             _failed |= _packResult.AnyFailure;
         }
 
+        private void ValidateSettings()
+        {
+            _settingsResult = new ValidationResult("Project Settings");
+
+            if (PlayerSettings.colorSpace != UnityEngine.ColorSpace.Linear)
+            {
+                _settingsResult.Warning("Colour space is not set to linear");
+                _settingsResult.AddSettingsContextToLast("Project/Player");
+            }
+
+            // Obsolete VR settings.
+#pragma warning disable 0618
+
+            if (!PlayerSettings.virtualRealitySupported)
+            {
+                _settingsResult.Warning("VR support isn't enabled");
+                _settingsResult.AddSettingsContextToLast("Project/Player");
+            }
+
+            string[] sdks = PlayerSettings.GetVirtualRealitySDKs(BuildTargetGroup.Standalone);
+            if (!sdks.Contains("Oculus"))
+            {
+                _settingsResult.Warning("Oculus support isn't enabled");
+                _settingsResult.AddSettingsContextToLast("Project/Player");
+            }
+            if (!sdks.Contains("OpenVR"))
+            {
+                _settingsResult.Warning("OpenVR support isn't enabled");
+                _settingsResult.AddSettingsContextToLast("Project/Player");
+            }
+
+            if (!PlayerSettings.singlePassStereoRendering)
+            {
+                _settingsResult.Warning("VR Stereo Rendering Mode isn't set to Single Pass");
+                _settingsResult.AddSettingsContextToLast("Project/Player");
+            }
+
+#pragma warning restore 0618
+
+            _needsCorrections |= this._settingsResult.IsCorrectable;
+            _failed |= this._settingsResult.AnyFailure;
+        }
+
         private void ValidateCar(CustomCarType car)
         {
             var results = new List<ValidationResult>();
@@ -258,7 +309,7 @@ namespace CCL.Creator.Validators
 
         private void OnGUI()
         {
-            if (_pack == null || _packResult == null) return;
+            if (_pack == null || _packResult == null || _settingsResult == null) return;
 
             if (_exception)
             {
@@ -282,9 +333,8 @@ namespace CCL.Creator.Validators
 
             GUILayout.BeginVertical("box");
             EditorHelpers.DrawHeader("Pack");
-
             DrawResults(_packResult.Entries, _widths);
-
+            DrawResults(_settingsResult.Entries, _widths);
             EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
 
