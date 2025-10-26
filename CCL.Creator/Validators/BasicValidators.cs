@@ -97,11 +97,29 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
 
-            if (livery.interiorPrefab)
+            if (livery.interiorPrefab != null)
             {
-                if (livery.interiorPrefab!.transform.position != Vector3.zero)
+                if (livery.interiorPrefab.transform.localPosition != Vector3.zero)
                 {
-                    result.Warning("Interior is not centered at (0,0,0)");
+                    result.Warning($"Interior is not centered at {Vector3.zero}");
+                }
+            }
+
+            if (livery.prefab != null)
+            {
+                if (livery.prefab.transform.TryFind(CarPartNames.INTERIOR_LOD, out var interiorLOD))
+                {
+                    foreach (var item in interiorLOD.GetComponentsInChildren<Renderer>(true))
+                    {
+                        if (item.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.Off)
+                        {
+                            result.Warning($"Renderer {item.name} in {CarPartNames.INTERIOR_LOD} has shadow casting turned on, it should be set to off");
+                        }
+                    }
+                }
+                else if (livery.interiorPrefab != null)
+                {
+                    result.Warning($"{livery.id} - Interior prefab exists but {CarPartNames.INTERIOR_LOD} does not");
                 }
             }
 

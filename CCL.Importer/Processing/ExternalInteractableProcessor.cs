@@ -2,7 +2,6 @@
 using DV.CabControls;
 using DV.Openables;
 using DV.Optimizers;
-using DV.Simulation.Brake;
 using System.ComponentModel.Composition;
 using System.Linq;
 using UnityEngine;
@@ -26,6 +25,7 @@ namespace CCL.Importer.Processing
         private static readonly GameObject _dh4Handbrake;
         private static readonly GameObject _microshunterHandbrake;
         private static readonly GameObject _dm1uHandbrake;
+        private static readonly GameObject _utilityHandbrake;
 
         private static readonly GameObject _de2FuelPort;
         private static readonly GameObject _be2ChargePort;
@@ -53,6 +53,8 @@ namespace CCL.Importer.Processing
                 .transform.Find(HANDBRAKE_MICROSHUNTER).gameObject;
             _dm1uHandbrake = QuickAccess.Locomotives.DM1U.interiorPrefab
                 .transform.Find(HANDBRAKE_DM1U).gameObject;
+            _utilityHandbrake = QuickAccess.Wagons.UtilityFlatbed.externalInteractablesPrefab
+                .transform.Find(HANDBRAKE_UTILITY_FLATBED).gameObject;
 
             _de2FuelPort = QuickAccess.Locomotives.DE2.prefab
                 .transform.Find($"{FUEL_CAP_ROOT}/{FUEL_CAP_DE2}").gameObject;
@@ -66,13 +68,16 @@ namespace CCL.Importer.Processing
             ProcessInteractablesIfPrefabExists(context.Car.explodedExternalInteractablesPrefab);
 
             SetupExternalConnectors(context.Car.prefab);
+
+            ProcessInteriorInteractablesIfPrefabExists(context.Car.interiorPrefab);
+            ProcessInteriorInteractablesIfPrefabExists(context.Car.explodedInteriorPrefab);
         }
 
         private static void ProcessInteractablesIfPrefabExists(GameObject interactables)
         {
             if (interactables == null) return;
 
-            SetupFreightInteractables(interactables);
+            SetupInteractables(interactables);
 
             var keyboardCtrl = interactables.AddComponent<InteractablesKeyboardControl>();
             keyboardCtrl.RefreshChildren();
@@ -81,15 +86,22 @@ namespace CCL.Importer.Processing
             optimizer.scriptsToDisable = new MonoBehaviour[] { keyboardCtrl };
         }
 
-        private static void Replace(Transform parent, Transform current, GameObject newModel)
+        private static void ProcessInteriorInteractablesIfPrefabExists(GameObject interior)
         {
-            var newGo = Object.Instantiate(newModel, parent);
-            newGo.transform.localPosition = current.localPosition;
-            newGo.transform.localRotation = current.localRotation;
-            Object.Destroy(current.gameObject);
+            if (interior == null) return;
+
+            SetupInteractables(interior);
         }
 
-        private static void SetupFreightInteractables(GameObject interactables)
+        private static void SetupInteractables(GameObject interactables)
+        {
+            ReplaceInteractablePrefabs(interactables);
+
+            interactables.SetLayersRecursive(ModelProcessor.NonStandardLayerExclusion, DVLayer.Interactable);
+            SetupOpenables(interactables);
+        }
+
+        private static void ReplaceInteractablePrefabs(GameObject interactables)
         {
             var existingChildren = Enumerable.Range(0, interactables.transform.childCount)
                 .Select(i => interactables.transform.GetChild(i))
@@ -129,13 +141,21 @@ namespace CCL.Importer.Processing
                     case DUMMY_HANDBRAKE_DM1U:
                         Replace(interactables.transform, current, _dm1uHandbrake);
                         break;
+                    case DUMMY_HANDBRAKE_UTILITY_FLATBED:
+                        Replace(interactables.transform, current, _utilityHandbrake);
+                        break;
                     default:
                         break;
                 }
             }
+        }
 
-            interactables.SetLayersRecursive(ModelProcessor.NonStandardLayerExclusion, DVLayer.Interactable);
-            SetupOpenables(interactables);
+        private static void Replace(Transform parent, Transform current, GameObject newModel)
+        {
+            var newGo = Object.Instantiate(newModel, parent);
+            newGo.transform.localPosition = current.localPosition;
+            newGo.transform.localRotation = current.localRotation;
+            Object.Destroy(current.gameObject);
         }
 
         private static void SetupExternalConnectors(GameObject prefab)

@@ -21,9 +21,8 @@ namespace CCL.Importer.Patches
             mode.Controller = __instance;
             __instance.allModes.Add(mode);
 
-            // Reactivate the GO with the new mode and refresh the controller.
+            // Reactivate the GO.
             go.SetActive(true);
-            __instance.ReactivateModes();
 
             __instance.crewVehicleControl.CarSummoned += OnCarSummoned;
         }

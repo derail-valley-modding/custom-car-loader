@@ -123,6 +123,7 @@
             public const string HANDBRAKE_DH4 = "RearCluster/HandbrakeLargeEU";
             public const string HANDBRAKE_MICROSHUNTER = "HandbrakeLargeEU";
             public const string HANDBRAKE_DM1U = "RightCluster/HandbrakeEU3";
+            public const string HANDBRAKE_UTILITY_FLATBED = "HandbrakeEU3";
 
             public const string DUMMY_HANDBRAKE_SMALL = "[brake small]";
             public const string DUMMY_BRAKE_RELEASE = "[brake release]";
@@ -134,6 +135,7 @@
             public const string DUMMY_HANDBRAKE_DH4 = "[brake dh4]";
             public const string DUMMY_HANDBRAKE_MICROSHUNTER = "[brake microshunter]";
             public const string DUMMY_HANDBRAKE_DM1U = "[brake dm1u]";
+            public const string DUMMY_HANDBRAKE_UTILITY_FLATBED = "[brake utility]";
         }
 
         public static class FuelPorts

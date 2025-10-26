@@ -181,6 +181,7 @@ namespace CCL.Creator
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_DH4:
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_MICROSHUNTER:
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_DM1U:
+                case CarPartNames.Interactables.DUMMY_HANDBRAKE_UTILITY_FLATBED:
                 case CarPartNames.FuelPorts.DUMMY_FUEL_CAP_DE2:
                 case CarPartNames.FuelPorts.DUMMY_CHARGE_PORT_BE2:
                     if (IsUnderRoot(go))

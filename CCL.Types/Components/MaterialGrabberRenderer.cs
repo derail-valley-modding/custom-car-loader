@@ -63,7 +63,7 @@ namespace CCL.Types.Components
 
                 if (RenderersToAffect.Any(x => item.RendererIndex >= x.sharedMaterials.Length))
                 {
-                    error = $"MaterialGrabberRenderer in {gameObject.GetPath()} has an index ({item.RendererIndex} out of range.";
+                    error = $"MaterialGrabberRenderer in {gameObject.GetPath()} has an index ({item.RendererIndex}) out of range.";
                     return false;
                 }
             }
