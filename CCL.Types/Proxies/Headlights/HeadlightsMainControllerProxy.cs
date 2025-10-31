@@ -1,11 +1,12 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Headlights
 {
     [AddComponentMenu("CCL/Proxies/Headlights/Headlights Main Controller Proxy")]
-    public class HeadlightsMainControllerProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields
+    public class HeadlightsMainControllerProxy : MonoBehaviour, IHasPortIdFields, IHasFuseIdFields, ISelfValidation
     {
         [PortId(DVPortValueType.CONTROL, false)]
         public string headlightControlFrontId = string.Empty;
@@ -48,6 +49,21 @@ namespace CCL.Types.Proxies.Headlights
             {
                 headlightSetupsRear = t.GetComponentsInChildren<HeadlightSetup>();
             }
+        }
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (headlightSetupsFront.Any(x => x == null))
+            {
+                return this.FailForNullEntries(nameof(headlightSetupsFront), out message);
+            }
+
+            if (headlightSetupsRear.Any(x => x == null))
+            {
+                return this.FailForNullEntries(nameof(headlightSetupsRear), out message);
+            }
+
+            return this.Pass(out message);
         }
     }
 }

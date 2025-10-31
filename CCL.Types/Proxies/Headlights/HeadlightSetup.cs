@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Headlights
 {
     [AddComponentMenu("CCL/Proxies/Headlights/Headlight Setup Proxy")]
     [NotProxied]
-    public class HeadlightSetup : MonoBehaviour
+    public class HeadlightSetup : MonoBehaviour, ISelfValidation
     {
         public enum HeadlightSetting
         {
@@ -30,5 +31,15 @@ namespace CCL.Types.Proxies.Headlights
         public HeadlightSetting setting;
         public HeadlightsSubControllerBaseProxy[] subControllers = new HeadlightsSubControllerBaseProxy[0];
         public bool mainOffSetup;
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (subControllers.Any(x => x == null))
+            {
+                return this.FailForNullEntries(nameof(subControllers), out message);
+            }
+
+            return this.Pass(out message);
+        }
     }
 }

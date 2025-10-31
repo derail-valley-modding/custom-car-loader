@@ -19,6 +19,24 @@ namespace CCL.Types.Proxies.Indicators
                 return SelfValidationResult.Warning;
             }
 
+            for (int i = 1; i < switchPercentage.Length; i++)
+            {
+                if (switchPercentage[i - 1] >= switchPercentage[i])
+                {
+                    message = $"{nameof(switchPercentage)} values are not orderered from lowest to highest";
+                    return SelfValidationResult.Warning;
+                }
+            }
+
+            foreach (var item in indicatorModels)
+            {
+                if (item.activeSelf)
+                {
+                    message = $"{item.name} should be disabled";
+                    return SelfValidationResult.Warning;
+                }
+            }
+
             return this.Pass(out message);
         }
     }

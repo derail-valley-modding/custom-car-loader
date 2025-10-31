@@ -103,7 +103,6 @@ namespace CCL.Creator.Wizards
                 }
             }
 
-            GUI.color = EditorHelpers.Colors.DEFAULT;
             // Sort mode selector
             Rect sortSelectArea = new Rect(H_PADDING, 0, position.width / 4 - H_PADDING, LINE_HEIGHT);
             _sortMode = (SortMode)EditorGUI.Popup(sortSelectArea, (int)_sortMode, _sortModeNames);
