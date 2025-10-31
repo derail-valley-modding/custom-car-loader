@@ -39,6 +39,12 @@ namespace CCL.Importer
             Instance.OnGUI += Settings.Draw;
             Instance.OnSaveGUI += Settings.Save;
 
+            if (!VersionCheck())
+            {
+                Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
+                return false;
+            }
+
             // Build caches before any car is loaded, to only get vanilla resources.
             Processing.GrabberProcessor.BuildAllCaches();
 
@@ -53,12 +59,6 @@ namespace CCL.Importer
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             InfoDump();
-
-            if (!VersionCheck())
-            {
-                Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
-                return false;
-            }
 
             return true;
         }

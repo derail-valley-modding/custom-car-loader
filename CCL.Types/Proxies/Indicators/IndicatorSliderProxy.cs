@@ -9,7 +9,14 @@ namespace CCL.Types.Proxies.Indicators
         public Vector3 startPosition = -Vector3.right;
         public Vector3 endPosition = Vector3.right;
 
-        public void OnDrawGizmos()
+        [RenderMethodButtons, SerializeField]
+        [MethodButton(nameof(CopyStart), "Copy Current To Start")]
+        [MethodButton(nameof(CopyEnd), "Copy Current To End")]
+        [MethodButton(nameof(PreviewStart), "Preview Start")]
+        [MethodButton(nameof(PreviewEnd), "Preview End")]
+        private bool _buttons;
+
+        private void OnDrawGizmos()
         {
             if (!pointer) return;
 
@@ -26,6 +33,32 @@ namespace CCL.Types.Proxies.Indicators
             Gizmos.DrawLine(worldStart + perpendicular * tickScale, worldStart + perpendicular * -tickScale);
             Gizmos.color = END_COLOR;
             Gizmos.DrawLine(worldEnd + perpendicular * tickScale, worldEnd + perpendicular * -tickScale);
+        }
+
+        private void CopyStart()
+        {
+            if (pointer == null) return;
+
+            startPosition = pointer.localPosition;
+        }
+
+        private void CopyEnd()
+        {
+            if (pointer == null) return;
+
+            endPosition = pointer.localPosition;
+        }
+        private void PreviewStart()
+        {
+            if (pointer == null) return;
+
+            pointer.localPosition = startPosition;
+        }
+        private void PreviewEnd()
+        {
+            if (pointer == null) return;
+
+            pointer.localPosition = endPosition;
         }
     }
 }

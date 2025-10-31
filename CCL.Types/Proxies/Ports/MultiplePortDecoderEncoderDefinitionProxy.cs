@@ -48,6 +48,7 @@ namespace CCL.Types.Proxies.Ports
         [SerializeField, RenderMethodButtons]
         [MethodButton(nameof(ResizeArrays), "Resize Arrays", "Resizes arrays to have the required length to match the ports")]
         [MethodButton(nameof(SetupForSteamerSingleHeadlightControl), "Setup For Single Steamer Headlight Control")]
+        [MethodButton("CCL.Creator.Wizards.DecoderEncoderWizard:ShowWindow", "Open Wizard")]
         private bool _renderButton;
 
         [SerializeField, HideInInspector]
@@ -80,6 +81,8 @@ namespace CCL.Types.Proxies.Ports
 
         private void SetupForSteamerSingleHeadlightControl()
         {
+            combinations = 19;
+
             values = FromMulti(new[,]
             {
                 { 0 / 5f, 5 / 5f, 0 / 6f },
@@ -197,11 +200,13 @@ namespace CCL.Types.Proxies.Ports
 
         public void ApplyDM1UDefaults()
         {
+            combinations = 3;
+
             values = FromMulti(new[,]
             {
-                { 0, 0, 0 },
-                { 1, 0, 0.5f },
-                { 1, 1, 1 },
+                { 0, 0, 0 / 2f },
+                { 1, 0, 1 / 2f },
+                { 1, 1, 2 / 2f },
             });
 
             SetupPortsForHeadlightControl();
@@ -224,6 +229,8 @@ namespace CCL.Types.Proxies.Ports
 
         public void ApplyBE2Defaults()
         {
+            combinations = 4;
+
             values = FromMulti(new[,]
             {
                 { 0, 0, 0 / 3f },

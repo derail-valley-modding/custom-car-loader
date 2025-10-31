@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
-    [AddComponentMenu("CCL/Proxies/Highlight Tag Proxy")]
+    [AddComponentMenu("CCL/Proxies/Highlight Tag Proxy"), DisallowMultipleComponent]
     public class HighlightTagProxy : MonoBehaviour
     {
         [Tooltip("Optional, leave empty to use this gameObject")]

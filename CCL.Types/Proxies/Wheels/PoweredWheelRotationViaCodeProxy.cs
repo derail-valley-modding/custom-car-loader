@@ -28,6 +28,8 @@ namespace CCL.Types.Proxies.Wheels
         [SerializeField]
         private Vector3[] _axis = new Vector3[0];
 
+        private PoweredWheelsManagerProxy? _cachedManager;
+
         public void OnValidate()
         {
             int length = additionalTransformsToRotate.Length;
@@ -53,6 +55,33 @@ namespace CCL.Types.Proxies.Wheels
                     transformToRotate = _transforms[i],
                     rotationAxis = _axis[i]
                 };
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (_cachedManager == null)
+            {
+                _cachedManager = transform.root.GetComponentInChildren<PoweredWheelsManagerProxy>();
+            }
+
+            if (_cachedManager != null)
+            {
+                foreach (var item in _cachedManager.poweredWheels)
+                {
+                    if (item.wheelTransform != null)
+                    {
+                        DrawWheelGizmo(item.wheelTransform, item.localRotationAxis, wheelRadius, true);
+                    }
+                }
+            }
+
+            foreach (var item in additionalTransformsToRotate)
+            {
+                if (item.transformToRotate != null)
+                {
+                    DrawWheelGizmo(item.transformToRotate, item.rotationAxis, wheelRadius, true);
+                }
             }
         }
     }

@@ -191,7 +191,7 @@ namespace CCL.Importer.Processing
                         // Field not found, so we can't replace it, log and skip.
                         if (fi == null)
                         {
-                            CCLPlugin.Error($"FieldInfo is null in '{prefab.name}' (field name: {replacement.FieldName}), skipping.");
+                            CCLPlugin.Error($"FieldInfo is null in '{prefab.name}/{grabber.name}' (field name: {replacement.FieldName}), skipping.");
                             continue;
                         }
 

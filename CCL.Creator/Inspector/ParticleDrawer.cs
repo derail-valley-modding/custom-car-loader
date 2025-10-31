@@ -7,7 +7,7 @@ namespace CCL.Creator.Inspector
     internal class ParticleDrawer
     {
         [DrawGizmo(GizmoType.InSelectionHierarchy)]
-        private static void DrawGizmoDistanceOptimiser(CopyVanillaParticleSystem particles, GizmoType gizmoType)
+        private static void DrawGizmoParticleSystem(CopyVanillaParticleSystem particles, GizmoType gizmoType)
         {
             Gizmos.color = new Color(0.1f, 0.9f, 1.0f);
             Gizmos.matrix = particles.transform.localToWorldMatrix;
@@ -24,6 +24,8 @@ namespace CCL.Creator.Inspector
                     Gizmos.DrawLine(Vector3.zero, Vector3.forward);
                     break;
             }
+
+            Gizmos.DrawIcon(Vector3.zero, "ParticleSystem Gizmo");
         }
     }
 }

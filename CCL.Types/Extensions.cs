@@ -127,5 +127,11 @@ namespace CCL.Types
             message = $"{name} cannot be null";
             return SelfValidationResult.Fail;
         }
+
+        public static SelfValidationResult FailForNullEntries(this ISelfValidation component, string name, out string message)
+        {
+            message = $"{name} cannot have null entries";
+            return SelfValidationResult.Fail;
+        }
     }
 }

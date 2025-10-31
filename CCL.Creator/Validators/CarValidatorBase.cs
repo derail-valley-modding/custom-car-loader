@@ -106,18 +106,23 @@ namespace CCL.Creator.Validators
 
             if (string.IsNullOrWhiteSpace(car.id))
             {
-                overallResult.Fail("Car ID is empty");
+                overallResult.Fail("Car ID is empty!");
             }
 
             if (car.liveries.Count == 0)
             {
-                overallResult.Fail("Car has no liveries");
+                overallResult.Fail("Car has no liveries!");
             }
 
             if (car.liveries.ContainsDuplicates(x => x.id))
             {
                 overallResult.CriticalFail("Car has duplicate livery IDs!");
                 return overallResult;
+            }
+
+            if (car.KindSelection != DVTrainCarKind.Car && car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
+            {
+                overallResult.Warning("Car is not of generic car kind but has no delete prevention set");
             }
 
             foreach (var livery in car.liveries)

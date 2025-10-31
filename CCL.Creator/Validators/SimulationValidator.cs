@@ -18,11 +18,31 @@ namespace CCL.Creator.Validators
             var result = Pass();
 
             var connectionDef = livery.prefab!.GetComponentInChildren<SimConnectionsDefinitionProxy>();
-            if (!connectionDef) return Pass();
+            if (!connectionDef) return Skip();
 
             var components = GetAllOfType<SimComponentDefinitionProxy>(livery).ToList();
             var havePortIds = GetAllOfType<IHasPortIdFields>(livery).ToList();
             var haveFuseIds = GetAllOfType<IHasFuseIdFields>(livery).ToList();
+
+            var portIds = new HashSet<string>();
+
+            // Check for duplicate port IDs.
+            foreach (var component in components)
+            {
+                foreach (var port in component.ExposedPorts)
+                {
+                    var fullId = component.GetFullPortId(port.ID);
+
+                    if (portIds.Contains(fullId))
+                    {
+                        result.Fail($"Duplicate port ID {fullId}");
+                    }
+                    else
+                    {
+                        portIds.Add(fullId);
+                    }
+                }
+            }
 
             // Check port connections
             foreach (var connection in connectionDef.connections)

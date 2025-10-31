@@ -12,35 +12,41 @@ namespace CCL.Creator.Validators
         public override ValidationResult Validate(CustomCarType car)
         {
             var result = base.Validate(car);
+            var tested = result.Status != ResultStatus.Skipped;
 
             foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<IVanillaResourceGrabber>(true))
             {
                 CheckGenericGrabber(grabber, result);
+                tested = true;
             }
 
             foreach (var grabber in car.AllPrefabs.GetComponentsInChildren<ICustomGrabberValidation>(true))
             {
-                CheckMaterialGrabberRenderer(grabber, result);
+                CheckCustomGrabber(grabber, result);
+                tested = true;
             }
 
-            return result;
+            return tested ? result : Skip();
         }
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
         {
             var result = Pass();
+            var tested = false;
 
             foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<IVanillaResourceGrabber>(true))
             {
                 CheckGenericGrabber(grabber, result);
+                tested = true;
             }
 
             foreach (var grabber in livery.AllPrefabs.GetComponentsInChildren<ICustomGrabberValidation>(true))
             {
-                CheckMaterialGrabberRenderer(grabber, result);
+                CheckCustomGrabber(grabber, result);
+                tested = true;
             }
 
-            return result;
+            return tested ? result : Skip();
         }
 
         private void CheckGenericGrabber(IVanillaResourceGrabber grabber, ValidationResult result)
@@ -61,7 +67,7 @@ namespace CCL.Creator.Validators
             }
         }
 
-        private void CheckMaterialGrabberRenderer(ICustomGrabberValidation grabber, ValidationResult result)
+        private void CheckCustomGrabber(ICustomGrabberValidation grabber, ValidationResult result)
         {
             if (!grabber.IsValid(out var error))
             {

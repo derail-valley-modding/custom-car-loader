@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Reflection;
+using UnityEngine;
 
 namespace CCL.Types.Proxies.Indicators
 {
@@ -14,7 +15,14 @@ namespace CCL.Types.Proxies.Indicators
         public bool drawAsBox = true;
         public Vector3 sizeMultiplier = Vector3.one;
 
-        private static Vector3 s_flatCube = new Vector3(0.1f, 0.0f, 0.1f);
+        [RenderMethodButtons, SerializeField]
+        [MethodButton(nameof(CopyStart), "Copy Current To Start")]
+        [MethodButton(nameof(CopyEnd), "Copy Current To End")]
+        [MethodButton(nameof(PreviewStart), "Preview Start")]
+        [MethodButton(nameof(PreviewEnd), "Preview End")]
+        private bool _buttons;
+
+        private static readonly Vector3 s_flatCube = new Vector3(0.1f, 0.0f, 0.1f);
 
         public void OnDrawGizmos()
         {
@@ -65,6 +73,32 @@ namespace CCL.Types.Proxies.Indicators
                 Gizmos.DrawWireCube(Vector3.up * endScale.y * 0.5f, s_flatCube);
                 Gizmos.DrawWireCube(Vector3.down * endScale.y * 0.5f, s_flatCube);
             }
+        }
+
+        private void CopyStart()
+        {
+            if (indicatorToScale == null) return;
+
+            startScale = indicatorToScale.localScale;
+        }
+
+        private void CopyEnd()
+        {
+            if (indicatorToScale == null) return;
+
+            endScale = indicatorToScale.localScale;
+        }
+        private void PreviewStart()
+        {
+            if (indicatorToScale == null) return;
+
+            indicatorToScale.localScale = startScale;
+        }
+        private void PreviewEnd()
+        {
+            if (indicatorToScale == null) return;
+
+            indicatorToScale.localScale = endScale;
         }
     }
 }

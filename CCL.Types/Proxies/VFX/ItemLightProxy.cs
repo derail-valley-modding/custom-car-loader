@@ -2,6 +2,7 @@
 
 namespace CCL.Types.Proxies.VFX
 {
+    [AddComponentMenu("CCL/Proxies/VFX/Item Light Proxy")]
     public class ItemLightProxy : MonoBehaviour
     {
         public Light light = null!;

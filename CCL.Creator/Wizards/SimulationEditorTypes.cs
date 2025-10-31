@@ -317,5 +317,31 @@ namespace CCL.Creator.Wizards
                 }
             }
         }
+
+        private class ConnectionCacheHandler
+        {
+            private static SimConnectionsDefinitionProxy? s_connections;
+
+            public static Dictionary<string, ConnectionResult> Inputs = new Dictionary<string, ConnectionResult>();
+            public static Dictionary<string, ConnectionResult> Outputs = new Dictionary<string, ConnectionResult>();
+
+            public static void InvalidateCache()
+            {
+                Inputs.Clear();
+                Outputs.Clear();
+            }
+
+            public static bool ConnectionsCheck(SimConnectionsDefinitionProxy connections)
+            {
+                if (s_connections != connections)
+                {
+                    s_connections = connections;
+                    InvalidateCache();
+                    return false;
+                }
+
+                return true;
+            }
+        }
     }
 }
