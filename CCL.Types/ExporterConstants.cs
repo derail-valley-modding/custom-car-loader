@@ -5,7 +5,7 @@ namespace CCL.Types
     public static class ExporterConstants
     {
         public const string MOD_ID = "DVCustomCarLoader";
-        public static readonly Version ExporterVersion = new Version(3, 1, 2);
+        public static readonly Version ExporterVersion = new Version(3, 1, 4);
         public static readonly Version MinimumCompatibleVersion = new Version(3, 1, 0);
         public const string MINIMUM_DV_BUILD = "build2702";
         public const int BUILD_INT = 2702;

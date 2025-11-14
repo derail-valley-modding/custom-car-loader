@@ -2,13 +2,22 @@
 using CCL.Types;
 using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using static CCL.Types.Proxies.Ports.MultiplePortDecoderEncoderDefinitionProxy;
 
 namespace CCL.Creator.Wizards
 {
     internal class DecoderEncoderWizard : EditorWindow
     {
+        private enum State
+        {
+            Setup,
+            Create,
+            Recover,
+        }
+
         private static DecoderEncoderWizard? s_instance;
         private static float s_width = EditorGUIUtility.singleLineHeight + 2;
         private static GUILayoutOption s_widthOption = GUILayout.Width(s_width);
@@ -25,7 +34,7 @@ namespace CCL.Creator.Wizards
         private MultiplePortDecoderEncoderDefinitionProxy? _definition;
         // GUI stuff.
         private Vector2 _scroll;
-        private bool _started = false;
+        private State _state;
         // User options.
         private int _combinations = 7;
         private int _inputCount = 2;
@@ -37,15 +46,20 @@ namespace CCL.Creator.Wizards
         {
             _definition = EditorHelpers.ObjectField("Definition", _definition, true);
 
-            if (_started)
+            switch (_state)
             {
-                ConfigGUI();
-            }
-            else
-            {
-                StartGUI();
+                case State.Create:
+                    ConfigGUI();
+                    break;
+                case State.Recover:
+                    break;
+                default:
+                    StartGUI();
+                    break;
             }
         }
+
+        #region Setup Mode
 
         private void StartGUI()
         {
@@ -54,7 +68,7 @@ namespace CCL.Creator.Wizards
 
             if (GUILayout.Button("Confirm"))
             {
-                _started = true;
+                _state = State.Create;
                 _limits = new int[_inputCount + 1];
                 _values = new List<int[]>();
 
@@ -72,25 +86,25 @@ namespace CCL.Creator.Wizards
 
             if (GUILayout.Button("Steamer Headlights"))
             {
-                _started = true;
+                _state = State.Create;
                 CreateSteamerHeadlights();
             }
 
             if (GUILayout.Button("DM3 Headlights"))
             {
-                _started = true;
+                _state = State.Create;
                 CreateDM3Headlights();
             }
 
             if (GUILayout.Button("BE2 Headlights"))
             {
-                _started = true;
+                _state = State.Create;
                 CreateBE2Headlights();
             }
 
             if (GUILayout.Button("DM1U Inside Lights"))
             {
-                _started = true;
+                _state = State.Create;
                 CreateDM1UInsideLights();
             }
         }
@@ -213,6 +227,10 @@ namespace CCL.Creator.Wizards
             };
         }
 
+        #endregion
+
+        #region Create Mode
+
         private void ConfigGUI()
         {
             EditorGUILayout.BeginScrollView(_scroll);
@@ -245,7 +263,7 @@ namespace CCL.Creator.Wizards
 
             if (GUILayout.Button("Return"))
             {
-                _started = false;
+                _state = State.Setup;
             }
         }
 
@@ -361,5 +379,34 @@ namespace CCL.Creator.Wizards
             AssetHelper.SaveAsset(_definition);
             Undo.IncrementCurrentGroup();
         }
+
+        #endregion
+
+        #region Recover Mode
+
+        private static int GuessInputCount(FloatArray[] arrays)
+        {
+            return Mathf.Max(3, arrays.Select(x => x.array.Length).Min()) - 1;
+        }
+
+        private static int GuessTotalValue(IEnumerable<float> values)
+        {
+            //var min = 1.0f;
+
+            //foreach (var value in values)
+            //{
+            //    if (value < min && value != 0)
+            //    {
+            //        min = value;
+            //    }
+            //}
+
+            //var guess = Mathf.RoundToInt(1.0f / min) + 1;
+            //return guess;
+
+            return values.Distinct().Count();
+        }
+
+        #endregion
     }
 }

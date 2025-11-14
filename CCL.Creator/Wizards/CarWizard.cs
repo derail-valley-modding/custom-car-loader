@@ -127,7 +127,9 @@ namespace CCL.Creator.Wizards
 
             EditorHelpers.DrawSeparator();
 
-            _createPack = EditorGUILayout.Toggle("Create Pack", _createPack);
+            _createPack = RenderToggle(
+                "You will need at least 1 pack to export any number of cars",
+                "Create Pack", _createPack);
 
             using (new EditorGUI.DisabledScope(!_createPack))
             {
@@ -176,6 +178,14 @@ namespace CCL.Creator.Wizards
         {
             EditorGUILayout.Space();
             T val = (T)EditorGUILayout.EnumPopup(label, value);
+            EditorHelpers.WordWrappedLabel(help);
+            return val;
+        }
+
+        private static bool RenderToggle(string help, string label, bool value)
+        {
+            EditorGUILayout.Space();
+            bool val = EditorGUILayout.Toggle(label, value);
             EditorHelpers.WordWrappedLabel(help);
             return val;
         }

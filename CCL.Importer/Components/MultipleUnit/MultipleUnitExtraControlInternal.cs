@@ -40,7 +40,7 @@ namespace CCL.Importer.Components.MultipleUnit
                 PropagateThroughCable(false);
             }
 
-            if (_module.UseWireless && _module.RemoteChannel.Transmitter == this)
+            if (_module.UseWireless && _module.RemoteChannel.Transmitter == _module)
             {
                 foreach (var device in _module.RemoteChannel.devices)
                 {
@@ -69,7 +69,7 @@ namespace CCL.Importer.Components.MultipleUnit
 
         private void TrySetValue(MultipleUnitModule module)
         {
-            if (module != this && module.train.TryGetComponent(out T comp))
+            if (module != _module && module.train.TryGetComponent(out T comp))
             {
                 comp.SetValue((T)this);
             }

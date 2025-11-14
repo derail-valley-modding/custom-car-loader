@@ -24,11 +24,21 @@ namespace CCL.Creator.Validators
             var havePortIds = GetAllOfType<IHasPortIdFields>(livery).ToList();
             var haveFuseIds = GetAllOfType<IHasFuseIdFields>(livery).ToList();
 
+            var compIds = new HashSet<string>();
             var portIds = new HashSet<string>();
 
-            // Check for duplicate port IDs.
+            // Check for duplicate component IDs or port IDs.
             foreach (var component in components)
             {
+                if (compIds.Contains(component.ID))
+                {
+                    result.Fail($"Duplicate component ID {component.ID}");
+                }
+                else
+                {
+                    compIds.Add(component.ID);
+                }
+
                 foreach (var port in component.ExposedPorts)
                 {
                     var fullId = component.GetFullPortId(port.ID);
