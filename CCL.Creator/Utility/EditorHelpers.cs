@@ -189,7 +189,7 @@ namespace CCL.Creator.Utility
 
             s_searchScroll = EditorGUILayout.BeginScrollView(s_searchScroll, false, true, GUILayout.MaxHeight(searchMaxHeight));
 
-            var results = searchOptions.Where(x => x.StartsWith(s, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x).Take(maxResults);
+            var results = searchOptions.Where(x => x.StartsWith(s, StringComparison.InvariantCultureIgnoreCase)).OrderBy(x => x);
 
             if (results.Count() > 0 && results.First() != property.stringValue)
             {
@@ -201,8 +201,29 @@ namespace CCL.Creator.Utility
                         GUI.FocusControl(string.Empty);
                         break;
                     }
+                    
+                    if (maxResults-- <= 0) break;
                 }
             }
+
+            //var results = searchOptions.OrderBy(x =>
+            //    TextUtilities.LevenshteinDistance(s, x) +
+            //    (x.StartsWith(s, StringComparison.InvariantCultureIgnoreCase) ? 0 : 15));
+
+            //if (results.Count() > 0 && results.First() != property.stringValue)
+            //{
+            //    foreach (var item in results)
+            //    {
+            //        if (GUILayout.Button(item, EditorStyles.toggle))
+            //        {
+            //            property.stringValue = item;
+            //            GUI.FocusControl(string.Empty);
+            //            break;
+            //        }
+
+            //        if (maxResults-- <= 0) break;
+            //    }
+            //}
 
             EditorGUILayout.EndScrollView();
         }

@@ -69,20 +69,26 @@ namespace CCL.Importer.Processing
 
             var broadcastController = SetupBroadcastPortsIfNeeded(livery.prefab);
 
-            SimController simController = livery.prefab.GetComponentInChildren<SimController>(true);
+            // Check if there's MU support. This is added by the coupler processor.
+            if (livery.prefab.TryGetComponent<MultipleUnitModule>(out var mum))
+            {
+                mum.controlsOverrider = baseOverrider;
+            }
+
+            var simController = livery.prefab.GetComponentInChildren<SimController>(true);
 
             // If we have something that can use a sim controller and don't already have a sim controller
-            var needsSimController = (livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true) ||
+            if (simController == null && (
                 broadcastController != null ||
-                livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0) &&
-                !simController;
-            if (needsSimController)
+                mum != null ||
+                simConnections != null ||
+                livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0))
             {
                 simController = livery.prefab.AddComponent<SimController>();
                 simController.connectionsDefinition = simConnections;
             }
 
-            if (simController)
+            if (simController != null)
             {
                 SetupSimController(simController, livery.prefab);
 
@@ -106,11 +112,6 @@ namespace CCL.Importer.Processing
             if (damageController)
             {
                 damageController.windows = livery.prefab.GetComponentInChildren<WindowsBreakingController>(true);
-            }
-
-            if (livery.prefab.TryGetComponent<MultipleUnitModule>(out var mum))
-            {
-                mum.controlsOverrider = baseOverrider;
             }
 
             // Same as was done for the external interactables, but check if there's a BaseControlsOverrider,

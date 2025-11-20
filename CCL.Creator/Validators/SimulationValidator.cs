@@ -120,7 +120,7 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortFeederExists(feeders, $"{externalControl.ID}.EXT_IN"))
                 {
-                    result.Warning($"Control \"{externalControl.ID}\" has no interactable port feeder");
+                    result.Warning($"Control \"{externalControl.ID}\" has no interactable port feeder", externalControl);
                 }
             }
 
@@ -128,7 +128,7 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortFeederExists(feeders, $"{gearshift.ID}.CONTROL_EXT_IN"))
                 {
-                    result.Warning($"Control \"{gearshift.ID}\" has no interactable port feeder");
+                    result.Warning($"Control \"{gearshift.ID}\" has no interactable port feeder", gearshift);
                 }
             }
 
@@ -142,19 +142,18 @@ namespace CCL.Creator.Validators
                     string fullId = $"{hasFuses.ID}.{fuse.id}";
                     if (!CheckFuseFeederExists(fuseFeeders, fullId))
                     {
-                        result.Warning($"Fuse \"{fullId}\" has no interactable fuse feeder");
+                        result.Warning($"Fuse \"{fullId}\" has no interactable fuse feeder", hasFuses);
                     }
                 }
             }
 
             // Check brakes
             var brakeSetup = livery.parentType!.brakes;
-
             if (livery.prefab.GetComponent<CompressorSimControllerProxy>())
             {
                 if (!brakeSetup.hasCompressor)
                 {
-                    result.Warning("Prefab has compressor component, but car's brake config says it does not");
+                    result.Warning("Prefab has compressor component, but car's brake config says it does not", livery);
                 }
             }
 
@@ -163,15 +162,14 @@ namespace CCL.Creator.Validators
             {
                 if (brakeSetup.brakeValveType == CustomCarType.BrakesSetup.TrainBrakeType.None)
                 {
-                    result.Warning("Prefab has train brake control, but car's brake config has no valve type set");
+                    result.Warning("Prefab has train brake control, but car's brake config has no valve type set", livery);
                 }
             }
-
             if (overridableControls.Any(c => c.ControlType == OverridableControlType.IndBrake))
             {
                 if (!brakeSetup.hasIndependentBrake)
                 {
-                    result.Warning("Prefab has independent brake control, but car's brake config says it does not");
+                    result.Warning("Prefab has independent brake control, but car's brake config says it does not", livery);
                 }
             }
 

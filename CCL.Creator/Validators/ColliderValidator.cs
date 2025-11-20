@@ -44,9 +44,9 @@ namespace CCL.Creator.Validators
                 result.Warning($"{livery.id} - No collider with the {nameof(ServiceCollider)} component found, " +
                     $"vehicle cannot be serviced!", collidersRoot);
             }
-            if (collision != null && InvalidOrigin(collision))
+            if (collision != null)
             {
-                result.Warning($"{livery.id} - {CarPartNames.Colliders.COLLISION} is not at the local origin");
+                CheckLocalOrigin(collision);
             }
 
             // Walkable.
@@ -59,10 +59,7 @@ namespace CCL.Creator.Validators
 
             if (walkable != null)
             {
-                if (InvalidOrigin(walkable))
-                {
-                    result.Warning($"{livery.id} - {CarPartNames.Colliders.WALKABLE} is not at the local origin");
-                }
+                CheckLocalOrigin(walkable);
 
                 // Fall safeties.
                 foreach (Collider collider in walkableComp)
@@ -92,10 +89,7 @@ namespace CCL.Creator.Validators
             var items = collidersRoot.FindSafe(CarPartNames.Colliders.ITEMS);
             if (items != null)
             {
-                if (InvalidOrigin(items))
-                {
-                    result.Warning($"{livery.id} - {CarPartNames.Colliders.ITEMS} is not at the local origin");
-                }
+                CheckLocalOrigin(items);
 
                 foreach (var disabler in items.GetComponentsInChildren<DrillingDisablerProxy>(true))
                 {
@@ -105,12 +99,16 @@ namespace CCL.Creator.Validators
                     }
                 }
             }
+            else
+            {
+                result.Warning($"{livery.id} - {CarPartNames.Colliders.ITEMS} missing, will be copied from {CarPartNames.Colliders.WALKABLE}");
+            }
 
             // Camera dampening.
             var cameraDampening = collidersRoot.FindSafe(CarPartNames.Colliders.CAMERA_DAMPENING);
-            if (cameraDampening != null && InvalidOrigin(cameraDampening))
+            if (cameraDampening != null)
             {
-                result.Warning($"{livery.id} - {CarPartNames.Colliders.CAMERA_DAMPENING} is not at the local origin");
+                CheckLocalOrigin(cameraDampening);
             }
 
             // Bogies.
@@ -122,6 +120,14 @@ namespace CCL.Creator.Validators
             }
 
             return result;
+
+            void CheckLocalOrigin(Transform t)
+            {
+                if (InvalidOrigin(t))
+                {
+                    result.Warning($"{livery.id} - {t.name} is not at the local origin");
+                }
+            }
         }
 
         private static bool InvalidOrigin(Transform t)

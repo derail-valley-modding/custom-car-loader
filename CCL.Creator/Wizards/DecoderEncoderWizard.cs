@@ -233,7 +233,7 @@ namespace CCL.Creator.Wizards
 
         private void ConfigGUI()
         {
-            EditorGUILayout.BeginScrollView(_scroll);
+            _scroll = EditorGUILayout.BeginScrollView(_scroll);
 
             DrawNames();
             DrawLimits();

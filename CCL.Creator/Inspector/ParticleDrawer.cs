@@ -25,7 +25,8 @@ namespace CCL.Creator.Inspector
                     break;
             }
 
-            Gizmos.DrawIcon(Vector3.zero, "ParticleSystem Gizmo");
+            Gizmos.matrix = Matrix4x4.identity;
+            Gizmos.DrawIcon(particles.transform.position, "ParticleSystem Gizmo");
         }
     }
 }

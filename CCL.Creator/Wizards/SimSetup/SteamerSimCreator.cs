@@ -85,8 +85,7 @@ namespace CCL.Creator.Wizards.SimSetup
 
             var waterDetector = CreateWaterDetector();
 
-            var coalDump = CreateExternalControl("coalDumpControl", true);
-            coalDump.defaultValue = 0.5f;
+            var coalDump = CreateExternalControl("coalDumpControl", true, 0.5f);
 
             var firebox = CreateSimComponent<FireboxDefinitionProxy>("firebox");
             var fireboxSimController = CreateSibling<FireboxSimControllerProxy>(firebox);

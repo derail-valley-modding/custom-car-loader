@@ -1,17 +1,17 @@
-﻿using CCL.Types.Components;
+﻿using CCL.Creator.Utility;
 using UnityEditor;
 using UnityEngine;
 
 namespace CCL.Creator.Inspector
 {
-    [CustomEditor(typeof(CopyVanillaLight))]
+    [CustomEditor(typeof(VanillaLightCopy))]
     internal class CopyVanillaLightEditor : Editor
     {
-        private CopyVanillaLight _comp = null!;
+        private VanillaLightCopy _comp = null!;
 
         public override void OnInspectorGUI()
         {
-            _comp = (CopyVanillaLight)target;
+            _comp = (VanillaLightCopy)target;
 
             base.OnInspectorGUI();
 
