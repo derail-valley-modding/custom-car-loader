@@ -131,6 +131,8 @@ namespace CCL.Creator.Wizards.SimSetup
             transmissionAB.aReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_RATIO_A");
             transmissionAB.bReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "GEAR_RATIO_B");
             transmissionAB.mulReadOut = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "MECHANICAL_GEAR_RATIO");
+            AddGearShifter(transmissionA, true);
+            AddGearShifter(transmissionB, false);
 
             var gearRatioCalc = CreateSimComponent<ConfigurableMultiplierDefinitionProxy>("gearRatioCalculator");
             gearRatioCalc.aReader = new PortReferenceDefinition(DVPortValueType.GENERIC, "HYDRAULIC_GEAR_RATIO");
@@ -354,6 +356,7 @@ namespace CCL.Creator.Wizards.SimSetup
             coolant.OnValidate();
 
             var transmission = CreateSimComponent<SmoothTransmissionDefinitionProxy>("transmission");
+            AddGearShifter(transmission, true);
 
             var poweredAxles = CreateSimComponent<ConfigurablePortDefinitionProxy>("poweredAxles");
             poweredAxles.value = 1;

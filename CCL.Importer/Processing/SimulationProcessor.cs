@@ -173,6 +173,7 @@ namespace CCL.Importer.Processing
             AddController<OilingPointsPortController, OilingPointPortFeederReader>(prefab);
             AddController<ControlsBlockController, ControlBlocker>(prefab);
             AddController<HandbrakeFeedersController, HandbrakeFeeder>(prefab);
+            AddController<ManualGearShiftingController, GearShifter>(prefab);
 
             AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
             AddController<RopeInitialiseController, RopeBehaviour>(prefab);

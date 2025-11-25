@@ -334,6 +334,13 @@ namespace CCL.Creator.Wizards.SimSetup
             return tractionFeeders;
         }
 
+        protected void AddGearShifter(SimComponentDefinitionProxy comp, bool isGearboxA)
+        {
+            var shifter = comp.gameObject.AddComponent<GearShifterProxy>();
+            shifter.currentGearRatioPortId = FullPortId(comp, "GEAR_RATIO");
+            shifter.isGearboxA = isGearboxA;
+        }
+
         #endregion
 
         #region Controls

@@ -35,6 +35,7 @@ namespace CCL.Creator.Wizards
         // GUI stuff.
         private Vector2 _scroll;
         private State _state;
+        private bool _recoveryCalculated;
         // User options.
         private int _combinations = 7;
         private int _inputCount = 2;
@@ -52,6 +53,7 @@ namespace CCL.Creator.Wizards
                     ConfigGUI();
                     break;
                 case State.Recover:
+                    RecoverGUI();
                     break;
                 default:
                     StartGUI();
@@ -384,6 +386,69 @@ namespace CCL.Creator.Wizards
 
         #region Recover Mode
 
+        private void RecoverGUI()
+        {
+            EditorGUILayout.LabelField("Coming Soon");
+            return;
+
+            GUI.enabled = _definition != null;
+
+            if (GUILayout.Button("Calculate") && _definition != null)
+            {
+                _inputCount = GuessInputCount(_definition.values);
+                _recoveryCalculated = true;
+            }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Number of Inputs", _inputCount.ToString());
+            EditorGUILayout.LabelField("Combinations", _combinations.ToString());
+
+            GUI.enabled = _recoveryCalculated;
+
+            if (GUILayout.Button("Recover"))
+            {
+                _recoveryCalculated = false;
+                DoRecovery();
+            }
+
+            GUI.enabled = true;
+        }
+
+        private void DoRecovery()
+        {
+            if (_definition == null) return;
+
+            _state = State.Create;
+            _limits = new int[_inputCount + 1];
+            _values = new List<int[]>();
+            _combinations = _definition.combinations;
+
+            for (int i = 0; i < _definition.values.Length; i++)
+            {
+                var item = _definition.values[i];
+                var array = new int[_inputCount];
+                var total = GuessTotalValue(GetValuesAt(i));
+
+                for (int j = 0; j < _inputCount && j < item.array.Length - 1; j++)
+                {
+                    array[j] = Mathf.RoundToInt(item.array[j] * total);
+                }
+
+                _values.Add(array);
+
+                IEnumerable<float> GetValuesAt(int index)
+                {
+                    yield return 0;
+                    //foreach (var item in collection)
+                    //{
+
+                    //}
+                }
+            }
+
+            _names = new string[_inputCount + 1];
+        }
+
         private static int GuessInputCount(FloatArray[] arrays)
         {
             return Mathf.Max(3, arrays.Select(x => x.array.Length).Min()) - 1;
@@ -391,20 +456,20 @@ namespace CCL.Creator.Wizards
 
         private static int GuessTotalValue(IEnumerable<float> values)
         {
-            //var min = 1.0f;
+            var min = 1.0f;
 
-            //foreach (var value in values)
-            //{
-            //    if (value < min && value != 0)
-            //    {
-            //        min = value;
-            //    }
-            //}
+            foreach (var value in values)
+            {
+                if (value < min && value != 0)
+                {
+                    min = value;
+                }
+            }
 
-            //var guess = Mathf.RoundToInt(1.0f / min) + 1;
-            //return guess;
+            var guess = Mathf.RoundToInt(1.0f / min) + 1;
+            return guess;
 
-            return values.Distinct().Count();
+            //return values.Distinct().Count();
         }
 
         #endregion
