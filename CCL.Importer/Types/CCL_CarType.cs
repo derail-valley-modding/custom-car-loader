@@ -1,10 +1,13 @@
 ﻿using CCL.Types;
+using CCL.Types.Tutorial;
 using DV;
 using DV.ThingTypes;
 using DVLangHelper.Data;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
+using static CCL.Types.CustomCarType;
 
 namespace CCL.Importer.Types
 {
@@ -18,6 +21,8 @@ namespace CCL.Importer.Types
         public DVTrainCarKind KindSelection;
         public TranslationData NameTranslations = new();
         public CargoSetup? CargoSetup;
+        public TutorialTypeEnum TutorialType = TutorialTypeEnum.None;
+        public TutorialSetup? Tutorial = null;
 
         public GameObject? SimAudioPrefab;
 

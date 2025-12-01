@@ -7,6 +7,7 @@ using CCL.Types.HUD;
 using CCL.Types.Proxies;
 
 using static CCL.Types.CustomCarType.BrakesSetup;
+using CCL.Types.Tutorial;
 
 namespace CCL.Types
 {
@@ -21,6 +22,15 @@ namespace CCL.Types
             TimeBasedCarVisitPropagatedToRearCar = 12,
             TimeBasedCarVisitPropagatedToFrontAndRearCar = 13,
             OnlyManualDeletePossible = 20
+        }
+
+        public enum TutorialTypeEnum
+        {
+            None,
+            Diesel = 100,
+            Steam = 500,
+            //Electric = 800,
+            Custom = 1000
         }
 
         public const float ROLLING_RESISTANCE_COEFFICIENT = 0.002f;
@@ -80,6 +90,11 @@ namespace CCL.Types
         public string GeneralLicense = string.Empty;
         [JobLicenseField, Tooltip("For wagons, this is where the required licenses go (ex. Military1 for military wagons)")]
         public string[] JobLicenses = new string[0];
+
+        [Header("Tutorial - optional")]
+        public TutorialTypeEnum TutorialType = TutorialTypeEnum.None;
+        [EnableIf(nameof(EnableCustomTutorial))]
+        public TutorialSetup? Tutorial = null;
 
         [SerializeField, HideInInspector]
         private string? brakesJson;
@@ -279,5 +294,6 @@ namespace CCL.Types
         // For the EnableIfAttribute to work cannot be in the nested class.
         private bool EnableTrainBrakeCurve => brakes.TrainBrakeCurveType == BrakeCurveType.Custom;
         private bool EnableIndBrakeCurve => brakes.IndBrakeCurveType == BrakeCurveType.Custom;
+        private bool EnableCustomTutorial => TutorialType == TutorialTypeEnum.Custom;
     }
 }
