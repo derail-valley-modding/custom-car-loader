@@ -30,7 +30,12 @@ namespace CCL.Importer.Patches
                         CCLPlugin.Error("Custom tutorial requested but not provided, using default behaviour.");
                         goto default;
                     }
-                    __result = TutorialGenerator.Generate(new TrainTutorialConstructor(loco, true), loco, ccl.Tutorial);
+
+                    var c = new TrainTutorialConstructor(loco, true);
+
+                    __result = TutorialGenerator.CustomTutorialImplementations.TryGetValue(ccl.id, out var function)
+                        ? function(c, loco)
+                        : TutorialGenerator.Generate(c, loco, ccl.Tutorial);
                     return false;
                 default:
                     return true;

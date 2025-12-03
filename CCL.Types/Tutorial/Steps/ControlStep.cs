@@ -12,7 +12,9 @@ namespace CCL.Types.Tutorial.Steps
         public QTSemantic Semantic = QTSemantic.Engage;
         public float TargetValueMin = 1.0f;
         public float TargetValueMax = 1.0f;
+        [TutorialNameField]
         public string NameKey = string.Empty;
+        [TutorialDescriptionField]
         public string DescriptionKey = string.Empty;
         public bool ShouldRecheck = true;
     }

@@ -9,13 +9,11 @@ namespace CCL.Importer.Tutorial
     {
         private ResourceContainerController?[] _controllers;
         private (ResourceContainerType, float)[] _requirements;
-        private string _message;
 
-        public TrainsetResourceAvailableCondition(TrainCar[] trainset, (ResourceContainerType Type, float Target)[] requirements, string message)
+        public TrainsetResourceAvailableCondition(TrainCar[] trainset, (ResourceContainerType Type, float Target)[] requirements)
         {
             _controllers = trainset.Select(x => x.SimController?.resourceContainerController).ToArray();
             _requirements = requirements;
-            _message = (string.IsNullOrEmpty(message) ? "ResourceAvailableCondition not fulfilled" : message);
         }
 
         public override string Check()
@@ -28,11 +26,19 @@ namespace CCL.Importer.Tutorial
 
                     var container = controller.GetResourceContainer(type);
 
-                    if (container != null && container.normalizedReadOutPort.Value <= target) return _message;
+                    if (container != null && container.normalizedReadOutPort.Value <= target) return ResourceToMessage(container.resourceType);
                 }
             }
 
             return string.Empty;
         }
+
+        private static string ResourceToMessage(ResourceContainerType type) => type switch
+        {
+            ResourceContainerType.FUEL => "tutorial/cond/requires_fuel",
+            ResourceContainerType.WATER or ResourceContainerType.COAL => "tutorial/cond/requires_coal_and_water",
+            ResourceContainerType.ELECTRIC_CHARGE => "tutorial/cond/requires_power",
+            _ => "ResourceAvailableCondition not fulfilled",
+        };
     }
 }

@@ -9,6 +9,7 @@ using DV.Simulation.Controllers;
 using DV.Simulation.Ports;
 using DV.Tutorial.QT;
 using LocoSim.Resources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,8 +18,10 @@ using static DV.Tutorial.QT.QuickTutorialFactory;
 
 namespace CCL.Importer
 {
-    internal static class TutorialGenerator
+    public static class TutorialGenerator
     {
+        public static Dictionary<string, Func<TrainTutorialConstructor, TrainCar, QuickTutorial>> CustomTutorialImplementations = new();
+
         public static QuickTutorial Generate(TrainTutorialConstructor c, TrainCar loco, TutorialSetup settings)
         {
             var overrider = c.Overrider;
@@ -35,7 +38,6 @@ namespace CCL.Importer
             c.Tutorial.AddStartingCheck(new PlayerInLocoCondition("tutorial/cond/in_locomotive"));
             c.Tutorial.AddStartingCheck(new CarOnRailsCondition("tutorial/cond/loco_railed_start"));
             c.Tutorial.AddStartingCheck(new CarDamageCondition(0f, 0.5f, "tutorial/cond/loco_damaged"));
-            //c.Tutorial.AddStartingCheck(new LocoFuelCondition(0.05f, 1f, "tutorial/cond/requires_fuel", "tutorial/cond/requires_coal_and_water", "tutorial/cond/requires_power"));
             c.Tutorial.AddStartingCheck(new CarSpeedCondition(0f, 0.1f, absolute: true, "tutorial/cond/loco_stationary"));
             c.Tutorial.AddStartingCheck(new CarGradeCondition(0f, 1f, "tutorial/cond/loco_grade"));
 
@@ -74,8 +76,8 @@ namespace CCL.Importer
             }
 
             // Get the override for the handbrake if set and is available.
-            TrainCar? handbrake = settings.Handbrake >= 0 && trainset[settings.Handbrake].brakeSystem.hasHandbrake ?
-                trainset[settings.Handbrake] : null;
+            TrainCar? handbrake = settings.Controls.HandbrakeTrainsetOverride >= 0 && trainset[settings.Controls.HandbrakeTrainsetOverride].brakeSystem.hasHandbrake ?
+                trainset[settings.Controls.HandbrakeTrainsetOverride] : null;
 
             // Keep every part of the trainset loaded.
             c.Tutorial.Add(new CarRangeWarningService(settings.MaximumDistance - 15.0f));
@@ -109,7 +111,7 @@ namespace CCL.Importer
             if (settings.RequiredResources.Length > 0)
             {
                 var resources = settings.RequiredResources.Select(x => ((ResourceContainerType)x, 0.1f)).ToArray();
-                c.Tutorial.AddGlobalCheck(new TrainsetResourceAvailableCondition(trainset, resources, "tutorial/cond/loco_damaged"));
+                c.Tutorial.AddGlobalCheck(new TrainsetResourceAvailableCondition(trainset, resources));
             }
 
             c.Tutorial.AddGlobalCheck(new CarDamageCondition(0f, 0.5f, "tutorial/cond/loco_damaged"));
@@ -148,31 +150,29 @@ namespace CCL.Importer
                 }
             }
 
+            Dictionary<int, TutorialPhase> customPhases = settings.CustomPhases.ToDictionary(k => k.Number, v => v);
+
             // Reset controls on the whole trainset.
-            c.BeginNewPhase();
+            BeginNewPhase("reset controls");
             foreach (var item in trainset)
             {
                 c.Phase.Add(new SwappedLocoResetStep(item));
             }
 
-            ProcessCustomPhases(settings.CustomPhases1);
-
             // Get steam going.
             if (settings.PrepareSteam)
             {
-                CCLPlugin.LogVerbose("Tutorial creation: prepare steam");
-
                 // Basic information about steam locos.
-                c.BeginNewPhase();
+                BeginNewPhase("steam startup cost");
                 c.AddPrompt("tutorial/loco/steam_startup_costs", pause: false);
-                c.BeginNewPhase();
+                BeginNewPhase("water level, injector, blowdown");
                 c.AddLookAndAcknowledge(waterLevel,
                     LocalizationAPI.L("car/tut/water"), LocalizationAPI.L("tutorial/loco/water_meter"));
                 c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Injector);
                 c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Blowdown);
 
                 // Fill firebox.
-                c.BeginNewPhase();
+                BeginNewPhase("fill firebox");
                 SteamerDrivingBasicPrereq(true, true, true, false, false);
                 c.AddControl(InteriorControlsManager.ControlType.Firedoor, 0.8f, 1f, QTSemantic.Open, false);
                 c.Phase.Add(new EquipAnyItemStep(shovels, LocalizationAPI.L("tutorial/loco/take_out_shovel")));
@@ -198,7 +198,7 @@ namespace CCL.Importer
                     $"{LocalizationAPI.L("car/tut/firebox")}\n\n{LocalizationAPI.L("tutorial/loco/shovel_coal")}", fire);
 
                 // Check water level.
-                c.BeginNewPhase();
+                BeginNewPhase("check water level");
                 SteamerDrivingBasicPrereq(false, true, true, false, false);
                 c.AddControl(InteriorControlsManager.ControlType.Firedoor, 0.8f, 1f, QTSemantic.Open, false);
                 if (waterLevel != null &&
@@ -209,7 +209,7 @@ namespace CCL.Importer
                 }
 
                 // Light fire.
-                c.BeginNewPhase();
+                BeginNewPhase("light fire");
                 SteamerDrivingBasicPrereq(true, true, true, false, false);
                 c.AddControl(InteriorControlsManager.ControlType.Firedoor, 0.8f, 1f, QTSemantic.Open, shouldRecheck: false);
                 c.Phase.Add(new EquipAnyItemStep(lighter, LocalizationAPI.L("tutorial/loco/take_out_lighter")));
@@ -217,7 +217,7 @@ namespace CCL.Importer
                     $"{LocalizationAPI.L("car/tut/firebox")}\n\n{LocalizationAPI.L("tutorial/loco/light_fire")}", fire));
 
                 // Check fire temp.
-                c.BeginNewPhase();
+                BeginNewPhase("blower and fire temp");
                 SteamerDrivingBasicPrereq(false, true, true, false, false);
                 c.AddControl(InteriorControlsManager.ControlType.Firedoor, 0f, 0f, QTSemantic.Close, shouldRecheck: false);
                 c.AddControl(InteriorControlsManager.ControlType.Blower, 1f, 1f, QTSemantic.FullyEngage);
@@ -226,53 +226,46 @@ namespace CCL.Importer
                     LocalizationAPI.L("tutorial/loco/ind_fire"), settings.TargetFireTemperature, float.PositiveInfinity, true, 3f);
 
                 // Check boiler pressure.
-                c.BeginNewPhase();
+                BeginNewPhase("monitor pressure");
                 SteamerDrivingBasicPrereq(false, true, true, false, false);
                 c.AddControl(InteriorControlsManager.ControlType.Blower, 1f, 1f, QTSemantic.FullyEngage);
                 c.AddMonitorIndicator(steam,
                     $"{LocalizationAPI.L("car/tut/boilerpressure")}\n{LocalizationAPI.L("tutorial/monitor_until", $"{settings.TargetSteamPressure} bar")}",
                     LocalizationAPI.L("tutorial/loco/ind_boiler_pressure"), settings.TargetSteamPressure + 1, float.PositiveInfinity, true, 3f);
 
-                // Close fire door.
-                c.BeginNewPhase();
+                // Close firedoor.
+                BeginNewPhase("ensure closed firedoor");
                 SteamerDrivingBasicPrereq(false, true, true, false, false);
                 c.AddControl(InteriorControlsManager.ControlType.Firedoor, 0f, 0f, QTSemantic.Close);
             }
 
-            ProcessCustomPhases(settings.CustomPhases2);
-
             // Fill oiling points on all parts.
             if (settings.OilingPoints)
             {
-                CCLPlugin.LogVerbose("Tutorial creation: oiling points");
-
-                c.BeginNewPhase();
+                BeginNewPhase("lubricator");
                 SteamerDrivingBasicPrereq(false, true, true, false, true);
 
                 var oil = interiorIndicators?.transmissionOil ?? externalIndicators?.transmissionOil;
                 c.AddAutomaticLubricatorStep(oil);
                 c.AddLookAndAcknowledge(oil, LocalizationAPI.L("car/tut/oil_bearing"), LocalizationAPI.L("tutorial/loco/ind_oil_bearing"));
 
-                if (settings.ShowTrainsetLubricators)
+                foreach (var item in trainset)
                 {
-                    foreach (var item in trainset)
-                    {
-                        if (item == loco) continue;
+                    if (item == loco) continue;
 
-                        var icm = item.interior?.GetComponentInChildren<InteriorControlsManager>();
+                    var icm = item.interior?.GetComponentInChildren<InteriorControlsManager>();
 
-                        if (icm == null) continue;
+                    if (icm == null) continue;
 
-                        c.BeginNewPhase();
-                        SteamerDrivingBasicPrereq(false, true, true, false, true);
-                        ReplaceReferences(item, icm);
-                        oil = item.loadedInterior?.GetComponent<LocoIndicatorReader>()?.transmissionOil ??
-                            item.loadedExternalInteractables?.GetComponent<LocoIndicatorReader>()?.transmissionOil;
-                        c.AddAutomaticLubricatorStep(oil);
-                    }
-
-                    ResetReferences();
+                    BeginNewPhase("lubricator (trainset)");
+                    SteamerDrivingBasicPrereq(false, true, true, false, true);
+                    ReplaceReferences(item, icm);
+                    oil = item.loadedInterior?.GetComponent<LocoIndicatorReader>()?.transmissionOil ??
+                        item.loadedExternalInteractables?.GetComponent<LocoIndicatorReader>()?.transmissionOil;
+                    c.AddAutomaticLubricatorStep(oil);
                 }
+
+                ResetReferences();
 
                 var controllers = trainset.Select(x => (x.loadedExternalInteractables?.GetComponentInChildren<OilingPointsPortController>(), x));
 
@@ -286,8 +279,6 @@ namespace CCL.Importer
 
                     points.AddRange(controller.entries.Select(x => (x, loco.transform.InverseTransformPoint(x.transform.position), train)));
                 }
-
-                CCLPlugin.LogVerbose($"Oiling point total: {points.Count}");
 
                 // If there are oiling points...
                 if (points.Count > 0)
@@ -314,13 +305,13 @@ namespace CCL.Importer
                         ReplaceReferences(map[first]);
 
                         // Show how to open, fill and close the first oiling point.
-                        c.BeginNewPhase();
+                        BeginNewPhase("first oiling point and oiler");
                         SteamerDrivingBasicPrereq(false, true, true, false, true);
                         c.AddControl(control, 1f, 1f,
                             LocalizationAPI.L("car/tut/oiling_point"), LocalizationAPI.L("tutorial/control/oiling_point"), QTSemantic.Open);
                         c.Phase.Add(new EquipAnyItemStep(oiler, LocalizationAPI.L("tutorial/loco/take_out_oiler")));
                         c.AddRefillOilingPointStep(indicator, 1f);
-                        c.BeginNewPhase();
+                        BeginNewPhase("close first oiling point");
                         SteamerDrivingBasicPrereq(false, true, true, false, true);
                         c.AddControl(control, 0f, 0f,
                             LocalizationAPI.L("car/tut/oiling_point"), LocalizationAPI.L("tutorial/control/oiling_point"), QTSemantic.Close);
@@ -333,7 +324,7 @@ namespace CCL.Importer
 
                             if (indicator != null)
                             {
-                                c.BeginNewPhase();
+                                BeginNewPhase("extra oiling point");
                                 SteamerDrivingBasicPrereq(false, true, true, false, true);
                                 c.AddRefillOilingPointStep(indicator, 1f);
                             }
@@ -341,79 +332,79 @@ namespace CCL.Importer
                     }
                 }
 
-                c.BeginNewPhase();
+                BeginNewPhase("oil storage");
                 SteamerDrivingBasicPrereq(false, true, true, false, true);
-                c.AddLookAndAcknowledge((interiorIndicators?.oil ?? externalIndicators?.oil),
+                c.AddLookAndAcknowledge(interiorIndicators?.oil ?? externalIndicators?.oil,
                     LocalizationAPI.L("car/tut/oil"), LocalizationAPI.L("tutorial/loco/ind_oil_storage"));
             }
 
-            ProcessCustomPhases(settings.CustomPhases3);
-
             if (settings.ShowBasicCabControls)
             {
-                CCLPlugin.LogVerbose("Tutorial creation: cab controls");
-
-                c.BeginNewPhase();
+                BeginNewPhase("cab controls");
                 SteamerDrivingBasicPrereq(true, true, true, false, true);
+                DieselBasicPrereq(true, false);
 
-                if (!settings.HeadlightsBeforeCab)
+                if (!settings.Controls.HeadlightsBeforeCabLight)
                 {
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndDashLight);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.CabLight);
-                    c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndCabLight, isSteamLoco: settings.MarkCabLightAsSteam);
+                    c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndCabLight, isSteamLoco: settings.CabLightIsGearLight);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Wipers);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndWipers1);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndWipers2);
                 }
 
                 // Allow users to customise target headlight positions.
-                c.AddControl(InteriorControlsManager.ControlType.HeadlightsFront,
-                    settings.FrontHeadlights.Minimum, settings.FrontHeadlights.Maximum, (QTSemantic)settings.FrontHeadlights.Semantic, false);
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlightsTypeFront);
-                c.AddControl(InteriorControlsManager.ControlType.IndHeadlightsTypeFront,
-                    settings.FrontIndHeadlightsType.Minimum, settings.FrontIndHeadlightsType.Maximum, (QTSemantic)settings.FrontIndHeadlightsType.Semantic);
-                c.AddControl(InteriorControlsManager.ControlType.IndHeadlights1Front, 
-                    settings.FrontIndHeadlights1.Minimum, settings.FrontIndHeadlights1.Maximum, (QTSemantic)settings.FrontIndHeadlights1.Semantic, false);
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlights2Front);
-                c.AddControl(InteriorControlsManager.ControlType.HeadlightsRear,
-                    settings.RearHeadlights.Minimum, settings.RearHeadlights.Maximum, (QTSemantic)settings.RearHeadlights.Semantic, false);
-                c.AddControl(InteriorControlsManager.ControlType.IndHeadlightsTypeRear, 
-                    settings.RearIndHeadlightsType.Minimum, settings.RearIndHeadlightsType.Maximum, (QTSemantic)settings.RearIndHeadlightsType.Semantic);
-                c.AddControl(InteriorControlsManager.ControlType.IndHeadlights1Rear, 
-                    settings.RearIndHeadlights1.Minimum, settings.RearIndHeadlights1.Maximum, (QTSemantic)settings.RearIndHeadlights1.Semantic, false);
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlights2Rear);
+                AddOverrideOrControl(settings.Controls.FrontHeadlights, settings.Controls.FrontHeadlightsSettings,
+                    InteriorControlsManager.ControlType.HeadlightsFront, false, false, settings.Controls.SingleHeadlightControl);
 
-                if (settings.HeadlightsBeforeCab)
+                if (settings.Controls.FrontIndHeadlightsType.Show)
+                {
+                    c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlightsTypeFront);
+                }
+                AddOverrideOrControl(settings.Controls.FrontIndHeadlightsType, settings.Controls.FrontIndHeadlightsTypeSettings,
+                    InteriorControlsManager.ControlType.IndHeadlightsTypeFront, false, false, settings.Controls.SingleHeadlightControl);
+                AddOverrideOrControl(settings.Controls.FrontIndHeadlights1, settings.Controls.FrontIndHeadlights1Settings,
+                    InteriorControlsManager.ControlType.IndHeadlights1Front, false, false, settings.Controls.SingleHeadlightControl);
+                if (settings.Controls.FrontIndHeadlights2.Show)
+                {
+                    c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlights2Front);
+                }
+
+                AddOverrideOrControl(settings.Controls.RearHeadlights, settings.Controls.RearHeadlightsSettings,
+                    InteriorControlsManager.ControlType.HeadlightsRear, false, false, settings.Controls.SingleHeadlightControl);
+                AddOverrideOrControl(settings.Controls.RearIndHeadlightsType, settings.Controls.RearIndHeadlightsTypeSettings,
+                    InteriorControlsManager.ControlType.IndHeadlightsTypeRear, false, false, settings.Controls.SingleHeadlightControl);
+                AddOverrideOrControl(settings.Controls.RearIndHeadlights1, settings.Controls.RearIndHeadlights1Settings,
+                    InteriorControlsManager.ControlType.IndHeadlights1Rear, false, false, settings.Controls.SingleHeadlightControl);
+                if (settings.Controls.RearIndHeadlights2.Show)
+                {
+                    c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlights2Rear);
+                }
+
+                if (settings.Controls.HeadlightsBeforeCabLight)
                 {
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndDashLight);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.CabLight);
-                    c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndCabLight, isSteamLoco: settings.MarkCabLightAsSteam);
+                    c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndCabLight, isSteamLoco: settings.CabLightIsGearLight);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Wipers);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndWipers1);
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndWipers2);
                 }
             }
 
-            ProcessCustomPhases(settings.CustomPhases4);
-
             if (settings.StartDieselEngine)
             {
-                CCLPlugin.LogVerbose("Tutorial creation: start diesel engine");
-
-                c.BeginNewPhase();
+                BeginNewPhase("start diesel engine");
                 DieselBasicPrereq(true, true);
                 c.AddOverridableControl(InteriorControlsManager.ControlType.Reverser, 0.49f, 0.51f, QTSemantic.SetToNeutral);
                 c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
                 c.AddOverridableControl(InteriorControlsManager.ControlType.DynamicBrake, 0f, 0f, QTSemantic.Disengage);
             }
 
-            ProcessCustomPhases(settings.CustomPhases5);
-
             if (settings.ShowBrakes)
             {
-                CCLPlugin.LogVerbose("Tutorial creation: brakes");
-
-                c.BeginNewPhase();
+                BeginNewPhase("brakes");
                 SteamerDrivingBasicPrereq(false, false, true, true, true);
                 c.AddMonitorIndicator(interiorIndicators?.mainReservoir ?? externalIndicators?.mainReservoir,
                     $"{LocalizationAPI.L("car/tut/mainres")}\n{LocalizationAPI.L("tutorial/monitor_until", "2 bar")}",
@@ -425,7 +416,7 @@ namespace CCL.Importer
                     c.AddLookAndAcknowledge(interiorIndicators?.engineRpm ?? externalIndicators?.engineRpm,
                         LocalizationAPI.L("car/tut/rpm"), LocalizationAPI.L("tutorial/loco/ind_rpm"));
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
-                    c.BeginNewPhase();
+                    BeginNewPhase("diesel check after brake RPM");
                     DieselBasicPrereq(false, true);
                 }
 
@@ -448,7 +439,7 @@ namespace CCL.Importer
                     LocalizationAPI.L("car/tut/brakepipe"), LocalizationAPI.L("tutorial/loco/brake_black_needle"));
             }
 
-            c.BeginNewPhase();
+            BeginNewPhase("turn off blower, speedometer, sander, refill firebox");
             SteamerDrivingBasicPrereq(false, false, true, true, true);
 
             // Some steps continue out of order.
@@ -457,16 +448,16 @@ namespace CCL.Importer
                 c.AddControl(InteriorControlsManager.ControlType.Blower, 0f, 0f, QTSemantic.Disengage);
             }
 
-            if (settings.ShowSpeedometer)
+            if (settings.Indicators.Speedometer.Show)
             {
                 c.AddLookAndAcknowledge(interiorIndicators?.speed ?? externalIndicators?.speed,
                     LocalizationAPI.L("car/tut/speedometer"), LocalizationAPI.L("tutorial/loco/ind_speed"));
             }
 
-            if (settings.ShowSand)
+            if (settings.Indicators.Sand.Show)
             {
                 c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Sander);
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.SandOverride, interiorIndicators?.sand ?? externalIndicators?.sand),
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Sand.Override, interiorIndicators?.sand ?? externalIndicators?.sand),
                     LocalizationAPI.L("car/tut/sand"), LocalizationAPI.L("tutorial/loco/ind_sand"));
             }
 
@@ -476,26 +467,22 @@ namespace CCL.Importer
                     $"{LocalizationAPI.L("car/tut/firebox")}\n\n{LocalizationAPI.L("tutorial/loco/shovel_coal")}", fire);
             }
 
-            c.BeginNewPhase();
+            BeginNewPhase("engage gears, start movement");
             SteamerDrivingBasicPrereq(false, false, false, true, true);
             c.AddVirtualHandbrakeControl(handbrake, 0f, 0f, QTSemantic.Disengage);
 
-            if (settings.HasGearboxA)
+            if (settings.Controls.GearboxA.Show)
             {
                 c.AddManualGearShifting(InteriorControlsManager.ControlType.GearboxA, true);
             }
-            if (settings.HasGearboxB)
+            if (settings.Controls.GearboxB.Show)
             {
                 c.AddManualGearShifting(InteriorControlsManager.ControlType.GearboxB, true);
             }
 
-            ProcessCustomPhases(settings.CustomPhases6);
-
             // Moving the loco.
             if (settings.ShowMovement)
             {
-                CCLPlugin.LogVerbose("Tutorial creation: movement");
-
                 if (settings.TreatAsSteam)
                 {
                     // Engage throttle, show steam chest.
@@ -508,13 +495,13 @@ namespace CCL.Importer
                         settings.TargetChargedChestPressure, float.PositiveInfinity);
 
                     // Disengage throttle.
-                    c.BeginNewPhase();
+                    BeginNewPhase("disengage throttle");
                     SteamerDrivingBasicPrereq(false, false, false, true, true);
                     c.AddVirtualHandbrakeControl(handbrake, 0f, 0f, QTSemantic.Disengage);
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage, isSteamLoco: true);
 
                     // Disengage brakes.
-                    c.BeginNewPhase();
+                    BeginNewPhase("disengage brakes");
                     SteamerDrivingBasicPrereq(false, false, false, true, true);
                     c.AddVirtualHandbrakeControl(handbrake, 0f, 0f, QTSemantic.Disengage);
 
@@ -525,14 +512,14 @@ namespace CCL.Importer
                     c.AddOverridableControl(InteriorControlsManager.ControlType.IndBrake, 0f, 0f, QTSemantic.Disengage);
 
                     // Stop the train again with the independent brake.
-                    c.BeginNewPhase();
+                    BeginNewPhase("stop train");
                     SteamerDrivingBasicPrereq(false, false, false, true, true);
                     c.AddVirtualHandbrakeControl(handbrake, 0f, 0f, QTSemantic.Disengage);
                     c.Phase.Add(new CarSpeedStep(loco, 1.0f, true));
                     c.AddOverridableControl(InteriorControlsManager.ControlType.IndBrake, 0.8f, 1f, QTSemantic.Engage);
 
                     // Show info about water and cutoff, and reset the reverser.
-                    c.BeginNewPhase();
+                    BeginNewPhase("water in cylinder and cutoff info");
                     SteamerDrivingBasicPrereq(false, false, false, true, true);
                     c.AddVirtualHandbrakeControl(handbrake, 0f, 0f, QTSemantic.Disengage);
                     c.AddOverridableControl(InteriorControlsManager.ControlType.IndBrake, 0.8f, 1f, QTSemantic.Engage);
@@ -551,11 +538,11 @@ namespace CCL.Importer
                         0f, 0f, QTSemantic.Disengage);
 
                     // Ensure gearboxes are engaged.
-                    if (settings.HasGearboxA)
+                    if (settings.Controls.GearboxA.Show)
                     {
                         c.AddManualGearShifting(InteriorControlsManager.ControlType.GearboxA, true);
                     }
-                    if (settings.HasGearboxB)
+                    if (settings.Controls.GearboxB.Show)
                     {
                         c.AddManualGearShifting(InteriorControlsManager.ControlType.GearboxB, true);
                     }
@@ -566,7 +553,7 @@ namespace CCL.Importer
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
 
                     // Stop the loco.
-                    c.BeginNewPhase();
+                    BeginNewPhase("stop train");
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
                     c.AddOverridableControl(InteriorControlsManager.ControlType.TrainBrake, 0.5f, 1f, QTSemantic.Engage);
                     c.Phase.Add(new CarSpeedStep(loco, 1f, aboveTarget: false));
@@ -574,7 +561,7 @@ namespace CCL.Importer
                 }
             }
 
-            c.BeginNewPhase();
+            BeginNewPhase("final steam controls, gearboxes, amps, TM and oil temps, fuel cutoff");
 
             if (settings.PrepareSteam)
             {
@@ -585,61 +572,88 @@ namespace CCL.Importer
             }
 
             // Show gearboxes again. If it only has gearbox B, ensure it displays the gear thing on it.
-            if (settings.HasGearboxA)
+            if (settings.Controls.GearboxA.Show)
             {
                 c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxA);
             }
-            if (settings.HasGearboxB)
+            if (settings.Controls.GearboxB.Show)
             {
                 c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxB);
             }
-            if (settings.HasGearboxA)
+            if (settings.Controls.GearboxA.Show)
             {
                 c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxA, LocalizationAPI.L("car/tut/gearboxa"), LocalizationAPI.L("tutorial/loco/gears_higher_speed"));
             }
-            else if (settings.HasGearboxB)
+            else if (settings.Controls.GearboxB.Show)
             {
                 c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxB, LocalizationAPI.L("car/tut/gearboxb"), LocalizationAPI.L("tutorial/loco/gears_higher_speed"));
             }
 
-            ProcessCustomPhases(settings.CustomPhases7);
-
-            CCLPlugin.LogVerbose("Tutorial creation: final bits");
-
             // Show some indicators and fuel cutoff.
-            c.AddLookAndAcknowledge(c.Indicators?.amps, LocalizationAPI.L("car/tut/amperage"), LocalizationAPI.L("tutorial/loco/ind_amps"));
-            c.AddLookAndAcknowledge(c.Indicators?.tmTemp, LocalizationAPI.L("car/tut/tmtemp"), LocalizationAPI.L("tutorial/loco/ind_tm_temp"));
-            c.AddLookAndAcknowledge(c.Indicators?.oilTemp, LocalizationAPI.L("car/tut/oiltemp"), LocalizationAPI.L("tutorial/loco/ind_transmission_oil_temp"));
-            c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.FuelCutoff);
+            if (settings.Indicators.Amps.Show)
+            {
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Amps.Override, interiorIndicators?.amps ?? externalIndicators?.amps),
+                    LocalizationAPI.L("car/tut/amperage"), LocalizationAPI.L("tutorial/loco/ind_amps"));
+            }
+            if (settings.Indicators.TMTemp.Show)
+            {
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.TMTemp.Override, interiorIndicators?.tmTemp ?? externalIndicators?.tmTemp),
+                    LocalizationAPI.L("car/tut/tmtemp"), LocalizationAPI.L("tutorial/loco/ind_tm_temp"));
+            }
+            if (settings.Indicators.OilTemp.Show)
+            {
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.OilTemp.Override, interiorIndicators?.oilTemp ?? externalIndicators?.oilTemp),
+                    LocalizationAPI.L("car/tut/oiltemp"), LocalizationAPI.L("tutorial/loco/ind_transmission_oil_temp"));
+            }
+            if (settings.Controls.FuelCutoff.Show)
+            {
+                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.FuelCutoff);
+            }
 
             // Show final controls.
-            c.BeginNewPhase();
-            c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.DynamicBrake);
-            c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Bell);
-            c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Horn, null, isSteamLoco: settings.MarkHornAsSteam);
+            BeginNewPhase("dynamic brake, bell, horn/whistle");
+            if (settings.Controls.DynamicBrake.Show)
+            {
+                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.DynamicBrake);
+            }
+            if (settings.Controls.Bell.Show)
+            {
+                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Bell);
+            }
+            if (settings.Controls.Horn.Show)
+            {
+                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Horn, null, isSteamLoco: settings.Controls.MarkHornAsWhistle);
+            }
 
             // Show the rest of the indicators.
             // Indicators might exist for the HUD so they are all optional.
             // Oiling points already show oil so it must be checked.
-            c.BeginNewPhase();
-            if (settings.ShowWheelslip)
+            BeginNewPhase("final indicators, resource storage");
+            if (settings.Indicators.Wheelslip.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.WheelslipOverride, c.Lamps?.wheelSlip),
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Wheelslip.Override, c.Lamps?.wheelSlip),
                     LocalizationAPI.L("car/tut/wheelslip"), LocalizationAPI.L("tutorial/loco/ind_wheel_slip"));
             }
-            c.AddLookAndAcknowledge(OverrideOrDefault(settings.BatteryOverride, interiorIndicators?.battery ?? externalIndicators?.battery),
-                LocalizationAPI.L("car/tut/battery"), LocalizationAPI.L("tutorial/loco/ind_battery"));
-            c.AddLookAndAcknowledge(OverrideOrDefault(settings.VoltageOverride, interiorIndicators?.voltage ?? externalIndicators?.voltage),
-                LocalizationAPI.L("car/tut/voltage"), LocalizationAPI.L("tutorial/loco/ind_voltage"));
-            c.AddLookAndAcknowledge(OverrideOrDefault(settings.FuelOverride, interiorIndicators?.fuel ?? externalIndicators?.fuel),
-                LocalizationAPI.L("car/tut/fuel"), LocalizationAPI.L("tutorial/loco/ind_fuel"));
-            if (!settings.OilingPoints && settings.ShowOil)
+            if (settings.Indicators.Battery.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.OilOverride, interiorIndicators?.oil ?? externalIndicators?.oil),
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Battery.Override, interiorIndicators?.battery ?? externalIndicators?.battery),
+                    LocalizationAPI.L("car/tut/battery"), LocalizationAPI.L("tutorial/loco/ind_battery"));
+            }
+            if (settings.Indicators.Voltage.Show)
+            {
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Voltage.Override, interiorIndicators?.voltage ?? externalIndicators?.voltage),
+                    LocalizationAPI.L("car/tut/voltage"), LocalizationAPI.L("tutorial/loco/ind_voltage"));
+            }
+            if (settings.Indicators.Fuel.Show)
+            {
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Fuel.Override, interiorIndicators?.fuel ?? externalIndicators?.fuel),
+                    LocalizationAPI.L("car/tut/fuel"), LocalizationAPI.L("tutorial/loco/ind_fuel"));
+            }
+            if (!settings.OilingPoints && settings.Indicators.Oil.Show)
+            {
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Oil.Override, interiorIndicators?.oil ?? externalIndicators?.oil),
                     LocalizationAPI.L("car/tut/oil"), LocalizationAPI.L("tutorial/loco/ind_oil_engine"));
             }
-
-            ProcessCustomPhases(settings.CustomPhases8);
 
             // Show water and coal storages for each vehicle.
             // Also show fuel sockets.
@@ -649,12 +663,12 @@ namespace CCL.Importer
                 var interior = car.loadedInterior?.GetComponent<LocoIndicatorReader>();
                 var external = car.loadedExternalInteractables?.GetComponent<LocoIndicatorReader>();
 
-                if (settings.CarsWithWater.Contains(i))
+                if (settings.TrainsetIndicesWithWater.Contains(i))
                 {
                     c.AddLookAndAcknowledge(interior?.tenderWaterLevel ?? external?.tenderWaterLevel,
                         LocalizationAPI.L("car/tut/water"), LocalizationAPI.L("tutorial/loco/ind_storage_water"));
                 }
-                if (settings.CarsWithCoal.Contains(i))
+                if (settings.TrainsetIndicesWithCoal.Contains(i))
                 {
                     c.AddLookAndAcknowledge(interior?.tenderCoalLevel ?? external?.tenderCoalLevel,
                         LocalizationAPI.L("car/tut/coal"), LocalizationAPI.L("tutorial/loco/ind_storage_coal"));
@@ -677,14 +691,22 @@ namespace CCL.Importer
             }
 
             // Finally over...
-            c.BeginNewPhase();
+            BeginNewPhase("complete tutorial");
             c.AddPrompt("tutorial/loco/completed", pause: false);
 
             return c.Tutorial;
 
+            // Default requirements.
             void SteamerDrivingBasicPrereq(bool disengageWaterControls, bool openDamperControl, bool engageHandbrakeControl,
                 bool openBrakeCutout, bool engageCompressorAndDynamo)
             {
+                if (engageHandbrakeControl)
+                {
+                    c.AddVirtualHandbrakeControl(handbrake, 1f, 1f, QTSemantic.FullyEngage);
+                }
+
+                if (!settings.IncludeSteamerPrerequisites) return;
+
                 if (disengageWaterControls)
                 {
                     c.AddControl(InteriorControlsManager.ControlType.Blowdown, 0f, 0f, QTSemantic.Disengage);
@@ -696,11 +718,6 @@ namespace CCL.Importer
                     c.AddControl(InteriorControlsManager.ControlType.Damper, 1f, 1f, QTSemantic.Open);
                 }
 
-                if (engageHandbrakeControl)
-                {
-                    c.AddVirtualHandbrakeControl(handbrake, 1f, 1f, QTSemantic.FullyEngage);
-                }
-
                 if (openBrakeCutout)
                 {
                     c.AddOverridableControl(InteriorControlsManager.ControlType.TrainBrakeCutout, 0.9f, 1f, QTSemantic.Open);
@@ -708,12 +725,10 @@ namespace CCL.Importer
 
                 if (engageCompressorAndDynamo)
                 {
-                    ReplaceReferencesByTrainset(settings.AirPump);
-                    c.AddControl(InteriorControlsManager.ControlType.AirPump, 1f, 1f, QTSemantic.Engage);
-                    ResetReferences();
-                    ReplaceReferencesByTrainset(settings.Dynamo);
-                    c.AddControl(InteriorControlsManager.ControlType.Dynamo, 1f, 1f, QTSemantic.Engage);
-                    ResetReferences();
+                    AddOverrideOrControl(settings.Controls.AirPump,
+                        new TutorialSetup.SemanticRange(TutorialSetup.QTSemantic.Engage, 1, 1), InteriorControlsManager.ControlType.AirPump);
+                    AddOverrideOrControl(settings.Controls.Dynamo,
+                        new TutorialSetup.SemanticRange(TutorialSetup.QTSemantic.Engage, 1, 1), InteriorControlsManager.ControlType.Dynamo);
                 }
             }
 
@@ -723,6 +738,8 @@ namespace CCL.Importer
                 {
                     c.AddVirtualHandbrakeControl(handbrake, 1f, 1f, QTSemantic.FullyEngage);
                 }
+
+                if (!settings.IncludeDieselPrerequisites) return;
 
                 c.AddFuse(InteriorControlsManager.ControlType.ElectricsFuse, QTSemantic.Engage);
                 c.AddFuse(InteriorControlsManager.ControlType.StarterFuse, QTSemantic.Engage);
@@ -735,22 +752,21 @@ namespace CCL.Importer
                 }
             }
 
-            Behaviour? OverrideOrDefault(string overrideId, Behaviour? behaviour)
+            void BeginNewPhase(string name)
             {
-                return customComps.TryGetValue(overrideId, out var id) ? id : behaviour;
-            }
-
-            void ProcessCustomPhases(List<TutorialPhase> phases)
-            {
-                foreach (var phase in phases)
+                while (customPhases.TryGetValue(c.Tutorial.phases.Count, out var custom))
                 {
-                    AddCustomPhase(phase);
+                    AddCustomPhase(custom);
                 }
+
+                c.BeginNewPhase();
+                CCLPlugin.LogVerbose($"Tutorial phase {PhaseDisplay()}: {name}");
             }
 
             void AddCustomPhase(TutorialPhase phase)
             {
                 c.BeginNewPhase();
+                CCLPlugin.LogVerbose($"Tutorial phase {PhaseDisplay()}: {phase.Name} (custom)");
 
                 SteamerDrivingBasicPrereq(phase.DisengageWaterControls, phase.OpenDamperControl,
                     phase.EngageHandbrakeControl, phase.OpenBrakeCutout, phase.EngageCompressorAndDynamo);
@@ -783,6 +799,7 @@ namespace CCL.Importer
                 }
             }
 
+            // Reference hacking.
             void ReplaceReferences(TrainCar car, InteriorControlsManager? icm = null)
             {
                 c.Loco = car;
@@ -792,17 +809,17 @@ namespace CCL.Importer
                 c.Lamps = car.interior.GetComponentInChildren<LocoLampReader>();
             }
 
-            void ReplaceReferencesByTrainset(int index)
-            {
-                if (index > -1)
-                {
-                    var icm = trainset[index].interior?.GetComponentInChildren<InteriorControlsManager>();
+            //void ReplaceReferencesByTrainsetIndex(int index)
+            //{
+            //    if (index > -1)
+            //    {
+            //        var icm = trainset[index].interior?.GetComponentInChildren<InteriorControlsManager>();
 
-                    if (icm == null) return;
+            //        if (icm == null) return;
 
-                    ReplaceReferences(trainset[index], icm);
-                }
-            }
+            //        ReplaceReferences(trainset[index], icm);
+            //    }
+            //}
 
             void ResetReferences()
             {
@@ -812,6 +829,36 @@ namespace CCL.Importer
                 c.Indicators = indicators;
                 c.Lamps = lamps;
             }
+
+            void AddOverrideOrControl(TutorialSetup.OverridableObject overrider, TutorialSetup.SemanticRange range,
+                InteriorControlsManager.ControlType type, bool shouldRecheck = true, bool isSteamLoco = false, bool singleHeadlights = false)
+            {
+                if (!overrider.Show) return;
+
+                if (string.IsNullOrEmpty(overrider.Override))
+                {
+                    c.AddControl(type, range.Minimum, range.Maximum, (QTSemantic)range.Semantic);
+                    return;
+                }
+
+                if (customComps.TryGetValue(overrider.Override, out var obj) && obj.TryGetComponent(out ControlImplBase control))
+                {
+                    var message = GetDescriptionFor(type, (QTSemantic)range.Semantic, control, isSteamLoco, singleHeadlights);
+                    c.AddControl(control, range.Minimum, range.Maximum, message.controlName, message.controlDescription, (QTSemantic)range.Semantic, shouldRecheck);
+                }
+                else
+                {
+                    CCLPlugin.Error($"Error creating tutorial for {loco.carLivery.id}: " +
+                        $"missing ID {overrider.Override} or no control in object ({type})");
+                }
+            }
+
+            Behaviour? OverrideOrDefault(string overrideId, Behaviour? behaviour)
+            {
+                return customComps.TryGetValue(overrideId, out var id) ? id : behaviour;
+            }
+
+            int PhaseDisplay() => c.Tutorial.phases.Count - 1;
         }
 
         private static void SetupICMForCar(TrainCar car)
@@ -823,7 +870,57 @@ namespace CCL.Importer
             icm.SetupControlReader(icm.GetComponent<LocoControlsReader>());
             icm.SetupControlReader(car.loadedExternalInteractables?.GetComponent<LocoControlsReader>());
 
-            CCLPlugin.LogVerbose($"ICM controls: {string.Join(", ", icm.controls.Keys)}");
+            CCLPlugin.LogVerbose($"ICM controls {car.carLivery.id}: {string.Join(", ", icm.controls.Keys)}");
+        }
+
+        private static ControlIconQuickTutorialMessage GetDescriptionFor(InteriorControlsManager.ControlType type, QTSemantic semantic,
+            ControlImplBase control, bool isSteamLoco = false, bool singleHeadlights = false)
+        {
+            (string Name, string Description) tuple;
+            if (isSteamLoco)
+            {
+                tuple = type switch
+                {
+                    InteriorControlsManager.ControlType.Reverser => (LocalizationAPI.L("car/tut/cutoff"), LocalizationAPI.L("tutorial/control/cutoff")),
+                    InteriorControlsManager.ControlType.Throttle => (LocalizationAPI.L("car/tut/regulator"), LocalizationAPI.L("tutorial/control/regulator")),
+                    InteriorControlsManager.ControlType.Horn => (LocalizationAPI.L("car/tut/whistle"), LocalizationAPI.L("tutorial/control/horn")),
+                    InteriorControlsManager.ControlType.IndCabLight => (LocalizationAPI.L("car/tut/gearlight"), LocalizationAPI.L("tutorial/control/gear_light")),
+                    _ => (LocalizationAPI.L("car/tut/" + type.ToString().ToLower()), LocalizationAPI.L("tutorial/control/" + type.ToString().ToLower())),
+                };
+            }
+            else
+            {
+                tuple.Name = (type == InteriorControlsManager.ControlType.HeadlightsFront && singleHeadlights)
+                    ? LocalizationAPI.L("car/tut/headlights")
+                    : LocalizationAPI.L("car/tut/" + type.ToString().ToLower());
+
+                switch (type)
+                {
+                    case InteriorControlsManager.ControlType.IndHeadlightsTypeFront:
+                    case InteriorControlsManager.ControlType.IndHeadlightsTypeRear:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/indheadlightstype");
+                        break;
+                    case InteriorControlsManager.ControlType.IndHeadlights1Front:
+                    case InteriorControlsManager.ControlType.IndHeadlights1Rear:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/indheadlights1");
+                        break;
+                    case InteriorControlsManager.ControlType.IndHeadlights2Front:
+                    case InteriorControlsManager.ControlType.IndHeadlights2Rear:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/indheadlights2");
+                        break;
+                    default:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/" + type.ToString().ToLower());
+                        break;
+                }
+            }
+
+            var message = new ControlIconQuickTutorialMessage(tuple.Name, tuple.Description).WithSprite(null, control, semantic);
+            if (type == InteriorControlsManager.ControlType.Handbrake)
+            {
+                message.spriteIndex = 6;
+            }
+
+            return message;
         }
     }
 }

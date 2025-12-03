@@ -133,7 +133,7 @@ namespace CCL.Types
             "Console/Console"
         };
         public static readonly string[] Names =
-{
+        {
             "MoveHorizontal",
             "MoveVertical",
             "Crouch",

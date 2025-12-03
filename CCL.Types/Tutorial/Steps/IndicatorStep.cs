@@ -12,7 +12,9 @@ namespace CCL.Types.Tutorial.Steps
         }
 
         public string TargetId = string.Empty;
+        [TutorialNameField]
         public string NameKey = string.Empty;
+        [TutorialDescriptionField]
         public string DescriptionKey = string.Empty;
         public string Value = string.Empty;
         public float MinValue = 1.0f;

@@ -6,8 +6,11 @@ namespace CCL.Types.Tutorial
     [AddComponentMenu("CCL/Tutorial/Tutorial Phase")]
     public class TutorialPhase : MonoBehaviour
     {
+        public int Number = 0;
+        public string Name = string.Empty;
         public List<TutorialStep> Steps = new List<TutorialStep>();
-        [Space]
+
+        [Header("Prerequisites")]
         public bool EngageHandbrakeControl;
         [Space]
         public bool DisengageWaterControls;
