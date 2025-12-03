@@ -72,6 +72,7 @@ namespace CCL.Importer.Proxies
             CreateMap<InvalidTeleportLocationReactionProxy, InvalidTeleportLocationReaction>().AutoCacheAndMap()
                 .ForMember(d => d.blocker, o => o.MapFrom(s => Mapper.GetFromCache(s.blocker)))
                 .AfterMap(InvalidTeleportLocationReactionAfter);
+            CreateMap<CabooseControllerProxy, CabooseController>().AutoCacheAndMap();
 
             CreateMap<BedSleepingProxy, BedSleeping>().AutoCacheAndMap();
             CreateMap<IgnoreCharacterHeadCollisionTagProxy, IgnoreCharacterHeadCollisionTag>().AutoCacheAndMap();

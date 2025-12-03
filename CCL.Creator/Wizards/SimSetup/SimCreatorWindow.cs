@@ -24,7 +24,8 @@ namespace CCL.Creator.Wizards.SimSetup
             BatteryElectric,
             Slug,
             Steam,
-            Tender
+            Tender,
+            Caboose
         }
 
         private static SimCreatorWindow? _instance;
@@ -47,7 +48,7 @@ namespace CCL.Creator.Wizards.SimSetup
         }
 
 
-        private GameObject _targetRoot;
+        private GameObject _targetRoot = null!;
         private bool _simItemsExist;
 
         private SimulationType _selectedType;
@@ -67,6 +68,7 @@ namespace CCL.Creator.Wizards.SimSetup
                         SimulationType.Slug => new SlugSimCreator(_targetRoot),
                         SimulationType.Steam => new SteamerSimCreator(_targetRoot),
                         SimulationType.Tender => new TenderSimCreator(_targetRoot),
+                        SimulationType.Caboose => new CabooseSimCreator(_targetRoot),
                         _ => throw new NotImplementedException(),
                     };
                     _selectedType = value;
