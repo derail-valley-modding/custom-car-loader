@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Simulation
 {
     [AddComponentMenu("CCL/Proxies/Simulation/Transmission Fixed Gear Definition Proxy")]
-    public class TransmissionFixedGearDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IBE2Defaults
+    public class TransmissionFixedGearDefinitionProxy : SimComponentDefinitionProxy, IDE2Defaults, IDE6Defaults, IBE2Defaults, IH1Defaults
     {
         public float gearRatio = 5.18f;
         public float transmissionEfficiency = 1f;
@@ -34,6 +34,12 @@ namespace CCL.Types.Proxies.Simulation
         public void ApplyBE2Defaults()
         {
             gearRatio = 4.133333f;
+            transmissionEfficiency = 1.0f;
+        }
+
+        public void ApplyH1Defaults()
+        {
+            gearRatio = 0.58f;
             transmissionEfficiency = 1.0f;
         }
 

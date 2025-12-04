@@ -169,7 +169,6 @@ namespace CCL.Importer
         /// </summary>
         public static class Audio
         {
-
             private static AudioClip? s_winSound;
             public static AudioClip WinSound => Extensions.GetCached(ref s_winSound,
                 () => Wagons.Caboose.prefab.GetComponentInChildren<CareerManagerFeesScreen>().feesClearedSound);

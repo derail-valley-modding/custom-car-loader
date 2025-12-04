@@ -3,7 +3,7 @@
 namespace CCL.Types.Proxies.Controls.VR
 {
     [AddComponentMenu("CCL/Proxies/Controls/VR/Valve Hand Snapper Proxy")]
-    public class ValveHandSnapperProxy : MonoBehaviour
+    public class ValveHandSnapperProxy : AHandPoseSnapperProxy
     {
         [Tooltip("The Y axis points up")]
         public Transform axis = null!;

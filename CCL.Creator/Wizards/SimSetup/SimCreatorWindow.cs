@@ -175,18 +175,7 @@ namespace CCL.Creator.Wizards.SimSetup
             }
             
             _damageController = _root.AddComponent<DamageControllerProxy>();
-
-            _damageController.speedToBrakeDamageCurve = new AnimationCurve()
-            {
-                keys = new Keyframe[]
-                {
-                    new Keyframe(0, 0, 0, 0, 0.333f, 0.333f),
-                    new Keyframe(2, 0, 0, 0, 0.333f, 0.333f),
-                    new Keyframe(7.868f, 0.127f, 0.028f, 0.028f, 0.333f, 0.333f),
-                    new Keyframe(29.032f, 0.671f, 0.015f, 0.015f, 0.333f, 0.333f),
-                    new Keyframe(100, 1, 0, 0, 0.333f, 0.333f),
-                }
-            };
+            _damageController.SetCurveToDefault();
 
             _sim = new GameObject("[sim]");
             _sim.transform.parent = _root.transform;

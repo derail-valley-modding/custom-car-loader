@@ -37,6 +37,10 @@ namespace CCL.Types.Proxies.Controllers
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false)]
         public string[] electricalPTOffExternalInPortIds = Array.Empty<string>();
 
+        [SerializeField, RenderMethodButtons]
+        [MethodButton(nameof(SetCurveToDefault), "Set curve to default")]
+        private bool _buttons;
+
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(bodyDamagerPortIds), bodyDamagerPortIds, DVPortValueType.DAMAGE),
@@ -51,5 +55,17 @@ namespace CCL.Types.Proxies.Controllers
             new PortIdField(this, nameof(electricalPTHealthStateExternalInPortIds), electricalPTHealthStateExternalInPortIds, DVPortType.EXTERNAL_IN, DVPortValueType.STATE),
             new PortIdField(this, nameof(electricalPTOffExternalInPortIds), electricalPTOffExternalInPortIds, DVPortType.EXTERNAL_IN, DVPortValueType.STATE),
         };
+
+        private AnimationCurve DefaultDamageCurve => new AnimationCurve(
+            new Keyframe(0, 0, 0, 0, 0.333f, 0.333f),
+            new Keyframe(2, 0, 0, 0, 0.333f, 0.333f),
+            new Keyframe(7.868f, 0.127f, 0.028f, 0.028f, 0.333f, 0.333f),
+            new Keyframe(29.032f, 0.671f, 0.015f, 0.015f, 0.333f, 0.333f),
+            new Keyframe(100, 1, 0, 0, 0.333f, 0.333f));
+
+        public void SetCurveToDefault()
+        {
+            speedToBrakeDamageCurve = DefaultDamageCurve;
+        }
     }
 }

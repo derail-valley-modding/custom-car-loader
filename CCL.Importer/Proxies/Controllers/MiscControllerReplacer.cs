@@ -32,6 +32,10 @@ namespace CCL.Importer.Proxies.Controllers
             CreateMap<ClapperControllerProxy, ClapperController>().AutoCacheAndMap();
             CreateMap<GearShifterProxy, GearShifter>().AutoCacheAndMap();
 
+            CreateMap<HandcarControllerProxy, HandcarController>().AutoCacheAndMap();
+            CreateMap<HandcarHandbrakeControllerProxy, HandcarHandbrakeController>().AutoCacheAndMap();
+            CreateMap<HandcarBarControllerProxy, HandcarBarController>().AutoCacheAndMap();
+
             CreateMap<LightIntensityPortModifierProxy, LightIntensityPortModifier>().AutoCacheAndMap()
                 .ForMember(d => d.cabLightsController, o => o.MapFrom(s => Mapper.GetFromCache(s.cabLightsController)));
         }

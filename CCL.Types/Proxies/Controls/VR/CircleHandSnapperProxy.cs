@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Controls.VR
 {
     [AddComponentMenu("CCL/Proxies/Controls/VR/Circle Hand Snapper Proxy")]
-    public class CircleHandSnapperProxy : MonoBehaviour
+    public class CircleHandSnapperProxy : AHandPoseSnapperProxy
     {
         [Tooltip("This object should have its Y+ direction aligned with the wheel rotation axis, pointing outwards from the object, i.e. towards the player")]
         public Transform centerUpward = null!;

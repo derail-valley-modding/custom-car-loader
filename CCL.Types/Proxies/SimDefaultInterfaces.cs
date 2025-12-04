@@ -21,6 +21,8 @@ namespace CCL.Types.Proxies
 
             if (defaults is IBE2Defaults be2) yield return ("Apply BE2 Defaults", be2.ApplyBE2Defaults);
 
+            if (defaults is IH1Defaults h1) yield return ("Apply H1 Defaults", h1.ApplyH1Defaults);
+
             if (defaults is IWagonDefaults wagon) yield return ("Apply Generic Wagon Defaults", wagon.ApplyWagonDefaults);
         }
     }
@@ -74,6 +76,11 @@ namespace CCL.Types.Proxies
     public interface IBE2Defaults
     {
         void ApplyBE2Defaults();
+    }
+
+    public interface IH1Defaults
+    {
+        void ApplyH1Defaults();
     }
 
     public interface IWagonDefaults
