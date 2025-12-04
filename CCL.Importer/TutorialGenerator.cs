@@ -179,13 +179,13 @@ namespace CCL.Importer
 
                 var shovelPileSource = loco;
                 // Find a ShovelCoalPile somewhere on the trainset if the loco doesn't have one.
-                if (loco.loadedExternalInteractables?.GetComponentInChildren<ShovelCoalPile>() == null)
+                if (!HasShovelPile(loco))
                 {
                     foreach (var item in trainset)
                     {
                         if (item == loco) continue;
 
-                        if (item.loadedExternalInteractables?.GetComponentInChildren<ShovelCoalPile>() != null)
+                        if (HasShovelPile(item))
                         {
                             shovelPileSource = item;
                             break;
@@ -921,6 +921,12 @@ namespace CCL.Importer
             }
 
             return message;
+        }
+
+        private static bool HasShovelPile(TrainCar car)
+        {
+            return (car.loadedInterior != null && car.loadedInterior.GetComponentInChildren<ShovelCoalPile>()) ||
+                (car.loadedExternalInteractables != null && car.loadedExternalInteractables.GetComponentInChildren<ShovelCoalPile>());
         }
     }
 }
