@@ -1,10 +1,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CCL.Types.Proxies.Ports;
+
+using CCL.Types.Components.Controllers;
 using CCL.Types.Proxies;
+using CCL.Types.Proxies.Ports;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System;
 using UnityEngine;
 
 namespace CCL.Tests
@@ -50,6 +53,9 @@ namespace CCL.Tests
             }
             else
             {
+                // Ignore this script type as it uses dynamic ports.
+                if (scriptType == typeof(ResourceSharerController)) return;
+
                 var instance = Activator.CreateInstance(scriptType);
                 var exposedFields = ((IHasPortIdFields)instance).ExposedPortIdFields.ToList();
 

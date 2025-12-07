@@ -75,6 +75,7 @@ namespace CCL.Importer.Processing
                     renderer.sortingFudge = item.SortingFudge;
                 }
 
+                item.ApplyTo(system);
                 Object.Destroy(item);
             }
         }

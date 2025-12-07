@@ -75,7 +75,7 @@ namespace CCL.Creator.Wizards
         private Vector2 _scrollPosition = Vector2.zero;
         private bool _createPack = true;
 
-        [MenuItem("CCL/Create New Car Type", priority = MenuOrdering.MenuBar.CarWizard)]
+        [MenuItem("CCL/Car Wizard", priority = MenuOrdering.MenuBar.CarWizard)]
         private static void ShowWindow()
         {
             _window = GetWindow<CarWizard>();
