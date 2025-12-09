@@ -46,8 +46,8 @@ namespace CCL.Types.Proxies.Controls
                 {
                     return Enumerable.Empty<PortIdField>();
                 }
-                return neutralStateSetters.Select((nss, i) =>
-                    new PortIdField(this, nameof(neutralStateSetters), nss.portId));
+
+                return neutralStateSetters.Select(nss => new PortIdField(this, nameof(neutralStateSetters), nss.portId));
             }
         }
 

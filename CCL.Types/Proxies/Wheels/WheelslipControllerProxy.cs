@@ -15,9 +15,9 @@ namespace CCL.Types.Proxies.Wheels
         public float maxWheelslipRpm = 600f;
         [PortId(DVPortValueType.GENERIC, false)]
         public string numberOfPoweredAxlesPortId = string.Empty;
-        [PortId(DVPortValueType.STATE, false)]
+        [PortId(DVPortValueType.STATE, false, false)]
         public string sandCoefPortId = string.Empty;
-        [PortId(DVPortValueType.STATE, false)]
+        [PortId(DVPortValueType.STATE, false, false)]
         public string engineBrakingActivePortId = string.Empty;
 
         [SerializeField, RenderMethodButtons]
@@ -27,8 +27,8 @@ namespace CCL.Types.Proxies.Wheels
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(numberOfPoweredAxlesPortId), numberOfPoweredAxlesPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(sandCoefPortId), sandCoefPortId, DVPortValueType.STATE),
-            new PortIdField(this, nameof(engineBrakingActivePortId), engineBrakingActivePortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(sandCoefPortId), sandCoefPortId, DVPortValueType.STATE, false),
+            new PortIdField(this, nameof(engineBrakingActivePortId), engineBrakingActivePortId, DVPortValueType.STATE, false),
         };
 
         private AnimationCurve DefaultAdhesionCurve => new AnimationCurve(

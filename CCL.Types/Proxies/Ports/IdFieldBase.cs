@@ -7,26 +7,26 @@ namespace CCL.Types.Proxies.Ports
 {
     public abstract class IdFieldBase
     {
-        const BindingFlags AllInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        private const BindingFlags AllInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         public readonly MonoBehaviour Container;
         public readonly string FieldName;
         public readonly bool IsMultiValue;
-        public readonly string[]? AssignedIds;
+        public readonly string[] AssignedIds;
 
         public string FullName => $"{Container.name}/{FieldName}";
 
-        public bool IsAssigned => (AssignedIds != null) && (AssignedIds.Length > 0);
+        public bool IsAssigned => AssignedIds.Length > 0;
         public bool IsIdAssigned(string fullFuseId)
         {
-            return (AssignedIds != null) && AssignedIds.Contains(fullFuseId);
+            return AssignedIds.Contains(fullFuseId);
         }
 
-        public IdFieldBase(MonoBehaviour container, string fieldName, string[]? assignedIds)
+        public IdFieldBase(MonoBehaviour container, string fieldName, string[] assignedIds)
         {
             Container = container;
             FieldName = fieldName;
-            AssignedIds = assignedIds?.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            AssignedIds = assignedIds.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
 
             IsMultiValue = Container.GetType().GetField(FieldName, AllInstance).FieldType != typeof(string);
         }

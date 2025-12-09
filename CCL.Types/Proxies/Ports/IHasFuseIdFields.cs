@@ -5,7 +5,7 @@ namespace CCL.Types.Proxies.Ports
 {
     public class FuseIdField : IdFieldBase
     {
-        public FuseIdField(MonoBehaviour container, string fieldName, string[]? fuseIds)
+        public FuseIdField(MonoBehaviour container, string fieldName, string[] fuseIds)
             : base(container, fieldName, fuseIds)
         { }
 

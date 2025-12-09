@@ -44,7 +44,7 @@ namespace CCL.Creator.Inspector
             {
                 if (selected == 0)
                 {
-                    GUI.backgroundColor = portData.canBeEmpty ? EditorHelpers.Colors.WARNING : EditorHelpers.Colors.DELETE_ACTION;
+                    GUI.backgroundColor = portData.required ? EditorHelpers.Colors.DELETE_ACTION : EditorHelpers.Colors.WARNING;
                 }
                 else if (selected < 0 && !string.IsNullOrEmpty(currentValue))
                 {

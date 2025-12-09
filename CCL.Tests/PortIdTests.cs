@@ -77,9 +77,9 @@ namespace CCL.Tests
                         {
                             failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} value type filter does not match definition");
                         }
-                        if (idField.Value.canBeEmpty != matchingExposed.CanBeEmpty)
+                        if (idField.Value.required != matchingExposed.Required)
                         {
-                            failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} empty allowance does not match definition");
+                            failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} requiredness does not match definition");
                         }
                     }
                 }

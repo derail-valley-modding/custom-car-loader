@@ -17,9 +17,15 @@ namespace CCL.Types.Proxies.Simulation
         [SerializeField, HideInInspector]
         private string? _json;
 
-        public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[] { controllingPort };
+        public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
+        {
+            controllingPort
+        };
 
-        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[] { new FuseIdField(this, nameof(fuseId), fuseId) };
+        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(fuseId), fuseId)
+        };
 
         public void OnValidate()
         {

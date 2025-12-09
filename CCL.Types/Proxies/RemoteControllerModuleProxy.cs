@@ -10,6 +10,9 @@ namespace CCL.Types.Proxies
         [FuseId]
         public string powerFuseId = string.Empty;
 
-        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[] { new FuseIdField(this, nameof(powerFuseId), powerFuseId) };
+        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(powerFuseId), powerFuseId)
+        };
     }
 }

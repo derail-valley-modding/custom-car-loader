@@ -87,7 +87,7 @@ namespace CCL.Creator.Validators
                 {
                     if (!field.IsAssigned)
                     {
-                        if (!field.CanBeEmpty)
+                        if (!field.IsMultiValue && field.Required)
                         {
                             result.Fail($"Port field {field.FullName} must be assigned", hasPortId is UObject obj ? obj : null);
                         }

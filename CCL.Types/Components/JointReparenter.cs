@@ -12,6 +12,8 @@ namespace CCL.Types.Components
         {
             _joint = GetComponent<Joint>();
             _joint.connectedBody = transform.parent.GetComponentInParent<Rigidbody>();
+
+            Destroy(this);
         }
     }
 }

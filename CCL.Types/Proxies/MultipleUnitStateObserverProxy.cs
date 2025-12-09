@@ -8,15 +8,16 @@ namespace CCL.Types.Proxies
     public class MultipleUnitStateObserverProxy : MonoBehaviour, IHasPortIdFields
     {
         [Header("optional")]
-        [PortId(DVPortValueType.TEMPERATURE, false)]
+        [PortId(DVPortValueType.TEMPERATURE, false, false)]
         public string temperaturePortId = string.Empty;
         [SerializeField]
         private float overheatStandardThreshold = 90f;
         [SerializeField]
         private float overheatCriticalThreshold = 105f;
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] {
-            new PortIdField(this, nameof(temperaturePortId), temperaturePortId, DVPortValueType.TEMPERATURE)
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(temperaturePortId), temperaturePortId, DVPortValueType.TEMPERATURE, false)
         };
     }
 }

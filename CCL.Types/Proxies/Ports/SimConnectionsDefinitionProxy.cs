@@ -169,7 +169,7 @@ namespace CCL.Types.Proxies.Ports
     {
         [PortReferenceId]
         public string portReferenceId = string.Empty;
-        [PortId]
+        [PortId(required = false)]
         public string portId = string.Empty;
     }
 }

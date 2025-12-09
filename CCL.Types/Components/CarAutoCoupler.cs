@@ -19,10 +19,13 @@ namespace CCL.Types.Components
         public string[] CarLiveries = new string[0];
 
         [Header("Optional")]
-        [PortId, Tooltip("Optional port that can disable automatic coupling\n" +
+        [PortId(required = false), Tooltip("Optional port that can disable automatic coupling\n" +
             "Will also uncouple the vehicle when active")]
         public string DisablerPort = string.Empty;
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(DisablerPort), DisablerPort) };
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(DisablerPort), DisablerPort, required: false)
+        };
     }
 }

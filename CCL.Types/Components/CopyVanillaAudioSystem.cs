@@ -9,9 +9,9 @@ namespace CCL.Types.Components
     {
         public VanillaAudioSystem AudioSystem;
 
-        [PortId]
+        [PortId(required = false)]
         public string PortId1 = string.Empty;
-        [PortId]
+        [PortId(required = false)]
         public string PortId2 = string.Empty;
 
         public Transform[] SourcePositions = new Transform[0];
@@ -22,8 +22,8 @@ namespace CCL.Types.Components
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(PortId1), PortId1),
-            new PortIdField(this, nameof(PortId2), PortId2)
+            new PortIdField(this, nameof(PortId1), PortId1, required: false),
+            new PortIdField(this, nameof(PortId2), PortId2, required: false)
         };
 
         public string[] Ports => new[]

@@ -13,7 +13,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Customization
 {
     [AddComponentMenu("CCL/Proxies/Customization/Train Car Customization Proxy")]
-    public class TrainCarCustomizationProxy : MonoBehaviour, ICustomSerialized, IHasFuseIdFields
+    public class TrainCarCustomizationProxy : MonoBehaviour, ICustomSerialized, IHasPortIdFields, IHasFuseIdFields
     {
         public enum STDSimPort : byte
         {
@@ -65,6 +65,19 @@ namespace CCL.Types.Proxies.Customization
         [RenderMethodButtons]
         [MethodButton(nameof(AutoSetup), "Auto Setup")]
         private bool _buttons;
+
+        public IEnumerable<PortIdField> ExposedPortIdFields
+        {
+            get
+            {
+                if (Ports == null || Ports.Length == 0)
+                {
+                    return Enumerable.Empty<PortIdField>();
+                }
+
+                return Ports.Select(def => new PortIdField(this, nameof(Ports), def.name));
+            }
+        }
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
