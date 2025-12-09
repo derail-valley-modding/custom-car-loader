@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using CCL.Creator.Utility;
+using UnityEditor;
 using UnityEngine;
 
 namespace CCL.Creator
@@ -15,9 +16,12 @@ namespace CCL.Creator
 
         private static CCLEditorSettings CreateSettings()
         {
+            // Check the default path first since it's faster.
             var settings = AssetDatabase.LoadAssetAtPath<CCLEditorSettings>(DefaultAssetPath);
 
-            if (settings == null)
+            // If it isn't at the default path, try to find it somewhere else. If it still cannot
+            // be found, then create a new instance.
+            if (settings == null && !AssetHelper.TryFindAsset<CCLEditorSettings>(out settings))
             {
                 settings = CreateInstance<CCLEditorSettings>();
                 AssetDatabase.CreateAsset(settings, DefaultAssetPath);
@@ -26,6 +30,12 @@ namespace CCL.Creator
 
             s_settings = settings;
             return settings;
+        }
+
+        [MenuItem("CCL/Settings", priority = MenuOrdering.MenuBar.Settings)]
+        private static void SelectSettings()
+        {
+            Selection.objects = new[] { Settings };
         }
 
         #endregion

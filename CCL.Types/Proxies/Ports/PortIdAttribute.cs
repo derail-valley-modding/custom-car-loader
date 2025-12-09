@@ -5,10 +5,9 @@ namespace CCL.Types.Proxies.Ports
     public class PortIdAttribute : PropertyAttribute
     {
         public DVPortType[]? typeFilters;
-
         public DVPortValueType[]? valueTypeFilters;
-
         public bool local;
+        public bool canBeEmpty = true;
 
         public PortIdAttribute(DVPortType[]? typeFilters = null, DVPortValueType[]? valueTypeFilters = null, bool local = false)
         {

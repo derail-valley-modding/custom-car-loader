@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using UObject = UnityEngine.Object;
+
 namespace CCL.Creator.Validators
 {
     [RequiresStep(typeof(LiverySettingsValidator))]
@@ -81,14 +83,24 @@ namespace CCL.Creator.Validators
             // Check port/fuse ID fields
             foreach (var hasPortId in havePortIds)
             {
-                foreach (var field in hasPortId.ExposedPortIdFields.Where(f => f.IsAssigned))
+                foreach (var field in hasPortId.ExposedPortIdFields)
                 {
+                    if (!field.IsAssigned)
+                    {
+                        if (!field.CanBeEmpty)
+                        {
+                            result.Fail($"Port field {field.FullName} must be assigned", hasPortId is UObject obj ? obj : null);
+                        }
+
+                        continue;
+                    }
+
                     foreach (string id in field.AssignedIds!)
                     {
                         if (!CheckPortExists(components, id))
                         {
                             result.Warning($"Port field {field.FullName} target \"{id}\" was not found",
-                                hasPortId is UnityEngine.Object obj ? obj : null);
+                                hasPortId is UObject obj ? obj : null);
                         }
                     }
                 }
@@ -103,7 +115,7 @@ namespace CCL.Creator.Validators
                         if (!CheckFuseExists(components, id))
                         {
                             result.Warning($"Fuse field {field.FullName} target \"{id}\" was not found",
-                                hasFuseId is UnityEngine.Object obj ? obj : null);
+                                hasFuseId is UObject obj ? obj : null);
                         }
                     }
                 }

@@ -8,6 +8,7 @@ namespace CCL.Types.Proxies.Ports
     {
         public readonly DVPortType[]? TypeFilters;
         public readonly DVPortValueType[]? ValueFilters;
+        public bool CanBeEmpty = true;
 
         public bool CanConnect(DVPortType type)
         {

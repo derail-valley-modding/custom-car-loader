@@ -9,14 +9,14 @@ namespace CCL.Types.Proxies.Controls
     [AddComponentMenu("CCL/Proxies/Controls/Control Blocker Proxy")]
     public class ControlBlockerProxy : MonoBehaviour, IHasPortIdFields, ICustomSerialized
     {
-        [PortId]
+        [PortId(canBeEmpty = false)]
         public string blockedControlPortId = string.Empty;
         public bool resetToZeroOnBlock;
         public BlockerDefinition[] blockers = new BlockerDefinition[0];
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
-            new PortIdField(this, nameof(blockedControlPortId), blockedControlPortId)
+            new PortIdField(this, nameof(blockedControlPortId), blockedControlPortId) { CanBeEmpty = false }
         };
 
         [SerializeField, HideInInspector]

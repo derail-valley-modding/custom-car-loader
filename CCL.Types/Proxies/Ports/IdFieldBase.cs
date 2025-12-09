@@ -14,7 +14,7 @@ namespace CCL.Types.Proxies.Ports
         public readonly bool IsMultiValue;
         public readonly string[]? AssignedIds;
 
-        public string FullName => $"{Container.name}.{FieldName}";
+        public string FullName => $"{Container.name}/{FieldName}";
 
         public bool IsAssigned => (AssignedIds != null) && (AssignedIds.Length > 0);
         public bool IsIdAssigned(string fullFuseId)
