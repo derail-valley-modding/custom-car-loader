@@ -39,7 +39,7 @@ namespace CCL.Creator.Wizards
             public bool AddStaticInteractionArea = true;
             public bool IsFuseControl = false;
             public bool IsHandbrake = false;
-            public bool AutomaticReparenting = false;
+            public bool AutomaticReparenting = true;
 
             [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)]
             public string ControlledPortId = string.Empty;

@@ -460,6 +460,8 @@ namespace CCL.Creator.Wizards.SimSetup
                 control.controlBlocker = control.gameObject.AddComponent<ControlBlockerProxy>();
             }
 
+            control.controlBlocker.blockedControlPortId = control.portId;
+
             return control.controlBlocker;
         }
 
