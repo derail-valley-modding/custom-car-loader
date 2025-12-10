@@ -87,6 +87,21 @@ namespace CCL.Types
             Track = track;
             AdditionalLiveries = liveries;
         }
+
+        public bool IsDE2ExclusiveSpawn()
+        {
+            switch (Track)
+            {
+                case SpawnTrack.FoodFactory1:
+                case SpawnTrack.GoodsFactory1:
+                case SpawnTrack.HarbourA1:
+                case SpawnTrack.MachineFactoryRoundhouse3:
+                case SpawnTrack.SteelMillTurntable1:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 
     public enum SpawnTrack
@@ -103,7 +118,7 @@ namespace CCL.Types
         CoalPowerPlant = 400,
         [Tooltip("Length: 300m")]
         Farm = 500,
-        [Tooltip("Length: 50m")]
+        [Tooltip("Length: 50m\nDE2 exclusive")]
         FoodFactory1 = 600,
         [Tooltip("Length: 55m")]
         FoodFactory2 = 601,
@@ -111,15 +126,15 @@ namespace CCL.Types
         ForestCentral = 700,
         [Tooltip("Length: 62m")]
         ForestSouth = 800,
-        [Tooltip("Length: 60m")]
+        [Tooltip("Length: 60m\nDE2 exclusive")]
         GoodsFactory1 = 900,
         [Tooltip("Length: 60m")]
         GoodsFactory2 = 901,
-        [Tooltip("Length: 65m")]
+        [Tooltip("Length: 65m\nDE2 exclusive")]
         HarbourA1 = 1000,
         [Tooltip("Length: 45m (has turntable)")]
         HarbourRoundhouse1 = 1001,
-        [Tooltip("Length: 45m (has turntable)")]
+        [Tooltip("Length: 45m (has turntable)\nS282 exclusive")]
         HarbourRoundhouse2 = 1002,
         [Tooltip("Length: 45m (has turntable)")]
         HarbourRoundhouse5 = 1005,
@@ -127,17 +142,17 @@ namespace CCL.Types
         HarbourRoundhouse7 = 1007,
         [Tooltip("Length: 45m")]
         IronMineEast = 1100,
-        [Tooltip("Length: 25m (has turntable)")]
+        [Tooltip("Length: 25m (has turntable)\nS282 exclusive")]
         IronMineWest = 1200,
         [Tooltip("Length: 140m")]
         MachineFactoryA1 = 1300,
         [Tooltip("Length: 45m (has turntable)")]
         MachineFactoryRoundhouse2 = 1302,
-        [Tooltip("Length: 45m (has turntable)")]
+        [Tooltip("Length: 45m (has turntable)\nDE2 exclusive")]
         MachineFactoryRoundhouse3 = 1303,
         [Tooltip("Length: 45m (has turntable)")]
         MachineFactoryRoundhouse4 = 1304,
-        [Tooltip("Length: 45m (has turntable)")]
+        [Tooltip("Length: 45m (has turntable)\nDE6 exclusive")]
         MachineFactoryRoundhouse7 = 1307,
         [Tooltip("Length: 130m")]
         OilRefinery = 1400,
@@ -147,7 +162,7 @@ namespace CCL.Types
         OilWellNorth = 1600,
         [Tooltip("Length: 95m")]
         Sawmill = 1700,
-        [Tooltip("Length: 32m (has turntable)")]
+        [Tooltip("Length: 32m (has turntable)\nDE2 exclusive")]
         SteelMillTurntable1 = 1800,
         [Tooltip("Length: 32m (has turntable)")]
         SteelMillTurntable2 = 1801

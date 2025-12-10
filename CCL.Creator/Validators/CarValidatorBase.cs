@@ -118,13 +118,18 @@ namespace CCL.Creator.Validators
                     break;
                 }
 
+                var curResult = ValidateLivery(livery);
+                overallResult.Merge(curResult);
+
                 if (livery.icon == null)
                 {
                     overallResult.Warning($"Livery '{livery.id}' has no icon");
                 }
 
-                var curResult = ValidateLivery(livery);
-                overallResult.Merge(curResult);
+                if (livery.LocoSpawnGroups.Any(x => x.IsDE2ExclusiveSpawn()))
+                {
+                    overallResult.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track, make sure this is intended");
+                }
             }
 
             return overallResult;
