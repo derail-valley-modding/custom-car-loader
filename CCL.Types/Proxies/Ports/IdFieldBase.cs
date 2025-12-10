@@ -13,6 +13,7 @@ namespace CCL.Types.Proxies.Ports
         public readonly string FieldName;
         public readonly bool IsMultiValue;
         public readonly string[] AssignedIds;
+        public readonly bool Required;
 
         public string FullName => $"{Container.name}/{FieldName}";
 
@@ -22,11 +23,12 @@ namespace CCL.Types.Proxies.Ports
             return AssignedIds.Contains(fullFuseId);
         }
 
-        public IdFieldBase(MonoBehaviour container, string fieldName, string[] assignedIds)
+        public IdFieldBase(MonoBehaviour container, string fieldName, string[] assignedIds, bool required)
         {
             Container = container;
             FieldName = fieldName;
             AssignedIds = assignedIds.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            Required = required;
 
             IsMultiValue = Container.GetType().GetField(FieldName, AllInstance).FieldType != typeof(string);
         }

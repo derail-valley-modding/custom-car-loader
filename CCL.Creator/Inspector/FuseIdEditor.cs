@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CCL.Creator.Inspector
 {
@@ -14,11 +15,13 @@ namespace CCL.Creator.Inspector
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            var fuseData = (FuseIdAttribute)attribute;
             var component = property.serializedObject.targetObject;
-            RenderProperty(position, property, label, ((Component)component).transform);
+
+            RenderProperty(position, property, label, ((Component)component).transform, fuseData);
         }
 
-        public static void RenderProperty(Rect position, SerializedProperty property, GUIContent label, Transform location)
+        public static void RenderProperty(Rect position, SerializedProperty property, GUIContent label, Transform location, FuseIdAttribute fuseData)
         {
             string? currentValue = property.stringValue;
             if (string.IsNullOrEmpty(currentValue))
@@ -42,7 +45,7 @@ namespace CCL.Creator.Inspector
             {
                 if (selected == 0)
                 {
-                    GUI.backgroundColor = EditorHelpers.Colors.WARNING;
+                    GUI.backgroundColor = fuseData.required ? EditorHelpers.Colors.DELETE_ACTION : EditorHelpers.Colors.WARNING;
                 }
                 else if (selected < 0 && !string.IsNullOrEmpty(currentValue))
                 {

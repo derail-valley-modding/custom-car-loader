@@ -83,7 +83,8 @@ namespace CCL.Creator.Wizards
                         idRect,
                         serialized.FindProperty(nameof(Settings.SourceFuseId)),
                         new GUIContent("Tracked Fuse"),
-                        _settings.TargetObject.transform);
+                        _settings.TargetObject.transform,
+                        new FuseIdAttribute(true));
                 }
                 else if (valueType == Settings.ReaderType.Port)
                 {
@@ -110,7 +111,8 @@ namespace CCL.Creator.Wizards
                     fuseRect,
                     serialized.FindProperty(nameof(Settings.FuseId)),
                     new GUIContent("Power Fuse"),
-                    _settings.TargetObject.transform);
+                    _settings.TargetObject.transform,
+                    new FuseIdAttribute());
 
 
                 serialized.ApplyModifiedProperties();

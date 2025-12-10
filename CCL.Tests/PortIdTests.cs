@@ -138,6 +138,10 @@ namespace CCL.Tests
                     {
                         failures.Add($"Fuse ID field {scriptType.Name}.{idField.Key} must be exposed via {nameof(IHasFuseIdFields)}");
                     }
+                    else if (idField.Value.required != matchingExposed.Required)
+                    {
+                        failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} requiredness does not match definition");
+                    }
                 }
             }
 

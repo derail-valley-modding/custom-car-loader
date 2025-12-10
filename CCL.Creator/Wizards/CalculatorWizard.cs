@@ -104,7 +104,7 @@ namespace CCL.Creator.Wizards
                 if (GUILayout.Button("Calculate Speed"))
                 {
                     speedMS = RPM / GearRatio * circumference / 60.0f;
-                    Speed = speedMS * Units.MSToKMH;
+                    Speed = speedMS * Units.MStoKMH;
                 }
 
                 RPM = EditorGUILayout.FloatField("RPM", RPM);
@@ -165,7 +165,7 @@ namespace CCL.Creator.Wizards
                 if (GUILayout.Button("Calculate Speed"))
                 {
                     speedMS = Power / Force;
-                    Speed = speedMS * Units.MSToKMH;
+                    Speed = speedMS * Units.MStoKMH;
                 }
             }
         }

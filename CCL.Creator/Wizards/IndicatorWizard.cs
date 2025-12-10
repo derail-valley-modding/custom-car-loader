@@ -96,7 +96,8 @@ namespace CCL.Creator.Wizards
                     fuseRect,
                     serialized.FindProperty(nameof(Settings.FuseId)),
                     new GUIContent("Power Fuse"),
-                    _settings.TargetObject.transform);
+                    _settings.TargetObject.transform,
+                    new FuseIdAttribute());
 
 
                 serialized.ApplyModifiedProperties();

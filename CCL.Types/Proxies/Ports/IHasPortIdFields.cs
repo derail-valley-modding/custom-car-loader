@@ -8,9 +8,6 @@ namespace CCL.Types.Proxies.Ports
     {
         public readonly DVPortType[]? TypeFilters;
         public readonly DVPortValueType[]? ValueFilters;
-        public readonly bool Required = true;
-
-        public bool IsValid => !Required || IsAssigned;
 
         public bool CanConnect(DVPortType type)
         {
@@ -25,11 +22,10 @@ namespace CCL.Types.Proxies.Ports
         // multi id, multi type, multi value
         public PortIdField(MonoBehaviour container, string fieldName, string[] portIds,
             DVPortType[]? typeFilters = null, DVPortValueType[]? valueFilters = null, bool required = true)
-            : base(container, fieldName, portIds)
+            : base(container, fieldName, portIds, required)
         {
             TypeFilters = typeFilters;
             ValueFilters = valueFilters;
-            Required = required;
         }
 
         // multi id, single type

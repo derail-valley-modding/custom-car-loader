@@ -15,7 +15,7 @@ namespace CCL.Types.Proxies.Indicators
 
         public Mode mode;
 
-        [FuseId]
+        [FuseId(true)]
         public string fuseId = string.Empty;
 
         [Header("Optional")]
@@ -24,7 +24,7 @@ namespace CCL.Types.Proxies.Indicators
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
-            new FuseIdField(this, nameof(fuseId), fuseId),
+            new FuseIdField(this, nameof(fuseId), fuseId, true),
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
     }

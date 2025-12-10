@@ -108,8 +108,18 @@ namespace CCL.Creator.Validators
 
             foreach (var hasFuseId in haveFuseIds)
             {
-                foreach (var field in hasFuseId.ExposedFuseIdFields.Where(f => f.IsAssigned))
+                foreach (var field in hasFuseId.ExposedFuseIdFields)
                 {
+                    if (!field.IsAssigned)
+                    {
+                        if (!field.IsMultiValue && field.Required)
+                        {
+                            result.Fail($"Fuse field {field.FullName} must be assigned", hasFuseId is UObject obj ? obj : null);
+                        }
+
+                        continue;
+                    }
+
                     foreach (string id in field.AssignedIds!)
                     {
                         if (!CheckFuseExists(components, id))
