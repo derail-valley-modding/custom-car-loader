@@ -10,6 +10,9 @@ namespace CCL.Types.Proxies.Controllers
         [PortId(DVPortValueType.GENERIC, true)]
         public string anglePortId = string.Empty;
 
-        public IEnumerable<PortIdField> ExposedPortIdFields => new[] { new PortIdField(this, nameof(anglePortId), anglePortId, DVPortValueType.GENERIC) };
+        public IEnumerable<PortIdField> ExposedPortIdFields => new[]
+        {
+            new PortIdField(this, nameof(anglePortId), anglePortId, DVPortValueType.GENERIC)
+        };
     }
 }

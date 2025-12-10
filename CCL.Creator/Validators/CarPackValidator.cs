@@ -288,6 +288,29 @@ namespace CCL.Creator.Validators
         private void ValidateCar(CustomCarType car)
         {
             var results = new List<ValidationResult>();
+            var carResult = new ValidationResult("Car Setup");
+            results.Add(carResult);
+
+            if (string.IsNullOrWhiteSpace(car.id))
+            {
+                carResult.Fail("Car ID is empty!", car);
+            }
+
+            if (car.liveries.Count == 0)
+            {
+                carResult.Fail("Car has no liveries!", car);
+            }
+
+            if (car.liveries.ContainsDuplicates(x => x.id))
+            {
+                carResult.CriticalFail("Car has duplicate livery IDs!", car);
+                goto AddResults;
+            }
+
+            if (car.KindSelection != DVTrainCarKind.Car && car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
+            {
+                carResult.Warning("Car is not of generic car kind but has no delete prevention set", car);
+            }
 
             foreach (var validator in SortedSteps)
             {
@@ -304,6 +327,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
+            AddResults:
             _results.Add(new CarResults(car.id, results));
         }
 

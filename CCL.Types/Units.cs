@@ -30,8 +30,9 @@ namespace CCL.Types
     {
         public const float Gravity = 9.81f;
 
-        public const float MSToKMH = 3.6f;
-        public const float KMHtoMS = 1.0f / MSToKMH;
+        public const float ToKilo = 0.001f;
+        public const float MStoKMH = 3.6f;
+        public const float KMHtoMS = 1.0f / MStoKMH;
 
         public const float BarToPascal = 100000.0f;
 

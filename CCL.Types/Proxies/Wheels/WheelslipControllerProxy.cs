@@ -6,7 +6,8 @@ namespace CCL.Types.Proxies.Wheels
 {
     [AddComponentMenu("CCL/Proxies/Wheels/Wheelslip Controller Proxy")]
     public class WheelslipControllerProxy : MonoBehaviourWithVehicleDefaults, IHasPortIdFields,
-        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults, IS060Defaults, IS282Defaults
+        IDE2Defaults, IDE6Defaults, IDH4Defaults, IDM3Defaults, IDM1UDefaults, IBE2Defaults, IH1Defaults,
+        IS060Defaults, IS282Defaults
     {
         public bool preventWheelslip;
 
@@ -14,20 +15,20 @@ namespace CCL.Types.Proxies.Wheels
         public float maxWheelslipRpm = 600f;
         [PortId(DVPortValueType.GENERIC, false)]
         public string numberOfPoweredAxlesPortId = string.Empty;
-        [PortId(DVPortValueType.STATE, false)]
+        [PortId(DVPortValueType.STATE, false, false)]
         public string sandCoefPortId = string.Empty;
-        [PortId(DVPortValueType.STATE, false)]
+        [PortId(DVPortValueType.STATE, false, false)]
         public string engineBrakingActivePortId = string.Empty;
 
-        [RenderMethodButtons]
+        [SerializeField, RenderMethodButtons]
         [MethodButton(nameof(SetCurveToDefault), "Set curve to default")]
-        public bool buttonRender;
+        private bool _buttons;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(numberOfPoweredAxlesPortId), numberOfPoweredAxlesPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(sandCoefPortId), sandCoefPortId, DVPortValueType.STATE),
-            new PortIdField(this, nameof(engineBrakingActivePortId), engineBrakingActivePortId, DVPortValueType.STATE),
+            new PortIdField(this, nameof(sandCoefPortId), sandCoefPortId, DVPortValueType.STATE, false),
+            new PortIdField(this, nameof(engineBrakingActivePortId), engineBrakingActivePortId, DVPortValueType.STATE, false),
         };
 
         private AnimationCurve DefaultAdhesionCurve => new AnimationCurve(
@@ -82,6 +83,13 @@ namespace CCL.Types.Proxies.Wheels
             preventWheelslip = false;
             wheelslipToAdhesionDrop = DefaultAdhesionCurve;
             maxWheelslipRpm = 370;
+        }
+
+        public void ApplyH1Defaults()
+        {
+            preventWheelslip = false;
+            wheelslipToAdhesionDrop = DefaultAdhesionCurve;
+            maxWheelslipRpm = 300;
         }
 
         public void ApplyS060Defaults()

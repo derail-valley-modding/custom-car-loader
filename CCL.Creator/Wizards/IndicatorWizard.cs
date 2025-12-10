@@ -36,7 +36,7 @@ namespace CCL.Creator.Wizards
             public string IndicatorName = "newIndicator";
             public IndicatorType IndicatorType;
             public IndicatorValueType ValueType;
-            public bool AutomaticReparenting = false;
+            public bool AutomaticReparenting = true;
 
             public DVPortValueType PortFilter;
             [PortId]
@@ -96,7 +96,8 @@ namespace CCL.Creator.Wizards
                     fuseRect,
                     serialized.FindProperty(nameof(Settings.FuseId)),
                     new GUIContent("Power Fuse"),
-                    _settings.TargetObject.transform);
+                    _settings.TargetObject.transform,
+                    new FuseIdAttribute());
 
 
                 serialized.ApplyModifiedProperties();

@@ -16,10 +16,10 @@ namespace CCL.Types.Proxies.Controllers
         [PortId(DVPortValueType.GENERIC, true)]
         public string activationPressureThresholdPortId = string.Empty;
 
-        [Header("optional")]
-        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, true)]
+        [Header("Optional")]
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, true, false)]
         public string compressorHealthStatePortId = string.Empty;
-        [PortId(DVPortValueType.PRESSURE, true)]
+        [PortId(DVPortValueType.PRESSURE, true, false)]
         public string mainResPressureNormalizedPortId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
@@ -28,8 +28,9 @@ namespace CCL.Types.Proxies.Controllers
             new PortIdField(this, nameof(productionRateOutPortId), productionRateOutPortId, DVPortValueType.STATE),
             new PortIdField(this, nameof(mainReservoirVolumePortId), mainReservoirVolumePortId, DVPortValueType.GENERIC),
             new PortIdField(this, nameof(activationPressureThresholdPortId), activationPressureThresholdPortId, DVPortValueType.GENERIC),
-            new PortIdField(this, nameof(compressorHealthStatePortId), compressorHealthStatePortId, DVPortType.EXTERNAL_IN, DVPortValueType.STATE),
-            new PortIdField(this, nameof(mainResPressureNormalizedPortId), mainResPressureNormalizedPortId, DVPortValueType.PRESSURE),
+
+            new PortIdField(this, nameof(compressorHealthStatePortId), compressorHealthStatePortId, DVPortType.EXTERNAL_IN, DVPortValueType.STATE, false),
+            new PortIdField(this, nameof(mainResPressureNormalizedPortId), mainResPressureNormalizedPortId, DVPortValueType.PRESSURE, false),
         };
     }
 }

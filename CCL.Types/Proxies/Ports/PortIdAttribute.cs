@@ -5,37 +5,40 @@ namespace CCL.Types.Proxies.Ports
     public class PortIdAttribute : PropertyAttribute
     {
         public DVPortType[]? typeFilters;
-
         public DVPortValueType[]? valueTypeFilters;
-
         public bool local;
+        public bool required;
 
-        public PortIdAttribute(DVPortType[]? typeFilters = null, DVPortValueType[]? valueTypeFilters = null, bool local = false)
+        public PortIdAttribute(DVPortType[]? typeFilters = null, DVPortValueType[]? valueTypeFilters = null, bool local = false, bool required = true)
         {
             this.typeFilters = typeFilters;
             this.valueTypeFilters = valueTypeFilters;
             this.local = local;
+            this.required = required;
         }
 
-        public PortIdAttribute(DVPortType typeFilter, DVPortValueType valueTypeFilter, bool local = false)
+        public PortIdAttribute(DVPortType typeFilter, DVPortValueType valueTypeFilter, bool local = false, bool required = true)
         {
             typeFilters = new DVPortType[1] { typeFilter };
             valueTypeFilters = new DVPortValueType[1] { valueTypeFilter };
             this.local = local;
+            this.required = required;
         }
 
-        public PortIdAttribute(DVPortType typeFilter, bool local = false)
+        public PortIdAttribute(DVPortType typeFilter, bool local = false, bool required = true)
         {
             typeFilters = new DVPortType[1] { typeFilter };
             valueTypeFilters = null;
             this.local = local;
+            this.required = required;
         }
 
-        public PortIdAttribute(DVPortValueType valueTypeFilter, bool local = false)
+        public PortIdAttribute(DVPortValueType valueTypeFilter, bool local = false, bool required = true)
         {
             typeFilters = null;
             valueTypeFilters = new DVPortValueType[1] { valueTypeFilter };
             this.local = local;
+            this.required = required;
         }
     }
 

@@ -30,6 +30,11 @@ namespace CCL.Importer.Proxies.Controllers
                 .ForMember(d => d.blowbackParticlesPrefab, o => o.MapFrom(s => QuickAccess.Explosions.GetExplosionPrefab(s.blowbackParticlesPrefab)));
 
             CreateMap<ClapperControllerProxy, ClapperController>().AutoCacheAndMap();
+            CreateMap<GearShifterProxy, GearShifter>().AutoCacheAndMap();
+
+            CreateMap<HandcarControllerProxy, HandcarController>().AutoCacheAndMap();
+            CreateMap<HandcarHandbrakeControllerProxy, HandcarHandbrakeController>().AutoCacheAndMap();
+            CreateMap<HandcarBarControllerProxy, HandcarBarController>().AutoCacheAndMap();
 
             CreateMap<LightIntensityPortModifierProxy, LightIntensityPortModifier>().AutoCacheAndMap()
                 .ForMember(d => d.cabLightsController, o => o.MapFrom(s => Mapper.GetFromCache(s.cabLightsController)));

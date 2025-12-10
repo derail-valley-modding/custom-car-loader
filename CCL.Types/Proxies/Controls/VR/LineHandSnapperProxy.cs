@@ -3,7 +3,7 @@
 namespace CCL.Types.Proxies.Controls.VR
 {
     [AddComponentMenu("CCL/Proxies/Controls/VR/Line Hand Snapper Proxy")]
-    public class LineHandSnapperProxy : MonoBehaviour
+    public class LineHandSnapperProxy : AHandPoseSnapperProxy
     {
         public Transform lineStart = null!;
         [Tooltip("This extends in the Y axis of the start transform")]

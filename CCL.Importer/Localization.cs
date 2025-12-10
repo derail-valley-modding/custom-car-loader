@@ -23,5 +23,10 @@ namespace CCL.Importer
                 return LocalizationAPI.L("ccl/comms/purchase_confirm_prompt", price.ToString("N2", LocalizationAPI.CC));
             }
         }
+
+        public class Tutorials
+        {
+            public const string TrainsetRequiredKey = "ccl/tutorial/cond/requires_trainset";
+        }
     }
 }

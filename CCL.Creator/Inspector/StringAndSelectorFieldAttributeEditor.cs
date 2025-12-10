@@ -17,7 +17,7 @@ namespace CCL.Creator.Inspector
             "You can quickly select a value from here instead of typing it manually\n" +
             "If this selector supports custom values, it will include an option for it");
 
-        private int _selected = 0;
+        private int _selected = -1;
 
         private void OnGUIInternal(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -31,8 +31,8 @@ namespace CCL.Creator.Inspector
             EditorGUI.BeginChangeCheck();
             EditorGUI.DelayedTextField(controlPos1, property);
 
-            // Get the current string as an array index.
-            if (EditorGUI.EndChangeCheck())
+            // Get the current string as an array index. If _selected hasn't been set yet, also run this code.
+            if (EditorGUI.EndChangeCheck() || _selected < 0)
             {
                 // Null or empty counts as Not Set.
                 if (string.IsNullOrEmpty(property.stringValue))
@@ -44,7 +44,7 @@ namespace CCL.Creator.Inspector
                     _selected = att.Options.IndexOf(property.stringValue);
 
                     // If the string does not exist in the array...
-                    if (_selected == -1)
+                    if (_selected < 0)
                     {
                         // ...and the array supports custom strings, set it to custom.
                         // Otherwise set it to Not Set.

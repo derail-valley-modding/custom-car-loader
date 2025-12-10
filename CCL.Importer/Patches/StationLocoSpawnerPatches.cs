@@ -34,16 +34,11 @@ namespace CCL.Importer.Patches
                         // If the group is supposed to use this spawner...
                         if (group.Track.ToName() == __instance.name)
                         {
-                            if (group.AdditionalLiveries.Length > 0)
-                            {
-                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}, {string.Join(", ", group.AdditionalLiveries)}]...");
-                            }
-                            else
-                            {
-                                CCLPlugin.LogVerbose($"Injecting loco spawn group [{variant.id}]...");
-                            }
+                            var wrapper = FromGroup(variant, group);
 
-                            __instance.locoTypeGroupsToSpawn.Add(FromGroup(variant, group));
+                            CCLPlugin.LogVerbose($"Injecting loco spawn group [{string.Join(", ", wrapper.liveries.Select(x => x.id))}]...");
+
+                            __instance.locoTypeGroupsToSpawn.Add(wrapper);
                         }
                     }
                 }
@@ -84,7 +79,8 @@ namespace CCL.Importer.Patches
 
         private static ListTrainCarTypeWrapper FromGroup(TrainCarLivery variant, LocoSpawnGroup group)
         {
-            List<TrainCarLivery> variants = new() { variant };
+            // Add livery at the start if it is missing from the group.
+            List<TrainCarLivery> variants = group.AdditionalLiveries.Contains(variant.id) ? new() : new() { variant };
 
             foreach (var item in group.AdditionalLiveries)
             {

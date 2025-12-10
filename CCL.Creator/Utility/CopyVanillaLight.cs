@@ -1,21 +1,16 @@
 ﻿using CCL.Types.Proxies.VFX;
 using UnityEngine;
 using UnityEngine.Rendering;
+
 using static CCL.Types.Proxies.VFX.LightShadowQualityProxy;
 
-namespace CCL.Types.Components
+namespace CCL.Creator.Utility
 {
-    [AddComponentMenu("CCL/Components/Copiers/Copy Vanilla Light")]
+    [AddComponentMenu("CCL Editor/Vanilla Light Copy")]
     [RequireComponent(typeof(Light))]
-    public class CopyVanillaLight : MonoBehaviour
+    public class VanillaLightCopy : MonoBehaviour
     {
         public VanillaLight LightToCopy;
-
-        private void Start()
-        {
-            Debug.Log($"{nameof(CopyVanillaLight)} was not deleted from '{name}'!");
-            Destroy(this);
-        }
 
         public void ApplyProperties()
         {

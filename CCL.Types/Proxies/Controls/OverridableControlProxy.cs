@@ -10,7 +10,7 @@ namespace CCL.Types.Proxies.Controls
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, true)]
         public string portId = string.Empty;
         public OverridableControlType ControlType;
-        [Header("optional")]
+        [Header("Optional")]
         public ControlBlockerProxy controlBlocker = null!;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[] 

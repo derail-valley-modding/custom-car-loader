@@ -75,7 +75,7 @@ namespace CCL.Creator.Wizards
         private Vector2 _scrollPosition = Vector2.zero;
         private bool _createPack = true;
 
-        [MenuItem("CCL/Create New Car Type", priority = MenuOrdering.MenuBar.CarWizard)]
+        [MenuItem("CCL/Car Wizard", priority = MenuOrdering.MenuBar.CarWizard)]
         private static void ShowWindow()
         {
             _window = GetWindow<CarWizard>();
@@ -127,7 +127,9 @@ namespace CCL.Creator.Wizards
 
             EditorHelpers.DrawSeparator();
 
-            _createPack = EditorGUILayout.Toggle("Create Pack", _createPack);
+            _createPack = RenderToggle(
+                "You will need at least 1 pack to export any number of cars",
+                "Create Pack", _createPack);
 
             using (new EditorGUI.DisabledScope(!_createPack))
             {
@@ -176,6 +178,14 @@ namespace CCL.Creator.Wizards
         {
             EditorGUILayout.Space();
             T val = (T)EditorGUILayout.EnumPopup(label, value);
+            EditorHelpers.WordWrappedLabel(help);
+            return val;
+        }
+
+        private static bool RenderToggle(string help, string label, bool value)
+        {
+            EditorGUILayout.Space();
+            bool val = EditorGUILayout.Toggle(label, value);
             EditorHelpers.WordWrappedLabel(help);
             return val;
         }

@@ -253,6 +253,12 @@ namespace CCL.Importer
                     }
                 }
 
+                if (carType.Tutorial != null)
+                {
+                    CCLPlugin.Log("Preparing tutorial settings...");
+                    carType.Tutorial.AfterImport();
+                }
+
                 // Set up steam locomotive for fast startup.
                 if (car.IsActualSteamLocomotive)
                 {

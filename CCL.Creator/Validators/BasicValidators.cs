@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Customization;
 using System.Linq;
 using UnityEngine;
@@ -7,35 +8,40 @@ namespace CCL.Creator.Validators
 {
     internal class LiverySettingsValidator : LiveryValidator
     {
-        public override string TestName => "Car Setup";
+        public override string TestName => "Livery Setup";
 
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
         {
             if (livery.prefab == null)
             {
-                return CriticalFail("Livery must have a prefab assigned!");
+                return CriticalFail("Livery must have a prefab assigned!", livery);
             }
 
             if (string.IsNullOrWhiteSpace(livery.id))
             {
-                return Fail("Livery has no ID set");
+                return Fail("Livery has no ID set", livery);
             }
 
             var result = Pass();
 
             if (livery.prefab.GetComponent<CustomizationPlacementMeshesProxy>() == null)
             {
-                result.Warning("Livery prefab does not have CustomizationPlacementMeshesProxy, " +
+                result.Warning($"Livery prefab does not have {nameof(CustomizationPlacementMeshesProxy)}, " +
                     "gadgets will not be able to be attached to this prefab", livery.prefab);
             }
 
             if (livery.TrainsetLiveries.Any(string.IsNullOrWhiteSpace))
             {
-                result.Warning("Livery trainset has blank entries");
+                result.Warning("Livery trainset has blank entries", livery);
             }
             else if (livery.TrainsetLiveries.ContainsDuplicates())
             {
-                result.Warning("Livery trainset has duplicates");
+                result.Warning("Livery trainset has duplicates", livery);
+            }
+
+            if (livery.HasMUCable && livery.prefab.GetComponentInChildren<DamageControllerProxy>() == null)
+            {
+                result.Warning($"Livery has MU cable but lacks {nameof(DamageControllerProxy)}, one will be added automatically", livery);
             }
 
             return result;
@@ -80,7 +86,7 @@ namespace CCL.Creator.Validators
                 {
                     if (lod.renderers.Length == 0)
                     {
-                        result.Warning("Missing renderers on LOD");
+                        result.Warning("Missing renderers on LOD", lodGroup);
                     }
                 }
             }
@@ -101,7 +107,7 @@ namespace CCL.Creator.Validators
             {
                 if (livery.interiorPrefab.transform.localPosition != Vector3.zero)
                 {
-                    result.Warning($"Interior is not centered at {Vector3.zero}");
+                    result.Warning($"Interior is not centered at {Vector3.zero}", livery.interiorPrefab);
                 }
             }
 
@@ -113,13 +119,13 @@ namespace CCL.Creator.Validators
                     {
                         if (item.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.Off)
                         {
-                            result.Warning($"Renderer {item.name} in {CarPartNames.INTERIOR_LOD} has shadow casting turned on, it should be set to off");
+                            result.Warning($"Renderer {item.name} in {CarPartNames.INTERIOR_LOD} has shadow casting turned on, it should be set to off", item);
                         }
                     }
                 }
                 else if (livery.interiorPrefab != null)
                 {
-                    result.Warning($"{livery.id} - Interior prefab exists but {CarPartNames.INTERIOR_LOD} does not");
+                    result.Warning($"{livery.id} - Interior prefab exists but {CarPartNames.INTERIOR_LOD} does not", livery.interiorPrefab);
                 }
             }
 

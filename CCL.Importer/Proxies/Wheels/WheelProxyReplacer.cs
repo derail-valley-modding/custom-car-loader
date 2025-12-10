@@ -38,7 +38,10 @@ namespace CCL.Importer.Proxies.Wheels
             if (proxy.GetWheelsFromDefaultBogies)
             {
                 var wheels = real.poweredWheels.ToList();
-                wheels.AddRange(real.transform.root.GetComponentsInChildren<PoweredWheel>());
+                // Grab all the powered wheels that do not have proxies attached, that means they're the ones
+                // from the default bogies only.
+                wheels.AddRange(real.transform.root.GetComponentsInChildren<PoweredWheel>()
+                    .Where(x => x.GetComponent<PoweredWheelProxy>() == null));
                 real.poweredWheels = wheels.ToArray();
             }
         }

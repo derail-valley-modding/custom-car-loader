@@ -11,7 +11,7 @@ namespace CCL.Types.Proxies.Indicators
         public string portId = string.Empty;
 
         [Header("Optional")]
-        [PortId(null, null, false)]
+        [PortId(null, null, false, false)]
         public string indicatorRangeScalerPortId = string.Empty;
         [FuseId]
         public string fuseId = string.Empty;
@@ -24,7 +24,7 @@ namespace CCL.Types.Proxies.Indicators
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(portId), portId),
-            new PortIdField(this, nameof(indicatorRangeScalerPortId), indicatorRangeScalerPortId),
+            new PortIdField(this, nameof(indicatorRangeScalerPortId), indicatorRangeScalerPortId, required: false),
         };
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]

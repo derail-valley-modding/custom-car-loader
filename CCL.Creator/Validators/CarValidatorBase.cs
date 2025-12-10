@@ -70,18 +70,18 @@ namespace CCL.Creator.Validators
         public abstract ValidationResult Validate(CustomCarType car);
 
         /// <summary>Create a new result with a single failure entry</summary>
-        protected ValidationResult Fail(string message)
+        protected ValidationResult Fail(string message, UnityEngine.Object? context = null)
         {
             var result = new ValidationResult(TestName);
-            result.Fail(message);
+            result.Fail(message, context);
             return result;
         }
 
         /// <summary>Create a new result with a single critical failure (critical failures stop validation)</summary>
-        protected ValidationResult CriticalFail(string message)
+        protected ValidationResult CriticalFail(string message, UnityEngine.Object? context = null)
         {
             var result = new ValidationResult(TestName);
-            result.CriticalFail(message);
+            result.CriticalFail(message, context);
             return result;
         }
 
@@ -104,27 +104,6 @@ namespace CCL.Creator.Validators
         {
             var overallResult = new ValidationResult(TestName);
 
-            if (string.IsNullOrWhiteSpace(car.id))
-            {
-                overallResult.Fail("Car ID is empty!");
-            }
-
-            if (car.liveries.Count == 0)
-            {
-                overallResult.Fail("Car has no liveries!");
-            }
-
-            if (car.liveries.ContainsDuplicates(x => x.id))
-            {
-                overallResult.CriticalFail("Car has duplicate livery IDs!");
-                return overallResult;
-            }
-
-            if (car.KindSelection != DVTrainCarKind.Car && car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
-            {
-                overallResult.Warning("Car is not of generic car kind but has no delete prevention set");
-            }
-
             foreach (var livery in car.liveries)
             {
                 if (livery == null)
@@ -141,6 +120,16 @@ namespace CCL.Creator.Validators
 
                 var curResult = ValidateLivery(livery);
                 overallResult.Merge(curResult);
+
+                if (livery.icon == null)
+                {
+                    overallResult.Warning($"Livery '{livery.id}' has no icon");
+                }
+
+                if (livery.LocoSpawnGroups.Any(x => x.IsDE2ExclusiveSpawn()))
+                {
+                    overallResult.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track, make sure this is intended");
+                }
             }
 
             return overallResult;

@@ -13,7 +13,7 @@ namespace CCL.Types.Proxies.Simulation
         public string effectiveResistancePortId = string.Empty;
         [PortId(DVPortType.READONLY_OUT, DVPortValueType.AMPS, true)]
         public string totalAmpsPortId = string.Empty;
-        [FuseId]
+        [FuseId(true)]
         public string powerFuseId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
@@ -25,7 +25,7 @@ namespace CCL.Types.Proxies.Simulation
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
-            new FuseIdField(this, nameof(powerFuseId), powerFuseId)
+            new FuseIdField(this, nameof(powerFuseId), powerFuseId, true)
         };
     }
 }

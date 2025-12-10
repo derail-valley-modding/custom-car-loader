@@ -1,5 +1,4 @@
 ﻿using CCL.Creator.Utility;
-using CCL.Types.Components;
 using CCL.Types.Proxies.Headlights;
 using System;
 using System.Collections.Generic;
@@ -160,14 +159,14 @@ namespace CCL.Creator.Wizards
                 light.transform.localPosition = Vector3.zero;
                 light.transform.localEulerAngles = new Vector3(1, 0, 0);
                 highController.lightSources = new[] { light };
-                CopyVanillaLight.ApplyProperties(light, VanillaLight.LocoHeadlightsHigh);
+                VanillaLightCopy.ApplyProperties(light, VanillaLight.LocoHeadlightsHigh);
 
                 light = new GameObject("LightLow").AddComponent<Light>();
                 light.transform.parent = front.transform;
                 light.transform.localPosition = Vector3.zero;
                 light.transform.localEulerAngles = new Vector3(8, 0, 0);
                 lowController.lightSources = new[] { light };
-                CopyVanillaLight.ApplyProperties(light, VanillaLight.LocoHeadlightsLow);
+                VanillaLightCopy.ApplyProperties(light, VanillaLight.LocoHeadlightsLow);
 
                 main.headlightSetupsFront[5].subControllers = new[] { highController };
                 main.headlightSetupsFront[5].setting = HeadlightSetup.HeadlightSetting.HeadlightSetting03;
@@ -220,14 +219,14 @@ namespace CCL.Creator.Wizards
                 light.transform.localPosition = Vector3.zero;
                 light.transform.localEulerAngles = new Vector3(1, 0, 0);
                 highController.lightSources = new[] { light };
-                CopyVanillaLight.ApplyProperties(light, VanillaLight.LocoHeadlightsHigh);
+                VanillaLightCopy.ApplyProperties(light, VanillaLight.LocoHeadlightsHigh);
 
                 light = new GameObject("LightLow").AddComponent<Light>();
                 light.transform.parent = rear.transform;
                 light.transform.localPosition = Vector3.zero;
                 light.transform.localEulerAngles = new Vector3(8, 0, 0);
                 lowController.lightSources = new[] { light };
-                CopyVanillaLight.ApplyProperties(light, VanillaLight.LocoHeadlightsLow);
+                VanillaLightCopy.ApplyProperties(light, VanillaLight.LocoHeadlightsLow);
 
                 main.headlightSetupsRear[5].subControllers = new[] { highController };
                 main.headlightSetupsRear[5].setting = HeadlightSetup.HeadlightSetting.HeadlightSetting03;

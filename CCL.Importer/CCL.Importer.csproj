@@ -54,6 +54,7 @@
 		<Reference Include="DV.NAudio" />
 		<Reference Include="DV.RailTrack" />
 		<Reference Include="DV.Simulation" />
+		<Reference Include="DV.SpriteLights" />
 		<Reference Include="DV.ThingTypes" />
 		<Reference Include="DV.TimeBasedEvents" />
 		<Reference Include="DV.UI" />

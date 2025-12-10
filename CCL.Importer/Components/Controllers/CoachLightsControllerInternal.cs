@@ -7,6 +7,13 @@ namespace CCL.Importer.Components.Controllers
 {
     internal class CoachLightsControllerInternal : MonoBehaviour
     {
+        private static SpriteLightsEvent? s_events = null;
+
+        private static SpriteLightsEvent Events => Extensions.GetCached(ref s_events,
+            WorldTimeBasedEvents.Instance.GetComponent<SpriteLightsEvent>);
+
+        public static bool StreetlightState => Events.LightTypeOn[(int)SpriteLightType.StreetSpriteLight];
+
         public Light[] InteriorLights = new Light[0];
         public Renderer[] InteriorLamps = new Renderer[0];
         public Material LampsOn = null!;
@@ -102,6 +109,6 @@ namespace CCL.Importer.Components.Controllers
             return false;
         }
 
-        private bool ShouldBeOn() => !IsDay && GetTrainsetPoweredState();
+        private bool ShouldBeOn() => /*!IsDay*/ StreetlightState && GetTrainsetPoweredState();
     }
 }

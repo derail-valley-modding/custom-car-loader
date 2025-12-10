@@ -1,10 +1,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CCL.Types.Proxies.Ports;
+
+using CCL.Types.Components.Controllers;
 using CCL.Types.Proxies;
+using CCL.Types.Proxies.Ports;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System;
 using UnityEngine;
 
 namespace CCL.Tests
@@ -50,6 +53,9 @@ namespace CCL.Tests
             }
             else
             {
+                // Ignore this script type as it uses dynamic ports.
+                if (scriptType == typeof(ResourceSharerController)) return;
+
                 var instance = Activator.CreateInstance(scriptType);
                 var exposedFields = ((IHasPortIdFields)instance).ExposedPortIdFields.ToList();
 
@@ -70,6 +76,10 @@ namespace CCL.Tests
                         if (!SetsAreEqual(idField.Value.valueTypeFilters, matchingExposed.ValueFilters))
                         {
                             failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} value type filter does not match definition");
+                        }
+                        if (idField.Value.required != matchingExposed.Required)
+                        {
+                            failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} requiredness does not match definition");
                         }
                     }
                 }
@@ -127,6 +137,10 @@ namespace CCL.Tests
                     if (matchingExposed == null)
                     {
                         failures.Add($"Fuse ID field {scriptType.Name}.{idField.Key} must be exposed via {nameof(IHasFuseIdFields)}");
+                    }
+                    else if (idField.Value.required != matchingExposed.Required)
+                    {
+                        failures.Add($"Exposed port ID field {scriptType.Name}.{idField.Key} requiredness does not match definition");
                     }
                 }
             }

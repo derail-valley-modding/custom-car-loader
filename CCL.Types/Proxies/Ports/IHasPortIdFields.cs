@@ -20,46 +20,54 @@ namespace CCL.Types.Proxies.Ports
         }
 
         // multi id, multi type, multi value
-        public PortIdField(MonoBehaviour container, string fieldName, string[]? portIds, DVPortType[]? typeFilters = null, DVPortValueType[]? valueFilters = null)
-            : base(container, fieldName, portIds)
+        public PortIdField(MonoBehaviour container, string fieldName, string[] portIds,
+            DVPortType[]? typeFilters = null, DVPortValueType[]? valueFilters = null, bool required = true)
+            : base(container, fieldName, portIds, required)
         {
             TypeFilters = typeFilters;
             ValueFilters = valueFilters;
         }
 
         // multi id, single type
-        public PortIdField(MonoBehaviour container, string fieldName, string[]? portIds, DVPortType typeFilter)
-            : this(container, fieldName, portIds, new[] { typeFilter })
+        public PortIdField(MonoBehaviour container, string fieldName, string[] portIds,
+            DVPortType typeFilter, bool required = true)
+            : this(container, fieldName, portIds, new[] { typeFilter }, required: required)
         { }
 
         // multi id, single value
-        public PortIdField(MonoBehaviour container, string fieldName, string[]? portIds, DVPortValueType valueFilter)
-            : this(container, fieldName, portIds, valueFilters: new[] { valueFilter })
+        public PortIdField(MonoBehaviour container, string fieldName, string[] portIds,
+            DVPortValueType valueFilter, bool required = true)
+            : this(container, fieldName, portIds, valueFilters: new[] { valueFilter }, required: required)
         { }
 
         // multi id, single type, single value
-        public PortIdField(MonoBehaviour container, string fieldName, string[]? portIds, DVPortType typeFilter, DVPortValueType valueFilter)
-            : this(container, fieldName, portIds, new[] { typeFilter }, new[] { valueFilter })
+        public PortIdField(MonoBehaviour container, string fieldName, string[] portIds,
+            DVPortType typeFilter, DVPortValueType valueFilter, bool required = true)
+            : this(container, fieldName, portIds, new[] { typeFilter }, new[] { valueFilter }, required)
         { }
 
         // single id, multi type, multi value
-        public PortIdField(MonoBehaviour container, string fieldName, string portId, DVPortType[]? typeFilters = null, DVPortValueType[]? valueFilters = null)
-            : this(container, fieldName, new[] { portId }, typeFilters, valueFilters)
+        public PortIdField(MonoBehaviour container, string fieldName, string portId,
+            DVPortType[]? typeFilters = null, DVPortValueType[]? valueFilters = null, bool required = true)
+            : this(container, fieldName, new[] { portId }, typeFilters, valueFilters, required)
         { }
 
         // single id, single type
-        public PortIdField(MonoBehaviour container, string fieldName, string portId, DVPortType typeFilter)
-            : this(container, fieldName, portId, typeFilters: new[] { typeFilter })
+        public PortIdField(MonoBehaviour container, string fieldName, string portId,
+            DVPortType typeFilter, bool required = true)
+            : this(container, fieldName, portId, typeFilters: new[] { typeFilter }, required: required)
         { }
 
         // single id, single value
-        public PortIdField(MonoBehaviour container, string fieldName, string portId, DVPortValueType valueFilter)
-            : this(container, fieldName, portId, valueFilters: new[] { valueFilter })
+        public PortIdField(MonoBehaviour container, string fieldName, string portId,
+            DVPortValueType valueFilter, bool required = true)
+            : this(container, fieldName, portId, valueFilters: new[] { valueFilter }, required: required)
         { }
 
         // single id, single type, single value
-        public PortIdField(MonoBehaviour container, string fieldName, string portId, DVPortType typeFilter, DVPortValueType valueFilter)
-            : this(container, fieldName, portId, new[] { typeFilter }, new[] { valueFilter })
+        public PortIdField(MonoBehaviour container, string fieldName, string portId,
+            DVPortType typeFilter, DVPortValueType valueFilter, bool required = true)
+            : this(container, fieldName, portId, new[] { typeFilter }, new[] { valueFilter }, required)
         { }
     }
 

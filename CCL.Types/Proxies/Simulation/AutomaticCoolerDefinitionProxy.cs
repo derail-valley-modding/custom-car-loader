@@ -15,7 +15,6 @@ namespace CCL.Types.Proxies.Simulation
         [FuseId]
         public string powerFuseId = string.Empty;
 
-
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.HEAT_RATE, "HEAT_OUT"),
@@ -29,7 +28,10 @@ namespace CCL.Types.Proxies.Simulation
             new PortReferenceDefinition(DVPortValueType.TEMPERATURE, "TARGET_TEMPERATURE")
         };
 
-        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[] { new FuseIdField(this, nameof(powerFuseId), powerFuseId) };
+        public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
+        {
+            new FuseIdField(this, nameof(powerFuseId), powerFuseId)
+        };
 
         #region Defaults
 

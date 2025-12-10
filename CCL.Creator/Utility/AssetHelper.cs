@@ -50,5 +50,22 @@ namespace CCL.Creator.Utility
             AssetDatabase.CreateAsset(instance, path);
             return AssetDatabase.LoadAssetAtPath<T>(path);
         }
+
+        // From Mapify.
+        public static T[] FindAssets<T>() where T : Object
+        {
+            return AssetDatabase.FindAssets($"t:{typeof(T).Name}").Select(AssetDatabase.GUIDToAssetPath).Select(AssetDatabase.LoadAssetAtPath<T>).ToArray();
+        }
+
+        public static T FindAsset<T>() where T : Object
+        {
+            return FindAssets<T>().FirstOrDefault();
+        }
+
+        public static bool TryFindAsset<T>(out T asset) where T : Object
+        {
+            asset = FindAsset<T>();
+            return asset != null;
+        }
     }
 }

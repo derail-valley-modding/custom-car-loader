@@ -139,7 +139,7 @@ namespace CCL.Creator.Wizards.SimSetup
             var dashLamp = CreateLampBasicControl("dashLamp", 0.4f);
             var gaugesLamp = CreateLampBasicControl("gaugesLamp", 0.4f);
             var cabLamp = CreateLampBasicControl("cabLightLamp", 0.4f);
-            var bellLamp = bell != null ? CreateLampBasicControl("cabLightLamp") : null;
+            var bellLamp = bell != null ? CreateLampBasicControl("bellLamp") : null;
             var fuelLamp = CreateLampDecreasingWarning("fuelLamp", DVPortValueType.FUEL, 1f, 0.25f, 0.125f, 0f);
             var oilLamp = CreateLampDecreasingWarning("oilLamp", DVPortValueType.OIL, 1f, 0.4f, 0.2f, 0f);
             var sandLamp = CreateLampDecreasingWarning("sandLamp", DVPortValueType.SAND, 1f, 0.1f, 0.05f, 0f);

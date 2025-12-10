@@ -10,11 +10,11 @@ namespace CCL.Types.Components
 
         public Transform[] sparkAnchors = new Transform[0];
 
-        [RenderMethodButtons]
+        [RenderMethodButtons, SerializeField]
         [MethodButton(nameof(AutoSetup), "Auto setup",
             "This will auto setup contact points on the bogies. If you are only using default bogies, and no extra wheels, " +
             "you do not need to include this component at all.")]
-        public bool buttonRender;
+        private bool _buttons;
 
         public void AutoSetup()
         {

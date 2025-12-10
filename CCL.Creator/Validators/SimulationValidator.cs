@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using UObject = UnityEngine.Object;
+
 namespace CCL.Creator.Validators
 {
     [RequiresStep(typeof(LiverySettingsValidator))]
@@ -24,11 +26,21 @@ namespace CCL.Creator.Validators
             var havePortIds = GetAllOfType<IHasPortIdFields>(livery).ToList();
             var haveFuseIds = GetAllOfType<IHasFuseIdFields>(livery).ToList();
 
+            var compIds = new HashSet<string>();
             var portIds = new HashSet<string>();
 
-            // Check for duplicate port IDs.
+            // Check for duplicate component IDs or port IDs.
             foreach (var component in components)
             {
+                if (compIds.Contains(component.ID))
+                {
+                    result.Fail($"Duplicate component ID {component.ID}");
+                }
+                else
+                {
+                    compIds.Add(component.ID);
+                }
+
                 foreach (var port in component.ExposedPorts)
                 {
                     var fullId = component.GetFullPortId(port.ID);
@@ -71,14 +83,24 @@ namespace CCL.Creator.Validators
             // Check port/fuse ID fields
             foreach (var hasPortId in havePortIds)
             {
-                foreach (var field in hasPortId.ExposedPortIdFields.Where(f => f.IsAssigned))
+                foreach (var field in hasPortId.ExposedPortIdFields)
                 {
+                    if (!field.IsAssigned)
+                    {
+                        if (!field.IsMultiValue && field.Required)
+                        {
+                            result.Fail($"Port field {field.FullName} must be assigned", hasPortId is UObject obj ? obj : null);
+                        }
+
+                        continue;
+                    }
+
                     foreach (string id in field.AssignedIds!)
                     {
                         if (!CheckPortExists(components, id))
                         {
                             result.Warning($"Port field {field.FullName} target \"{id}\" was not found",
-                                hasPortId is UnityEngine.Object obj ? obj : null);
+                                hasPortId is UObject obj ? obj : null);
                         }
                     }
                 }
@@ -86,14 +108,24 @@ namespace CCL.Creator.Validators
 
             foreach (var hasFuseId in haveFuseIds)
             {
-                foreach (var field in hasFuseId.ExposedFuseIdFields.Where(f => f.IsAssigned))
+                foreach (var field in hasFuseId.ExposedFuseIdFields)
                 {
+                    if (!field.IsAssigned)
+                    {
+                        if (!field.IsMultiValue && field.Required)
+                        {
+                            result.Fail($"Fuse field {field.FullName} must be assigned", hasFuseId is UObject obj ? obj : null);
+                        }
+
+                        continue;
+                    }
+
                     foreach (string id in field.AssignedIds!)
                     {
                         if (!CheckFuseExists(components, id))
                         {
                             result.Warning($"Fuse field {field.FullName} target \"{id}\" was not found",
-                                hasFuseId is UnityEngine.Object obj ? obj : null);
+                                hasFuseId is UObject obj ? obj : null);
                         }
                     }
                 }
@@ -110,7 +142,7 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortFeederExists(feeders, $"{externalControl.ID}.EXT_IN"))
                 {
-                    result.Warning($"Control \"{externalControl.ID}\" has no interactable port feeder");
+                    result.Warning($"Control \"{externalControl.ID}\" has no interactable port feeder", externalControl);
                 }
             }
 
@@ -118,7 +150,7 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortFeederExists(feeders, $"{gearshift.ID}.CONTROL_EXT_IN"))
                 {
-                    result.Warning($"Control \"{gearshift.ID}\" has no interactable port feeder");
+                    result.Warning($"Control \"{gearshift.ID}\" has no interactable port feeder", gearshift);
                 }
             }
 
@@ -132,19 +164,18 @@ namespace CCL.Creator.Validators
                     string fullId = $"{hasFuses.ID}.{fuse.id}";
                     if (!CheckFuseFeederExists(fuseFeeders, fullId))
                     {
-                        result.Warning($"Fuse \"{fullId}\" has no interactable fuse feeder");
+                        result.Warning($"Fuse \"{fullId}\" has no interactable fuse feeder", hasFuses);
                     }
                 }
             }
 
             // Check brakes
             var brakeSetup = livery.parentType!.brakes;
-
             if (livery.prefab.GetComponent<CompressorSimControllerProxy>())
             {
                 if (!brakeSetup.hasCompressor)
                 {
-                    result.Warning("Prefab has compressor component, but car's brake config says it does not");
+                    result.Warning("Prefab has compressor component, but car's brake config says it does not", livery);
                 }
             }
 
@@ -153,15 +184,14 @@ namespace CCL.Creator.Validators
             {
                 if (brakeSetup.brakeValveType == CustomCarType.BrakesSetup.TrainBrakeType.None)
                 {
-                    result.Warning("Prefab has train brake control, but car's brake config has no valve type set");
+                    result.Warning("Prefab has train brake control, but car's brake config has no valve type set", livery);
                 }
             }
-
             if (overridableControls.Any(c => c.ControlType == OverridableControlType.IndBrake))
             {
                 if (!brakeSetup.hasIndependentBrake)
                 {
-                    result.Warning("Prefab has independent brake control, but car's brake config says it does not");
+                    result.Warning("Prefab has independent brake control, but car's brake config says it does not", livery);
                 }
             }
 

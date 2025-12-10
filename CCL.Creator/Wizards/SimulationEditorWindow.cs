@@ -110,16 +110,16 @@ namespace CCL.Creator.Wizards
             // Headers
             float compWidth = position.width - (H_PADDING * 4);
             Rect typeRect = new Rect(H_PADDING, LINE_HEIGHT, compWidth / 8, LINE_HEIGHT);
-            GUI.Label(typeRect, "Port Type", "box");
+            EditorGUI.LabelField(typeRect, "Port Type", GUI.skin.box);
             
             Rect valueRect = new Rect(compWidth / 8 + H_PADDING, LINE_HEIGHT, compWidth / 8, LINE_HEIGHT);
-            GUI.Label(valueRect, "Value Type", "box");
+            EditorGUI.LabelField(valueRect, "Value Type", GUI.skin.box);
 
             Rect idRect = new Rect(compWidth / 4 + H_PADDING, LINE_HEIGHT, compWidth / 4, LINE_HEIGHT);
-            GUI.Label(idRect, "ID", "box");
+            EditorGUI.LabelField(idRect, "ID", GUI.skin.box);
 
             Rect connectRect = new Rect(compWidth / 2 + H_PADDING, LINE_HEIGHT, compWidth / 2, LINE_HEIGHT);
-            GUI.Label(connectRect, "Connection(s)", "box");
+            EditorGUI.LabelField(connectRect, "Connection(s)", GUI.skin.box);
 
             // Component scroll view
             Rect scrollArea = new Rect(0, LINE_HEIGHT * 2, position.width, position.height - LINE_HEIGHT * 2);
@@ -130,7 +130,7 @@ namespace CCL.Creator.Wizards
 
             // Section Label
             Rect sectionRect = new Rect(H_PADDING, H_PADDING, compWidth, LINE_HEIGHT);
-            GUI.Label(sectionRect, "Sim Components (Execution Order)");
+            EditorGUI.LabelField(sectionRect, "Sim Components (Execution Order)");
 
             EditorGUI.BeginChangeCheck();
 
@@ -143,7 +143,7 @@ namespace CCL.Creator.Wizards
             // Section Label
             yOffset += LINE_HEIGHT;
             sectionRect = new Rect(H_PADDING, yOffset, compWidth, LINE_HEIGHT);
-            GUI.Label(sectionRect, "Port & Fuse ID Components");
+            EditorGUI.LabelField(sectionRect, "Port & Fuse ID Components");
             yOffset += LINE_HEIGHT;
 
             foreach (var hasIds in haveIds)
@@ -160,7 +160,7 @@ namespace CCL.Creator.Wizards
         }
 
         const int N_COLUMNS = 2;
-        const int H_PADDING = 10;
+        const int H_PADDING = 12;
         const int LINE_HEIGHT = 20;
 
         private class ComponentInfo

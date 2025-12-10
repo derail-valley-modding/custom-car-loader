@@ -24,7 +24,8 @@ namespace CCL.Creator.Wizards.SimSetup
             BatteryElectric,
             Slug,
             Steam,
-            Tender
+            Tender,
+            Caboose
         }
 
         private static SimCreatorWindow? _instance;
@@ -47,7 +48,7 @@ namespace CCL.Creator.Wizards.SimSetup
         }
 
 
-        private GameObject _targetRoot;
+        private GameObject _targetRoot = null!;
         private bool _simItemsExist;
 
         private SimulationType _selectedType;
@@ -67,6 +68,7 @@ namespace CCL.Creator.Wizards.SimSetup
                         SimulationType.Slug => new SlugSimCreator(_targetRoot),
                         SimulationType.Steam => new SteamerSimCreator(_targetRoot),
                         SimulationType.Tender => new TenderSimCreator(_targetRoot),
+                        SimulationType.Caboose => new CabooseSimCreator(_targetRoot),
                         _ => throw new NotImplementedException(),
                     };
                     _selectedType = value;
@@ -173,18 +175,7 @@ namespace CCL.Creator.Wizards.SimSetup
             }
             
             _damageController = _root.AddComponent<DamageControllerProxy>();
-
-            _damageController.speedToBrakeDamageCurve = new AnimationCurve()
-            {
-                keys = new Keyframe[]
-                {
-                    new Keyframe(0, 0, 0, 0, 0.333f, 0.333f),
-                    new Keyframe(2, 0, 0, 0, 0.333f, 0.333f),
-                    new Keyframe(7.868f, 0.127f, 0.028f, 0.028f, 0.333f, 0.333f),
-                    new Keyframe(29.032f, 0.671f, 0.015f, 0.015f, 0.333f, 0.333f),
-                    new Keyframe(100, 1, 0, 0, 0.333f, 0.333f),
-                }
-            };
+            _damageController.SetCurveToDefault();
 
             _sim = new GameObject("[sim]");
             _sim.transform.parent = _root.transform;
@@ -334,6 +325,13 @@ namespace CCL.Creator.Wizards.SimSetup
             return tractionFeeders;
         }
 
+        protected void AddGearShifter(SimComponentDefinitionProxy comp, bool isGearboxA)
+        {
+            var shifter = comp.gameObject.AddComponent<GearShifterProxy>();
+            shifter.currentGearRatioPortId = FullPortId(comp, "GEAR_RATIO");
+            shifter.isGearboxA = isGearboxA;
+        }
+
         #endregion
 
         #region Controls
@@ -461,6 +459,8 @@ namespace CCL.Creator.Wizards.SimSetup
             {
                 control.controlBlocker = control.gameObject.AddComponent<ControlBlockerProxy>();
             }
+
+            control.controlBlocker.blockedControlPortId = control.portId;
 
             return control.controlBlocker;
         }

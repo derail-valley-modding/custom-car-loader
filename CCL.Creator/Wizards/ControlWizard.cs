@@ -39,7 +39,7 @@ namespace CCL.Creator.Wizards
             public bool AddStaticInteractionArea = true;
             public bool IsFuseControl = false;
             public bool IsHandbrake = false;
-            public bool AutomaticReparenting = false;
+            public bool AutomaticReparenting = true;
 
             [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL)]
             public string ControlledPortId = string.Empty;
@@ -96,18 +96,17 @@ namespace CCL.Creator.Wizards
                         idRect,
                         serialized.FindProperty(nameof(Settings.ControlledFuseId)),
                         new GUIContent("Controlled Fuse"),
-                        _settings.TargetObject.transform);
+                        _settings.TargetObject.transform,
+                        new FuseIdAttribute(true));
                 }
                 else if (!isHandbrake)
                 {
-                    var filter = new PortIdAttribute(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL);
-
                     PortIdEditor.RenderProperty(
                         idRect,
                         serialized.FindProperty(nameof(Settings.ControlledPortId)),
                         new GUIContent("Controlled Port"),
                         _settings.TargetObject.transform,
-                        filter);
+                        new PortIdAttribute(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL));
                 }
 
                 EditorGUILayout.PropertyField(serialized.FindProperty(nameof(Settings.AutomaticReparenting)));
