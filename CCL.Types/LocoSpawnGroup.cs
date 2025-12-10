@@ -77,7 +77,7 @@ namespace CCL.Types
         [Tooltip("The track where the loco(s) will spawn")]
         public SpawnTrack Track;
         [Tooltip("Extra locos/tenders to spawn together (in order)\n" +
-            "Vehicle is automatically added at the front unless it is present in this array")]
+            "Livery is automatically added at the front unless it is present in this array")]
         public string[] AdditionalLiveries;
 
         public LocoSpawnGroup() : this(SpawnTrack.MachineFactoryA1, new string[0]) { }
