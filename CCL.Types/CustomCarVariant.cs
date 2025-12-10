@@ -45,16 +45,23 @@ namespace CCL.Types
         public bool HideBackCoupler = false;
 
         [Header("Trainset - optional")]
-        [Tooltip("This is used to tell other mods if this vehicle is part of a set of vehicles\n" +
+        [Tooltip("This is used to tell if this vehicle is part of a set of vehicles\n" +
             "Examples are a locomotive and her tender (S282A + S282B)\n" +
             "Order is important")]
         public string[] TrainsetLiveries = new string[0];
+        [Tooltip("Used by other mods to limit or enable repetitive spawning\n" +
+            "Leave at 0 to ignore")]
+        public int MaxRepeatedSpawn = 0;
+        [Tooltip("Only affects Passenger Jobs")]
+        public bool AllowOnRegionalRoutes = true;
+        [Tooltip("Only affects Passenger Jobs")]
+        public bool AllowOnExpressRoutes = true;
 
         [Header("Spawning - optional")]
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
         [SerializeField, HideInInspector]
         private string? _spawnGroupJson = string.Empty;
-
+        
         [Header("Work Train - optional")]
         public bool UnlockableAsWorkTrain = false;
         public float UnlockPrice = 30000.0f;

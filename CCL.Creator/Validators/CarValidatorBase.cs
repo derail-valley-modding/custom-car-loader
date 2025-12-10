@@ -118,6 +118,11 @@ namespace CCL.Creator.Validators
                     break;
                 }
 
+                if (livery.icon == null)
+                {
+                    overallResult.Warning($"Livery '{livery.id}' has no icon");
+                }
+
                 var curResult = ValidateLivery(livery);
                 overallResult.Merge(curResult);
             }
