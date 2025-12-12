@@ -14,6 +14,7 @@ namespace CCL.Importer
         // Don't show these in the settings screen.
         public bool InfoDump = false;
         public HashSet<string> DisabledIds = new();
+        public HashSet<string> DisabledLiveryIds = new();
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

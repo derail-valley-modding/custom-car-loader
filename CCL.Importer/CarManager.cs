@@ -65,7 +65,7 @@ namespace CCL.Importer
 
         private static void LoadCarDefinitions(UnityModManager.ModEntry mod)
         {
-            var loaded = new List<string>();
+            List<(string Car, List<string> Liveries)> loaded = new();
 
             foreach (string file in Directory.EnumerateFiles(mod.Path, ExporterConstants.EXPORTED_BUNDLE_NAME, SearchOption.AllDirectories))
             {
@@ -97,9 +97,9 @@ namespace CCL.Importer
             }
         }
 
-        private static List<string> LoadPack(CustomCarPack pack)
+        private static List<(string, List<string>)> LoadPack(CustomCarPack pack)
         {
-            var loaded = new List<string>();
+            var loaded = new List<(string, List<string>)>();
             var version = new Version(pack.ExporterVersion);
 
             if (version > ExporterConstants.ExporterVersion)
@@ -147,7 +147,7 @@ namespace CCL.Importer
                 {
                     if (LoadCar(car))
                     {
-                        loaded.Add(car.id);
+                        loaded.Add((car.id, car.liveries.Select(x => x.id).ToList()));
                     }
                     else
                     {
@@ -610,7 +610,7 @@ namespace CCL.Importer
         /// </summary>
         public static bool IsCarLiveryEnabled(TrainCarLivery livery)
         {
-            return IsCarTypeEnabled(livery.parentType);
+            return IsCarTypeEnabled(livery.parentType) && !CCLPlugin.Settings.DisabledLiveryIds.Contains(livery.id);
         }
 
         /// <summary>
