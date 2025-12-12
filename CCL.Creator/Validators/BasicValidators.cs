@@ -24,6 +24,16 @@ namespace CCL.Creator.Validators
 
             var result = Pass();
 
+            if (livery.icon == null)
+            {
+                result.Warning($"Livery '{livery.id}' has no icon", livery);
+            }
+
+            if (livery.LocoSpawnGroups.Any(x => x.IsDE2ExclusiveSpawn()))
+            {
+                result.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track, make sure this is intended", livery);
+            }
+
             if (livery.prefab.GetComponent<CustomizationPlacementMeshesProxy>() == null)
             {
                 result.Warning($"Livery prefab does not have {nameof(CustomizationPlacementMeshesProxy)}, " +
