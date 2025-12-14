@@ -96,24 +96,36 @@ namespace CCL.Importer.Patches
     }
 
     [HarmonyPatch(typeof(StationProceduralJobGenerator))]
-    internal class StationProceduralJobGeneratorRandomFromListCarTypePatches
+    internal class StationProceduralJobGeneratorRandomFromListPatches
     {
-        private static MethodBase TargetMethod()
+        private static IEnumerable<MethodBase> TargetMethods()
         {
-            return typeof(StationProceduralJobGenerator).GetMethod(nameof(StationProceduralJobGenerator.GetRandomFromList), BindingFlags.Instance | BindingFlags.NonPublic)
+            yield return typeof(StationProceduralJobGenerator).GetMethod(nameof(StationProceduralJobGenerator.GetRandomFromList), BindingFlags.Instance | BindingFlags.NonPublic)
                 .MakeGenericMethod(typeof(TrainCarType_v2));
+            yield return typeof(StationProceduralJobGenerator).GetMethod(nameof(StationProceduralJobGenerator.GetRandomFromList), BindingFlags.Instance | BindingFlags.NonPublic)
+                .MakeGenericMethod(typeof(TrainCarLivery));
         }
 
         [HarmonyPrefix, HarmonyPatch]
-        private static void OverrideInput(ref List<TrainCarType_v2> list)
+        private static void OverrideInput(ref object list)
         {
-            list.RemoveAll(carType => CCLPlugin.Settings.DisabledIds.Contains(carType.id));
-
-            if (!CCLPlugin.Settings.PreferCCLInJobs) return;
-
-            if (GetCCLTypesOnlyIfAny(list, out var modified))
+            switch (list)
             {
-                list = modified;
+                case List<TrainCarType_v2> types:
+                    types.RemoveAll(carType => CCLPlugin.Settings.DisabledIds.Contains(carType.id));
+
+                    if (!CCLPlugin.Settings.PreferCCLInJobs) return;
+
+                    if (GetCCLTypesOnlyIfAny(types, out var modified))
+                    {
+                        list = modified;
+                    }
+                    break;
+                case List<TrainCarLivery> liveries:
+                    liveries.RemoveAll(carLivery => CCLPlugin.Settings.DisabledLiveryIds.Contains(carLivery.id));
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -136,22 +148,6 @@ namespace CCL.Importer.Patches
 
             result = original;
             return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(StationProceduralJobGenerator))]
-    internal class StationProceduralJobGeneratorRandomFromListCarLiveryPatches
-    {
-        private static MethodBase TargetMethod()
-        {
-            return typeof(StationProceduralJobGenerator).GetMethod(nameof(StationProceduralJobGenerator.GetRandomFromList), BindingFlags.Instance | BindingFlags.NonPublic)
-                .MakeGenericMethod(typeof(TrainCarLivery));
-        }
-
-        [HarmonyPrefix, HarmonyPatch]
-        private static void OverrideInput(ref List<TrainCarLivery> list)
-        {
-            list.RemoveAll(carLivery => CCLPlugin.Settings.DisabledLiveryIds.Contains(carLivery.id));
         }
     }
 }
