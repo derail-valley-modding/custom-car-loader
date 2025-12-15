@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CCL.Types.Proxies.Simulation.Electric
+namespace CCL.Types.Components.Simulation.Electric
 {
-    [AddComponentMenu("CCL/Proxies/Simulation/Electric/Battery Definition Proxy")]
-    public class BatteryDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, IBE2Defaults
+    [AddComponentMenu("CCL/Components/Simulation/Electric/Battery Custom Curve Definition")]
+    public class BatteryCustomCurveDefinition : SimComponentDefinitionProxy, IHasFuseIdFields
     {
-        public readonly BatteryChemistry chemistry = BatteryChemistry.LeadAcid;
-
         public int numSeriesCells = 36;
         public float internalResistance = 0.005f;
         public float baseConsumptionMultiplier = 4f;
+        public AnimationCurve chargeToVoltageCurve = null!;
 
         [FuseId(true)]
         public string powerFuseId = string.Empty;
@@ -33,22 +32,5 @@ namespace CCL.Types.Proxies.Simulation.Electric
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId),
         };
-
-        #region Defaults
-
-        public void ApplyBE2Defaults()
-        {
-            numSeriesCells = 56;
-            internalResistance = 0.005f;
-            baseConsumptionMultiplier = 2f;
-        }
-
-        #endregion
-    }
-
-    public enum BatteryChemistry
-    {
-        Unknown,
-        LeadAcid
     }
 }

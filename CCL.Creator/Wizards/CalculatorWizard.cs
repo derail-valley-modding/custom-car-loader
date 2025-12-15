@@ -235,11 +235,5 @@ namespace CCL.Creator.Wizards
         private AdhesionLimit _adhesionLimit = new AdhesionLimit();
 
         #endregion
-
-        #region Components
-
-
-
-        #endregion
     }
 }
