@@ -21,5 +21,5 @@ namespace CCL.Types.Tutorial
         public bool IncludeStartedEngine;
     }
 
-    public class TutorialStep : MonoBehaviour { }
+    public abstract class TutorialStep : MonoBehaviour { }
 }

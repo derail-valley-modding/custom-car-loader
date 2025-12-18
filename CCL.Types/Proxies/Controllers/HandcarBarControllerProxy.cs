@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Handcar Bar Controller Proxy")]
     public class HandcarBarControllerProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, false)]
