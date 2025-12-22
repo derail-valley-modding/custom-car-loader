@@ -22,6 +22,12 @@ namespace CCL.Creator.Validators
             var connectionDef = livery.prefab!.GetComponentInChildren<SimConnectionsDefinitionProxy>();
             if (!connectionDef) return Skip();
 
+            if (connectionDef.executionOrder.Any(x => x == null))
+            {
+                result.Fail("Execution order has null entries");
+                return result;
+            }
+
             var components = GetAllOfType<SimComponentDefinitionProxy>(livery).ToList();
             var havePortIds = GetAllOfType<IHasPortIdFields>(livery).ToList();
             var haveFuseIds = GetAllOfType<IHasFuseIdFields>(livery).ToList();
