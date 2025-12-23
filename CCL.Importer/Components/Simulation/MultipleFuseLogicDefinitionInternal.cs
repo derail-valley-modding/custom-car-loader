@@ -6,18 +6,15 @@ using static CCL.Types.Components.Simulation.FuseLogicDefinition;
 
 namespace CCL.Importer.Components.Simulation
 {
-    internal class FuseLogicDefinitionInternal : SimComponentDefinition
+    internal class MultipleFuseLogicDefinitionInternal : SimComponentDefinition
     {
-        public string FuseA = string.Empty;
-        public string FuseB = string.Empty;
-
+        public string[] Fuses = new string[0];
         public LogicType Logic = LogicType.AND;
-
         public FuseDefinition OutputFuse = new("OUT", false);
 
         public override SimComponent InstantiateImplementation()
         {
-            return new FuseLogic(this);
+            return new MultipleFuseLogic(this);
         }
     }
 }

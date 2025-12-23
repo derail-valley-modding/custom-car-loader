@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
+    [AddComponentMenu("CCL/Components/Simulation/Fuse Logic Definition")]
     public class FuseLogicDefinition : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized
     {
         public enum LogicType

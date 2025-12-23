@@ -72,6 +72,7 @@ namespace CCL.Importer.Components
             CreateMap<TimeReaderDefinition, TimeReaderDefinitionInternal>().AutoCacheAndMap();
             CreateMap<SteamMechanicalStokerDefinition, SteamMechanicalStokerDefinitionInternal>().AutoCacheAndMap();
             CreateMap<FuseLogicDefinition, FuseLogicDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<MultipleFuseLogicDefinition, MultipleFuseLogicDefinitionInternal>().AutoCacheAndMap();
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();
