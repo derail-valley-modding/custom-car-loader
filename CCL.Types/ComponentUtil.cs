@@ -6,7 +6,8 @@ namespace CCL.Types
     public static class ComponentUtil
     {
         // https://discussions.unity.com/t/how-to-get-a-component-from-an-object-and-add-it-to-another-copy-components-at-runtime/80939/4
-        public static T CopyComponent<T>(T from, T to) where T : Component
+        public static T CopyComponent<T>(T from, T to)
+            where T : Component
         {
             var type = typeof(T);
 
@@ -32,6 +33,12 @@ namespace CCL.Types
             }
 
             return to;
+        }
+
+        public static bool HasComponent<T>(GameObject go, bool inChildren = true)
+            where T : Component
+        {
+            return (inChildren ? go.GetComponentInChildren<T>() : go.GetComponent<T>()) != null;
         }
     }
 }

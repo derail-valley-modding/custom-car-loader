@@ -6,57 +6,57 @@ namespace CCL.Importer.Implementations
 {
     internal class BatteryCustomCurve : SimComponent
     {
-        private readonly int numSeriesCells = 36;
-        private readonly float internalResistance;
-        private readonly float baseConsumptionMultiplier;
-        private readonly AnimationCurve chargeToVoltageCurve;
-        private readonly float minVoltage;
-        private readonly float maxVoltage;
+        private readonly int _numSeriesCells = 36;
+        private readonly float _internalResistance;
+        private readonly float _baseConsumptionMultiplier;
+        private readonly AnimationCurve _chargeToVoltageCurve;
+        private readonly float _minVoltage;
+        private readonly float _maxVoltage;
 
-        private readonly FuseReference powerFuseRef;
-        private readonly Port voltageReadOut;
-        private readonly Port voltageNormalizedReadOut;
-        private readonly PortReference chargeNormalized;
-        private readonly PortReference chargeConsumption;
-        private readonly PortReference powerReader;
+        private readonly FuseReference _powerFuseRef;
+        private readonly Port _voltageReadOut;
+        private readonly Port _voltageNormalizedReadOut;
+        private readonly PortReference _chargeNormalized;
+        private readonly PortReference _chargeConsumption;
+        private readonly PortReference _powerReader;
 
         public BatteryCustomCurve(BatteryCustomCurveDefinitionInternal def) : base(def.ID)
         {
-            numSeriesCells = def.numSeriesCells;
-            internalResistance = def.internalResistance;
-            baseConsumptionMultiplier = def.baseConsumptionMultiplier;
-            chargeToVoltageCurve = def.chargeToVoltageCurve;
+            _numSeriesCells = def.numSeriesCells;
+            _internalResistance = def.internalResistance;
+            _baseConsumptionMultiplier = def.baseConsumptionMultiplier;
+            _chargeToVoltageCurve = def.chargeToVoltageCurve;
 
-            powerFuseRef = AddFuseReference(def.powerFuseId);
-            chargeNormalized = AddPortReference(def.chargeNormalized, 0f);
-            chargeConsumption = AddPortReference(def.chargeConsumption, 0f);
-            voltageReadOut = AddPort(def.voltageReadOut, 0f);
-            voltageNormalizedReadOut = AddPort(def.voltageNormalizedReadOut, 0f);
-            powerReader = AddPortReference(def.powerReader, 0f);
+            _powerFuseRef = AddFuseReference(def.powerFuseId);
+            _chargeNormalized = AddPortReference(def.chargeNormalized, 0f);
+            _chargeConsumption = AddPortReference(def.chargeConsumption, 0f);
+            _voltageReadOut = AddPort(def.voltageReadOut, 0f);
+            _voltageNormalizedReadOut = AddPort(def.voltageNormalizedReadOut, 0f);
+            _powerReader = AddPortReference(def.powerReader, 0f);
 
-            minVoltage = numSeriesCells * chargeToVoltageCurve[0].value;
-            maxVoltage = numSeriesCells * chargeToVoltageCurve[chargeToVoltageCurve.length - 1].value;
+            _minVoltage = _numSeriesCells * _chargeToVoltageCurve[0].value;
+            _maxVoltage = _numSeriesCells * _chargeToVoltageCurve[_chargeToVoltageCurve.length - 1].value;
         }
 
         public override void Tick(float delta)
         {
-            float voltage = numSeriesCells * chargeToVoltageCurve.Evaluate(chargeNormalized.Value);
-            float power = voltage * voltage - 4f * powerReader.Value * internalResistance;
+            float voltage = _numSeriesCells * _chargeToVoltageCurve.Evaluate(_chargeNormalized.Value);
+            float num = voltage * voltage - 4f * _powerReader.Value * _internalResistance;
 
-            if (chargeNormalized.Value <= 0f || power <= 0f)
+            if (_chargeNormalized.Value <= 0f || num <= 0f)
             {
-                powerFuseRef.ChangeState(false);
-                voltageReadOut.Value = 0f;
-                voltageNormalizedReadOut.Value = 0f;
-                chargeConsumption.Value = 0f;
+                _powerFuseRef.ChangeState(false);
+                _voltageReadOut.Value = 0f;
+                _voltageNormalizedReadOut.Value = 0f;
+                _chargeConsumption.Value = 0f;
                 return;
             }
 
-            float afterPowered = powerFuseRef.ProcessInput(0.5f * (voltage + Mathf.Sqrt(power)));
-            voltageReadOut.Value = afterPowered;
-            voltageNormalizedReadOut.Value = Mathf.InverseLerp(minVoltage, maxVoltage, afterPowered);
-            float consumption = gameParams.ResourceConsumptionModifier * baseConsumptionMultiplier * powerReader.Value;
-            chargeConsumption.Value = consumption * delta / 1000000f;
+            voltage = _powerFuseRef.ProcessInput(0.5f * (voltage + Mathf.Sqrt(num)));
+            _voltageReadOut.Value = voltage;
+            _voltageNormalizedReadOut.Value = Mathf.InverseLerp(_minVoltage, _maxVoltage, voltage);
+            float consumption = gameParams.ResourceConsumptionModifier * _baseConsumptionMultiplier * _powerReader.Value;
+            _chargeConsumption.Value = consumption * delta / 1000000f;
         }
     }
 }

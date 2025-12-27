@@ -62,7 +62,7 @@ namespace CCL.Importer.Processing
             // that make ports exist.
             var simConnections = livery.prefab.GetComponentInChildren<SimConnectionDefinition>(true);
 
-            if (!simConnections && (livery.prefab.GetComponentsInChildren<SimComponentDefinition>(true).Length > 0))
+            if (simConnections == null && (livery.prefab.GetComponentsInChildren<SimComponentDefinition>(true).Length > 0))
             {
                 simConnections = AttachSimConnectionsToPrefab(livery.prefab);
             }
@@ -84,6 +84,12 @@ namespace CCL.Importer.Processing
                 simConnections != null ||
                 livery.prefab.GetComponentsInChildren<ASimInitializedController>(true).Length > 0))
             {
+                // It cannot be null if we're adding it to a sim controller.
+                if (simConnections == null)
+                {
+                    simConnections = AttachSimConnectionsToPrefab(livery.prefab);
+                }
+
                 simController = livery.prefab.AddComponent<SimController>();
                 simController.connectionsDefinition = simConnections;
             }
