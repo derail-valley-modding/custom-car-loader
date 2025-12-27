@@ -7,18 +7,6 @@ namespace CCL.Types
 {
     public static class Extensions
     {
-        public static List<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> prefabs, bool includeInactive = false)
-        {
-            var list = new List<T>();
-
-            foreach (var prefab in prefabs)
-            {
-                list.AddRange(prefab.gameObject.GetComponentsInChildren<T>(includeInactive));
-            }
-
-            return list;
-        }
-
         public static string ToName(this SpawnTrack track)
         {
             return LocoSpawnGroup.TrackToSpawnerName[track];
@@ -35,31 +23,27 @@ namespace CCL.Types
         {
             return Enum.IsDefined(typeof(T), enumValue);
         }
+
         public static string ToCamelCase(this string str) =>
             !string.IsNullOrEmpty(str) && str.Length > 1 ? char.ToLowerInvariant(str[0]) + str.Substring(1) : str.ToLowerInvariant();
+
+        #region Unity
+
+        public static List<T> GetComponentsInChildren<T>(this IEnumerable<GameObject> prefabs, bool includeInactive = false)
+        {
+            var list = new List<T>();
+
+            foreach (var prefab in prefabs)
+            {
+                list.AddRange(prefab.gameObject.GetComponentsInChildren<T>(includeInactive));
+            }
+
+            return list;
+        }
 
         public static T AddComponentCopy<T>(this GameObject go, T component) where T : Component
         {
             return ComponentUtil.CopyComponent(component, go.AddComponent<T>());
-        }
-
-        // https://stackoverflow.com/a/10120982
-        public static float ClosestTo(this IEnumerable<float> collection, float target)
-        {
-            var closest = float.PositiveInfinity;
-            var minDifference = float.PositiveInfinity;
-
-            foreach (var element in collection)
-            {
-                var difference = Math.Abs(element - target);
-                if (minDifference > difference)
-                {
-                    minDifference = difference;
-                    closest = element;
-                }
-            }
-
-            return closest;
         }
 
         public static void ResetLocal(this Transform transform)
@@ -81,6 +65,29 @@ namespace CCL.Types
             result = transform.Find(n);
 
             return result != null;
+        }
+
+        #endregion
+
+        #region Enumerables
+
+        // https://stackoverflow.com/a/10120982
+        public static float ClosestTo(this IEnumerable<float> collection, float target)
+        {
+            var closest = float.PositiveInfinity;
+            var minDifference = float.PositiveInfinity;
+
+            foreach (var element in collection)
+            {
+                var difference = Math.Abs(element - target);
+                if (minDifference > difference)
+                {
+                    minDifference = difference;
+                    closest = element;
+                }
+            }
+
+            return closest;
         }
 
         public static int FirstIndexMatch<TItem>(this IEnumerable<TItem> items, Predicate<TItem> condition)
@@ -110,11 +117,29 @@ namespace CCL.Types
             return enumerable.Any(item => !knownKeys.Add(item));
         }
 
+        public static bool TryFind<T>(this List<T> list, Predicate<T> match, out T value)
+        {
+            value = list.Find(match);
+
+            return value != null;
+        }
+
+        public static bool TryFind<T>(this T[] array, Predicate<T> match, out T value)
+        {
+            value = Array.Find(array, match);
+
+            return value != null;
+        }
+
         public static bool ContainsDuplicates<T, TIdentifier>(this IEnumerable<T> enumerable, Func<T, TIdentifier> discriminator)
         {
             var knownKeys = new HashSet<TIdentifier>();
             return enumerable.Any(item => !knownKeys.Add(discriminator(item)));
         }
+
+        #endregion
+
+        #region Validation
 
         public static SelfValidationResult Pass(this ISelfValidation component, out string message)
         {
@@ -133,5 +158,7 @@ namespace CCL.Types
             message = $"{name} cannot have null entries";
             return SelfValidationResult.Fail;
         }
+
+        #endregion
     }
 }

@@ -36,7 +36,7 @@ namespace CCL.Creator.Validators
                 result.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track, make sure this is intended", livery);
             }
 
-            if (ComponentUtil.HasComponent<CustomizationPlacementMeshesProxy>(livery.prefab, false))
+            if (!ComponentUtil.HasComponent<CustomizationPlacementMeshesProxy>(livery.prefab, false))
             {
                 result.Warning($"Livery prefab does not have {nameof(CustomizationPlacementMeshesProxy)}, " +
                     "gadgets will not be able to be attached to this prefab", livery.prefab);
@@ -165,7 +165,7 @@ namespace CCL.Creator.Validators
             
             void CheckComp<T>() where T : Component
             {
-                if (ComponentUtil.HasComponent<T>(prefab))
+                if (!ComponentUtil.HasComponent<T>(prefab))
                 {
                     result.Fail($"Livery has MU cable but lacks {typeof(T).Name}", livery);
                 }

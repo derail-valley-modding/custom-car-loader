@@ -2,6 +2,7 @@
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Ports;
+using CCL.Types.Proxies.Simulation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +63,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            // Check port connections
+            // Check port connections.
             foreach (var connection in connectionDef.connections)
             {
                 if (!CheckPortExists(components, connection.fullPortIdOut) || !CheckPortExists(components, connection.fullPortIdIn))
@@ -86,7 +87,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            // Check port/fuse ID fields
+            // Check port/fuse ID fields.
             foreach (var hasPortId in havePortIds)
             {
                 foreach (var field in hasPortId.ExposedPortIdFields)
@@ -137,7 +138,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            // Check control definitions
+            // Check control definitions.
             var controls = GetAllOfType<ExternalControlDefinitionProxy>(livery)
                 .Cast<SimComponentDefinitionProxy>()
                 .Concat(GetAllOfType<GenericControlDefinitionProxy>(livery));
@@ -175,7 +176,18 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            // Check brakes
+            // Check lamps.
+            foreach(var lamp in GetAllOfType<LampLogicDefinitionProxy>(livery))
+            {
+                // Lamps MUST be connected.
+                if (!connectionDef.portReferenceConnections.TryFind(x => x.portReferenceId == lamp.GetFullPortId(lamp.inputReader.ID), out var connection)
+                    || string.IsNullOrEmpty(connection.portId))
+                {
+                    result.Fail($"Lamp \"{lamp.ID}\" is not connected", lamp);
+                }
+            }
+
+            // Check brakes.
             var brakeSetup = livery.parentType!.brakes;
             if (livery.prefab.GetComponent<CompressorSimControllerProxy>())
             {
