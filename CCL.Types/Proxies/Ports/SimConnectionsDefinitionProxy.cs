@@ -9,6 +9,8 @@ namespace CCL.Types.Proxies.Ports
     [AddComponentMenu("CCL/Proxies/Ports/Sim Connections Definition Proxy")]
     public class SimConnectionsDefinitionProxy : MonoBehaviour, ICustomSerialized
     {
+        [Tooltip("Automatically clear connections when components are removed")]
+        public bool AutoClearRemovedConnections = true;
         public List<SimComponentDefinitionProxy> executionOrder = new List<SimComponentDefinitionProxy>();
         public List<PortConnectionProxy> connections = new List<PortConnectionProxy>();
         public List<PortReferenceConnectionProxy> portReferenceConnections = new List<PortReferenceConnectionProxy>();

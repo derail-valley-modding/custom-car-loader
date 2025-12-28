@@ -186,6 +186,11 @@ namespace CCL.Types
                         }
                     }
                 }
+
+                if (SimAudioPrefab != null)
+                {
+                    yield return SimAudioPrefab;
+                }
             }
         }
 

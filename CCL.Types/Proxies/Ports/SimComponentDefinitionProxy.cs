@@ -38,7 +38,7 @@ namespace CCL.Types.Proxies.Ports
         void OnDestroy()
         {
             var connections = transform.root.GetComponentInChildren<SimConnectionsDefinitionProxy>();
-            if (connections)
+            if (connections && connections.AutoClearRemovedConnections)
             {
                 connections.DestroyConnectionsToComponent(this);
             }

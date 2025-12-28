@@ -31,9 +31,13 @@ namespace CCL.Creator.Validators
                 result.Warning($"Livery '{livery.id}' has no icon", livery);
             }
 
-            if (livery.LocoSpawnGroups.Any(x => x.IsDE2ExclusiveSpawn()))
+            if (livery.LocoSpawnGroups.TryFind(x => x.IsDisallowedSpawn(), out var disallowed))
             {
-                result.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track, make sure this is intended", livery);
+                result.Fail($"Livery '{livery.id}' is set to spawn on a disallowed track ({disallowed.Track})", livery);
+            }
+            else if (livery.LocoSpawnGroups.TryFind(x => x.IsDE2ExclusiveSpawn(), out var exlusive))
+            {
+                result.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track ({exlusive.Track}), make sure this is intended", livery);
             }
 
             if (!ComponentUtil.HasComponent<CustomizationPlacementMeshesProxy>(livery.prefab, false))

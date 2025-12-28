@@ -40,13 +40,15 @@ namespace CCL.Creator
 
         #endregion
 
+        [Header("Editor Behaviour")]
+        [Tooltip("Highlights GameObjects with specific names in the hierarchy window")]
+        public bool HighlightSpecialGameObjectNames = true;
+
         [Header("Port Display")]
         [Tooltip("Whether or not to display the port code on fields ([Port], [Fuse]...)")]
         public bool DisplayCodeOnPortFields = true;
         [Tooltip("Displays ports with a folder structure instead of a simple list")]
         public bool UseFolderSystemOnPortFields = false;
-        [Tooltip("Highlights GameObjects with specific names in the hierarchy window")]
-        public bool HighlightSpecialGameObjectNames = true;
 
         [Header("Extra IDs")]
         [Tooltip("Extra Cargo IDs to display in cargo fields\n" +

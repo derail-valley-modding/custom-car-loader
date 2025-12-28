@@ -11,6 +11,7 @@ namespace CCL.Creator.Inspector
     internal class SimConnectionsDefinitionEditor : Editor
     {
         private SimConnectionsDefinitionProxy _proxy = null!;
+        private SerializedProperty _autoClear = null!;
         private SerializedProperty _connections = null!;
         private SerializedProperty _refConnections = null!;
         private ReorderableList _orderList = null!;
@@ -20,6 +21,7 @@ namespace CCL.Creator.Inspector
 
         private void OnEnable()
         {
+            _autoClear = serializedObject.FindProperty(nameof(SimConnectionsDefinitionProxy.AutoClearRemovedConnections));
             _connections = serializedObject.FindProperty(nameof(SimConnectionsDefinitionProxy.connections));
             _refConnections = serializedObject.FindProperty(nameof(SimConnectionsDefinitionProxy.portReferenceConnections));
 
@@ -75,6 +77,7 @@ namespace CCL.Creator.Inspector
             EditorGUILayout.Space();
             _orderList.DoLayoutList();
 
+            EditorGUILayout.PropertyField(_autoClear);
             _reorderMode = EditorGUILayout.Toggle("Reorder Mode", _reorderMode);
 
             if (_reorderMode)

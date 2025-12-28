@@ -161,7 +161,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            // Check fuse feeders
+            // Check fuse feeders.
             var fuseFeeders = GetAllOfType<InteractableFuseFeederProxy>(livery);
 
             foreach (var hasFuses in components)
