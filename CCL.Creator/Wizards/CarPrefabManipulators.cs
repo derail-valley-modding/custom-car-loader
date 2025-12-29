@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -8,6 +9,8 @@ namespace CCL.Creator.Wizards
 {
     public static class CarPrefabManipulators
     {
+        private static readonly Quaternion InvertRotation = Quaternion.Euler(0, 180, 0);
+
         public static void AlignBogieColliders(CustomCarVariant carType)
         {
             if (!carType.prefab)
@@ -145,6 +148,114 @@ namespace CCL.Creator.Wizards
                     return 1.10f;
                 default:
                     return 0.00f;
+            }
+        }
+
+        private static CustomCarVariant s_working = null!;
+
+        public static void ResetCouplers(CustomCarVariant variant)
+        {
+            if (variant.prefab == null)
+            {
+                Debug.LogWarning("Car prefab is empty, can't reset couplers!");
+                return;
+            }
+
+            s_working = variant;
+
+            if (variant.prefab.transform.TryFind(CarPartNames.Couplers.RIG_FRONT, out var coupler))
+            {
+                AlignFrontCoupler(coupler);
+            }
+            else
+            {
+                Debug.LogError("Missing front coupler rig!");
+            }
+
+            if (variant.prefab.transform.TryFind(CarPartNames.Couplers.RIG_REAR, out coupler))
+            {
+                AlignRearCoupler(coupler);
+            }
+            else
+            {
+                Debug.LogError("Missing rear coupler rig!");
+            }
+
+            s_working = null!;
+            AssetHelper.SaveAsset(variant.prefab);
+        }
+
+        private static void AlignFrontCoupler(Transform t)
+        {
+            SetPosition(t, CarPartNames.Buffers.PAD_FL, new Vector3(-0.8640631f, 0, 0.2150002f));
+            SetPosition(t, CarPartNames.Buffers.PAD_FR, new Vector3(0.8640631f, 0, 0.2150002f));
+            SetPosition(t, CarPartNames.Buffers.PLATE_FRONT, new Vector3(0, -0.07841396f, -0.3319998f), scale: Vector3.one * 0.81f);
+            SetPosition(t, CarPartNames.Couplers.COUPLER_FRONT, new Vector3(0, 0, -0.2495f));
+
+            if (SetPosition(t, CarPartNames.Buffers.CHAIN_REGULAR, new Vector3(0, 0, 0)))
+            {
+                SetUpChainPart(t.Find(CarPartNames.Buffers.CHAIN_REGULAR));
+            }
+        }
+
+        private static void AlignRearCoupler(Transform t)
+        {
+            SetPosition(t, CarPartNames.Buffers.PAD_RL, new Vector3(-0.8640631f, 0, -0.2139997f), InvertRotation);
+            SetPosition(t, CarPartNames.Buffers.PAD_RR, new Vector3(0.8640631f, 0, -0.2139997f), InvertRotation);
+            SetPosition(t, CarPartNames.Buffers.PLATE_REAR, new Vector3(0, -0.07841396f, 0.3319998f), InvertRotation, Vector3.one * 0.81f);
+            SetPosition(t, CarPartNames.Couplers.COUPLER_REAR, new Vector3(0, 0, -0.2495f), InvertRotation);
+
+            if (SetPosition(t, CarPartNames.Buffers.CHAIN_REGULAR, new Vector3(0, 0, 0), InvertRotation))
+            {
+                SetUpChainPart(t.Find(CarPartNames.Buffers.CHAIN_REGULAR));
+            }
+        }
+
+        private static bool SetPosition(Transform t, string path, Vector3 pos, Quaternion? rot = null, Vector3? scale = null)
+        {
+            if (t.TryFind(path, out var child))
+            {
+                child.localPosition = pos;
+                child.localRotation = rot ?? Quaternion.identity;
+                child.localScale = scale ?? Vector3.one;
+
+                return true;
+            }
+            else if (s_working.UseCustomBuffers)
+            {
+                Debug.LogWarning($"Missing '{t.name}/{path}'!");
+            }
+
+            return false;
+        }
+
+        private static void SetUpChainPart(Transform t)
+        {
+            SetPosition(t, CarPartNames.Buffers.ANCHORS[0], new Vector3(-0.8640631f, 0, 0.3f));
+            SetPosition(t, CarPartNames.Buffers.ANCHORS[1], new Vector3(0.8640631f, 0, 0.3f));
+
+            if (SetPosition(t, CarPartNames.Couplers.HOSES_ROOT, Vector3.zero))
+            {
+                var hoses = t.Find(CarPartNames.Couplers.HOSES_ROOT);
+
+                if (SetPosition(hoses, CarPartNames.Couplers.AIR_HOSE, new Vector3(-0.383f, -0.08700001f, -0.173f)))
+                {
+                    if (SetPosition(hoses, $"{CarPartNames.Couplers.AIR_HOSE}/cock valve",
+                        new Vector3(-0.02579999f, -0.0277f, 0.0649f),
+                        Quaternion.Euler(135, 0, 89.99999f),
+                        Vector3.one * 0.07f))
+                    {
+                        SetPosition(hoses, $"{CarPartNames.Couplers.AIR_HOSE}/cock valve/CableBase model",
+                            new Vector3(-1.45664f, -0.3699999f, 0.3111272f),
+                            Quaternion.Euler(-180, -92.20001f, 89.99999f),
+                            new Vector3(-14.28572f, 14.28572f, 14.28572f));
+                    }
+                }
+
+                if (SetPosition(hoses, CarPartNames.Couplers.MU_CONNECTOR, new Vector3(0.383f, 0.11f, -0.1875f)))
+                {
+                    SetPosition(hoses, $"{CarPartNames.Couplers.AIR_HOSE}/HeadEndPowerConnectorBase", Vector3.zero, scale: Vector3.one * 100f);
+                }
             }
         }
     }

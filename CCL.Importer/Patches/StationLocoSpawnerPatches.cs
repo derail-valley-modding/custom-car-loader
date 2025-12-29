@@ -31,6 +31,13 @@ namespace CCL.Importer.Patches
                 {
                     foreach (var group in variant.LocoSpawnGroups)
                     {
+                        // Safety check.
+                        if (group.IsDisallowedSpawn())
+                        {
+                            CCLPlugin.Error($"Attempted to add a custom loco ('{variant.id}') to a disallowed spawn track");
+                            continue;
+                        }
+
                         // If the group is supposed to use this spawner...
                         if (group.Track.ToName() == __instance.name)
                         {

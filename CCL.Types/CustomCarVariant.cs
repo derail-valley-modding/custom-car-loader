@@ -72,9 +72,10 @@ namespace CCL.Types
         [Header("Catalog - optional")]
         public CatalogPage? CatalogPage = null;
 
-        [RenderMethodButtons]
+        [RenderMethodButtons, SerializeField]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
-        public bool buttonRender;
+        [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:ResetCouplers", "Reset Coupler Children")]
+        private bool _buttons;
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;

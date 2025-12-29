@@ -13,7 +13,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "3.1.2";
+        public const string Version = "3.1.5";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
