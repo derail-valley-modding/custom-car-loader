@@ -30,9 +30,9 @@ namespace CCL.Creator.Validators
             }
 
             // Bounding collider.
-            var collision = collidersRoot.FindSafe(CarPartNames.Colliders.COLLISION);
-            var collisionComp = collision ? collision!.GetComponentsInChildren<BoxCollider>(true) : Array.Empty<Collider>();
-            if (!collision || collisionComp.Length < 1)
+            var collision = collidersRoot.Find(CarPartNames.Colliders.COLLISION);
+            var collisionComp = collision ? collision!.GetComponentsInChildren<Collider>(true) : Array.Empty<Collider>();
+            if (collision == null || collisionComp.Length < 1)
             {
                 result.Warning($"{livery.id} - Bounding {CarPartNames.Colliders.COLLISION} collider will be auto-generated", collidersRoot);
             }
@@ -47,6 +47,11 @@ namespace CCL.Creator.Validators
             if (collision != null)
             {
                 CheckLocalOrigin(collision);
+
+                if (collision.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
+                {
+                    result.Fail("Non-convex mesh colliders are not supported for car collisions");
+                }
             }
 
             // Walkable.

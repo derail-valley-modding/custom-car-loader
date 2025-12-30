@@ -1,6 +1,7 @@
 ﻿using CCL.Importer.Components;
 using CCL.Importer.Components.Controllers;
 using CCL.Types.Components;
+using CCL.Types.Components.Controls;
 using DV.CabControls;
 using DV.Damage;
 using DV.HUD;
@@ -19,6 +20,7 @@ using LocoSim.Definitions;
 using LocoSim.DVExtensions.Test;
 using LocoSim.Implementations.Wheels;
 using System.ComponentModel.Composition;
+using System.Linq;
 using UnityEngine;
 using VerletRope;
 
@@ -185,6 +187,12 @@ namespace CCL.Importer.Processing
             AddController<RopeInitialiseController, RopeBehaviour>(prefab);
 
             // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
+
+            // Order port feeders for priority.
+            if (prefab.TryGetComponent(out InteractablePortFeedersController controller))
+            {
+                controller.entries = controller.entries.OrderBy(x => x.GetComponent<MultiControlPriority>() != null).ToArray();
+            }
         }
 
         private static void AddController<TController, TComp>(GameObject prefab)

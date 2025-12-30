@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using CCL.Types.Proxies.Controls;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -32,7 +33,12 @@ namespace CCL.Creator.Validators
             {
                 if (control.colliderGameObjects.Length == 0)
                 {
-                    result.Warning($"Control '{control.name}' does not have any colliders, physical interaction will not work", control);
+                    result.Warning($"Control '{control.name}' does not have any colliders assigned, physical interaction will not work", control);
+                }
+
+                if (control.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
+                {
+                    result.Fail($"Control '{control.name}' - non-convex mesh colliders are not supported in controls");
                 }
 
                 switch (control)
@@ -57,7 +63,7 @@ namespace CCL.Creator.Validators
                 {
                     if (min > max)
                     {
-                        result.Warning($"{name} '{control.name}' limits bad setup: jointLimitMin must not be larger than jointLimitMax ", control);
+                        result.Warning($"{name} '{control.name}' limits bad setup: jointLimitMin must not be larger than jointLimitMax", control);
                     }
                 }
             }
