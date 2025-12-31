@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
-    [AddComponentMenu("CCL/Proxies/Ports/Sim Connections Definition Proxy")]
+    [AddComponentMenu("CCL/Proxies/Ports/Sim Connections Definition Proxy"), ExecuteInEditMode]
     public class SimConnectionsDefinitionProxy : MonoBehaviour, ICustomSerialized
     {
         [Tooltip("Automatically clear connections when components are removed")]
@@ -19,6 +19,14 @@ namespace CCL.Types.Proxies.Ports
         private string? connectionsJson;
         [SerializeField, HideInInspector]
         private string? portReferenceConnectionsJson;
+
+        // Flag to avoid showing port disconnects when leaving a scene (including prefab editor).
+        private bool _destroyed = false;
+
+        private void OnDestroy()
+        {
+            _destroyed = true;
+        }
 
         public void OnValidate()
         {
@@ -73,6 +81,9 @@ namespace CCL.Types.Proxies.Ports
 
         public void DestroyConnectionsToComponent(SimComponentDefinitionProxy component)
         {
+            // If this component was destroyed, there is no need to remove connections.
+            if (_destroyed) return;
+
             string compId = component.ID;
             foreach (var connection in connections.ToArray())
             {
