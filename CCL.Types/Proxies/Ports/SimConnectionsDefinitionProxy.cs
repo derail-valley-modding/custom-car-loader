@@ -78,6 +78,7 @@ namespace CCL.Types.Proxies.Ports
             {
                 if (component.ExposedPorts.Any(p => ConnectionUsesPort(connection, compId, p)))
                 {
+                    Debug.LogWarning($"Removed port connection [{connection.fullPortIdOut}] -> [{connection.fullPortIdIn}]", this);
                     connections.Remove(connection);
                 }
             }
@@ -86,6 +87,7 @@ namespace CCL.Types.Proxies.Ports
                 if (component.ExposedPorts.Any(p => ConnectionUsesPort(connection, compId, p)) ||
                     component.ExposedPortReferences.Any(r => ConnectionUsesReference(connection, compId, r)))
                 {
+                    Debug.LogWarning($"Removed port connection [{connection.portReferenceId}] -> [{connection.portId}]", this);
                     portReferenceConnections.Remove(connection);
                 }
             }
