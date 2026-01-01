@@ -34,17 +34,14 @@ namespace CCL.Importer.Implementations
 
                 state = _logic switch
                 {
-                    LogicType.AND => state & next,
-                    LogicType.OR => state | next,
-                    LogicType.XOR => state ^ next,
-                    LogicType.NOR => !(state | next),
-                    LogicType.NAND => !(state & next),
-                    LogicType.XNOR => state ^ next,
+                    LogicType.AND or LogicType.NAND => state & next,
+                    LogicType.OR or LogicType.NOR => state | next,
+                    LogicType.XOR or LogicType.XNOR => state ^ next,
                     _ => throw new System.NotSupportedException($"Unknown logic {_logic}"),
                 };
             }
 
-            if (_logic == LogicType.XNOR)
+            if (_logic is LogicType.NAND or LogicType.XOR or LogicType.XNOR)
             {
                 state = !state;
             }
