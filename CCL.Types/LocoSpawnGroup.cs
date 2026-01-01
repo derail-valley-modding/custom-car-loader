@@ -168,7 +168,7 @@ namespace CCL.Types
         OilWellNorth = 1600,
         [Tooltip("Length: 95m")]
         Sawmill = 1700,
-        [Tooltip("Length: 32m (has turntable)\nDE2 exclusive\n")]
+        [Tooltip("Length: 32m (has turntable)\nDE2 exclusive\nReserved Track")]
         SteelMillTurntable1 = 1800,
         [Tooltip("Length: 32m (has turntable)")]
         SteelMillTurntable2 = 1801

@@ -57,7 +57,7 @@ namespace CCL.Creator.Validators
 
             if (livery.LocoSpawnGroups.Length > 0 && livery.UnlockableAsWorkTrain)
             {
-                result.Warning("Livery can spawn in the world but is also set as a work train", livery);
+                result.Warning("Livery can spawn in the world but is also set as a work train, this can result in unintended behaviour", livery);
             }
 
             return result;
