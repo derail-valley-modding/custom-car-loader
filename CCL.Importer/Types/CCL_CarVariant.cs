@@ -24,6 +24,9 @@ namespace CCL.Importer.Types
         public bool HideBackCoupler;
 
         public string[] TrainsetLiveries = new string[0];
+        public int MaxRepeatedSpawn = 0;
+        public bool AllowOnRegionalRoutes = true;
+        public bool AllowOnExpressRoutes = true;
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
         public bool UnlockableAsWorkTrain = false;
         public float UnlockPrice = 30000.0f;
@@ -44,7 +47,7 @@ namespace CCL.Importer.Types
 
                 if (interiorPrefab) yield return interiorPrefab;
                 if (explodedInteriorPrefab) yield return explodedInteriorPrefab;
-                
+
                 if (externalInteractablesPrefab) yield return externalInteractablesPrefab;
                 if (explodedExternalInteractablesPrefab) yield return explodedExternalInteractablesPrefab;
             }
@@ -54,7 +57,7 @@ namespace CCL.Importer.Types
         {
             prefab = ModelProcessor.CreateModifiablePrefab(prefab);
 
-            if (interiorPrefab) interiorPrefab =  ModelProcessor.CreateModifiablePrefab(interiorPrefab);
+            if (interiorPrefab) interiorPrefab = ModelProcessor.CreateModifiablePrefab(interiorPrefab);
             if (explodedInteriorPrefab) explodedInteriorPrefab = ModelProcessor.CreateModifiablePrefab(explodedInteriorPrefab);
 
             if (externalInteractablesPrefab) externalInteractablesPrefab = ModelProcessor.CreateModifiablePrefab(externalInteractablesPrefab);

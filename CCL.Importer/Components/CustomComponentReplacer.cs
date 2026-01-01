@@ -5,6 +5,7 @@ using CCL.Importer.Components.Headlights;
 using CCL.Importer.Components.Indicators;
 using CCL.Importer.Components.MultipleUnit;
 using CCL.Importer.Components.Simulation;
+using CCL.Importer.Components.Simulation.Electric;
 using CCL.Importer.Implementations.Controls;
 using CCL.Types.Components;
 using CCL.Types.Components.Controllers;
@@ -13,6 +14,7 @@ using CCL.Types.Components.Headlights;
 using CCL.Types.Components.Indicators;
 using CCL.Types.Components.MultipleUnit;
 using CCL.Types.Components.Simulation;
+using CCL.Types.Components.Simulation.Electric;
 using DV.CabControls;
 
 namespace CCL.Importer.Components
@@ -69,6 +71,11 @@ namespace CCL.Importer.Components
             CreateMap<CombinedThrottleDynamicBrakeDefinition, CombinedThrottleDynamicBrakeDefinitionInternal>().AutoCacheAndMap();
             CreateMap<TimeReaderDefinition, TimeReaderDefinitionInternal>().AutoCacheAndMap();
             CreateMap<SteamMechanicalStokerDefinition, SteamMechanicalStokerDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<FuseLogicDefinition, FuseLogicDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<MultipleFuseLogicDefinition, MultipleFuseLogicDefinitionInternal>().AutoCacheAndMap();
+
+            // Electric.
+            CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();
         }
 
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)

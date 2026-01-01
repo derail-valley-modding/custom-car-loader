@@ -5,9 +5,9 @@ using DVLangHelper.Data;
 using CCL.Types.Json;
 using CCL.Types.HUD;
 using CCL.Types.Proxies;
+using CCL.Types.Tutorial;
 
 using static CCL.Types.CustomCarType.BrakesSetup;
-using CCL.Types.Tutorial;
 
 namespace CCL.Types
 {
@@ -77,6 +77,7 @@ namespace CCL.Types
         public CargoSetup? CargoSetup;
 
         [Space]
+        [Tooltip("Despawn behaviour")]
         public UnusedCarDeletePreventionMode unusedCarDeletePreventionMode;
 
         [Header("Audio - optional")]
@@ -184,6 +185,11 @@ namespace CCL.Types
                             }
                         }
                     }
+                }
+
+                if (SimAudioPrefab != null)
+                {
+                    yield return SimAudioPrefab;
                 }
             }
         }

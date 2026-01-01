@@ -63,6 +63,8 @@ namespace CCL.Importer.Proxies
 
             CreateMap<MultipleUnitStateObserverProxy, MultipleUnitStateObserver>().AutoCacheAndMap();
             CreateMap<RemoteControllerModuleProxy, RemoteControllerModule>().AutoCacheAndMap();
+            CreateMap<SteamTenderAutoCoupleMechanismProxy, SteamTenderAutoCoupleMechanism>().AutoCacheAndMap();
+            CreateMap<TenderCouplerJointEnstrongerProxy, TenderCouplerJointEnstronger>().AutoCacheAndMap();
 
             CreateMap<FireProxy, Fire>().AutoCacheAndMap()
                 .ReplaceInstancedObjects();

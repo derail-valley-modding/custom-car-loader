@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Gear Shifter Proxy")]
     public class GearShifterProxy : MonoBehaviour, IHasPortIdFields
     {
         [PortId(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, true)]

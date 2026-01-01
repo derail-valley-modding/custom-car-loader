@@ -17,7 +17,7 @@ namespace CCL.Types.Proxies.Ports
 
         public virtual IEnumerable<FuseDefinition> ExposedFuses => Enumerable.Empty<FuseDefinition>();
 
-        void Reset()
+        private void Reset()
         {
             if (string.IsNullOrWhiteSpace(ID) && (GetComponents<SimComponentDefinitionProxy>().Length <= 1))
             {
@@ -35,16 +35,16 @@ namespace CCL.Types.Proxies.Ports
             }
         }
 
-        void OnDestroy()
+        private void OnDestroy()
         {
             var connections = transform.root.GetComponentInChildren<SimConnectionsDefinitionProxy>();
-            if (connections)
+            if (connections && connections.AutoClearRemovedConnections)
             {
                 connections.DestroyConnectionsToComponent(this);
             }
         }
 
-        void OnValidate()
+        private void OnValidate()
         {
             if (!string.IsNullOrWhiteSpace(_previousId) && !string.IsNullOrWhiteSpace(ID) && (ID != _previousId))
             {

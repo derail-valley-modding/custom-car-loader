@@ -107,19 +107,21 @@ namespace CCL.Creator.Wizards
             Rect sortSelectArea = new Rect(H_PADDING, 0, position.width / 4 - H_PADDING, LINE_HEIGHT);
             _sortMode = (SortMode)EditorGUI.Popup(sortSelectArea, (int)_sortMode, _sortModeNames);
 
+            var boxStyle = EditorHelpers.StyleWithTextColour(GUI.skin.label.normal.textColor, GUI.skin.box);
+
             // Headers
             float compWidth = position.width - (H_PADDING * 4);
             Rect typeRect = new Rect(H_PADDING, LINE_HEIGHT, compWidth / 8, LINE_HEIGHT);
-            EditorGUI.LabelField(typeRect, "Port Type", GUI.skin.box);
+            EditorGUI.LabelField(typeRect, "Port Type", boxStyle);
             
             Rect valueRect = new Rect(compWidth / 8 + H_PADDING, LINE_HEIGHT, compWidth / 8, LINE_HEIGHT);
-            EditorGUI.LabelField(valueRect, "Value Type", GUI.skin.box);
+            EditorGUI.LabelField(valueRect, "Value Type", boxStyle);
 
             Rect idRect = new Rect(compWidth / 4 + H_PADDING, LINE_HEIGHT, compWidth / 4, LINE_HEIGHT);
-            EditorGUI.LabelField(idRect, "ID", GUI.skin.box);
+            EditorGUI.LabelField(idRect, "ID", boxStyle);
 
             Rect connectRect = new Rect(compWidth / 2 + H_PADDING, LINE_HEIGHT, compWidth / 2, LINE_HEIGHT);
-            EditorGUI.LabelField(connectRect, "Connection(s)", GUI.skin.box);
+            EditorGUI.LabelField(connectRect, "Connection(s)", boxStyle);
 
             // Component scroll view
             Rect scrollArea = new Rect(0, LINE_HEIGHT * 2, position.width, position.height - LINE_HEIGHT * 2);

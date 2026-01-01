@@ -1,6 +1,8 @@
 ﻿using CCL.Types;
 using CCL.Types.Proxies.Controllers;
+using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Customization;
+using CCL.Types.Proxies.Ports;
 using System.Linq;
 using UnityEngine;
 
@@ -24,7 +26,21 @@ namespace CCL.Creator.Validators
 
             var result = Pass();
 
-            if (livery.prefab.GetComponent<CustomizationPlacementMeshesProxy>() == null)
+            if (livery.icon == null)
+            {
+                result.Warning($"Livery '{livery.id}' has no icon", livery);
+            }
+
+            if (livery.LocoSpawnGroups.TryFind(x => x.IsDisallowedSpawn(), out var disallowed))
+            {
+                result.Fail($"Livery '{livery.id}' is set to spawn on a disallowed track ({disallowed.Track})", livery);
+            }
+            else if (livery.LocoSpawnGroups.TryFind(x => x.IsDE2ExclusiveSpawn(), out var exlusive))
+            {
+                result.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track ({exlusive.Track}), make sure this is intended", livery);
+            }
+
+            if (!ComponentUtil.HasComponent<CustomizationPlacementMeshesProxy>(livery.prefab, false))
             {
                 result.Warning($"Livery prefab does not have {nameof(CustomizationPlacementMeshesProxy)}, " +
                     "gadgets will not be able to be attached to this prefab", livery.prefab);
@@ -39,9 +55,9 @@ namespace CCL.Creator.Validators
                 result.Warning("Livery trainset has duplicates", livery);
             }
 
-            if (livery.HasMUCable && livery.prefab.GetComponentInChildren<DamageControllerProxy>() == null)
+            if (livery.LocoSpawnGroups.Length > 0 && livery.UnlockableAsWorkTrain)
             {
-                result.Warning($"Livery has MU cable but lacks {nameof(DamageControllerProxy)}, one will be added automatically", livery);
+                result.Warning("Livery can spawn in the world but is also set as a work train, this can result in unintended behaviour", livery);
             }
 
             return result;
@@ -130,6 +146,34 @@ namespace CCL.Creator.Validators
             }
 
             return result;
+        }
+    }
+
+    [RequiresStep(typeof(LiverySettingsValidator))]
+    internal class MultipleUnitValidator : LiveryValidator
+    {
+        public override string TestName => "Multiple Unit";
+
+        protected override ValidationResult ValidateLivery(CustomCarVariant livery)
+        {
+            if (!livery.HasMUCable) return Skip();
+
+            var result = Pass();
+            var prefab = livery.prefab!;
+
+            CheckComp<BaseControlsOverriderProxy>();
+            CheckComp<SimConnectionsDefinitionProxy>();
+            CheckComp<DamageControllerProxy>();
+
+            return result;
+            
+            void CheckComp<T>() where T : Component
+            {
+                if (!ComponentUtil.HasComponent<T>(prefab))
+                {
+                    result.Fail($"Livery has MU cable but lacks {typeof(T).Name}", livery);
+                }
+            }
         }
     }
 }

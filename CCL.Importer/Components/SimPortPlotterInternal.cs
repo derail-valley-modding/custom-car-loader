@@ -3,7 +3,10 @@ using DV.Simulation.Cars;
 using LocoSim.Definitions;
 using LocoSim.Implementations;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
+using UmmUI = UnityModManagerNet.UnityModManager.UI;
 
 namespace CCL.Importer.Components
 {
@@ -242,6 +245,7 @@ namespace CCL.Importer.Components
             fontSize = 10,
             alignment = TextAnchor.MiddleCenter
         });
+        private static string[] NoKeys => new[] { "No Ports" };
 
         public int TickRate = 5;
         public List<string> PortIds = new();
@@ -262,7 +266,9 @@ namespace CCL.Importer.Components
         private Port? _dummyPower;
         private Port? _dummyTrainsetForce;
         private Port? _dummyTrainsetPower;
-        private string _portToAdd = string.Empty;
+        private Dictionary<string, Port>? _map;
+        private string[] _keys = NoKeys;
+        private int _lastPort = 0;
 
         private void Start()
         {
@@ -283,24 +289,19 @@ namespace CCL.Importer.Components
             }
 
             var flow = controller.SimulationFlow;
-            var map = new Dictionary<string, Port>();
 
-            foreach (var comp in flow.OrderedSimComps)
+            if (flow == null)
             {
-                foreach (var port in comp.GetAllPorts())
-                {
-                    map[port.id] = port;
-                }
-
-                foreach (var portReference in comp.GetAllPortReferences())
-                {
-                    map[portReference.id] = portReference.GetPort();
-                }
+                Debug.LogError("SimController has no SimulationFlow for SimPortPlotter");
+                return;
             }
+
+            _map = new();
+            RebuildMap(flow);
 
             foreach (var id in PortIds)
             {
-                if (map.TryGetValue(id, out var port))
+                if (_map.TryGetValue(id, out var port))
                 {
                     _ports.Add(new PortData(id, port));
                 }
@@ -308,9 +309,10 @@ namespace CCL.Importer.Components
 
             foreach (var id in PortReferenceIds)
             {
-                if (map.TryGetValue(id, out var port))
+                var reference = AsReferenceId(id);
+                if (_map.TryGetValue(reference, out var port))
                 {
-                    _ports.Add(new PortData($"{id} (R)", port));
+                    _ports.Add(new PortData(reference, port));
                 }
             }
 
@@ -525,6 +527,11 @@ namespace CCL.Importer.Components
 
         private void DrawButtons()
         {
+            // |                                                                          [-][x]
+            // [                                                                               ]
+            // |Record    | Round | Port Dropdown            | Trainset Ports |   | Clear Data |
+            // |Wheelslip | Adhesion         | Derail | Grade    |                             |
+
             // Button to minimise (hide window).
             if (GUI.Button(new Rect(CloseButtonPosX - ButtonSize, 0f, ButtonSize, ButtonSize), "-", WindowButtonsStyle))
             {
@@ -532,18 +539,32 @@ namespace CCL.Importer.Components
             }
 
             // Record data toggle.
-            _record = GUI.Toggle(new(GetSideOffset(0), LowerButtonsPosY, SideOffset, 20f), _record, "Record data");
+            _record = GUI.Toggle(new(GetSideOffset(0), LowerButtonsPosY, SideOffset, 20f), _record, " Record data");
 
             // Rounding toggle.
-            s_round = GUI.Toggle(new(GetSideOffset(1), LowerButtonsPosY, SideOffset, 20f), s_round, "Round values");
+            s_round = GUI.Toggle(new(GetSideOffset(1), LowerButtonsPosY, SideOffset, 20f), s_round, " Round values");
 
-            // Text field and button to add ports easily.
-            if (GUI.Button(new Rect(GetSideOffset(2), LowerButtonsPosY, SideOffset, ButtonSize), "Try Add Port"))
+            // Enable/disable the port section in case there is no map (which means there was no sim flow).
+            GUI.enabled = _map != null;
+
+            // Popup button to add ports from a list.
+            // Since this uses GUILayout, we need an area to fit it in instead of supplying the rect directly.
+            GUILayout.BeginArea(new Rect(GetSideOffset(2), LowerButtonsPosY, SideOffset * 3 + 20f, ButtonSize));
+            if (UmmUI.PopupToggleGroup(ref _lastPort, _keys, $"{_car.ID} Port List") && _lastPort > 0)
             {
-                TryAddPort();
+                TryAddPort(_keys[_lastPort]);
+                _lastPort = 0;
+            }
+            GUILayout.EndArea();
+
+            // Button to refresh port mapping.
+            if (GUI.Button(new Rect(GetSideOffset(5), LowerButtonsPosY, SideOffset, ButtonSize), "Refresh Ports"))
+            {
+                RebuildMap();
             }
 
-            _portToAdd = GUI.TextField(new Rect(GetSideOffset(3), LowerButtonsPosY, SideOffset * 3, ButtonSize), _portToAdd);
+            // Restore enabledness.
+            GUI.enabled = true;
 
             // Button to add trainset ports.
             if (GUI.Button(new Rect(GetSideOffset(6), LowerButtonsPosY, SideOffset, ButtonSize), "Trainset Ports"))
@@ -573,7 +594,7 @@ namespace CCL.Importer.Components
             if (sim != null && sim.wheelslipController != null)
             {
                 // Wheelslip is happening or not.
-                GUI.Toggle(new(GetSideOffset(0), LowerButtonsPosY2, SideOffset, 20f), sim.wheelslipController.IsWheelslipping, "Wheelslipping");
+                GUI.Toggle(new(GetSideOffset(0), LowerButtonsPosY2, SideOffset, 20f), sim.wheelslipController.IsWheelslipping, " Wheelslipping");
 
                 // Adhesion limit.
                 GUI.Label(new(GetSideOffset(1), LowerButtonsPosY2, SideOffset * 2, 20f),
@@ -633,6 +654,37 @@ namespace CCL.Importer.Components
             return Color.HSVToRGB((count * 0.31f) % 1.00f, 0.55f, 1.00f);
         }
 
+        private void RebuildMap(SimulationFlow? flow = null)
+        {
+            flow ??= _car.SimController?.SimulationFlow;
+
+            if (flow == null)
+            {
+                _keys = NoKeys;
+                return;
+            }
+
+            _map ??= new();
+            _map.Clear();
+
+            foreach (var comp in flow.OrderedSimComps)
+            {
+                foreach (var port in comp.GetAllPorts())
+                {
+                    _map[port.id] = port;
+                }
+
+                foreach (var portReference in comp.GetAllPortReferences())
+                {
+                    _map[AsReferenceId(portReference.id)] = portReference.GetPort();
+                }
+            }
+
+            var temp = new List<string>() { "Select Port" };
+            temp.AddRange(_map.Keys);
+            _keys = temp.ToArray();
+        }
+
         private void ResetData()
         {
             foreach (var port in _ports)
@@ -670,34 +722,40 @@ namespace CCL.Importer.Components
             _ports.Add(new PortData("TRAINSET_POWER", _dummyTrainsetPower));
         }
 
-        private void TryAddPort()
+        private void TryAddPort(string port)
         {
-            var flow = _car.SimController.SimulationFlow;
-            var map = new Dictionary<string, Port>();
-
-            foreach (var comp in flow.OrderedSimComps)
+            if (_map == null)
             {
-                foreach (var port in comp.GetAllPorts())
-                {
-                    map[port.id] = port;
-                }
-
-                foreach (var portReference in comp.GetAllPortReferences())
-                {
-                    map[portReference.id] = portReference.GetPort();
-                }
+                Debug.LogWarning("PortPlotter does not have a port map to add ports");
+                return;
             }
 
-            if (map.TryGetValue(_portToAdd, out var match))
+            if (_ports.Any(x => x.Id == port))
             {
-                _ports.Add(new PortData(_portToAdd, match));
+                Debug.LogWarning("Port already plotted");
+                return;
             }
+
+            if (_map.TryGetValue(port, out var match))
+            {
+                _ports.Add(new PortData(port, match));
+            }
+            else
+            {
+                RebuildMap();
+                Debug.LogWarning($"Could not find port '{port}', map was rebuilt just in case");
+            }
+        }
+
+        private static string AsReferenceId(string pordId)
+        {
+            return $"{pordId} (Ref)";
         }
 
         public static string GetUnitForValueType(PortValueType valueType) => valueType switch
         {
             PortValueType.POWER => "W",
-            PortValueType.TORQUE => "Nm",
+            PortValueType.TORQUE => "τ",
             PortValueType.FORCE => "N",
             PortValueType.TEMPERATURE => "°C",
             PortValueType.AMPS => "A",

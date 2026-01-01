@@ -6,9 +6,11 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
-    [AddComponentMenu("CCL/Proxies/Ports/Sim Connections Definition Proxy")]
+    [AddComponentMenu("CCL/Proxies/Ports/Sim Connections Definition Proxy"), ExecuteInEditMode]
     public class SimConnectionsDefinitionProxy : MonoBehaviour, ICustomSerialized
     {
+        [Tooltip("Automatically clear connections when components are removed")]
+        public bool AutoClearRemovedConnections = true;
         public List<SimComponentDefinitionProxy> executionOrder = new List<SimComponentDefinitionProxy>();
         public List<PortConnectionProxy> connections = new List<PortConnectionProxy>();
         public List<PortReferenceConnectionProxy> portReferenceConnections = new List<PortReferenceConnectionProxy>();
@@ -17,6 +19,14 @@ namespace CCL.Types.Proxies.Ports
         private string? connectionsJson;
         [SerializeField, HideInInspector]
         private string? portReferenceConnectionsJson;
+
+        // Flag to avoid showing port disconnects when leaving a scene (including prefab editor).
+        private bool _destroyed = false;
+
+        private void OnDestroy()
+        {
+            _destroyed = true;
+        }
 
         public void OnValidate()
         {
@@ -71,11 +81,15 @@ namespace CCL.Types.Proxies.Ports
 
         public void DestroyConnectionsToComponent(SimComponentDefinitionProxy component)
         {
+            // If this component was destroyed, there is no need to remove connections.
+            if (_destroyed) return;
+
             string compId = component.ID;
             foreach (var connection in connections.ToArray())
             {
                 if (component.ExposedPorts.Any(p => ConnectionUsesPort(connection, compId, p)))
                 {
+                    Debug.LogWarning($"Removed port connection [{connection.fullPortIdOut}] -> [{connection.fullPortIdIn}]", this);
                     connections.Remove(connection);
                 }
             }
@@ -84,6 +98,7 @@ namespace CCL.Types.Proxies.Ports
                 if (component.ExposedPorts.Any(p => ConnectionUsesPort(connection, compId, p)) ||
                     component.ExposedPortReferences.Any(r => ConnectionUsesReference(connection, compId, r)))
                 {
+                    Debug.LogWarning($"Removed port connection [{connection.portReferenceId}] -> [{connection.portId}]", this);
                     portReferenceConnections.Remove(connection);
                 }
             }

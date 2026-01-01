@@ -37,9 +37,8 @@ namespace CCL.Types.Tutorial
         }
 
         [Serializable]
-        public class OverridableObject
+        public class OverridableObject : NonOverridableObject
         {
-            public bool Show = true;
             [Tooltip("The ID of the TutorialObjectID to use instead of the original one\n" +
                 "Object can be in other parts of a trainset")]
             public string Override = string.Empty;
@@ -101,15 +100,17 @@ namespace CCL.Types.Tutorial
             public OverridableObject Dynamo = new OverridableObject();
             public OverridableObject AirPump = new OverridableObject();
 
+            [Header("Diesel")]
+            public OverridableObject FuelCutoff = new OverridableObject();
+
             [Header("Gears")]
-            public NonOverridableObject GearboxA = new NonOverridableObject();
-            public NonOverridableObject GearboxB = new NonOverridableObject();
+            public OverridableObject GearboxA = new OverridableObject();
+            public OverridableObject GearboxB = new OverridableObject();
 
             [Header("Other")]
-            public NonOverridableObject FuelCutoff = new NonOverridableObject();
-            public NonOverridableObject DynamicBrake = new NonOverridableObject();
-            public NonOverridableObject Bell = new NonOverridableObject();
-            public NonOverridableObject Horn = new NonOverridableObject();
+            public OverridableObject DynamicBrake = new OverridableObject();
+            public OverridableObject Bell = new OverridableObject();
+            public OverridableObject Horn = new OverridableObject();
             public bool MarkHornAsWhistle = false;
         }
 

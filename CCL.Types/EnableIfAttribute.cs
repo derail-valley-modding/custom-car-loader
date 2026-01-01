@@ -18,4 +18,13 @@ namespace CCL.Types
             Invert = invert;
         }
     }
+
+    public class DisableIfAttribute : EnableIfAttribute
+    {
+        /// <summary>
+        /// Disables the property in the inspector based on a condition.
+        /// </summary>
+        /// <param name="target">The name of the field, property, or method that decides when to disable. Must be/return a bool.</param>
+        public DisableIfAttribute(string target) : base(target, true) { }
+    }
 }

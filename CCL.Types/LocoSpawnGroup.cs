@@ -102,6 +102,12 @@ namespace CCL.Types
                     return false;
             }
         }
+
+        public bool IsDisallowedSpawn() => Track switch
+        {
+            SpawnTrack.SteelMillTurntable1 => true,
+            _ => false,
+        };
     }
 
     public enum SpawnTrack
@@ -162,7 +168,7 @@ namespace CCL.Types
         OilWellNorth = 1600,
         [Tooltip("Length: 95m")]
         Sawmill = 1700,
-        [Tooltip("Length: 32m (has turntable)\nDE2 exclusive")]
+        [Tooltip("Length: 32m (has turntable)\nDE2 exclusive\nReserved Track")]
         SteelMillTurntable1 = 1800,
         [Tooltip("Length: 32m (has turntable)")]
         SteelMillTurntable2 = 1801

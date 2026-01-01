@@ -355,27 +355,27 @@ namespace CCL.Importer
                 }
 
                 // Allow users to customise target headlight positions.
-                AddOverrideOrControl(settings.Controls.FrontHeadlights, settings.Controls.FrontHeadlightsSettings,
+                AddControlOverride(settings.Controls.FrontHeadlights, settings.Controls.FrontHeadlightsSettings,
                     InteriorControlsManager.ControlType.HeadlightsFront, false, false, settings.Controls.SingleHeadlightControl);
 
                 if (settings.Controls.FrontIndHeadlightsType.Show)
                 {
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlightsTypeFront);
                 }
-                AddOverrideOrControl(settings.Controls.FrontIndHeadlightsType, settings.Controls.FrontIndHeadlightsTypeSettings,
+                AddControlOverride(settings.Controls.FrontIndHeadlightsType, settings.Controls.FrontIndHeadlightsTypeSettings,
                     InteriorControlsManager.ControlType.IndHeadlightsTypeFront, false, false, settings.Controls.SingleHeadlightControl);
-                AddOverrideOrControl(settings.Controls.FrontIndHeadlights1, settings.Controls.FrontIndHeadlights1Settings,
+                AddControlOverride(settings.Controls.FrontIndHeadlights1, settings.Controls.FrontIndHeadlights1Settings,
                     InteriorControlsManager.ControlType.IndHeadlights1Front, false, false, settings.Controls.SingleHeadlightControl);
                 if (settings.Controls.FrontIndHeadlights2.Show)
                 {
                     c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.IndHeadlights2Front);
                 }
 
-                AddOverrideOrControl(settings.Controls.RearHeadlights, settings.Controls.RearHeadlightsSettings,
+                AddControlOverride(settings.Controls.RearHeadlights, settings.Controls.RearHeadlightsSettings,
                     InteriorControlsManager.ControlType.HeadlightsRear, false, false, settings.Controls.SingleHeadlightControl);
-                AddOverrideOrControl(settings.Controls.RearIndHeadlightsType, settings.Controls.RearIndHeadlightsTypeSettings,
+                AddControlOverride(settings.Controls.RearIndHeadlightsType, settings.Controls.RearIndHeadlightsTypeSettings,
                     InteriorControlsManager.ControlType.IndHeadlightsTypeRear, false, false, settings.Controls.SingleHeadlightControl);
-                AddOverrideOrControl(settings.Controls.RearIndHeadlights1, settings.Controls.RearIndHeadlights1Settings,
+                AddControlOverride(settings.Controls.RearIndHeadlights1, settings.Controls.RearIndHeadlights1Settings,
                     InteriorControlsManager.ControlType.IndHeadlights1Rear, false, false, settings.Controls.SingleHeadlightControl);
                 if (settings.Controls.RearIndHeadlights2.Show)
                 {
@@ -574,55 +574,61 @@ namespace CCL.Importer
             // Show gearboxes again. If it only has gearbox B, ensure it displays the gear thing on it.
             if (settings.Controls.GearboxA.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxA);
+                AddLookAndAcknowledgeControlOverride(settings.Controls.GearboxA.Override, InteriorControlsManager.ControlType.GearboxA);
             }
             if (settings.Controls.GearboxB.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxB);
+                AddLookAndAcknowledgeControlOverride(settings.Controls.GearboxB.Override, InteriorControlsManager.ControlType.GearboxB);
             }
             if (settings.Controls.GearboxA.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxA, LocalizationAPI.L("car/tut/gearboxa"), LocalizationAPI.L("tutorial/loco/gears_higher_speed"));
+                AddLookAndAcknowledgeControlOverrideWithNames(settings.Controls.GearboxA.Override,
+                    InteriorControlsManager.ControlType.GearboxA, "car/tut/gearboxa", "tutorial/loco/gears_higher_speed");
             }
             else if (settings.Controls.GearboxB.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.GearboxB, LocalizationAPI.L("car/tut/gearboxb"), LocalizationAPI.L("tutorial/loco/gears_higher_speed"));
+                AddLookAndAcknowledgeControlOverrideWithNames(settings.Controls.GearboxB.Override,
+                    InteriorControlsManager.ControlType.GearboxB, "car/tut/gearboxb", "tutorial/loco/gears_higher_speed");
             }
 
             // Show some indicators and fuel cutoff.
             if (settings.Indicators.Amps.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Amps.Override, interiorIndicators?.amps ?? externalIndicators?.amps),
-                    LocalizationAPI.L("car/tut/amperage"), LocalizationAPI.L("tutorial/loco/ind_amps"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.Amps.Override, interiorIndicators?.amps ?? externalIndicators?.amps,
+                    "car/tut/amperage", "tutorial/loco/ind_amps");
             }
             if (settings.Indicators.TMTemp.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.TMTemp.Override, interiorIndicators?.tmTemp ?? externalIndicators?.tmTemp),
-                    LocalizationAPI.L("car/tut/tmtemp"), LocalizationAPI.L("tutorial/loco/ind_tm_temp"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.TMTemp.Override, interiorIndicators?.tmTemp ?? externalIndicators?.tmTemp,
+                    "car/tut/tmtemp", "tutorial/loco/ind_tm_temp");
             }
             if (settings.Indicators.OilTemp.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.OilTemp.Override, interiorIndicators?.oilTemp ?? externalIndicators?.oilTemp),
-                    LocalizationAPI.L("car/tut/oiltemp"), LocalizationAPI.L("tutorial/loco/ind_transmission_oil_temp"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.OilTemp.Override, interiorIndicators?.oilTemp ?? externalIndicators?.oilTemp,
+                    "car/tut/oiltemp", "tutorial/loco/ind_transmission_oil_temp");
             }
             if (settings.Controls.FuelCutoff.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.FuelCutoff);
+                AddLookAndAcknowledgeControlOverride(settings.Controls.FuelCutoff.Override,
+                    InteriorControlsManager.ControlType.FuelCutoff);
             }
 
             // Show final controls.
             BeginNewPhase("dynamic brake, bell, horn/whistle");
             if (settings.Controls.DynamicBrake.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.DynamicBrake);
+                AddLookAndAcknowledgeControlOverride(settings.Controls.DynamicBrake.Override,
+                    InteriorControlsManager.ControlType.DynamicBrake);
             }
             if (settings.Controls.Bell.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Bell);
+                AddLookAndAcknowledgeControlOverride(settings.Controls.Bell.Override,
+                    InteriorControlsManager.ControlType.Bell);
             }
             if (settings.Controls.Horn.Show)
             {
-                c.AddLookAndAcknowledge(InteriorControlsManager.ControlType.Horn, null, isSteamLoco: settings.Controls.MarkHornAsWhistle);
+                AddLookAndAcknowledgeControlOverride(settings.Controls.Horn.Override,
+                    InteriorControlsManager.ControlType.Horn, isSteamLoco: settings.Controls.MarkHornAsWhistle);
             }
 
             // Show the rest of the indicators.
@@ -631,28 +637,28 @@ namespace CCL.Importer
             BeginNewPhase("final indicators, resource storage");
             if (settings.Indicators.Wheelslip.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Wheelslip.Override, c.Lamps?.wheelSlip),
-                    LocalizationAPI.L("car/tut/wheelslip"), LocalizationAPI.L("tutorial/loco/ind_wheel_slip"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.Wheelslip.Override, c.Lamps?.wheelSlip,
+                    "car/tut/wheelslip", "tutorial/loco/ind_wheel_slip");
             }
             if (settings.Indicators.Battery.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Battery.Override, interiorIndicators?.battery ?? externalIndicators?.battery),
-                    LocalizationAPI.L("car/tut/battery"), LocalizationAPI.L("tutorial/loco/ind_battery"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.Battery.Override, interiorIndicators?.battery ?? externalIndicators?.battery,
+                    "car/tut/battery", "tutorial/loco/ind_battery");
             }
             if (settings.Indicators.Voltage.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Voltage.Override, interiorIndicators?.voltage ?? externalIndicators?.voltage),
-                    LocalizationAPI.L("car/tut/voltage"), LocalizationAPI.L("tutorial/loco/ind_voltage"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.Voltage.Override, interiorIndicators?.voltage ?? externalIndicators?.voltage,
+                    "car/tut/voltage", "tutorial/loco/ind_voltage");
             }
             if (settings.Indicators.Fuel.Show)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Fuel.Override, interiorIndicators?.fuel ?? externalIndicators?.fuel),
-                    LocalizationAPI.L("car/tut/fuel"), LocalizationAPI.L("tutorial/loco/ind_fuel"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.Fuel.Override, interiorIndicators?.fuel ?? externalIndicators?.fuel,
+                    "car/tut/fuel", "tutorial/loco/ind_fuel");
             }
-            if (!settings.OilingPoints && settings.Indicators.Oil.Show)
+            if (settings.Indicators.Oil.Show && !settings.OilingPoints)
             {
-                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Oil.Override, interiorIndicators?.oil ?? externalIndicators?.oil),
-                    LocalizationAPI.L("car/tut/oil"), LocalizationAPI.L("tutorial/loco/ind_oil_engine"));
+                AddLookAndAcknowledgeOverride(settings.Indicators.Oil.Override, interiorIndicators?.oil ?? externalIndicators?.oil,
+                    "car/tut/oil", "tutorial/loco/ind_oil_engine");
             }
 
             // Show water and coal storages for each vehicle.
@@ -725,9 +731,9 @@ namespace CCL.Importer
 
                 if (engageCompressorAndDynamo)
                 {
-                    AddOverrideOrControl(settings.Controls.AirPump,
+                    AddControlOverride(settings.Controls.AirPump,
                         new TutorialSetup.SemanticRange(TutorialSetup.QTSemantic.Engage, 1, 1), InteriorControlsManager.ControlType.AirPump);
-                    AddOverrideOrControl(settings.Controls.Dynamo,
+                    AddControlOverride(settings.Controls.Dynamo,
                         new TutorialSetup.SemanticRange(TutorialSetup.QTSemantic.Engage, 1, 1), InteriorControlsManager.ControlType.Dynamo);
                 }
             }
@@ -752,6 +758,7 @@ namespace CCL.Importer
                 }
             }
 
+            // Custom phases.
             void BeginNewPhase(string name)
             {
                 while (customPhases.TryGetValue(c.Tutorial.phases.Count, out var custom))
@@ -809,18 +816,6 @@ namespace CCL.Importer
                 c.Lamps = car.interior.GetComponentInChildren<LocoLampReader>();
             }
 
-            //void ReplaceReferencesByTrainsetIndex(int index)
-            //{
-            //    if (index > -1)
-            //    {
-            //        var icm = trainset[index].interior?.GetComponentInChildren<InteriorControlsManager>();
-
-            //        if (icm == null) return;
-
-            //        ReplaceReferences(trainset[index], icm);
-            //    }
-            //}
-
             void ResetReferences()
             {
                 c.Loco = loco;
@@ -830,27 +825,73 @@ namespace CCL.Importer
                 c.Lamps = lamps;
             }
 
-            void AddOverrideOrControl(TutorialSetup.OverridableObject overrider, TutorialSetup.SemanticRange range,
+            // Replicate original methods but with override ability.
+            void AddControlOverride(TutorialSetup.OverridableObject overrider, TutorialSetup.SemanticRange range,
                 InteriorControlsManager.ControlType type, bool shouldRecheck = true, bool isSteamLoco = false, bool singleHeadlights = false)
             {
+                // No show, so no work.
                 if (!overrider.Show) return;
 
-                if (string.IsNullOrEmpty(overrider.Override))
+                // If an ID is specified...
+                if (!string.IsNullOrEmpty(overrider.Override))
                 {
-                    c.AddControl(type, range.Minimum, range.Maximum, (QTSemantic)range.Semantic);
-                    return;
+                    // And that ID has a matching comp and control...
+                    if (customComps.TryGetValue(overrider.Override, out var obj) && obj.TryGetComponent(out ControlImplBase control))
+                    {
+                        // Get the name and description for the control type.
+                        var message = GetDescriptionFor(type, (QTSemantic)range.Semantic, control, isSteamLoco, singleHeadlights);
+                        c.AddControl(control, range.Minimum, range.Maximum, message.controlName, message.controlDescription, (QTSemantic)range.Semantic, shouldRecheck);
+                        return;
+                    }
+
+                    CCLPlugin.Error($"Error creating tutorial for {loco.carLivery.id}: " +
+                        $"missing ID {overrider.Override} or no control in object '{obj.name}' for {type} control, using default");
                 }
 
-                if (customComps.TryGetValue(overrider.Override, out var obj) && obj.TryGetComponent(out ControlImplBase control))
+                // Fall back to the original method.
+                c.AddControl(type, range.Minimum, range.Maximum, (QTSemantic)range.Semantic);
+            }
+
+            void AddLookAndAcknowledgeOverride(string overrideId, Behaviour? behaviour, string nameKey, string typeKey)
+            {
+                c.AddLookAndAcknowledge(OverrideOrDefault(overrideId, behaviour),
+                    LocalizationAPI.L(nameKey), LocalizationAPI.L(typeKey));
+            }
+
+            void AddLookAndAcknowledgeControlOverride(string overrideId, InteriorControlsManager.ControlType type, bool isSteamLoco = false)
+            {
+                if (!string.IsNullOrEmpty(overrideId))
                 {
-                    var message = GetDescriptionFor(type, (QTSemantic)range.Semantic, control, isSteamLoco, singleHeadlights);
-                    c.AddControl(control, range.Minimum, range.Maximum, message.controlName, message.controlDescription, (QTSemantic)range.Semantic, shouldRecheck);
-                }
-                else
-                {
+                    if (customComps.TryGetValue(overrideId, out var obj))
+                    {
+                        c.AddLookAndAcknowledge(obj.transform, GetDescriptionForLook(type, isSteamLoco));
+                        return;
+                    }
+
                     CCLPlugin.Error($"Error creating tutorial for {loco.carLivery.id}: " +
-                        $"missing ID {overrider.Override} or no control in object ({type})");
+                        $"missing ID {overrideId} for {type} look, using default");
                 }
+
+                c.AddLookAndAcknowledge(type, isSteamLoco: isSteamLoco);
+            }
+
+            void AddLookAndAcknowledgeControlOverrideWithNames(string overrideId, InteriorControlsManager.ControlType type,
+                string nameKey, string typeKey, bool isSteamLoco = false)
+            {
+                if (!string.IsNullOrEmpty(overrideId))
+                {
+                    if (customComps.TryGetValue(overrideId, out var obj))
+                    {
+                        c.AddLookAndAcknowledge(obj.transform,
+                            new ControlIconQuickTutorialMessage(LocalizationAPI.L(nameKey), LocalizationAPI.L(typeKey), 2));
+                        return;
+                    }
+
+                    CCLPlugin.Error($"Error creating tutorial for {loco.carLivery.id}: " +
+                        $"missing ID {overrideId} for {type} look, using default");
+                }
+
+                c.AddLookAndAcknowledge(type, LocalizationAPI.L(nameKey), LocalizationAPI.L(typeKey), isSteamLoco: isSteamLoco);
             }
 
             Behaviour? OverrideOrDefault(string overrideId, Behaviour? behaviour)
@@ -920,6 +961,51 @@ namespace CCL.Importer
                 message.spriteIndex = 6;
             }
 
+            return message;
+        }
+
+        private static ControlIconQuickTutorialMessage GetDescriptionForLook(InteriorControlsManager.ControlType type,
+            bool isSteamLoco = false, bool singleHeadlights = false)
+        {
+            (string Name, string Description) tuple;
+            if (isSteamLoco)
+            {
+                tuple = type switch
+                {
+                    InteriorControlsManager.ControlType.Reverser => (LocalizationAPI.L("car/tut/cutoff"), LocalizationAPI.L("tutorial/control/cutoff")),
+                    InteriorControlsManager.ControlType.Throttle => (LocalizationAPI.L("car/tut/regulator"), LocalizationAPI.L("tutorial/control/regulator")),
+                    InteriorControlsManager.ControlType.Horn => (LocalizationAPI.L("car/tut/whistle"), LocalizationAPI.L("tutorial/control/horn")),
+                    InteriorControlsManager.ControlType.IndCabLight => (LocalizationAPI.L("car/tut/gearlight"), LocalizationAPI.L("tutorial/control/gear_light")),
+                    _ => (LocalizationAPI.L("car/tut/" + type.ToString().ToLower()), LocalizationAPI.L("tutorial/control/" + type.ToString().ToLower())),
+                };
+            }
+            else
+            {
+                tuple.Name = (type == InteriorControlsManager.ControlType.HeadlightsFront && singleHeadlights)
+                    ? LocalizationAPI.L("car/tut/headlights")
+                    : LocalizationAPI.L("car/tut/" + type.ToString().ToLower());
+
+                switch (type)
+                {
+                    case InteriorControlsManager.ControlType.IndHeadlightsTypeFront:
+                    case InteriorControlsManager.ControlType.IndHeadlightsTypeRear:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/indheadlightstype");
+                        break;
+                    case InteriorControlsManager.ControlType.IndHeadlights1Front:
+                    case InteriorControlsManager.ControlType.IndHeadlights1Rear:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/indheadlights1");
+                        break;
+                    case InteriorControlsManager.ControlType.IndHeadlights2Front:
+                    case InteriorControlsManager.ControlType.IndHeadlights2Rear:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/indheadlights2");
+                        break;
+                    default:
+                        tuple.Description = LocalizationAPI.L("tutorial/control/" + type.ToString().ToLower());
+                        break;
+                }
+            }
+
+            var message = new ControlIconQuickTutorialMessage(tuple.Name, tuple.Description, 2);
             return message;
         }
 

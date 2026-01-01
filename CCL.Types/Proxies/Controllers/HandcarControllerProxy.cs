@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Controllers
 {
+    [AddComponentMenu("CCL/Proxies/Controllers/Handcar Controller Proxy")]
     public class HandcarControllerProxy : MonoBehaviour, IHasPortIdFields
     {
         public Animator handlebarAnimator = null!;

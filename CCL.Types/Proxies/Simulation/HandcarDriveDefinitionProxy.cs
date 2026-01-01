@@ -4,11 +4,12 @@ using UnityEngine;
 
 namespace CCL.Types.Proxies.Simulation
 {
+    [AddComponentMenu("CCL/Proxies/Simulation/Handcar Drive Definition Proxy")]
     public class HandcarDriveDefinitionProxy : SimComponentDefinitionProxy, IH1Defaults
     {
         public float maxTorqueProduction = 1000f;
 
-        [Tooltip("x-axis should be in [0-1] range")]
+        [Tooltip("X-axis should be in [0, 1] range")]
         public AnimationCurve positionDiffToTorque = null!;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
