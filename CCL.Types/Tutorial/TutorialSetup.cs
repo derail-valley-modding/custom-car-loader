@@ -129,6 +129,7 @@ namespace CCL.Types.Tutorial
             public OverridableObject Voltage = new OverridableObject();
             public OverridableObject Fuel = new OverridableObject();
             public OverridableObject Oil = new OverridableObject();
+            public NonOverridableObject TransmissionOil = new NonOverridableObject();
         }
 
         [Header("Conditions")]

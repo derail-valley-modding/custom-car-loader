@@ -247,7 +247,10 @@ namespace CCL.Importer
 
                 var oil = interiorIndicators?.transmissionOil ?? externalIndicators?.transmissionOil;
                 c.AddAutomaticLubricatorStep(oil);
-                c.AddLookAndAcknowledge(oil, LocalizationAPI.L("car/tut/oil_bearing"), LocalizationAPI.L("tutorial/loco/ind_oil_bearing"));
+                if (settings.Indicators.TransmissionOil.Show)
+                {
+                    c.AddLookAndAcknowledge(oil, LocalizationAPI.L("car/tut/oil_bearing"), LocalizationAPI.L("tutorial/loco/ind_oil_bearing"));
+                }
 
                 foreach (var item in trainset)
                 {
@@ -450,7 +453,7 @@ namespace CCL.Importer
 
             if (settings.Indicators.Speedometer.Show)
             {
-                c.AddLookAndAcknowledge(interiorIndicators?.speed ?? externalIndicators?.speed,
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Speedometer.Override, interiorIndicators?.speed ?? externalIndicators?.speed),
                     LocalizationAPI.L("car/tut/speedometer"), LocalizationAPI.L("tutorial/loco/ind_speed"));
             }
 

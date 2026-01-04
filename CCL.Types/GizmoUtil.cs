@@ -277,6 +277,17 @@ namespace CCL.Types
             }
         }
 
+        public static void DrawGradientLine(Vector3 start, Vector3 end, Color startColour, Color endColour)
+        {
+            var dif = (end - start) / GIZMO_SEGMENTS;
+
+            for (int i = 0; i < GIZMO_SEGMENTS; i++)
+            {
+                Gizmos.color = Color.Lerp(startColour, endColour, i / (GIZMO_SEGMENTS - 1.0f));
+                Gizmos.DrawLine(start, start += dif);
+            }
+        }
+
         public class MatrixScope : IDisposable
         {
             private readonly Matrix4x4 _matrix;
@@ -290,6 +301,11 @@ namespace CCL.Types
             public void Dispose()
             {
                 Gizmos.matrix = _matrix;
+            }
+
+            public static MatrixScope LocalTransform(Transform t)
+            {
+                return new MatrixScope(t.localToWorldMatrix);
             }
         }
     }

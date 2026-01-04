@@ -30,13 +30,18 @@ namespace CCL.Types.Proxies.Controls
 
         private void OnDrawGizmos()
         {
-            Vector3 movedOffset = transform.TransformPoint(Vector3.up * linearLimit * -2.0f);
+            if (useCustomConnectionAnchor && connectionAnchor == null) return;
 
-            Gizmos.color = START_COLOR;
-            Gizmos.DrawWireSphere(transform.position, 0.01f);
-            Gizmos.color = END_COLOR;
-            Gizmos.DrawLine(transform.position, movedOffset);
-            Gizmos.DrawWireSphere(movedOffset, 0.01f);
+            Vector3 movedOffset = Vector3.up * linearLimit;
+
+            using (GizmoUtil.MatrixScope.LocalTransform(useCustomConnectionAnchor ? connectionAnchor : transform))
+            {
+                GizmoUtil.DrawGradientLine(movedOffset, -movedOffset, START_COLOR, END_COLOR);
+                Gizmos.color = START_COLOR;
+                Gizmos.DrawWireSphere(movedOffset, 0.01f);
+                Gizmos.color = END_COLOR;
+                Gizmos.DrawWireSphere(-movedOffset, 0.01f);
+            }
         }
     }
 }
