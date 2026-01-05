@@ -307,9 +307,17 @@ namespace CCL.Creator.Validators
                 goto AddResults;
             }
 
-            if (car.KindSelection != DVTrainCarKind.Car && car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
+            if (car.KindSelection != DVTrainCarKind.Car)
             {
-                carResult.Warning("Car is not of generic car kind but has no delete prevention set", car);
+                if (car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
+                {
+                    carResult.Warning("Car is not of generic car kind but has no delete prevention set", car);
+                }
+
+                if (car.carIdPrefix != "-")
+                {
+                    carResult.Warning("Car is not of generic car kind but ID prefix is not \"-\"", car);
+                }
             }
 
             foreach (var validator in SortedSteps)

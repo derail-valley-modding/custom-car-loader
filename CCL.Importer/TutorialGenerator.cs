@@ -770,7 +770,7 @@ namespace CCL.Importer
                 }
 
                 c.BeginNewPhase();
-                CCLPlugin.LogVerbose($"Tutorial phase {PhaseDisplay()}: {name}");
+                CCLPlugin.Log($"Tutorial phase {PhaseDisplay()}: {name}");
             }
 
             void AddCustomPhase(TutorialPhase phase)
@@ -1008,8 +1008,7 @@ namespace CCL.Importer
                 }
             }
 
-            var message = new ControlIconQuickTutorialMessage(tuple.Name, tuple.Description, 2);
-            return message;
+            return new ControlIconQuickTutorialMessage(tuple.Name, tuple.Description, 2);
         }
 
         private static bool HasShovelPile(TrainCar car)
