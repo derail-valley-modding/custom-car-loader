@@ -161,17 +161,17 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            // Check fuse feeders.
-            var fuseFeeders = GetAllOfType<InteractableFuseFeederProxy>(livery);
+            // Check things that can set fuses.
+            var fuseSetters = connectionDef.executionOrder.OfType<ICanSetFuses>().Concat(GetAllOfType<InteractableFuseFeederProxy>(livery));
 
             foreach (var hasFuses in components)
             {
                 foreach (var fuse in hasFuses.ExposedFuses)
                 {
                     string fullId = $"{hasFuses.ID}.{fuse.id}";
-                    if (!CheckFuseFeederExists(fuseFeeders, fullId))
+                    if (!CheckFuseSetterExists(fuseSetters, fullId))
                     {
-                        result.Warning($"Fuse \"{fullId}\" has no interactable fuse feeder", hasFuses);
+                        result.Warning($"Fuse \"{fullId}\" has no interactable fuse feeder or controller", hasFuses);
                     }
                 }
             }
@@ -276,9 +276,9 @@ namespace CCL.Creator.Validators
             return feeders.Any(pf => pf.portId == controlPortId);
         }
 
-        private bool CheckFuseFeederExists(IEnumerable<InteractableFuseFeederProxy> feeders, string fuseId)
+        private bool CheckFuseSetterExists(IEnumerable<ICanSetFuses> setters, string fuseId)
         {
-            return feeders.Any(ff => ff.fuseId == fuseId);
+            return setters.Any(x => x.SettableFuses.Any(y => y == fuseId));
         }
     }
 }

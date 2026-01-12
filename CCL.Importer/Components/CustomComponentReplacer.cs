@@ -73,6 +73,7 @@ namespace CCL.Importer.Components
             CreateMap<SteamMechanicalStokerDefinition, SteamMechanicalStokerDefinitionInternal>().AutoCacheAndMap();
             CreateMap<FuseLogicDefinition, FuseLogicDefinitionInternal>().AutoCacheAndMap();
             CreateMap<MultipleFuseLogicDefinition, MultipleFuseLogicDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<ConstantMultiplierOffsetDefinition, ConstantMultiplierOffsetDefinitionInternal>().AutoCacheAndMap();
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();

@@ -9,7 +9,7 @@ using static CCL.Types.Components.Simulation.FuseLogicDefinition;
 namespace CCL.Types.Components.Simulation
 {
     [AddComponentMenu("CCL/Components/Simulation/Multiple Fuse Logic Definition")]
-    public class MultipleFuseLogicDefinition : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized
+    public class MultipleFuseLogicDefinition : SimComponentDefinitionProxy, IHasFuseIdFields, ICanSetFuses, ICustomSerialized
     {
         [FuseId(true)]
         public string[] Fuses = new string[0];
@@ -23,6 +23,16 @@ namespace CCL.Types.Components.Simulation
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => Fuses.Select(x =>
             new FuseIdField(this, nameof(Fuses), x, true));
+
+        public override IEnumerable<FuseDefinition> ExposedFuses => new[]
+        {
+            OutputFuse
+        };
+
+        public IEnumerable<string> SettableFuses => new[]
+        {
+            GetFullPortId(OutputFuse.id)
+        };
 
         public void OnValidate()
         {

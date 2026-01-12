@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Simulation
 {
     [AddComponentMenu("CCL/Proxies/Simulation/Fuse Controller Definition Proxy")]
-    public class FuseControllerDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized
+    public class FuseControllerDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICanSetFuses, ICustomSerialized
     {
         public float setThreshold = 0.5f;
         public bool isActiveWhenOverThreshold = true;
@@ -25,6 +25,11 @@ namespace CCL.Types.Proxies.Simulation
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(fuseId), fuseId)
+        };
+
+        public IEnumerable<string> SettableFuses => new[]
+        {
+            fuseId
         };
 
         public void OnValidate()
