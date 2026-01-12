@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Controls
 {
     [AddComponentMenu("CCL/Proxies/Controls/Interactable Port Feeder Proxy")]
-    public class InteractablePortFeederProxy : MonoBehaviour, IHasPortIdFields
+    public class InteractablePortFeederProxy : MonoBehaviour, IHasPortIdFields, ICanSetPorts
     {
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL, false)]
         public string portId = string.Empty;
@@ -13,6 +13,11 @@ namespace CCL.Types.Proxies.Controls
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(portId), portId, DVPortType.EXTERNAL_IN, DVPortValueType.CONTROL),
+        };
+
+        public IEnumerable<string> SettablePorts => new[]
+        {
+            portId
         };
     }
 }

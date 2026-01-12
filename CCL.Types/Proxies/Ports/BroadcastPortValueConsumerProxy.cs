@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Ports
 {
     [AddComponentMenu("CCL/Proxies/Ports/Broadcast Port Value Consumer Proxy")]
-    public class BroadcastPortValueConsumerProxy : MonoBehaviour, IHasPortIdFields
+    public class BroadcastPortValueConsumerProxy : MonoBehaviour, IHasPortIdFields, ICanSetPorts
     {
         [PortId(null, null, true)]
         public string consumerPortId = string.Empty;
@@ -17,6 +17,11 @@ namespace CCL.Types.Proxies.Ports
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(consumerPortId), consumerPortId),
+        };
+
+        public IEnumerable<string> SettablePorts => new[]
+        {
+            consumerPortId
         };
     }
 }

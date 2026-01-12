@@ -39,11 +39,16 @@ namespace CCL.Creator.Validators
 
             void NoMoreThanOne<T>(GameObject prefab)
             {
-                if (prefab.GetComponentsInChildren<T>().Length > 1)
+                var comps = prefab.GetComponentsInChildren<T>();
+
+                if (comps.Length > 0)
                 {
                     result ??= Pass();
 
-                    result.Fail($"Cannot have more than 1 {typeof(T).Name} component in the prefab");
+                    if (comps.Length > 1)
+                    {
+                        result.Fail($"Cannot have more than 1 {typeof(T).Name} component in the prefab");
+                    }
                 }
             }
         }

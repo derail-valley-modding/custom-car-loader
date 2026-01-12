@@ -143,11 +143,13 @@ namespace CCL.Creator.Validators
                 .Cast<SimComponentDefinitionProxy>()
                 .Concat(GetAllOfType<GenericControlDefinitionProxy>(livery));
 
-            var feeders = GetAllOfType<InteractablePortFeederProxy>(livery);
+            var portSetters = connectionDef.executionOrder.OfType<ICanSetPorts>()
+                .Concat(GetAllOfType<InteractablePortFeederProxy>(livery))
+                .Concat(GetAllOfType<BroadcastPortValueConsumerProxy>(livery));
 
             foreach (var externalControl in controls)
             {
-                if (!CheckPortFeederExists(feeders, $"{externalControl.ID}.EXT_IN"))
+                if (!CheckPortSetterExists(portSetters, $"{externalControl.ID}.EXT_IN"))
                 {
                     result.Warning($"Control \"{externalControl.ID}\" has no interactable port feeder", externalControl);
                 }
@@ -155,14 +157,15 @@ namespace CCL.Creator.Validators
 
             foreach (var gearshift in GetAllOfType<ManualTransmissionInputDefinitionProxy>(livery))
             {
-                if (!CheckPortFeederExists(feeders, $"{gearshift.ID}.CONTROL_EXT_IN"))
+                if (!CheckPortSetterExists(portSetters, $"{gearshift.ID}.CONTROL_EXT_IN"))
                 {
                     result.Warning($"Control \"{gearshift.ID}\" has no interactable port feeder", gearshift);
                 }
             }
 
             // Check things that can set fuses.
-            var fuseSetters = connectionDef.executionOrder.OfType<ICanSetFuses>().Concat(GetAllOfType<InteractableFuseFeederProxy>(livery));
+            var fuseSetters = connectionDef.executionOrder.OfType<ICanSetFuses>()
+                .Concat(GetAllOfType<InteractableFuseFeederProxy>(livery));
 
             foreach (var hasFuses in components)
             {
@@ -271,9 +274,9 @@ namespace CCL.Creator.Validators
             return result;
         }
 
-        private bool CheckPortFeederExists(IEnumerable<InteractablePortFeederProxy> feeders, string controlPortId)
+        private bool CheckPortSetterExists(IEnumerable<ICanSetPorts> setters, string controlPortId)
         {
-            return feeders.Any(pf => pf.portId == controlPortId);
+            return setters.Any(x => x.SettablePorts.Any(y => y == controlPortId));
         }
 
         private bool CheckFuseSetterExists(IEnumerable<ICanSetFuses> setters, string fuseId)
