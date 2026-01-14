@@ -16,6 +16,7 @@ namespace CCL.Creator.Wizards.SimSetup
         {
             yield return "Dummy Fusebox";
             yield return "Dummy Traction";
+            yield return "No Controls";
         }
 
         public override void CreateSimForBasisImpl(int basisIndex)
