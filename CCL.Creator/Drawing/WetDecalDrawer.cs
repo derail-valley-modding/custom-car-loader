@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using static CCL.Types.Proxies.Weather.WetDecalEnums;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Drawing
 {
     internal class WetDecalDrawer
     {
