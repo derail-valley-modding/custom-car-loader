@@ -52,6 +52,14 @@ namespace CCL.Types.Proxies.Controls
         public float gizmoRadius = 0.5f;
         public float angleOffset = 0;
 
+        public override void OnValidate()
+        {
+            jointLimitMin = Mathf.Clamp(jointLimitMin, -177f, 177f);
+            jointLimitMax = Mathf.Clamp(jointLimitMax, -177f, 177f);
+
+            base.OnValidate();
+        }
+
         private void OnDrawGizmos()
         {
             Color startColor = invertDirection ? END_COLOR : START_COLOR;

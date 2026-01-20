@@ -70,7 +70,7 @@ namespace CCL.Types
         public float wheelRadius = 0.459f;
         public bool useDefaultWheelRotation = true;
         public bool UseCustomGauge = false;
-        [Tooltip("Value in millimetres")]
+        [EnableIf(nameof(UseCustomGauge)), Tooltip("Value in millimetres")]
         public int Gauge = 1435;
 
         [Header("Cargo")]

@@ -307,6 +307,11 @@ namespace CCL.Types
             {
                 return new MatrixScope(t.localToWorldMatrix);
             }
+
+            public static MatrixScope LocalTransformNoScale(Transform t)
+            {
+                return new MatrixScope(t.LocalToWorldNoScale());
+            }
         }
     }
 }

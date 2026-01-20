@@ -19,6 +19,7 @@ namespace CCL.Creator.Utility
             public static readonly Color CONFIRM_ACTION = new Color(0.50f, 1.80f, 0.75f);
             public static readonly Color WARNING = new Color(1.75f, 1.40f, 0.25f);
             public static readonly Color DELETE_ACTION = new Color(2.00f, 0.75f, 0.75f);
+            public static readonly Color INFO = new Color(0.55f, 0.80f, 1.75f);
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
     public enum SelfValidationResult
     {
         Pass,
+        Info,
         Warning,
         Fail,
         Critical

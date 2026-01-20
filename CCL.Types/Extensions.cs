@@ -67,6 +67,11 @@ namespace CCL.Types
             return result != null;
         }
 
+        public static Matrix4x4 LocalToWorldNoScale(this Transform transform)
+        {
+            return Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+        }
+
         #endregion
 
         #region Enumerables
