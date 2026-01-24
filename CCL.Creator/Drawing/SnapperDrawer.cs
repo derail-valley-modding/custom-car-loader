@@ -1,5 +1,4 @@
-﻿using CCL.Types;
-using CCL.Types.Proxies.Controls.VR;
+﻿using CCL.Types.Proxies.Controls.VR;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,20 +11,31 @@ namespace CCL.Creator.Drawing
         {
             if (snapper.lineStart == null) return;
 
-            var end = Vector3.up * snapper.lineLength;
-            var from = Quaternion.Euler(0, -snapper.minAngle, 0) * Vector3.right;
+            var start = snapper.lineStart.position;
+            var end = snapper.lineStart.TransformPoint(Vector3.up * snapper.lineLength);
+            var dir = end - start;
+
             var tAngle = snapper.maxAngle - snapper.minAngle;
 
-            Handles.matrix = snapper.lineStart.localToWorldMatrix;
-            Handles.color = Color.cyan;
+            if (tAngle >= 360)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(start, end);
+                Gizmos.DrawSphere(start, 0.01f);
+                Gizmos.DrawSphere(end, 0.01f);
+            }
+            else
+            {
+                var from = snapper.lineStart.TransformDirection(Quaternion.AngleAxis(snapper.minAngle, Vector3.up) * Vector3.right);
 
-            Handles.DrawLine(Vector3.zero, end);
-            Handles.DrawSolidArc(Vector3.zero, Vector3.up, from, -tAngle, 0.01f);
-            Handles.DrawSolidArc(end, Vector3.up, from, -tAngle, 0.01f);
-            Handles.DrawWireArc(Vector3.zero, Vector3.up, from, 360, 0.01f);
-            Handles.DrawWireArc(end, Vector3.up, from, 360, 0.01f);
+                Handles.color = Color.cyan;
 
-            Handles.matrix = Matrix4x4.identity;
+                Handles.DrawLine(start, end);
+                Handles.DrawSolidArc(start, dir, from, tAngle, 0.01f);
+                Handles.DrawSolidArc(end, dir, from, tAngle, 0.01f);
+                Handles.DrawWireArc(start, dir, from, 360, 0.01f);
+                Handles.DrawWireArc(end, dir, from, 360, 0.01f);
+            }
         }
     }
 }

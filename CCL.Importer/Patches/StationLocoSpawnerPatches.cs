@@ -12,7 +12,7 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(StationLocoSpawner))]
     internal class StationLocoSpawnerPatches
     {
-        private static Regex s_regex = new("\\[Y\\]_\\[([a-z0-9]*)\\]_\\[(.*)]", RegexOptions.IgnoreCase);
+        private static readonly Regex s_regex = new("\\[Y\\]_\\[([a-z0-9]*)\\]_\\[(.*)]", RegexOptions.IgnoreCase);
 
         [HarmonyPostfix, HarmonyPatch(nameof(StationLocoSpawner.Start))]
         private static void StartPostfix(StationLocoSpawner __instance)
@@ -31,16 +31,16 @@ namespace CCL.Importer.Patches
                 {
                     foreach (var group in variant.LocoSpawnGroups)
                     {
-                        // Safety check.
-                        if (group.IsDisallowedSpawn())
-                        {
-                            CCLPlugin.Error($"Attempted to add a custom loco ('{variant.id}') to a disallowed spawn track");
-                            continue;
-                        }
-
                         // If the group is supposed to use this spawner...
                         if (group.Track.ToName() == __instance.name)
                         {
+                            // Safety check.
+                            if (group.IsDisallowedSpawn())
+                            {
+                                CCLPlugin.Error($"Attempted to add a custom loco ('{variant.id}') to a disallowed spawn track");
+                                continue;
+                            }
+
                             var wrapper = FromGroup(variant, group);
 
                             CCLPlugin.LogVerbose($"Injecting loco spawn group [{string.Join(", ", wrapper.liveries.Select(x => x.id))}]...");

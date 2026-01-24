@@ -210,7 +210,7 @@ namespace CCL.Importer
 
                 foreach (var livery in car.liveries)
                 {
-                    if (Globals.G.Types.Liveries.Any(x => x.id == livery.id))
+                    if (CarTypeInjector.IdToLiveryMap.ContainsKey(livery.id) || Globals.G.Types.Liveries.Any(x => x.id == livery.id))
                     {
                         CCLPlugin.Error($"Failed to load car {car.id}, livery ID '{livery.id}' already ingame");
                         return false;

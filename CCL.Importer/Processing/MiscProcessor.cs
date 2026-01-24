@@ -21,11 +21,7 @@ namespace CCL.Importer.Processing
             foreach (var prefab in context.Car.AllPrefabs)
             {
                 ProcessSetPhysicsMaterial(prefab);
-            }
-
-            if (context.Car.interiorPrefab != null)
-            {
-
+                ProcessBedButtonProperties(prefab);
             }
         }
 
