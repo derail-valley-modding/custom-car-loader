@@ -21,6 +21,7 @@ namespace CCL.Types.Tutorial.Steps
         public float MaxValue = 1.0f;
         public MonitorMode Mode = MonitorMode.Above;
         public bool ManualDismiss = true;
+        public float MinMonitoringTime = 3.0f;
 
         public static string ModeToKey(MonitorMode mode) => mode switch
         {

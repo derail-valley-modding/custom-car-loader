@@ -7,6 +7,8 @@ namespace CCL.Importer
     {
         [Draw("Prefer CCL In Job Generation", Tooltip = "Forces job generation to use CCL cars if available for that cargo")]
         public bool PreferCCLInJobs = false;
+        [Draw("Keep DE2 Spawns", Tooltip = "Keeps tracks that only spawn DE2s exclusive to DE2s")]
+        public bool KeepDE2Spawns = false;
 
         [Draw("Use Verbose Logging", Tooltip = "Enable this if you experience bugs or are developing your own custom car")]
         public bool UseVerboseLogging = false;
