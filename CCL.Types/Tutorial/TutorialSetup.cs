@@ -174,6 +174,7 @@ namespace CCL.Types.Tutorial
         // Misc.
         [Space]
         public bool ShowBrakes = true;
+        [EnableIf(nameof(ShowBrakes))]
         public bool EngageThrottleForBrakeCharging = true;
 
         // Movement.
