@@ -63,7 +63,7 @@ namespace CCL.Types.Proxies.Headlights
                 return this.FailForNullEntries(nameof(headlightSetupsRear), out message);
             }
 
-            if (GetComponentInParent<CarLightsOptimizerProxy>() == null)
+            if (this.GetComponentInParentInactive<CarLightsOptimizerProxy>() == null)
             {
                 message = $"missing {nameof(CarLightsOptimizerProxy)}";
                 return SelfValidationResult.Fail;

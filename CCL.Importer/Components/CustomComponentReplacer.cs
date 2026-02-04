@@ -59,6 +59,8 @@ namespace CCL.Importer.Components
             CreateMap<IndicatorShaderCustomValue, IndicatorShaderCustomValueInternal>().AutoCacheAndMap();
             CreateMap<IndicatorTMP, IndicatorTMPInternal>().AutoCacheAndMap();
             CreateMap<IndicatorGaugeDelta, IndicatorGaugeDeltaInternal>().AutoCacheAndMap();
+            CreateMap<IndicatorLCDDriver, IndicatorLCDDriverInternal>().AutoCacheAndMap()
+                .ForMember(d => d.LCD, o => o.MapFrom(s => Mapper.GetFromCache(s.LCD)));
 
             CreateMap<IndicatorHandbrakeReader, IndicatorHandbrakeReaderInternal>().AutoCacheAndMap();
         }

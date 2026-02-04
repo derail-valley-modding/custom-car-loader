@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
+    [AddComponentMenu("CCL/Components/Simulation/Combined Control Definition")]
     public class CombinedControlDefinition : SimComponentDefinitionProxy
     {
         public float NeutralValue = 0.5f;

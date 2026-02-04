@@ -111,7 +111,7 @@ namespace CCL.Creator.Validators
     }
 
     [RequiresStep(typeof(LiverySettingsValidator))]
-    internal class InteriorTransformValidator : LiveryValidator
+    internal class InteriorValidator : LiveryValidator
     {
         public override string TestName => "Interior";
 
@@ -144,6 +144,11 @@ namespace CCL.Creator.Validators
                 {
                     result.Warning($"{livery.id} - Interior prefab exists but {CarPartNames.INTERIOR_LOD} does not", livery.interiorPrefab);
                 }
+            }
+
+            if (livery.parentType != null && livery.parentType.HUDLayout != null && livery.interiorPrefab == null)
+            {
+                result.Fail($"{livery.id} - HUD layout needs an interior prefab to exist");
             }
 
             return result;

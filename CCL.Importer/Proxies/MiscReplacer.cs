@@ -2,12 +2,12 @@
 using CCL.Types;
 using CCL.Types.Proxies;
 using DV;
+using DV.Customization.Gadgets;
 using DV.Hacks;
 using DV.Interaction;
 using DV.Optimizers;
 using DV.RemoteControls;
 using DV.Simulation.Cars;
-using DV.ThingTypes.TransitionHelpers;
 using LocoSim.DVExtensions.Test;
 using System.Linq;
 using UnityEngine;
@@ -17,10 +17,18 @@ namespace CCL.Importer.Proxies
     internal class MiscReplacer : Profile
     {
         private static GameObject? s_cabHightlightGlow = null;
+        private static LCDDriver? s_locoRemoteLCD = null;
+        private static LCDDriver? s_speedometerLCD = null;
+        private static LCDDriver? s_clockLCD = null;
 
-        private static GameObject CabHighlightGlow =>
-            Extensions.GetCached(ref s_cabHightlightGlow,
-                () => DV.ThingTypes.TrainCarType.LocoShunter.ToV2().prefab.transform.Find(CarPartNames.Cab.HIGHLIGHT_GLOW).gameObject);
+        private static GameObject CabHighlightGlow => Extensions.GetCached(ref s_cabHightlightGlow,
+            () => QuickAccess.Locomotives.DE2.prefab.transform.Find(CarPartNames.Cab.HIGHLIGHT_GLOW).gameObject);
+        private static LCDDriver LocoRemoteLCD => Extensions.GetCached(ref s_locoRemoteLCD,
+            () => QuickAccess.Items.LocoRemote.GetComponentInChildren<LCDDriver>(true));
+        private static LCDDriver SpeedometerLCD => Extensions.GetCached(ref s_speedometerLCD,
+            () => QuickAccess.Items.DigitalSpeedometer.GetComponent<GadgetItem>().GadgetPrefab.GetComponentInChildren<LCDDriver>(true));
+        private static LCDDriver ClockLCD => Extensions.GetCached(ref s_clockLCD,
+            () => QuickAccess.Items.DigitalClock.GetComponent<GadgetItem>().GadgetPrefab.GetComponentInChildren<LCDDriver>(true));
 
         public MiscReplacer()
         {
@@ -83,6 +91,9 @@ namespace CCL.Importer.Proxies
 
             CreateMap<DE6KnifeSwitchFuseHUDHackFixProxy, DE6KnifeSwitchFuseHUDHackFix>().AutoCacheAndMap();
 
+            CreateMap<LCDDriverProxy, LCDDriver>().AutoCacheAndMap()
+                .AfterMap(LCDAfter);
+
             CreateMap<SimDataDisplaySimControllerProxy, SimDataDisplaySimController>().AutoCacheAndMap()
                 .ForMember(d => d.portIdsToPlot, o => o.MapFrom(s => s.portIdsToPlot.Concat(s.portReferenceIdsToPlot)));
         }
@@ -125,6 +136,27 @@ namespace CCL.Importer.Proxies
             instance.gameObject.SetLayer(DVLayer.Train_Walkable);
             instance.name = "WALK_blocker";
             Object.DestroyImmediate(instance);
+        }
+
+        private void LCDAfter(LCDDriverProxy proxy, LCDDriver driver)
+        {
+            if (proxy.UseCustomStyle)
+            {
+                if (proxy.customStyle != null)
+                {
+                    driver.digitModelPrefab = proxy.customStyle;
+                    return;
+                }
+
+                CCLPlugin.Error("LCD Driver wants custom style, but no prefab was set! Defaulting to regular red.");
+            }
+
+            driver.digitModelPrefab = proxy.model switch
+            {
+                LCDDriverProxy.DigitStyle.TransparentRed => SpeedometerLCD.digitModelPrefab,
+                LCDDriverProxy.DigitStyle.RegularBlack => ClockLCD.digitModelPrefab,
+                _ => LocoRemoteLCD.digitModelPrefab,
+            };
         }
     }
 }
