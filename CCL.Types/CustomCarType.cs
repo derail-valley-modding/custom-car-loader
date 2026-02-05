@@ -43,7 +43,7 @@ namespace CCL.Types
 
         public string id = string.Empty;
         public string carIdPrefix = "-";
-        [Tooltip("Check if this car should be treated as a steam locomotive")]
+        [Tooltip("Check if this car should be treated as a steam locomotive (for things like quick startup)")]
         public bool IsSteamLocomotive = false;
 
         [HideInInspector]

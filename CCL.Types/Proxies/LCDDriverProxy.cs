@@ -3,7 +3,7 @@
 namespace CCL.Types.Proxies
 {
     [AddComponentMenu("CCL/Proxies/LCD Driver Proxy")]
-    public class LCDDriverProxy : MonoBehaviour
+    public class LCDDriverProxy : MonoBehaviour, ISelfValidation
     {
         private static readonly Vector3 s_size = new Vector3(1.2f, 0, 1.7f);
         private static readonly Vector3 s_sizeDot = new Vector3(0.2f, 0, 0.2f);
@@ -49,6 +49,26 @@ namespace CCL.Types.Proxies
                     Gizmos.DrawWireCube(s_positionColon2 + offset, s_sizeDot);
                 }
             }
+        }
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (UseCustomStyle)
+            {
+                if (customStyle == null)
+                {
+                    message = "a style prefab must be assigned when custom style is selected";
+                    return SelfValidationResult.Fail;
+                }
+
+                if (customStyle.transform.childCount != 18)
+                {
+                    message = "custom style must have 18 children (dot, colon, and 16 segments) to work properly";
+                    return SelfValidationResult.Fail;
+                }
+            }
+
+            return this.Pass(out message);
         }
     }
 }

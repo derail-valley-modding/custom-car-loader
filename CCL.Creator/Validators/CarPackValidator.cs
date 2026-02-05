@@ -312,14 +312,18 @@ namespace CCL.Creator.Validators
             var carResult = new ValidationResult("Car Setup");
             results.Add(carResult);
 
+            // Validate specific settings related to the CarType here so
+            // they aren't duplicated for each livery.
             if (string.IsNullOrWhiteSpace(car.id))
             {
-                carResult.Fail("Car ID is empty!", car);
+                carResult.CriticalFail("Car ID is empty!", car);
+                goto AddResults;
             }
 
             if (car.liveries.Count == 0)
             {
-                carResult.Fail("Car has no liveries!", car);
+                carResult.CriticalFail("Car has no liveries!", car);
+                goto AddResults;
             }
 
             if (car.liveries.ContainsDuplicates(x => x.id))
@@ -356,7 +360,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            AddResults:
+        AddResults:
             _results.Add(new CarResults(car.id, results));
         }
 
