@@ -29,7 +29,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             };
         }
 
-        [Header("Per oiling point")]
+        [Header("Per Oiling Point")]
         public float capacity = 5f;
         public float consumptionPerRev = 0.001f;
         public float pointOpenConsumptionMultiplier = 100f;

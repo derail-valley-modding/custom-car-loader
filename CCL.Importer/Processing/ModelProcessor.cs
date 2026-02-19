@@ -12,8 +12,6 @@ namespace CCL.Importer.Processing
     internal class ModelProcessor
     {
         private static readonly AggregateCatalog _catalog;
-        private static Transform? s_holder;
-        private static Transform Holder => Extensions.GetCached(ref s_holder, CreateHolder);
 
         static ModelProcessor()
         {
@@ -87,23 +85,9 @@ namespace CCL.Importer.Processing
             if (Car.explodedExternalInteractablesPrefab) ModelUtil.SetLayersRecursiveAndExclude(Car.explodedExternalInteractablesPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
         }
 
-        private static Transform CreateHolder()
-        {
-            var go = new GameObject("[CCL FAILURES]");
-            go.AddComponent<ScriptForLoadFailures>();
-            Object.DontDestroyOnLoad(go);
-
-            go = new GameObject("[CCL HOLDER]");
-            go.SetActive(false);
-            go.AddComponent<DummyScriptToInspectNonObjects>();
-            Object.DontDestroyOnLoad(go);
-
-            return go.transform;
-        }
-
         public static GameObject CreateModifiablePrefab(GameObject gameObject)
         {
-            GameObject newFab = Object.Instantiate(gameObject, Holder);
+            GameObject newFab = Object.Instantiate(gameObject, ObjectHelper.Holder);
 
             // No (Clone), makes it look bad.
             newFab.name = gameObject.name;

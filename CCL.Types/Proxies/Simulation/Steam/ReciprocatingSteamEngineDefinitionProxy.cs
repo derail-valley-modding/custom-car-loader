@@ -14,11 +14,11 @@ namespace CCL.Types.Proxies.Simulation.Steam
         public float minCutoff = 0.05f;
         public float maxCutoff = 0.9f;
 
-        [Header("Throttle and steam chest")]
+        [Header("Throttle and Steam Chest")]
         public float throttleMaxFlow;
         public float steamChestVolume;
 
-        [Header("Water in cylinders")]
+        [Header("Water in Cylinders")]
         public float cylinderHeatRate = 0.05f;
         public float maxCondensationRate = 0.015f;
         public float primingRate = 0.05f;

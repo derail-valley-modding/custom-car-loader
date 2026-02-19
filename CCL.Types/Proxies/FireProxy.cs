@@ -33,6 +33,8 @@ namespace CCL.Types.Proxies
             }
         }
 
+        #region Defaults
+
         public void ApplyS060Defaults()
         {
             fireboxDoorCurve = new AnimationCurve
@@ -56,5 +58,7 @@ namespace CCL.Types.Proxies
                 },
             };
         }
+
+        #endregion
     }
 }

@@ -3,7 +3,7 @@ using CCL.Types.Proxies.Simulation.Steam;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Inspector.SimComponents
 {
     [CustomEditor(typeof(ReciprocatingSteamEngineDefinitionProxy)), CanEditMultipleObjects]
     internal class ReciprocatingSteamEngineDefinitionProxyEditor : Editor
