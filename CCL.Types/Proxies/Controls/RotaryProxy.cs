@@ -40,7 +40,7 @@ namespace CCL.Types.Proxies.Controls
         public AudioClip drag = null!;
         public AudioClip limitHit = null!;
 
-        [Header("Editor visualization")]
+        [Header("Editor Visualization")]
         public float gizmoRadius = 0.02f;
         public float angleOffset = 0;
 

@@ -19,7 +19,7 @@ namespace CCL.Types.Proxies.Controls
         public Vector3 touchInteractionAxis = Vector3.up;
         public bool disableTouchUse;
 
-        [Header("Editor visualization")]
+        [Header("Editor Visualization")]
         public float gizmoRadius = 0.05f;
         public float angleOffset = 0;
 

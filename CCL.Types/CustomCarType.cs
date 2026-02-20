@@ -73,12 +73,12 @@ namespace CCL.Types
         [EnableIf(nameof(UseCustomGauge)), Tooltip("Value in millimetres")]
         public int Gauge = 1435;
 
-        [Header("Cargo")]
-        public CargoSetup? CargoSetup;
-
         [Space]
         [Tooltip("Despawn behaviour")]
         public UnusedCarDeletePreventionMode unusedCarDeletePreventionMode;
+
+        [Header("Cargo - optional")]
+        public CargoSetup? CargoSetup;
 
         [Header("Audio - optional")]
         public GameObject? SimAudioPrefab;
@@ -129,6 +129,7 @@ namespace CCL.Types
         public void ForceValidation()
         {
             OnValidate();
+
             if (liveries != null)
             {
                 foreach (var child in liveries)

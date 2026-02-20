@@ -48,7 +48,7 @@ namespace CCL.Types.Proxies.Controls
         public AudioClip limitHit = null!;
         public bool limitVibration;
 
-        [Header("Editor visualization")]
+        [Header("Editor Visualization")]
         public float gizmoRadius = 0.5f;
         public float angleOffset = 0;
 

@@ -42,7 +42,7 @@ namespace CCL.Types.Proxies.Controls
         public float notchAngle = 1f;
         public bool enableWhenTouching;
 
-        [Header("Editor visualization")]
+        [Header("Editor Visualization")]
         public float gizmoScale = 0.5f;
         public float angleOffset = 0;
 

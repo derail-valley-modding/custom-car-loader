@@ -3,6 +3,7 @@ using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Customization;
 using CCL.Types.Proxies.Ports;
+using CCL.Types.Proxies.Weather;
 using System.Linq;
 using UnityEngine;
 
@@ -124,6 +125,13 @@ namespace CCL.Creator.Validators
                 if (livery.interiorPrefab.transform.localPosition != Vector3.zero)
                 {
                     result.Warning($"'{livery.id}' - Interior is not centered at {Vector3.zero}", livery.interiorPrefab);
+                }
+
+                var openables = livery.interiorPrefab.GetComponentsInChildren<OpenableControlProxy>();
+
+                if (openables.Length > 0)
+                {
+                    result.Warning($"'{livery.id}' - Openables are not supported in the interior prefab", livery.interiorPrefab);
                 }
             }
 
