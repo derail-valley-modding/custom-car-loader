@@ -75,6 +75,14 @@ namespace CCL.Creator.Inspector
             }
 
             EditorGUILayout.Space();
+            EditorGUILayout.HelpBox("For better behaviour, execution order of sim components should follow certain rules:\n" +
+                "• First components should be inputs (controls, decoders)\n" +
+                "• Followed by resources\n" +
+                "• Followed by the main simulation components\n" +
+                "    • These should also be ordered by what they depend on (1. diesel engine → 2. generator → 3. TMs)\n" +
+                "• Followed by status readers (lamps, indicators)", MessageType.Info);
+
+            EditorGUILayout.Space();
             _orderList.DoLayoutList();
 
             EditorGUILayout.PropertyField(_autoClear);

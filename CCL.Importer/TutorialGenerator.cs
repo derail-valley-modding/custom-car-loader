@@ -552,14 +552,14 @@ namespace CCL.Importer
 
                     // Engage throttle until movement is detected.
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0.05f, 1f, QTSemantic.GentlyEngage, false);
-                    c.Phase.Add(new CarSpeedStep(loco, 1f, aboveTarget: true));
+                    c.Phase.Add(new CarSpeedStep(loco, 1f, true));
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
 
                     // Stop the loco.
                     BeginNewPhase("stop train");
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
                     c.AddOverridableControl(InteriorControlsManager.ControlType.TrainBrake, 0.5f, 1f, QTSemantic.Engage);
-                    c.Phase.Add(new CarSpeedStep(loco, 1f, aboveTarget: false));
+                    c.Phase.Add(new CarSpeedStep(loco, 1f, false));
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Reverser, 0.49f, 0.51f, QTSemantic.SetToNeutral);
                 }
             }

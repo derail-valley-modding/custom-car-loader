@@ -221,9 +221,19 @@ namespace CCL.Creator
                 // Lights.
                 case "FrontSide":
                 case "RearSide":
-                    if (go.transform.parent != null && go.transform.parent.name == "[headlights]")
+                    var headlightParent = go.transform.parent;
+                    if (headlightParent != null && headlightParent.name == "[headlights]")
                     {
                         content = EditorGUIUtility.IconContent("Lighting");
+                        txC = EditorHelpers.Colors.CONFIRM_ACTION;
+                    }
+                    break;
+
+                // Sim.
+                case "[sim]":
+                    if (go.GetComponent<Types.Proxies.Ports.SimConnectionsDefinitionProxy>() != null)
+                    {
+                        content = EditorGUIUtility.IconContent("Favorite Icon", "The main simulation object");
                         txC = EditorHelpers.Colors.CONFIRM_ACTION;
                     }
                     break;
