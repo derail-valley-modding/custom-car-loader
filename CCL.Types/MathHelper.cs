@@ -5,6 +5,7 @@ namespace CCL.Types
     public static class MathHelper
     {
         public const float Tau = Mathf.PI * 2.0f;
+        public const float RPMtoRadS = Tau / 60.0f;
 
         public static float Bezier(float p0, float p1, float p2, float p3, float t)
         {
