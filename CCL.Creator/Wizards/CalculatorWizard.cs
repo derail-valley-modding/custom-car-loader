@@ -25,7 +25,9 @@ namespace CCL.Creator.Wizards
             new GUIContent("Steam Tractive Effort",
                 "Approximate tractive effort for steam locomotives"),
             new GUIContent("Adhesion Limit",
-                "Adhesion limit")
+                "Adhesion limit"),
+            new GUIContent("Motor Voltage",
+                "Motor voltage and current for different configurations")
         };
 
         private SerializedObject _editor = null!;
@@ -63,6 +65,9 @@ namespace CCL.Creator.Wizards
                         break;
                     case 3:
                         _adhesionLimit.Draw();
+                        break;
+                    case 4:
+                        _motorVoltage.Draw();
                         break;
                     default:
                         EditorGUILayout.HelpBox("Please select an option above!", MessageType.Info);
@@ -233,6 +238,62 @@ namespace CCL.Creator.Wizards
 
         [SerializeField]
         private AdhesionLimit _adhesionLimit = new AdhesionLimit();
+
+        #endregion
+
+        #region Motor Voltage
+
+        [Serializable]
+        private class MotorVoltage
+        {
+            private float GeneratorVoltage;
+            private float MotorCurrent;
+            private Types.Proxies.Simulation.Electric.TractionMotorSetDefinitionProxy? Definition;
+
+            public void Draw()
+            {
+                GeneratorVoltage = EditorGUILayout.FloatField("Generator Voltage", GeneratorVoltage);
+                MotorCurrent = EditorGUILayout.FloatField("Current Per Motor", MotorCurrent);
+                Definition = EditorHelpers.ObjectField("TM Definition", Definition, true);
+
+                if (Definition == null)
+                {
+                    EditorGUILayout.HelpBox("Please link your current traction motor configuration in the field above", MessageType.Info);
+                    return;
+                }
+
+                for (int i = 0; i < Definition.configurations.Length; i++)
+                {
+                    EditorHelpers.DrawSeparator();
+                    EditorGUILayout.LabelField($"Config {i}");
+                    var config = Definition.configurations[i];
+                    var current = MotorCurrent * config.motorGroups.Length;
+
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        EditorGUILayout.LabelField("Group Count", $"{config.motorGroups.Length}");
+                        EditorGUILayout.LabelField("Excitation", $"{config.excitationMultiplier:P2}");
+                        EditorGUILayout.LabelField("Total Current", $"{current:F2} A");
+
+                        for (int j = 0; j < config.motorGroups.Length; j++)
+                        {
+                            EditorGUILayout.LabelField($"Group {j}");
+                            var group = config.motorGroups[j];
+                            var voltage = GeneratorVoltage / group.motorIndexes.Length * config.excitationMultiplier;
+
+                            using (new EditorGUI.IndentLevelScope())
+                            {
+                                EditorGUILayout.LabelField("Motor Count", $"{group.motorIndexes.Length}");
+                                EditorGUILayout.LabelField("Voltage/Motor", $"{voltage:F2} V");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [SerializeField]
+        private MotorVoltage _motorVoltage = new MotorVoltage();
 
         #endregion
     }

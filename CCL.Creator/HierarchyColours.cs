@@ -233,8 +233,9 @@ namespace CCL.Creator
                 case "[sim]":
                     if (go.GetComponent<Types.Proxies.Ports.SimConnectionsDefinitionProxy>() != null)
                     {
-                        content = EditorGUIUtility.IconContent("Favorite Icon", "The main simulation object");
+                        content = EditorGUIUtility.IconContent("Favorite Icon");
                         txC = EditorHelpers.Colors.CONFIRM_ACTION;
+                        content.tooltip = "The main simulation object";
                     }
                     break;
 
