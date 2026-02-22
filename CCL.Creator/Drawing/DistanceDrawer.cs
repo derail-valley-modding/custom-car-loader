@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Drawing
 {
     internal class DistanceDrawer
     {

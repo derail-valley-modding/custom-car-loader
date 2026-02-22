@@ -67,6 +67,29 @@ namespace CCL.Types
             return result != null;
         }
 
+        public static Matrix4x4 LocalToWorldNoScale(this Transform transform)
+        {
+            return Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+        }
+
+        // The default GetComponentInParent does not work on prefab assets because
+        // they are treated as inactive. A parameter to make them work was only
+        // added to a later version so it must be reimplemented...
+        public static T GetComponentInParentInactive<T>(this Component comp)
+            where T : class
+        {
+            var t = comp.transform;
+
+            while (t != null)
+            {
+                var found = t.GetComponent<T>();
+                if (found != null) return found;
+                t = t.parent;
+            }
+
+            return null!;
+        }
+
         #endregion
 
         #region Enumerables

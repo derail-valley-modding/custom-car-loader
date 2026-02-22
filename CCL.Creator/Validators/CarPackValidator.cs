@@ -14,6 +14,8 @@ namespace CCL.Creator.Validators
 {
     internal class CarPackValidator : EditorWindow
     {
+        private const string InfoKey = "Info";
+
         private static readonly AggregateCatalog s_catalog;
 
         [ImportMany]
@@ -164,6 +166,7 @@ namespace CCL.Creator.Validators
             _widths = new TableWidths();
 
             _widths.ResizeButton(" Go ");
+            _widths.ResizeResult(InfoKey);
 
             foreach (var name in Enum.GetNames(typeof(ResultStatus)))
             {
@@ -172,14 +175,12 @@ namespace CCL.Creator.Validators
 
             foreach (var entry in _settingsResult.Entries)
             {
-                _widths.ResizeName(GetName(entry));
-                _widths.ResizeMessage(GetMessage(entry));
+                ResizeEntry(entry);
             }
 
             foreach (var entry in _packResult.Entries)
             {
-                _widths.ResizeName(GetName(entry));
-                _widths.ResizeMessage(GetMessage(entry));
+                ResizeEntry(entry);
             }
 
             foreach (var carResult in _results)
@@ -188,9 +189,29 @@ namespace CCL.Creator.Validators
                 {
                     foreach (var entry in result.Entries)
                     {
-                        _widths.ResizeName(GetName(entry));
-                        _widths.ResizeMessage(GetMessage(entry));
+                        ResizeEntry(entry);
                     }
+
+                    ResizeInfo(result);
+                }
+            }
+
+            ResizeInfo(_settingsResult);
+            ResizeInfo(_packResult);
+
+            void ResizeEntry(ResultEntry entry)
+            {
+                _widths.ResizeName(GetName(entry));
+                _widths.ResizeMessage(GetMessage(entry));
+            }
+
+            void ResizeInfo(ValidationResult result)
+            {
+                if (result.Info.Count == 0) return;
+
+                foreach (var info in result.Info)
+                {
+                    _widths.ResizeMessage(info);
                 }
             }
         }
@@ -291,14 +312,18 @@ namespace CCL.Creator.Validators
             var carResult = new ValidationResult("Car Setup");
             results.Add(carResult);
 
+            // Validate specific settings related to the CarType here so
+            // they aren't duplicated for each livery.
             if (string.IsNullOrWhiteSpace(car.id))
             {
-                carResult.Fail("Car ID is empty!", car);
+                carResult.CriticalFail("Car ID is empty!", car);
+                goto AddResults;
             }
 
             if (car.liveries.Count == 0)
             {
-                carResult.Fail("Car has no liveries!", car);
+                carResult.CriticalFail("Car has no liveries!", car);
+                goto AddResults;
             }
 
             if (car.liveries.ContainsDuplicates(x => x.id))
@@ -307,9 +332,17 @@ namespace CCL.Creator.Validators
                 goto AddResults;
             }
 
-            if (car.KindSelection != DVTrainCarKind.Car && car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
+            if (car.KindSelection != DVTrainCarKind.Car)
             {
-                carResult.Warning("Car is not of generic car kind but has no delete prevention set", car);
+                if (car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
+                {
+                    carResult.Warning("Car is not of generic car kind but has no delete prevention set", car);
+                }
+
+                if (car.carIdPrefix != "-")
+                {
+                    carResult.Warning("Car is not of generic car kind but ID prefix is not \"-\"", car);
+                }
             }
 
             foreach (var validator in SortedSteps)
@@ -327,7 +360,7 @@ namespace CCL.Creator.Validators
                 }
             }
 
-            AddResults:
+        AddResults:
             _results.Add(new CarResults(car.id, results));
         }
 
@@ -359,6 +392,8 @@ namespace CCL.Creator.Validators
             EditorHelpers.DrawHeader("Pack");
             DrawResults(_packResult.Entries, _widths);
             DrawResults(_settingsResult.Entries, _widths);
+            DrawInfos(_packResult.Info, _widths);
+            DrawInfos(_settingsResult.Info, _widths);
             EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
 
@@ -413,7 +448,12 @@ namespace CCL.Creator.Validators
             EditorHelpers.DrawHeader(results.CarId);
 
             DrawResults(results.Results.SelectMany(x => x.Entries), widths);
-            
+
+            foreach (var result in results.Results)
+            {
+                DrawInfos(result.Info, widths);
+            }
+
             EditorGUILayout.Space();
             EditorGUILayout.EndVertical();
         }
@@ -468,6 +508,26 @@ namespace CCL.Creator.Validators
             {
                 // Padding so the buttons aren't misaligned.
                 GUILayout.Label(" ", width, GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
+            }
+        }
+
+        private static void DrawInfos(List<string> infos, TableWidths widths)
+        {
+            var options = widths.ToOptions();
+
+            foreach (var info in infos)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                EditorGUILayout.LabelField($" ", options[0]);
+
+                EditorGUILayout.LabelField(InfoKey, EditorHelpers.StyleWithTextColour(EditorHelpers.Colors.INFO, GUI.skin.label), options[1]);
+
+                GUILayout.Label(" ", options[2], GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
+
+                EditorGUILayout.LabelField(info, options[3]);
+
+                EditorGUILayout.EndHorizontal();
             }
         }
 

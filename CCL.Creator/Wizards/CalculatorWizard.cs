@@ -25,7 +25,11 @@ namespace CCL.Creator.Wizards
             new GUIContent("Steam Tractive Effort",
                 "Approximate tractive effort for steam locomotives"),
             new GUIContent("Adhesion Limit",
-                "Adhesion limit")
+                "Adhesion limit"),
+            new GUIContent("Traction Motor Properties",
+                "Motor voltage and current for different configurations"),
+            new GUIContent("Generator Voltage",
+                "Expected maximum generator voltage")
         };
 
         private SerializedObject _editor = null!;
@@ -64,6 +68,12 @@ namespace CCL.Creator.Wizards
                     case 3:
                         _adhesionLimit.Draw();
                         break;
+                    case 4:
+                        _tmProperties.Draw();
+                        break;
+                    case 5:
+                        _generatorVoltage.Draw();
+                        break;
                     default:
                         EditorGUILayout.HelpBox("Please select an option above!", MessageType.Info);
                         break;
@@ -80,7 +90,7 @@ namespace CCL.Creator.Wizards
         private class SpeedRPM
         {
             public float WheelRadius = 0.459f;
-            public float Speed;
+            public float Speed = 0.0f;
             public float RPM = 0.0f;
             public float GearRatio = 1.0f;
 
@@ -214,10 +224,10 @@ namespace CCL.Creator.Wizards
         [Serializable]
         private class AdhesionLimit
         {
-            private float TotalWeight = 38200;
-            private float FrictionCoeff = 0.2f;
-            private int TotalAxles = 2;
-            private int PoweredAxles = 2;
+            public float TotalWeight = 38200;
+            public float FrictionCoeff = 0.2f;
+            public int TotalAxles = 2;
+            public int PoweredAxles = 2;
 
             public void Draw()
             {
@@ -233,6 +243,118 @@ namespace CCL.Creator.Wizards
 
         [SerializeField]
         private AdhesionLimit _adhesionLimit = new AdhesionLimit();
+
+        #endregion
+
+        #region Traction Motor Properties
+
+        [Serializable]
+        private class TractionMotorProperties
+        {
+            public float GeneratorVoltage = 1000;
+            public float MotorCurrent = 500;
+            public Types.Proxies.Simulation.Electric.TractionMotorSetDefinitionProxy? Definition;
+
+            public void Draw()
+            {
+                GeneratorVoltage = EditorGUILayout.FloatField("Generator Voltage", GeneratorVoltage);
+                MotorCurrent = EditorGUILayout.FloatField("Current Per Motor", MotorCurrent);
+                Definition = EditorHelpers.ObjectField("TM Definition", Definition, true);
+
+                if (Definition == null)
+                {
+                    EditorGUILayout.HelpBox("Please link your current traction motor configuration in the field above", MessageType.Info);
+                    return;
+                }
+
+
+                for (int i = 0; i < Definition.configurations.Length; i++)
+                {
+                    EditorHelpers.DrawSeparator();
+                    EditorGUILayout.LabelField($"Config {i}");
+                    var config = Definition.configurations[i];
+                    var current = MotorCurrent * config.motorGroups.Length;
+
+                    int seriesCount = config.motorGroups.Length > 0 ? config.motorGroups[0].motorIndexes.Length : 0;
+
+                    using (new EditorGUI.IndentLevelScope())
+                    {
+                        EditorGUILayout.LabelField("Parallel Groups", $"{config.motorGroups.Length}");
+                        EditorGUILayout.LabelField("Excitation", $"{config.excitationMultiplier:P2}");
+                        EditorGUILayout.LabelField("Total Current", $"{current:F2} A");
+
+                        for (int j = 0; j < config.motorGroups.Length; j++)
+                        {
+                            EditorGUILayout.LabelField($"Group {j}");
+                            var group = config.motorGroups[j];
+                            var voltage = GeneratorVoltage / group.motorIndexes.Length * config.excitationMultiplier;
+
+                            using (new EditorGUI.IndentLevelScope())
+                            {
+                                EditorGUILayout.LabelField("Motors In Series", $"{group.motorIndexes.Length}");
+                                EditorGUILayout.LabelField("Voltage/Motor", $"{voltage:F2} V");
+
+                                if (seriesCount != group.motorIndexes.Length)
+                                {
+                                    EditorGUILayout.LabelField("Group size is not defined correctly!",
+                                        EditorHelpers.StyleWithTextColour(EditorHelpers.Colors.DELETE_ACTION, GUI.skin.label));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        [SerializeField]
+        private TractionMotorProperties _tmProperties = new TractionMotorProperties();
+
+        #endregion
+
+        #region Generator Voltage
+
+        [Serializable]
+        private class GeneratorVoltage
+        {
+            public Types.Proxies.Simulation.Electric.TractionGeneratorDefinitionProxy? Definition;
+            public float ShaftRPM = 900;
+            public bool UseExternalValues = false;
+            public float Current = 500;
+            public float Resistance = 1.5f;
+
+            public void Draw()
+            {
+                Definition = EditorHelpers.ObjectField("Generator Definition", Definition, true);
+                ShaftRPM = EditorGUILayout.FloatField("Shaft RPM", ShaftRPM);
+                UseExternalValues = EditorGUILayout.Toggle("Use External Values", UseExternalValues);
+
+                using (new EditorGUI.DisabledGroupScope(!UseExternalValues))
+                {
+                    Current = EditorGUILayout.FloatField("Current", Current);
+                    Resistance = EditorGUILayout.FloatField("Single Motor Effective Resistance", Resistance);
+                }
+
+                if (Definition == null)
+                {
+                    return;
+                }
+
+                var excitation = 1.0f;
+                var rads = ShaftRPM * MathHelper.RPMtoRadS;
+
+                if (UseExternalValues)
+                {
+                    var voltage = Mathf.Min(Definition.maxVoltage, Current * Resistance);
+                    excitation = Mathf.Clamp01(voltage / rads / Definition.torqueFactor);
+                }
+
+                EditorGUILayout.LabelField("Maximum Voltage", $"{rads * excitation * Definition.torqueFactor:F2} V");
+                EditorGUILayout.LabelField("Excitation", $"{excitation:P2}");
+            }
+        }
+
+        [SerializeField]
+        private GeneratorVoltage _generatorVoltage = new GeneratorVoltage();
 
         #endregion
     }

@@ -59,6 +59,8 @@ namespace CCL.Importer.Components
             CreateMap<IndicatorShaderCustomValue, IndicatorShaderCustomValueInternal>().AutoCacheAndMap();
             CreateMap<IndicatorTMP, IndicatorTMPInternal>().AutoCacheAndMap();
             CreateMap<IndicatorGaugeDelta, IndicatorGaugeDeltaInternal>().AutoCacheAndMap();
+            CreateMap<IndicatorLCDDriver, IndicatorLCDDriverInternal>().AutoCacheAndMap()
+                .ForMember(d => d.LCD, o => o.MapFrom(s => Mapper.GetFromCache(s.LCD)));
 
             CreateMap<IndicatorHandbrakeReader, IndicatorHandbrakeReaderInternal>().AutoCacheAndMap();
         }
@@ -69,10 +71,12 @@ namespace CCL.Importer.Components
             CreateMap<FuseInverterDefinition, FuseInverterDefinitionInternal>().AutoCacheAndMap()
                 .AfterMap(FuseInverterAfter);
             CreateMap<CombinedThrottleDynamicBrakeDefinition, CombinedThrottleDynamicBrakeDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<CombinedControlDefinition, CombinedControlDefinitionInternal>().AutoCacheAndMap();
             CreateMap<TimeReaderDefinition, TimeReaderDefinitionInternal>().AutoCacheAndMap();
             CreateMap<SteamMechanicalStokerDefinition, SteamMechanicalStokerDefinitionInternal>().AutoCacheAndMap();
             CreateMap<FuseLogicDefinition, FuseLogicDefinitionInternal>().AutoCacheAndMap();
             CreateMap<MultipleFuseLogicDefinition, MultipleFuseLogicDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<ConstantMultiplierOffsetDefinition, ConstantMultiplierOffsetDefinitionInternal>().AutoCacheAndMap();
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();

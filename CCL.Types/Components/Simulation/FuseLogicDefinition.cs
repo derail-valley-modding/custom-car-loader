@@ -6,7 +6,7 @@ using UnityEngine;
 namespace CCL.Types.Components.Simulation
 {
     [AddComponentMenu("CCL/Components/Simulation/Fuse Logic Definition")]
-    public class FuseLogicDefinition : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized
+    public class FuseLogicDefinition : SimComponentDefinitionProxy, IHasFuseIdFields, ICanSetFuses, ICustomSerialized
     {
         public enum LogicType
         {
@@ -34,6 +34,16 @@ namespace CCL.Types.Components.Simulation
         {
             new FuseIdField(this, nameof(FuseA), FuseA, true),
             new FuseIdField(this, nameof(FuseB), FuseB, true)
+        };
+
+        public override IEnumerable<FuseDefinition> ExposedFuses => new[]
+        {
+            OutputFuse
+        };
+
+        public IEnumerable<string> SettableFuses => new[]
+        {
+            GetFullPortId(OutputFuse.id)
         };
 
         public void OnValidate()

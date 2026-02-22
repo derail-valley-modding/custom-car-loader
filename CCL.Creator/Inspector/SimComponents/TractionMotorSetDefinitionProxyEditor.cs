@@ -3,7 +3,7 @@ using CCL.Types;
 using CCL.Types.Proxies.Simulation.Electric;
 using UnityEditor;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Inspector.SimComponents
 {
     [CustomEditor(typeof(TractionMotorSetDefinitionProxy)), CanEditMultipleObjects]
     internal class TractionMotorSetDefinitionProxyEditor : Editor
@@ -18,8 +18,8 @@ namespace CCL.Creator.Inspector
 
             _proxy = (TractionMotorSetDefinitionProxy)target;
 
-            var powerLoss = (_proxy.maxAmpsPerTm * _proxy.maxAmpsPerTm * _proxy.externalResistance) +
-                (_proxy.maxAmpsPerTm * _proxy.maxAmpsPerTm * _proxy.motorResistance);
+            var powerLoss = _proxy.maxAmpsPerTm * _proxy.maxAmpsPerTm * _proxy.externalResistance +
+                _proxy.maxAmpsPerTm * _proxy.maxAmpsPerTm * _proxy.motorResistance;
             var dbPower = _proxy.dynamicBrakeMaxCurrent * _proxy.dynamicBrakeMaxCurrent * _proxy.dynamicBrakeGridResistance;
 
             // Convert to kW for display.

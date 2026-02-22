@@ -31,7 +31,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
-            new FuseIdField(this, nameof(powerFuseId), powerFuseId),
+            new FuseIdField(this, nameof(powerFuseId), powerFuseId, true),
         };
 
         #region Defaults

@@ -63,8 +63,15 @@ namespace CCL.Importer.Components
 
             private void SetStartingValues()
             {
-                Min = Mathf.Min(0, Port.Value);
-                Max = Mathf.Max(0, Port.Value);
+                var value = Port.Value;
+
+                if (float.IsInfinity(value))
+                {
+                    value = 1;
+                }
+
+                Min = Mathf.Min(0, value);
+                Max = Mathf.Max(0, value);
             }
 
             public void Reset()
@@ -90,12 +97,12 @@ namespace CCL.Importer.Components
 
                 var value = Port.Value;
 
-                if (value < Min)
+                if (value < Min && !float.IsInfinity(value))
                 {
                     Min = value;
                 }
 
-                if (value > Max)
+                if (value > Max && !float.IsInfinity(value))
                 {
                     Max = value;
                 }
@@ -137,14 +144,17 @@ namespace CCL.Importer.Components
                 Vector2 prev = Vector2.zero;
                 float x = 0;
                 bool init = false;
+                bool prevInfinite = false;
 
                 foreach (var item in Values)
                 {
                     var mapped = GetMapped(item);
+                    var infinite = float.IsInfinity(item);
 
                     // Setup the first previous value to be able to draw lines.
                     if (!init)
                     {
+                        prevInfinite = infinite;
                         prev = ToGLPosition(x, mapped);
                         init = true;
                         continue;
@@ -152,9 +162,10 @@ namespace CCL.Importer.Components
 
                     var current = ToGLPosition(x, mapped);
 
+                    // If any value is infinite, don't draw as those vectors can't be handled.
                     // Only draw if at least one position is within the view rectangle.
                     // If both are out, don't draw, but if 1 is in we clip the line.
-                    if (WithinViewBounds(prev, view, out pos1) | WithinViewBounds(current, view, out pos2))
+                    if (!infinite && !prevInfinite && (WithinViewBounds(prev, view, out pos1) | WithinViewBounds(current, view, out pos2)))
                     {
                         GL.Vertex(pos1);
                         GL.Vertex(pos2);
@@ -163,6 +174,7 @@ namespace CCL.Importer.Components
                     // Advance offset and move previous.
                     x += Offset;
                     prev = current;
+                    prevInfinite = infinite;
                 }
 
                 GLHelper.EndAndPop();

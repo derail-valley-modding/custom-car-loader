@@ -13,7 +13,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "3.1.5";
+        public const string Version = "3.1.6";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
@@ -42,6 +42,8 @@ namespace CCL.Importer
             if (!VersionCheck())
             {
                 Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
+                CarManager.LoadFailures.Add("[CCL] Unsupported version");
+                ObjectHelper.CreateFailuresHolder();
                 return false;
             }
 

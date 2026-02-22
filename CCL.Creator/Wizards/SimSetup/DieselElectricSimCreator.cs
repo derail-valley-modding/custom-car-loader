@@ -22,20 +22,7 @@ namespace CCL.Creator.Wizards.SimSetup
         public override IEnumerable<string> GetSimFeatures(int basisIndex)
         {
             yield return "Diesel Engine";
-
-            switch (basisIndex)
-            {
-                case 0:
-                    yield return "2 Traction Motors";
-                    break;
-                case 1:
-                    yield return "6 Traction Motors";
-                    break;
-                default:
-                    break;
-            }
-
-            yield return "Traction Motors";
+            yield return $"{TMCount(basisIndex)} Traction Motors";
             yield return "Mechanical Compressor";
 
             if (HasDynamicBrake(basisIndex)) yield return "Dynamic Brake";
@@ -319,26 +306,24 @@ namespace CCL.Creator.Wizards.SimSetup
             }
         }
 
-        private static bool HasDynamicBrake(int index)
-        {
-            switch (index)
-            {
-                case 1:
-                    return true;
-                default:
-                    return false;
-            }
-        }
 
-        private static bool HasBell(int index)
+        private static int TMCount(int basis) => basis switch
         {
-            switch (index)
-            {
-                case 1:
-                    return true;
-                default:
-                    return false;
-            }
-        }
+            0 => 2,
+            1 => 6,
+            _ => 0,
+        };
+
+        private static bool HasDynamicBrake(int index) => index switch
+        {
+            1 => true,
+            _ => false,
+        };
+
+        private static bool HasBell(int index) => index switch
+        {
+            1 => true,
+            _ => false,
+        };
     }
 }

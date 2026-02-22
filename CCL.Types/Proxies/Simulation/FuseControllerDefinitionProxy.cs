@@ -6,11 +6,11 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Simulation
 {
     [AddComponentMenu("CCL/Proxies/Simulation/Fuse Controller Definition Proxy")]
-    public class FuseControllerDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICustomSerialized
+    public class FuseControllerDefinitionProxy : SimComponentDefinitionProxy, IHasFuseIdFields, ICanSetFuses, ICustomSerialized
     {
         public float setThreshold = 0.5f;
         public bool isActiveWhenOverThreshold = true;
-        [FuseId]
+        [FuseId(true)]
         public string fuseId = string.Empty;
         public PortReferenceDefinition controllingPort = new PortReferenceDefinition(DVPortValueType.STATE, "CONTROLLING_PORT", false);
 
@@ -24,7 +24,12 @@ namespace CCL.Types.Proxies.Simulation
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
-            new FuseIdField(this, nameof(fuseId), fuseId)
+            new FuseIdField(this, nameof(fuseId), fuseId, true)
+        };
+
+        public IEnumerable<string> SettableFuses => new[]
+        {
+            fuseId
         };
 
         public void OnValidate()

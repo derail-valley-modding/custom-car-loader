@@ -160,7 +160,10 @@ namespace CCL.Creator.Validators
         public IEnumerable<ResultEntry> Entries => 
             (_warnings.Count > 0) ?
             _warnings :
-            (IEnumerable <ResultEntry>)new[] { new ResultEntry(TestName, Status) };
+            (IEnumerable<ResultEntry>)new[] { new ResultEntry(TestName, Status) };
+
+        private readonly List<string> _info = new List<string>();
+        public List<string> Info => _info;
 
         /// <summary>Whether this result requires/suggests correction by the user</summary>
         public bool IsCorrectable => _warnings.Any();
@@ -221,6 +224,12 @@ namespace CCL.Creator.Validators
         {
             Escalate(other.Status);
             _warnings.AddRange(other.Warnings);
+            _info.AddRange(other.Info);
+        }
+
+        public void AddInformation(string message)
+        {
+            Info.Add(message);
         }
     }
 

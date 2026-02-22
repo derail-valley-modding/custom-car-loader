@@ -44,22 +44,22 @@ namespace CCL.Creator.Validators
                 switch (control)
                 {
                     case LeverProxy lever:
-                        LimitWarning(control, lever.jointLimitMin, lever.jointLimitMax, "Lever");
+                        LimitWarning(lever.jointLimitMin, lever.jointLimitMax, "Lever");
                         break;
                     case RotaryProxy rotary:
-                        LimitWarning(control, rotary.jointLimitMin, rotary.jointLimitMax, "Rotary");
+                        LimitWarning(rotary.jointLimitMin, rotary.jointLimitMax, "Rotary");
                         break;
                     case ToggleSwitchProxy toggleSwitch:
-                        LimitWarning(control, toggleSwitch.jointLimitMin, toggleSwitch.jointLimitMax, "Toggle Switch");
+                        LimitWarning(toggleSwitch.jointLimitMin, toggleSwitch.jointLimitMax, "Toggle Switch");
                         break;
                     case WheelProxy wheel:
-                        LimitWarning(control, wheel.jointLimitMin, wheel.jointLimitMax, "Wheel");
+                        LimitWarning(wheel.jointLimitMin, wheel.jointLimitMax, "Wheel");
                         break;
                     default:
                         break;
                 }
 
-                void LimitWarning(ControlSpecProxy control, float min, float max, string name)
+                void LimitWarning(float min, float max, string name)
                 {
                     if (min > max)
                     {

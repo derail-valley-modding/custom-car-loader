@@ -173,5 +173,22 @@ namespace CCL.Importer
             public static AudioClip WinSound => Extensions.GetCached(ref s_winSound,
                 () => Wagons.Caboose.prefab.GetComponentInChildren<CareerManagerFeesScreen>().feesClearedSound);
         }
+
+        /// <summary>
+        /// References to items.
+        /// </summary>
+        public static class Items
+        {
+            private static InventoryItemSpec? s_locoRemote;
+            private static InventoryItemSpec? s_digitalSpeedometer;
+            private static InventoryItemSpec? s_digitalClock;
+
+            public static InventoryItemSpec LocoRemote => Extensions.GetCached(ref s_locoRemote,
+                () => Globals.G.Items.items.Find(x => x.ItemPrefabName == "RemoteController"));
+            public static InventoryItemSpec DigitalSpeedometer => Extensions.GetCached(ref s_digitalSpeedometer,
+                () => Globals.G.Items.items.Find(x => x.ItemPrefabName == "DigitalSpeedometer"));
+            public static InventoryItemSpec DigitalClock => Extensions.GetCached(ref s_digitalClock,
+                () => Globals.G.Items.items.Find(x => x.ItemPrefabName == "DigitalClock"));
+        }
     }
 }

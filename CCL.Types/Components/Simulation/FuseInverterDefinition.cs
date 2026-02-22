@@ -1,12 +1,14 @@
 ﻿using CCL.Types.Json;
 using CCL.Types.Proxies.Ports;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
     [AddComponentMenu("CCL/Components/Simulation/Fuse Inverter Definition")]
-    public class FuseInverterDefinition : SimComponentDefinitionProxy, ICustomSerialized
+    public class FuseInverterDefinition : SimComponentDefinitionProxy, ICanSetFuses, ICustomSerialized
     {
         [Serializable]
         public class FusePair
@@ -18,6 +20,8 @@ namespace CCL.Types.Components.Simulation
         }
 
         public FusePair[] FusesToInvert = new FusePair[0];
+
+        public IEnumerable<string> SettableFuses => FusesToInvert.Select(f => f.InvertedFuseId);
 
         [HideInInspector, SerializeField]
         private string? _json;

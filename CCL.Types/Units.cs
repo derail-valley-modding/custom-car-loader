@@ -69,5 +69,45 @@ namespace CCL.Types
                 _ => value,
             };
         }
+
+        /// <summary>
+        /// Only for values below 1T.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        public static string RoundAndFormat(float value, string? unit = null)
+        {
+            // 1 234 567 890 ->    1.23 G
+            //   123 456 789 ->  123.45 M
+            //    12 345 678 ->   12.34 M
+            //     1 234 567 ->    1.23 M
+            //       123 456 ->  123.45 k
+            //        12 345 ->   12.34 k
+            //         1 234 -> 1234.000
+
+            unit ??= string.Empty;
+
+            if (unit != "kg")
+            {
+                if (value >= 1000000000 || value <= -1000000000)
+                {
+                    return $"{value:0,,,.## G}{unit}";
+                }
+
+                if (value >= 1000000 || value <= -1000000)
+                {
+                    return $"{value:0,,.## M}{unit}";
+                }
+
+                if (value >= 10000 || value <= -10000)
+                {
+                    return $"{value:0,.## k}{unit}";
+                }
+            }
+
+            // 3 decimal spaces looks ugly, so only keep them for very small values.
+            return (value < 10 || value > -10) ? $"{value:0.###} {unit}" : $"{value:0.##} {unit}";
+        }
     }
 }

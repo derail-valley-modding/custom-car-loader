@@ -88,12 +88,16 @@ namespace CCL.Importer
     {
         private const int WindowId = 9000;
 
+        private static GUILayoutOption s_width = GUILayout.MaxWidth(380);
+
         private Rect _windowRect = new(10, 10, 400, 200);
         private Vector2 _scroll = Vector2.zero;
 
+        public static readonly List<string> StaticFailures = new();
+
         private void Start()
         {
-            if (CarManager.LoadFailures.Count == 0)
+            if (CarManager.LoadFailures.Count == 0 && StaticFailures.Count == 0)
             {
                 Destroy(gameObject);
             }
@@ -109,9 +113,14 @@ namespace CCL.Importer
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUILayout.BeginVertical();
 
-            foreach (var item in CarManager.LoadFailures)
+            foreach (var failure in StaticFailures)
             {
-                GUILayout.Label(item, GUILayout.MaxWidth(380));
+                GUILayout.Label(failure, s_width);
+            }
+
+            foreach (var failure in CarManager.LoadFailures)
+            {
+                GUILayout.Label(failure, s_width);
             }
 
             GUILayout.EndVertical();

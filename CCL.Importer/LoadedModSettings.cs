@@ -28,6 +28,8 @@ namespace CCL.Importer
 
             foreach (var (car, liveries) in Ids)
             {
+                GUILayout.BeginVertical(GUI.skin.box);
+
                 var allDisabled = AllLiveriesDisabled(liveries);
                 var carDisabled = DrawOption(car, CCLPlugin.Settings.DisabledIds, 0.0f, allDisabled);
 
@@ -48,6 +50,7 @@ namespace CCL.Importer
                 }
 
                 GUI.enabled = true;
+                GUILayout.EndVertical();
             }
 
             static bool AllLiveriesDisabled(List<string> liveries)

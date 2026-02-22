@@ -63,7 +63,49 @@ namespace CCL.Types.Proxies.Headlights
                 return this.FailForNullEntries(nameof(headlightSetupsRear), out message);
             }
 
-            return this.Pass(out message);
+            if (this.GetComponentInParentInactive<CarLightsOptimizerProxy>() == null)
+            {
+                message = $"missing {nameof(CarLightsOptimizerProxy)}";
+                return SelfValidationResult.Fail;
+            }
+
+            if (!headlightSetupsFront.Any(x => x.mainOffSetup))
+            {
+                message = "no main off setup for front";
+                return SelfValidationResult.Fail;
+            }
+
+            if (!headlightSetupsRear.Any(x => x.mainOffSetup))
+            {
+                message = "no main off setup for rear";
+                return SelfValidationResult.Fail;
+            }
+
+            float offFront = headlightSetupsFront.FirstIndexMatch(x => x.mainOffSetup);
+            float offRear = headlightSetupsRear.FirstIndexMatch(x => x.mainOffSetup);
+
+            if (headlightSetupsFront.Length > 1 && headlightSetupsRear.Length > 1)
+            {
+                message = $"Make sure {FrontText()} and {RearText()}";
+            }
+            else if (headlightSetupsFront.Length > 1)
+            {
+                message = $"Make sure {FrontText()}";
+            }
+            else if (headlightSetupsRear.Length > 1)
+            {
+                message = $"Make sure {RearText()}";
+            }
+            else
+            {
+                message = "no valid number of setups";
+                return SelfValidationResult.Fail;
+            }
+
+            return SelfValidationResult.Info;
+
+            string FrontText() => $"the default value for {headlightControlFrontId} is {offFront / (headlightSetupsFront.Length - 1)}";
+            string RearText() => $"the default value for {headlightControlRearId} is {offRear / (headlightSetupsRear.Length - 1)}";
         }
     }
 }

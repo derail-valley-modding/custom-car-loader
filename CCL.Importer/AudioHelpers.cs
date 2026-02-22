@@ -8,7 +8,7 @@ namespace CCL.Importer
 {
     public static class AudioHelpers
     {
-        private static Dictionary<DVAudioMixerGroup, AudioMixerGroup> s_mixerGroups = new Dictionary<DVAudioMixerGroup, AudioMixerGroup>();
+        private static Dictionary<DVAudioMixerGroup, AudioMixerGroup> s_mixerGroups = new();
         private static GameObject? s_audioS282;
         private static GameObject? s_audioDE6;
 
@@ -36,7 +36,7 @@ namespace CCL.Importer
                     .GetComponent<AudioClipPortReader>().mixerGroup,
                 DVAudioMixerGroup.Compressor => AudioDE6.transform.Find("[sim] Engine/Compressor_Layered")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
-                DVAudioMixerGroup.Chuffs => AudioS282.transform.Find("[sim] Engine/SteamChuff/2ChuffsPerSecond")
+                DVAudioMixerGroup.Chuffs => AudioS282.transform.Find("[sim] Engine/SteamChuff/3ChuffsPerSecond")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
                 DVAudioMixerGroup.Derailment => AudioS282.transform.Find("CarBaseAudioModules/DerailLayers")
                     .GetComponent<LayeredAudio>().audioMixerGroup,

@@ -14,8 +14,9 @@ namespace CCL.Importer.Proxies.Simulation
         {
             CreateMap<SanderDefinitionProxy, SanderDefinition>().AutoCacheAndMap();
 
-            // heat
+            // Heat.
             CreateMap<PassiveCoolerDefinitionProxy, PassiveCoolerDefinition>().AutoCacheAndMap();
+            CreateMap<ActiveCoolerDefinitionProxy, ActiveCoolerDefinition>().AutoCacheAndMap();
             CreateMap<AutomaticCoolerDefinitionProxy, AutomaticCoolerDefinition>().AutoCacheAndMap();
             CreateMap<DirectionalCoolerDefinitionProxy, DirectionalMovementCoolerDefinition>().AutoCacheAndMap();
             CreateMap<HeatReservoirDefinitionProxy, HeatReservoirDefinition>().AutoCacheAndMap();
@@ -37,6 +38,8 @@ namespace CCL.Importer.Proxies.Simulation
             CreateMap<SmoothedOutputDefinitionProxy, SmoothedOutputDefinition>().AutoCacheAndMap();
             CreateMap<WaterDetectorDefinitionProxy, WaterDetectorDefinition>().AutoCacheAndMap();
             CreateMap<LampLogicDefinitionProxy, LampLogicDefinition>().AutoCacheAndMap();
+
+            CreateMap<AutomaticTransmissionInputDefinitionProxy, AutomaticTransmissionInputDefinition>().AutoCacheAndMap();
         }
 
         private static void AddDrivingForce(TractionDefinition traction)

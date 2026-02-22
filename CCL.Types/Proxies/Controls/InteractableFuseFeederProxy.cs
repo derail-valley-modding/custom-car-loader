@@ -5,7 +5,7 @@ using UnityEngine;
 namespace CCL.Types.Proxies.Controls
 {
     [AddComponentMenu("CCL/Proxies/Controls/Interactable Fuse Feeder Proxy")]
-    public class InteractableFuseFeederProxy : MonoBehaviour, IHasFuseIdFields
+    public class InteractableFuseFeederProxy : MonoBehaviour, IHasFuseIdFields, ICanSetFuses
     {
         [FuseId(true)]
         public string fuseId = string.Empty;
@@ -13,6 +13,11 @@ namespace CCL.Types.Proxies.Controls
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]
         {
             new FuseIdField(this, nameof(fuseId), fuseId, true),
+        };
+
+        public IEnumerable<string> SettableFuses => new[]
+        {
+            fuseId
         };
     }
 }

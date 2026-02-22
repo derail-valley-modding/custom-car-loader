@@ -7,7 +7,7 @@ namespace CCL.Importer.Patches
     [HarmonyPatch(typeof(CarTypes))]
     internal class CarTypesPatches
     {
-        public static HashSet<string> SteamLocomotiveIds = new HashSet<string>();
+        public static HashSet<string> SteamLocomotiveIds = new();
 
         [HarmonyPostfix, HarmonyPatch(nameof(CarTypes.IsSteamLocomotive))]
         private static void IsSteamLocomotivePostfix(TrainCarLivery carLivery, ref bool __result)

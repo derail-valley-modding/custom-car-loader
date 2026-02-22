@@ -2,7 +2,7 @@
 using CCL.Types.Proxies.Simulation.Electric;
 using UnityEditor;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Inspector.SimComponents
 {
     [CustomEditor(typeof(BatteryDefinitionProxy))]
     internal class BatteryDefinitionProxyEditor : Editor

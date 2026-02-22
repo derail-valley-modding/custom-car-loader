@@ -84,6 +84,16 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new Keyframe(0.0f, 0.5f) { inTangent = 2.5f, outTangent = 2.5f },
             new Keyframe(1.0f, 3.0f) { inTangent = 2.5f, outTangent = 2.5f });
 
+        private void Reset()
+        {
+            ResetCurve();
+        }
+
+        public void ResetCurve()
+        {
+            explosionPressureThreshold = ExplosionCurve;
+        }
+
         #region Defaults
 
         public void ApplyS060Defaults()

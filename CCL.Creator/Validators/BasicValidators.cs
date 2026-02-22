@@ -3,6 +3,7 @@ using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Customization;
 using CCL.Types.Proxies.Ports;
+using CCL.Types.Proxies.Weather;
 using System.Linq;
 using UnityEngine;
 
@@ -102,7 +103,7 @@ namespace CCL.Creator.Validators
                 {
                     if (lod.renderers.Length == 0)
                     {
-                        result.Warning("Missing renderers on LOD", lodGroup);
+                        result.Warning($"'{livery.id}' - Missing renderers on LOD", lodGroup);
                     }
                 }
             }
@@ -111,7 +112,7 @@ namespace CCL.Creator.Validators
     }
 
     [RequiresStep(typeof(LiverySettingsValidator))]
-    internal class InteriorTransformValidator : LiveryValidator
+    internal class InteriorValidator : LiveryValidator
     {
         public override string TestName => "Interior";
 
@@ -123,7 +124,14 @@ namespace CCL.Creator.Validators
             {
                 if (livery.interiorPrefab.transform.localPosition != Vector3.zero)
                 {
-                    result.Warning($"Interior is not centered at {Vector3.zero}", livery.interiorPrefab);
+                    result.Warning($"'{livery.id}' - Interior is not centered at {Vector3.zero}", livery.interiorPrefab);
+                }
+
+                var openables = livery.interiorPrefab.GetComponentsInChildren<OpenableControlProxy>();
+
+                if (openables.Length > 0)
+                {
+                    result.Warning($"'{livery.id}' - Openables are not supported in the interior prefab", livery.interiorPrefab);
                 }
             }
 
@@ -135,7 +143,8 @@ namespace CCL.Creator.Validators
                     {
                         if (item.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.Off)
                         {
-                            result.Warning($"Renderer {item.name} in {CarPartNames.INTERIOR_LOD} has shadow casting turned on, it should be set to off", item);
+                            result.Warning($"'{livery.id}' - Renderer {item.name} in {CarPartNames.INTERIOR_LOD} has shadow casting turned on, " +
+                                $"it should be set to off", item);
                         }
                     }
                 }
@@ -143,6 +152,11 @@ namespace CCL.Creator.Validators
                 {
                     result.Warning($"{livery.id} - Interior prefab exists but {CarPartNames.INTERIOR_LOD} does not", livery.interiorPrefab);
                 }
+            }
+
+            if (livery.parentType != null && livery.parentType.HUDLayout != null && livery.interiorPrefab == null)
+            {
+                result.Fail($"{livery.id} - HUD layout needs an interior prefab to exist");
             }
 
             return result;
@@ -171,7 +185,7 @@ namespace CCL.Creator.Validators
             {
                 if (!ComponentUtil.HasComponent<T>(prefab))
                 {
-                    result.Fail($"Livery has MU cable but lacks {typeof(T).Name}", livery);
+                    result.Fail($"Livery '{livery.id}' has MU cable but lacks {typeof(T).Name}", livery);
                 }
             }
         }

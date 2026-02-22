@@ -45,4 +45,10 @@
         World_Item = 27,
         Reflection_Probe_Only = 28,
     }
+
+    public enum CouplerDirection
+    {
+        Front,
+        Rear
+    }
 }

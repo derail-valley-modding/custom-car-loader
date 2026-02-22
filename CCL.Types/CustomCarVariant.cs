@@ -51,13 +51,6 @@ namespace CCL.Types
             "Examples are a locomotive and her tender (S282A + S282B)\n" +
             "Order is important")]
         public string[] TrainsetLiveries = new string[0];
-        [Tooltip("Used by other mods to limit or enable repetitive spawning\n" +
-            "Leave at 0 to ignore")]
-        public int MaxRepeatedSpawn = 0;
-        [Tooltip("Only affects Passenger Jobs")]
-        public bool AllowOnRegionalRoutes = true;
-        [Tooltip("Only affects Passenger Jobs")]
-        public bool AllowOnExpressRoutes = true;
 
         [Header("Spawning - optional")]
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
@@ -71,6 +64,15 @@ namespace CCL.Types
 
         [Header("Catalog - optional")]
         public CatalogPage? CatalogPage = null;
+
+        [Header("Mod Compatibility - optional")]
+        [Tooltip("Used by other mods to limit or enable repetitive spawning\n" +
+            "Leave at 0 to ignore")]
+        public int MaxRepeatedSpawn = 0;
+        [Tooltip("Only affects Passenger Jobs")]
+        public bool AllowOnRegionalRoutes = true;
+        [Tooltip("Only affects Passenger Jobs")]
+        public bool AllowOnExpressRoutes = true;
 
         [RenderMethodButtons, SerializeField]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]

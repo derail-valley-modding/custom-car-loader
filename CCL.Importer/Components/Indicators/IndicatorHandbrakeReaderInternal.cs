@@ -9,7 +9,7 @@ namespace CCL.Importer.Components.Indicators
 
         private TrainCar _car = null!;
         private Indicator _indicator = null!;
-        private Fuse _fuse = null!;
+        private Fuse? _fuse = null;
 
         private void Awake()
         {
@@ -18,7 +18,7 @@ namespace CCL.Importer.Components.Indicators
 
             if (_indicator == null)
             {
-                Debug.LogError("Can't find Indicator on " + base.gameObject.name + ". Ignoring init");
+                Debug.LogError("Can't find Indicator on " + base.gameObject.name + ". Ignoring awake");
                 Object.Destroy(this);
                 return;
             }
@@ -33,12 +33,12 @@ namespace CCL.Importer.Components.Indicators
 
                 if (simulationFlow == null)
                 {
-                    Debug.LogError("Couldn't find SimFlow, ignoring FuseId won't be functional!");
+                    Debug.LogError("Couldn't find SimFlow, FuseId on IndicatorHandbrakeReader won't be functional!");
                     return;
                 }
                 if (!simulationFlow.TryGetFuse(FuseId, out _fuse))
                 {
-                    Debug.LogError("[" + base.gameObject.GetPath() + "]: IndicatorHandbrakeReader isn't initialized properly, fuse won't be set");
+                    Debug.LogError("[" + gameObject.GetPath() + "]: IndicatorHandbrakeReader isn't initialized properly, fuse won't be set!");
                 }
             }
         }

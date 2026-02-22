@@ -28,9 +28,9 @@ namespace CCL.Importer
             var controls = c.Controls;
             var indicators = c.Indicators;
             var lamps = c.Lamps;
-            var lighter = new[] { "lighter" };
-            var shovels = new[] { "shovel", "ExpertShovel", "GoldenShovel" };
-            var oiler = new[] { "Oiler" };
+            string[] lighter = new[] { "lighter" };
+            string[] shovels = new[] { "shovel", "ExpertShovel", "GoldenShovel" };
+            string[] oiler = new[] { "Oiler" };
 
             CCLPlugin.LogVerbose("Tutorial creation: conditions");
 
@@ -223,7 +223,7 @@ namespace CCL.Importer
                 c.AddControl(InteriorControlsManager.ControlType.Blower, 1f, 1f, QTSemantic.FullyEngage);
                 c.AddMonitorIndicator(fireTemp,
                     $"{LocalizationAPI.L("car/tut/firetemp")}\n{LocalizationAPI.L("tutorial/monitor_until", $"{settings.TargetFireTemperature} °C")}",
-                    LocalizationAPI.L("tutorial/loco/ind_fire"), settings.TargetFireTemperature, float.PositiveInfinity, true, 3f);
+                    LocalizationAPI.L("tutorial/loco/ind_fire"), settings.TargetFireTemperature, float.PositiveInfinity, true, MIN_MONITOR_WAIT_TIME);
 
                 // Check boiler pressure.
                 BeginNewPhase("monitor pressure");
@@ -231,7 +231,7 @@ namespace CCL.Importer
                 c.AddControl(InteriorControlsManager.ControlType.Blower, 1f, 1f, QTSemantic.FullyEngage);
                 c.AddMonitorIndicator(steam,
                     $"{LocalizationAPI.L("car/tut/boilerpressure")}\n{LocalizationAPI.L("tutorial/monitor_until", $"{settings.TargetSteamPressure} bar")}",
-                    LocalizationAPI.L("tutorial/loco/ind_boiler_pressure"), settings.TargetSteamPressure + 1, float.PositiveInfinity, true, 3f);
+                    LocalizationAPI.L("tutorial/loco/ind_boiler_pressure"), settings.TargetSteamPressure + 1, float.PositiveInfinity, true, MIN_MONITOR_WAIT_TIME);
 
                 // Close firedoor.
                 BeginNewPhase("ensure closed firedoor");
@@ -247,7 +247,10 @@ namespace CCL.Importer
 
                 var oil = interiorIndicators?.transmissionOil ?? externalIndicators?.transmissionOil;
                 c.AddAutomaticLubricatorStep(oil);
-                c.AddLookAndAcknowledge(oil, LocalizationAPI.L("car/tut/oil_bearing"), LocalizationAPI.L("tutorial/loco/ind_oil_bearing"));
+                if (settings.Indicators.TransmissionOil.Show)
+                {
+                    c.AddLookAndAcknowledge(oil, LocalizationAPI.L("car/tut/oil_bearing"), LocalizationAPI.L("tutorial/loco/ind_oil_bearing"));
+                }
 
                 foreach (var item in trainset)
                 {
@@ -408,7 +411,7 @@ namespace CCL.Importer
                 SteamerDrivingBasicPrereq(false, false, true, true, true);
                 c.AddMonitorIndicator(interiorIndicators?.mainReservoir ?? externalIndicators?.mainReservoir,
                     $"{LocalizationAPI.L("car/tut/mainres")}\n{LocalizationAPI.L("tutorial/monitor_until", "2 bar")}",
-                    LocalizationAPI.L("tutorial/loco/int_main_res"), 3f, float.PositiveInfinity, true, 3f);
+                    LocalizationAPI.L("tutorial/loco/int_main_res"), 3f, float.PositiveInfinity, true, MIN_MONITOR_WAIT_TIME);
 
                 if (settings.EngageThrottleForBrakeCharging)
                 {
@@ -450,7 +453,7 @@ namespace CCL.Importer
 
             if (settings.Indicators.Speedometer.Show)
             {
-                c.AddLookAndAcknowledge(interiorIndicators?.speed ?? externalIndicators?.speed,
+                c.AddLookAndAcknowledge(OverrideOrDefault(settings.Indicators.Speedometer.Override, interiorIndicators?.speed ?? externalIndicators?.speed),
                     LocalizationAPI.L("car/tut/speedometer"), LocalizationAPI.L("tutorial/loco/ind_speed"));
             }
 
@@ -549,14 +552,14 @@ namespace CCL.Importer
 
                     // Engage throttle until movement is detected.
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0.05f, 1f, QTSemantic.GentlyEngage, false);
-                    c.Phase.Add(new CarSpeedStep(loco, 1f, aboveTarget: true));
+                    c.Phase.Add(new CarSpeedStep(loco, 1f, true));
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
 
                     // Stop the loco.
                     BeginNewPhase("stop train");
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Throttle, 0f, 0f, QTSemantic.Disengage);
                     c.AddOverridableControl(InteriorControlsManager.ControlType.TrainBrake, 0.5f, 1f, QTSemantic.Engage);
-                    c.Phase.Add(new CarSpeedStep(loco, 1f, aboveTarget: false));
+                    c.Phase.Add(new CarSpeedStep(loco, 1f, false));
                     c.AddOverridableControl(InteriorControlsManager.ControlType.Reverser, 0.49f, 0.51f, QTSemantic.SetToNeutral);
                 }
             }
@@ -767,7 +770,7 @@ namespace CCL.Importer
                 }
 
                 c.BeginNewPhase();
-                CCLPlugin.LogVerbose($"Tutorial phase {PhaseDisplay()}: {name}");
+                CCLPlugin.Log($"Tutorial phase {PhaseDisplay()}: {name}");
             }
 
             void AddCustomPhase(TutorialPhase phase)
@@ -795,7 +798,7 @@ namespace CCL.Importer
                             c.AddMonitorIndicator(customComps[step.TargetId].GetComponent<Indicator>(),
                                 $"{LocalizationAPI.L(step.NameKey)}\n{LocalizationAPI.L(IndicatorStep.ModeToKey(step.Mode), step.Value)}",
                                 LocalizationAPI.L(step.DescriptionKey),
-                                step.MinValue, step.MaxValue, step.ManualDismiss);
+                                step.MinValue, step.MaxValue, step.ManualDismiss, step.MinMonitoringTime);
                             break;
                         case CCL.Types.Tutorial.Steps.PromptStep step:
                             c.AddPrompt(step.Key, step.Pause);
@@ -1005,8 +1008,7 @@ namespace CCL.Importer
                 }
             }
 
-            var message = new ControlIconQuickTutorialMessage(tuple.Name, tuple.Description, 2);
-            return message;
+            return new ControlIconQuickTutorialMessage(tuple.Name, tuple.Description, 2);
         }
 
         private static bool HasShovelPile(TrainCar car)

@@ -10,7 +10,7 @@ namespace CCL.Types
         /// <summary>
         /// Gets the vector from an object's transform origin to the center of its bounding box
         /// </summary>
-        public static Vector3 GetModelCenterline( GameObject gameObject )
+        public static Vector3 GetModelCenterline(GameObject gameObject)
         {
             Vector3 massCenter = Vector3.forward;
 

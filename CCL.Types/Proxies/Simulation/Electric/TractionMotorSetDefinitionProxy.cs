@@ -117,6 +117,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         public class ElectricalConfigurationDefinition
         {
             public float excitationMultiplier;
+            [Tooltip("In Parallel")]
             public MotorGroupDefinition[] motorGroups = new MotorGroupDefinition[0];
             public TransitionDefinition forwardTransition = new TransitionDefinition();
             public TransitionDefinition backwardTransition = new TransitionDefinition();
@@ -125,6 +126,7 @@ namespace CCL.Types.Proxies.Simulation.Electric
         [Serializable]
         public class MotorGroupDefinition
         {
+            [Tooltip("In Series")]
             public int[] motorIndexes = new int[0];
         }
 

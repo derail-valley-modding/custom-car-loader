@@ -1,12 +1,13 @@
 ﻿using CCL.Types.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Ports
 {
     [AddComponentMenu("CCL/Proxies/Ports/Multiple Port Decoder \u2215 Encoder Definition Proxy")]
-    public class MultiplePortDecoderEncoderDefinitionProxy : SimComponentDefinitionProxy, ICustomSerialized,
+    public class MultiplePortDecoderEncoderDefinitionProxy : SimComponentDefinitionProxy, ICanSetPorts, ICustomSerialized,
         IDM1UDefaults, IS060Defaults, IS282Defaults, IBE2Defaults
     {
         [Serializable]
@@ -68,6 +69,8 @@ namespace CCL.Types.Proxies.Ports
                 yield return outputPort;
             }
         }
+
+        public IEnumerable<string> SettablePorts => inputPorts.Select(x => GetFullPortId(x.ID)).Append(outputPort.ID);
 
         private void ResizeArrays()
         {

@@ -43,7 +43,7 @@ namespace CCL.Types
 
         public string id = string.Empty;
         public string carIdPrefix = "-";
-        [Tooltip("Check if this car should be treated as a steam locomotive")]
+        [Tooltip("Check if this car should be treated as a steam locomotive (for things like quick startup)")]
         public bool IsSteamLocomotive = false;
 
         [HideInInspector]
@@ -70,15 +70,15 @@ namespace CCL.Types
         public float wheelRadius = 0.459f;
         public bool useDefaultWheelRotation = true;
         public bool UseCustomGauge = false;
-        [Tooltip("Value in millimetres")]
+        [EnableIf(nameof(UseCustomGauge)), Tooltip("Value in millimetres")]
         public int Gauge = 1435;
-
-        [Header("Cargo")]
-        public CargoSetup? CargoSetup;
 
         [Space]
         [Tooltip("Despawn behaviour")]
         public UnusedCarDeletePreventionMode unusedCarDeletePreventionMode;
+
+        [Header("Cargo - optional")]
+        public CargoSetup? CargoSetup;
 
         [Header("Audio - optional")]
         public GameObject? SimAudioPrefab;
@@ -129,6 +129,7 @@ namespace CCL.Types
         public void ForceValidation()
         {
             OnValidate();
+
             if (liveries != null)
             {
                 foreach (var child in liveries)

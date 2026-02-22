@@ -3,7 +3,7 @@ using CCL.Types.Proxies.Simulation.Steam;
 using UnityEditor;
 using UnityEngine;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Inspector.SimComponents
 {
     [CustomEditor(typeof(BoilerDefinitionProxy)), CanEditMultipleObjects]
     internal class BoilerDefinitionProxyEditor : Editor
@@ -24,6 +24,12 @@ namespace CCL.Creator.Inspector
             EditorGUILayout.LabelField("Spawn Water % At 1 bar", $"{_proxy.spawnWaterLevel * 0.001f / volume * 100.0f:F2}%");
 
             EditorHelpers.DrawLocoDefaultsButtons(target);
+
+            if (GUILayout.Button("Reset Explosion Curve"))
+            {
+                _proxy.ResetCurve();
+                AssetHelper.SaveAsset(_proxy);
+            }
         }
     }
 }

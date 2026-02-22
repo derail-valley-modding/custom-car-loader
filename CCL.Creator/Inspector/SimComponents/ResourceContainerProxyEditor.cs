@@ -2,7 +2,7 @@
 using CCL.Types.Proxies.Resources;
 using UnityEditor;
 
-namespace CCL.Creator.Inspector
+namespace CCL.Creator.Inspector.SimComponents
 {
     [CustomEditor(typeof(ResourceContainerProxy)), CanEditMultipleObjects]
     internal class ResourceContainerProxyEditor : Editor

@@ -25,6 +25,9 @@ namespace CCL.Creator.Validators
 
                     switch (comp.Validate(out var message))
                     {
+                        case SelfValidationResult.Info:
+                            result.AddInformation($"{livery.id} - {message}");
+                            break;
                         case SelfValidationResult.Warning:
                             result.Warning(AddCompToMessage(self, message), self);
                             break;
