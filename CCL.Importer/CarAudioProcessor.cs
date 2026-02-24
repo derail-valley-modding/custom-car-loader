@@ -1,5 +1,4 @@
-﻿using CCL.Importer.Processing;
-using CCL.Importer.Types;
+﻿using CCL.Importer.Types;
 using CCL.Types;
 using CCL.Types.Components;
 using DV.Damage;
@@ -43,7 +42,7 @@ namespace CCL.Importer
 
                 //carType.audioPoolSize = 10;
 
-                var newAudioFab = ModelProcessor.CreateModifiablePrefab(pool.defaultAudioPrefab);
+                var newAudioFab = ObjectHelper.CreateModifiablePrefab(pool.defaultAudioPrefab);
                 var modularAudio = newAudioFab.GetComponent<CarModularAudio>();
                 var simAudioFab = carType.SimAudioPrefab;
 
