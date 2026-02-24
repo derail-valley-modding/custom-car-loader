@@ -1,9 +1,10 @@
 ﻿using CCL.Types.Json;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Controls
 {
-    public abstract class ControlSpecProxy : MonoBehaviour, ICustomSerialized
+    public abstract class ControlSpecProxy : MonoBehaviour, ICustomSerialized, ISelfValidation
     {
         protected static readonly Color START_COLOR = new Color(0.65f, 0, 0);
         protected static readonly Color END_COLOR = new Color(0, 0.65f, 0);
@@ -41,6 +42,16 @@ namespace CCL.Types.Proxies.Controls
 
                 nonVrStaticInteractionArea.OnValidate();
             }
+        }
+
+        public SelfValidationResult Validate(out string message)
+        {
+            if (colliderGameObjects.Any(x => x == null))
+            {
+                return this.FailForNullEntries(nameof(colliderGameObjects), out message);
+            }
+
+            return this.Pass(out message);
         }
     }
 }
