@@ -2,6 +2,11 @@
   "Releases": [
     {
       "Id": "DVCustomCarLoader",
+      "Version": "3.1.7",
+      "DownloadUrl": "https://github.com/derail-valley-modding/custom-car-loader/releases/download/v3.1.7/DVCustomCarLoader.zip"
+    },
+    {
+      "Id": "DVCustomCarLoader",
       "Version": "3.1.6",
       "DownloadUrl": "https://github.com/derail-valley-modding/custom-car-loader/releases/download/v3.1.6/DVCustomCarLoader.zip"
     },
