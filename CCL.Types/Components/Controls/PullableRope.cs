@@ -28,9 +28,11 @@ namespace CCL.Types.Components.Controls
             if (Origin == null) return;
 
             var pos = Origin.position;
-            Gizmos.color = Color.red;
+            Gizmos.color = MID_COLOR;
+            Gizmos.DrawLine(pos, transform.position);
+            Gizmos.color = START_COLOR;
             Gizmos.DrawLine(pos, pos += Vector3.down * RestLength);
-            Gizmos.color = Color.green;
+            Gizmos.color = END_COLOR;
             Gizmos.DrawLine(pos, pos + Vector3.down * Extension);
         }
     }

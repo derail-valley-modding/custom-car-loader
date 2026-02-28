@@ -6,7 +6,8 @@ using UnityEngine;
 namespace CCL.Types.Proxies.VFX
 {
     [AddComponentMenu("CCL/Proxies/VFX/Cylinder Cock Particle Port Reader Proxy")]
-    public class CylinderCockParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, ICustomSerialized, IS060Defaults, IS282Defaults
+    public class CylinderCockParticlePortReaderProxy : AParticlePortReaderProxy, IHasPortIdFields, ICustomSerialized, ISelfValidation,
+        IS060Defaults, IS282Defaults
     {
         public static AnimationCurve Curve0 => new AnimationCurve(
             new Keyframe(0.00f, 1),
@@ -137,6 +138,24 @@ namespace CCL.Types.Proxies.VFX
             emissionRateMultiplierMin = 1.0f;
             emissionRateMultiplierMax = 5.0f;
             emissionRateMaxSpeedKmh = 60.0f;
+        }
+
+        public SelfValidationResult Validate(out string message)
+        {
+            foreach (var setup in cylinderSetups)
+            {
+                if (setup.frontParticlesParent == null)
+                {
+                    return this.FailForNull(nameof(CylinderSetup.frontParticlesParent), out message);
+                }
+
+                if (setup.rearParticlesParent == null)
+                {
+                    return this.FailForNull(nameof(CylinderSetup.rearParticlesParent), out message);
+                }
+            }
+
+            return this.Pass(out message);
         }
 
         [Serializable]
