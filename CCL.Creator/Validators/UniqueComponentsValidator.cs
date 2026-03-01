@@ -5,6 +5,7 @@ using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Headlights;
 using CCL.Types.Proxies.Ports;
 using CCL.Types.Proxies.Simulation;
+using CCL.Types.Proxies.Simulation.Steam;
 using CCL.Types.Proxies.VFX;
 using CCL.Types.Proxies.Weather;
 using CCL.Types.Proxies.Wheels;
@@ -34,6 +35,7 @@ namespace CCL.Creator.Validators
             NoMoreThanOne<CoalPileSimControllerProxy>(prefab);
             NoMoreThanOne<FireboxSimControllerProxy>(prefab);
             NoMoreThanOne<RemoteControllerModuleProxy>(prefab);
+            NoMoreThanOne<LubricatorRatchetDriverProxy>(prefab);
 
             return result ?? Skip();
 
@@ -47,7 +49,7 @@ namespace CCL.Creator.Validators
 
                     if (comps.Length > 1)
                     {
-                        result.Fail($"Cannot have more than 1 {typeof(T).Name} component in the prefab");
+                        result.Fail($"{prefab.name} - Cannot have more than 1 {typeof(T).Name} component in the prefab");
                     }
                 }
             }

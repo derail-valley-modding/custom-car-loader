@@ -31,14 +31,30 @@ namespace CCL.Creator.Validators
 
             foreach (var control in controls)
             {
-                if (control.colliderGameObjects.Length == 0)
+                var hasCol = false;
+
+                foreach (var go in control.colliderGameObjects)
+                {
+                    if (go == null)
+                    {
+                        result.Warning($"Control '{control.name}' has null entries in collider objects", control);
+                        break;
+                    }
+
+                    if (ComponentUtil.HasComponent<Collider>(go, false))
+                    {
+                        hasCol = true;
+                    }
+                }
+
+                if (!hasCol)
                 {
                     result.Warning($"Control '{control.name}' does not have any colliders assigned, physical interaction will not work", control);
                 }
 
                 if (control.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
                 {
-                    result.Fail($"Control '{control.name}' - non-convex mesh colliders are not supported in controls");
+                    result.Fail($"Control '{control.name}' - non-convex mesh colliders are not supported in controls", control);
                 }
 
                 switch (control)

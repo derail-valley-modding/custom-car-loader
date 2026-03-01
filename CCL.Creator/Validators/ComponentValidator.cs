@@ -1,4 +1,5 @@
 ﻿using CCL.Types;
+using CCL.Types.Proxies.Simulation.Steam;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -43,12 +44,26 @@ namespace CCL.Creator.Validators
                 }
             }
 
+            count += TestLubricatorRatchet(livery, result);
+
             return count == 0 ? Skip() : result;
 
             static string AddCompToMessage(Component comp, string message)
             {
                 return $"{comp.name}/{comp.GetType().Name}: {message}";
             }
+        }
+
+        private int TestLubricatorRatchet(CustomCarVariant livery, ValidationResult result)
+        {
+            var comps = livery.AllPrefabs.GetComponentsInChildren<LubricatorRatchetProxy>();
+
+            if (comps.Count > 0 && !ComponentUtil.HasComponent<LubricatorRatchetDriverProxy>(livery.prefab!))
+            {
+                result.Fail($"Could not find any {nameof(LubricatorRatchetDriverProxy)}", livery.prefab);
+            }
+
+            return comps.Count;
         }
     }
 }
