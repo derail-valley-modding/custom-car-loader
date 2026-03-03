@@ -35,6 +35,7 @@ namespace CCL.Importer.Components
             CreateMap<HideObjectsOnCargoLoad, HideObjectsOnCargoLoadInternal>().AutoCacheAndMap();
             CreateMap<CoupledAttachment, CoupledAttachmentInternal>().AutoCacheAndMap();
             CreateMap<VehicleIdToTMP, VehicleIdToTMPInternal>().AutoCacheAndMap();
+            CreateMap<KeepCoupledInteriorLoaded, KeepCoupledInteriorLoadedInternal>().AutoCacheAndMap();
 
             CreateMap<SimPortPlotter, SimPortPlotterInternal>().AutoCacheAndMap();
         }
