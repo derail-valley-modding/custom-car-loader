@@ -13,7 +13,7 @@ namespace CCL.Types.Proxies.Simulation
         public string powerFuseId = string.Empty;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
-{
+        {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUTPUT")
         };
 
