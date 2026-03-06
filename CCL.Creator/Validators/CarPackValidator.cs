@@ -45,7 +45,9 @@ namespace CCL.Creator.Validators
             public CarResults(string carId, List<ValidationResult> results)
             {
                 CarId = carId;
-                Results = results;
+                Results = CCLEditorSettings.Settings.SortSkippedToBottom ?
+                    results.OrderBy(x => x.Status == ResultStatus.Skipped).ToList() :
+                    results;
             }
         }
 
@@ -309,41 +311,6 @@ namespace CCL.Creator.Validators
         private void ValidateCar(CustomCarType car)
         {
             var results = new List<ValidationResult>();
-            var carResult = new ValidationResult("Car Setup");
-            results.Add(carResult);
-
-            // Validate specific settings related to the CarType here so
-            // they aren't duplicated for each livery.
-            if (string.IsNullOrWhiteSpace(car.id))
-            {
-                carResult.CriticalFail("Car ID is empty!", car);
-                goto AddResults;
-            }
-
-            if (car.liveries.Count == 0)
-            {
-                carResult.CriticalFail("Car has no liveries!", car);
-                goto AddResults;
-            }
-
-            if (car.liveries.ContainsDuplicates(x => x.id))
-            {
-                carResult.CriticalFail("Car has duplicate livery IDs!", car);
-                goto AddResults;
-            }
-
-            if (car.KindSelection != DVTrainCarKind.Car)
-            {
-                if (car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
-                {
-                    carResult.Warning("Car is not of generic car kind but has no delete prevention set", car);
-                }
-
-                if (car.carIdPrefix != "-")
-                {
-                    carResult.Warning("Car is not of generic car kind but ID prefix is not \"-\"", car);
-                }
-            }
 
             foreach (var validator in SortedSteps)
             {
@@ -360,7 +327,6 @@ namespace CCL.Creator.Validators
                 }
             }
 
-        AddResults:
             _results.Add(new CarResults(car.id, results));
         }
 

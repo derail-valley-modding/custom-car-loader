@@ -63,5 +63,11 @@ namespace CCL.Creator
         [Tooltip("Extra Paint asset names to display in paint fields\n" +
             "Only works on fields that support custom values")]
         public string[] ExtraPaints = new string[0];
+
+        [Header("Validation")]
+        [Tooltip("Displays warnings if there are missing meshes in the bogie transforms")]
+        public bool DisplayWarningsForMissingMeshesInBogies = true;
+        [Tooltip("Sorts all skipped validation steps to the bottom of the list")]
+        public bool SortSkippedToBottom = true;
     }
 }

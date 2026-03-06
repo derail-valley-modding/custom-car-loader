@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace CCL.Creator.Validators
 {
+    [RequiresStep(typeof(CarSettingsValidator))]
     internal class LiverySettingsValidator : LiveryValidator
     {
         public override string TestName => "Livery Setup";

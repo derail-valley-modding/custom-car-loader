@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CCL.Creator.Validators
 {
+    [RequiresStep(typeof(CarSettingsValidator))]
     internal class CargoValidator : CarValidator
     {
         public override string TestName => "Cargo Settings";
