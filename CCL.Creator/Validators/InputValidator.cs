@@ -15,9 +15,11 @@ namespace CCL.Creator.Validators
         {
             var result = Pass();
             var hashes = ControlActions.Names.ToHashSet();
-            var tested = false;
+            var comps = livery.AllPrefabs.GetComponentsInChildren<AKeyboardInputProxy>(true);
 
-            foreach (var input in livery.AllPrefabs.GetComponentsInChildren<AKeyboardInputProxy>(true))
+            if (comps.Count == 0) return Skip();
+
+            foreach (var input in comps)
             {
                 switch (input)
                 {
@@ -88,11 +90,9 @@ namespace CCL.Creator.Validators
                     default:
                         break;
                 }
-
-                tested = true;
             }
 
-            return tested ? result : Skip();
+            return result;
 
             bool CheckActionName(ActionReference? action)
             {

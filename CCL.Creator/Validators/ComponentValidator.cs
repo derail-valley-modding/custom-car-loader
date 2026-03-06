@@ -58,7 +58,7 @@ namespace CCL.Creator.Validators
         {
             var comps = livery.AllPrefabs.GetComponentsInChildren<LubricatorRatchetProxy>();
 
-            if (comps.Count > 0 && !ComponentUtil.HasComponent<LubricatorRatchetDriverProxy>(livery.prefab!))
+            if (comps.Count > 0 && !ComponentUtil.HasComponentInChildren<LubricatorRatchetDriverProxy>(livery.prefab!))
             {
                 result.Fail($"Could not find any {nameof(LubricatorRatchetDriverProxy)}", livery.prefab);
             }

@@ -80,7 +80,7 @@ namespace CCL.Creator.Wizards
             "Eighth Unit"
         };
 
-        [MenuItem("CCL/Naming Wizard", priority = MenuOrdering.MenuBar.Calculator)]
+        [MenuItem("CCL/Naming Wizard", priority = MenuOrdering.MenuBar.Naming)]
         public static void ShowWindow()
         {
             var window = GetWindow<NamingWizard>();

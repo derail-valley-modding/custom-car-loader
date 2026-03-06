@@ -41,7 +41,7 @@ namespace CCL.Creator.Validators
                         break;
                     }
 
-                    if (ComponentUtil.HasComponent<Collider>(go, false))
+                    if (ComponentUtil.HasComponent<Collider>(go))
                     {
                         hasCol = true;
                     }

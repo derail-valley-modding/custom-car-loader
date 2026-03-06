@@ -35,10 +35,16 @@ namespace CCL.Types
             return to;
         }
 
-        public static bool HasComponent<T>(GameObject go, bool inChildren = true)
+        public static bool HasComponent<T>(GameObject go)
             where T : Component
         {
-            return (inChildren ? go.GetComponentInChildren<T>() : go.GetComponent<T>()) != null;
+            return go.GetComponent<T>() != null;
+        }
+
+        public static bool HasComponentInChildren<T>(GameObject go)
+            where T : Component
+        {
+            return go.GetComponentInChildren<T>() != null;
         }
     }
 }
