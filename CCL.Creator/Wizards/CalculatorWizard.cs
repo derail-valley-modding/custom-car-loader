@@ -1,8 +1,15 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types;
+using CCL.Types.Components.Simulation;
+using CCL.Types.Proxies.Simulation;
+using CCL.Types.Proxies.Simulation.Diesel;
+using CCL.Types.Proxies.Simulation.Electric;
+using CCL.Types.Proxies.Simulation.Steam;
 using System;
 using UnityEditor;
 using UnityEngine;
+
+using UObject = UnityEngine.Object;
 
 namespace CCL.Creator.Wizards
 {
@@ -31,6 +38,9 @@ namespace CCL.Creator.Wizards
             new GUIContent("Generator Voltage",
                 "Expected maximum generator voltage")
         };
+
+        private static readonly GUIContent s_context = new GUIContent("Context Object",
+            "Drag an asset or component here to try and assign relevant information automatically");
 
         private SerializedObject _editor = null!;
         private float _scroll = 0.0f;
@@ -131,6 +141,61 @@ namespace CCL.Creator.Wizards
                     GearRatio = speedMS * 60.0f / circumference * (1.0f / RPM);
                     GearRatio = 1.0f / GearRatio;
                 }
+
+                EditorGUILayout.Space();
+                Guess(EditorHelpers.ObjectField<UObject>(s_context, null, true));
+            }
+
+            private void Guess(UObject? context)
+            {
+                int index;
+
+                switch (context)
+                {
+                    case CustomCarType car:
+                        WheelRadius = car.wheelRadius;
+                        break;
+                    case CustomCarVariant livery:
+                        Guess(livery.parentType);
+                        Guess(livery.prefab);
+                        break;
+
+                    case TractionMotorSetDefinitionProxy tms:
+                        RPM = tms.maxMotorRpm;
+                        break;
+                    case DieselEngineDirectDefinitionProxy engine:
+                        RPM = RPM == engine.engineRpmMax ? engine.engineRpmIdle : engine.engineRpmMax;
+                        break;
+                    case RPMDamageCalculatorDefinition damage:
+                        RPM = damage.MaxRPM;
+                        break;
+
+                    case TransmissionFixedGearDefinitionProxy transmission:
+                        GearRatio = transmission.gearRatio;
+                        break;
+                    case SmoothTransmissionDefinitionProxy transmission:
+                        if (transmission.gearRatios.Length == 0) break;
+                        index = transmission.gearRatios.FirstIndexMatch(x => x == GearRatio);
+                        GearRatio = transmission.gearRatios[(index + 1) % transmission.gearRatios.Length];
+                        break;
+                    case HydraulicTransmissionDefinitionProxy transmission:
+                        if (transmission.configs.Length == 0) break;
+                        index = transmission.configs.FirstIndexMatch(x => x.gearRatio == GearRatio);
+                        GearRatio = transmission.configs[(index + 1) % transmission.configs.Length].gearRatio;
+                        break;
+
+                    case GameObject prefab:
+                        Guess(prefab.GetComponentInChildren<DieselEngineDirectDefinitionProxy>());
+                        Guess(prefab.GetComponentInChildren<TractionMotorSetDefinitionProxy>());
+                        Guess(prefab.GetComponentInChildren<RPMDamageCalculatorDefinition>());
+                        Guess(prefab.GetComponentInChildren<HydraulicTransmissionDefinitionProxy>());
+                        Guess(prefab.GetComponentInChildren<SmoothTransmissionDefinitionProxy>());
+                        Guess(prefab.GetComponentInChildren<TransmissionFixedGearDefinitionProxy>());
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
 
@@ -209,8 +274,44 @@ namespace CCL.Creator.Wizards
                 var result = Cutoff * CylCount * Pressure * CylinderBore * CylinderBore * PistonStroke / (DriverRadius * 400.0f);
 
                 EditorGUILayout.LabelField("Tractive Effort", $"{result * Units.BarToPascal:F0} N");
+                EditorGUILayout.LabelField("Expected Speed", $"{MathHelper.Tau * DriverRadius * 5.25 * Units.MStoKMH:F0} km/h");
 
                 // TODO: Compounding?
+
+                EditorGUILayout.Space();
+                Guess(EditorHelpers.ObjectField<UObject>(s_context, null, true));
+            }
+
+            private void Guess(UObject? context)
+            {
+                switch (context)
+                {
+                    case CustomCarType car:
+                        DriverRadius = car.wheelRadius;
+                        break;
+                    case CustomCarVariant livery:
+                        Guess(livery.parentType);
+                        Guess(livery.prefab);
+                        break;
+
+                    case BoilerDefinitionProxy boiler:
+                        Pressure = boiler.safetyValveOpeningPressure;
+                        break;
+
+                    case ReciprocatingSteamEngineDefinitionProxy engine:
+                        CylinderBore = engine.cylinderBore;
+                        PistonStroke = engine.pistonStroke;
+                        CylCount = engine.numCylinders;
+                        break;
+
+                    case GameObject prefab:
+                        Guess(prefab.GetComponentInChildren<BoilerDefinitionProxy>());
+                        Guess(prefab.GetComponentInChildren<ReciprocatingSteamEngineDefinitionProxy>());
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
 
@@ -238,6 +339,31 @@ namespace CCL.Creator.Wizards
 
                 var result = TotalWeight * Units.Gravity / TotalAxles * PoweredAxles * FrictionCoeff;
                 EditorGUILayout.LabelField("Adhesion Limit", $"{result:F0} N");
+
+                EditorGUILayout.Space();
+                Guess(EditorHelpers.ObjectField<UObject>(s_context, null, true));
+            }
+
+            private void Guess(UObject? context)
+            {
+                switch (context)
+                {
+                    case CustomCarType car:
+                        TotalWeight = car.mass;
+                        FrictionCoeff = car.wheelslipFrictionCoefficient;
+                        break;
+                    case CustomCarVariant livery:
+                        Guess(livery.parentType);
+                        Guess(livery.prefab);
+                        break;
+
+                    case TractionMotorSetDefinitionProxy tms:
+                        PoweredAxles = tms.numberOfTractionMotors;
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
 
@@ -253,7 +379,7 @@ namespace CCL.Creator.Wizards
         {
             public float GeneratorVoltage = 1000;
             public float MotorCurrent = 500;
-            public Types.Proxies.Simulation.Electric.TractionMotorSetDefinitionProxy? Definition;
+            public TractionMotorSetDefinitionProxy? Definition;
 
             public void Draw()
             {
@@ -316,7 +442,7 @@ namespace CCL.Creator.Wizards
         [Serializable]
         private class GeneratorVoltage
         {
-            public Types.Proxies.Simulation.Electric.TractionGeneratorDefinitionProxy? Definition;
+            public TractionGeneratorDefinitionProxy? Definition;
             public float ShaftRPM = 900;
             public bool UseExternalValues = false;
             public float Current = 500;
