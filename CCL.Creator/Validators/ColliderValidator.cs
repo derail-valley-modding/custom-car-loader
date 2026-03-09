@@ -57,7 +57,7 @@ namespace CCL.Creator.Validators
             // Walkable.
             var walkable = collidersRoot.FindSafe(CarPartNames.Colliders.WALKABLE);
             var walkableComp = walkable ? walkable!.GetComponentsInChildren<Collider>(true) : Array.Empty<Collider>();
-            if (!walkable || !walkableComp.Any())
+            if (walkable == null || !walkableComp.Any())
             {
                 result.Fail($"{livery.id} - No {CarPartNames.Colliders.WALKABLE} colliders set - car has no player collision", collidersRoot);
             }
@@ -87,8 +87,9 @@ namespace CCL.Creator.Validators
                         }
                     }
                 }
-            }
 
+                CheckEmptyFilters(walkable);
+            }
 
             // Items.
             var items = collidersRoot.FindSafe(CarPartNames.Colliders.ITEMS);
@@ -103,6 +104,8 @@ namespace CCL.Creator.Validators
                         result.Warning($"{livery.id} - Drill disabler {disabler.name} is not under {CarPartNames.Colliders.DRILLING_DISABLERS}");
                     }
                 }
+
+                CheckEmptyFilters(items);
             }
             else
             {
@@ -131,6 +134,17 @@ namespace CCL.Creator.Validators
                 if (InvalidOrigin(t))
                 {
                     result.Warning($"{livery.id} - {t.name} is not at the local origin");
+                }
+            }
+
+            void CheckEmptyFilters(Transform t)
+            {
+                foreach (var filter in t.GetComponentsInChildren<MeshFilter>(true))
+                {
+                    if (filter.sharedMesh == null)
+                    {
+                        result.Fail("Mesh in MeshFilter is null!", filter);
+                    }
                 }
             }
         }
