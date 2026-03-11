@@ -68,6 +68,8 @@ namespace CCL.Creator.Validators
                     case SelfValidationResult.Critical:
                         result.CriticalFail(AddCompToMessage(self, message), self);
                         return count;
+                    case SelfValidationResult.Pass:
+                        continue;
                     default:
                         Debug.LogWarning($"Unknown self validation result from {self.name}/{self.GetType().Name}");
                         continue;

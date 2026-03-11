@@ -39,6 +39,11 @@ namespace CCL.Creator.Validators
             // Check for duplicate component IDs or port IDs.
             foreach (var component in components)
             {
+                if (string.IsNullOrWhiteSpace(component.ID))
+                {
+                    result.Warning($"Component of type {component.GetType().Name} has an empty ID, this can cause problems");
+                }
+
                 if (compIds.Contains(component.ID))
                 {
                     result.Fail($"Duplicate component ID {component.ID}");

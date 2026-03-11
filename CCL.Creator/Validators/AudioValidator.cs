@@ -2,6 +2,7 @@
 using CCL.Types.Components;
 using CCL.Types.Proxies.Audio;
 using CCL.Types.Proxies.Ports;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -18,13 +19,32 @@ namespace CCL.Creator.Validators
             var result = Pass();
             var prefab = car.SimAudioPrefab;
 
-            CheckCylCocks(prefab, result);
             CheckPorts(prefab, result);
+            CheckCylCocks(prefab, result);
+            CheckAudioClips(prefab, result);
+            CheckChuffs(prefab, result);
 
             return result;
         }
 
-        private void CheckCylCocks(GameObject prefab, ValidationResult result)
+        private static void CheckPorts(GameObject prefab, ValidationResult result)
+        {
+            foreach (var comp in prefab.GetComponentsInChildren<IHasPortIdFields>(true))
+            {
+                foreach (var port in comp.ExposedPortIdFields)
+                {
+                    if (!port.IsAssigned)
+                    {
+                        if (!port.IsMultiValue && port.Required)
+                        {
+                            result.Fail($"Port field {port.FullName} must be assigned", comp is Object obj ? obj : null);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void CheckCylCocks(GameObject prefab, ValidationResult result)
         {
             foreach (var comp in prefab.GetComponentsInChildren<CylinderCockLayeredPortReaderProxy>(true))
             {
@@ -47,18 +67,59 @@ namespace CCL.Creator.Validators
             }
         }
 
-        private void CheckPorts(GameObject prefab, ValidationResult result)
+        private static void CheckAudioClips(GameObject prefab, ValidationResult result)
         {
-            foreach (var comp in prefab.GetComponentsInChildren<IHasPortIdFields>(true))
+            foreach (var comp in prefab.GetComponentsInChildren<AudioClipPortReaderProxy>(true))
             {
-                foreach (var port in comp.ExposedPortIdFields)
+                if (comp.clips.Any(x => x == null))
                 {
-                    if (!port.IsAssigned)
+                    result.Fail($"{comp.name}/{nameof(AudioClipPortReaderProxy)}: null entries in clip array", comp);
+                }
+            }
+        }
+
+        private static void CheckChuffs(GameObject prefab, ValidationResult result)
+        {
+            foreach (var comp in prefab.GetComponentsInChildren<ChuffClipsSimReaderProxy>(true))
+            {
+                // Individual chuffs.
+                CheckArray(comp.lowPressureClips, "low pressure clips");
+                CheckArray(comp.mediumPressureClips, "medium pressure clips");
+                CheckArray(comp.highPressureClips, "high pressure clips");
+                CheckIndividualConfig(comp.regularChuffConfig, "chuff");
+
+                // Water chuffs.
+                CheckArray(comp.waterChuffClips, "water chuff clips");
+                CheckIndividualConfig(comp.waterChuffConfig, "water chuff");
+
+                // Ash chuffs.
+                CheckArray(comp.ashChuffClips, "ash chuff clips");
+                CheckIndividualConfig(comp.ashChuffConfig, "ash chuff");
+
+                // Loops.
+                CheckArray(comp.chuffLoops, "chuff loops");
+                CheckArray(comp.waterChuffLoops, "water chuff loops");
+                CheckArray(comp.ashChuffLoops, "ash chuff loops");
+
+                void CheckArray<T>(T[] array, string name)
+                {
+                    if (array.Any(x => x == null))
                     {
-                        if (!port.IsMultiValue && port.Required)
-                        {
-                            result.Fail($"Port field {port.FullName} must be assigned", comp is Object obj ? obj : null);
-                        }
+                        result.Fail($"{comp.name}/{nameof(ChuffClipsSimReaderProxy)}: null entries in {name} array", comp);
+                    }
+                }
+
+                void CheckIndividualConfig(IndividualChuffAudioSourceConfig config, string name)
+                {
+                    if (config == null)
+                    {
+                        result.Fail($"{comp.name}/{nameof(ChuffClipsSimReaderProxy)}: {name} config is null", comp);
+                        return;
+                    }
+
+                    if (config.parent == null)
+                    {
+                        result.Fail($"{config.name}/{nameof(IndividualChuffAudioSourceConfig)}: parent is null", config);
                     }
                 }
             }
