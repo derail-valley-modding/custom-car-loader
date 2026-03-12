@@ -45,8 +45,10 @@ namespace CCL.Types.Proxies.Controls
             }
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
+            highlight = null;
+
             if (transform.localPosition != Vector3.zero)
             {
                 message = "local position should be (0, 0, 0)";
@@ -70,7 +72,7 @@ namespace CCL.Types.Proxies.Controls
                 return SelfValidationResult.Warning;
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

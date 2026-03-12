@@ -36,7 +36,7 @@ namespace CCL.Creator.Validators
                     {
                         if (!port.IsMultiValue && port.Required)
                         {
-                            result.Fail($"Port field {port.FullName} must be assigned", comp is Object obj ? obj : null);
+                            result.Fail($"Port field {port.FullName} must be assigned", comp is Object obj ? obj : null, port.FieldName);
                         }
                     }
                 }
@@ -51,7 +51,8 @@ namespace CCL.Creator.Validators
                 {
                     if (audio == null)
                     {
-                        result.Fail($"{comp.name}/{nameof(CylinderCockLayeredPortReaderProxy)}: null entries in audio array", comp);
+                        result.Fail($"{comp.name}/{nameof(CylinderCockLayeredPortReaderProxy)}: null entries in audio array",
+                            comp, nameof(comp.cylCockAudio));
                         return;
                     }
 
@@ -60,7 +61,7 @@ namespace CCL.Creator.Validators
                     {
                         result.Warning($"{audio.name} does not have a {nameof(LayeredAudioProxy)} " +
                             $"or {nameof(CopyVanillaAudioSystem)} for {nameof(CylinderCockLayeredPortReaderProxy)}, " +
-                            $"make sure this is intentional", audio);
+                            $"make sure this is intentional", audio, nameof(comp.cylCockAudio));
                     }
                 }
             }
@@ -71,37 +72,37 @@ namespace CCL.Creator.Validators
             foreach (var comp in prefab.GetComponentsInChildren<ChuffClipsSimReaderProxy>(true))
             {
                 // Individual chuffs.
-                CheckArray(comp.lowPressureClips, "low pressure clips");
-                CheckArray(comp.mediumPressureClips, "medium pressure clips");
-                CheckArray(comp.highPressureClips, "high pressure clips");
-                CheckIndividualConfig(comp.regularChuffConfig, "chuff");
+                CheckArray(comp.lowPressureClips, "low pressure clips", nameof(comp.lowPressureClips));
+                CheckArray(comp.mediumPressureClips, "medium pressure clips", nameof(comp.mediumPressureClips));
+                CheckArray(comp.highPressureClips, "high pressure clips", nameof(comp.highPressureClips));
+                CheckIndividualConfig(comp.regularChuffConfig, "chuff", nameof(comp.regularChuffConfig));
 
                 // Water chuffs.
                 //CheckArray(comp.waterChuffClips, "water chuff clips");
-                CheckIndividualConfig(comp.waterChuffConfig, "water chuff");
+                CheckIndividualConfig(comp.waterChuffConfig, "water chuff", nameof(comp.waterChuffConfig));
 
                 // Ash chuffs.
                 //CheckArray(comp.ashChuffClips, "ash chuff clips");
-                CheckIndividualConfig(comp.ashChuffConfig, "ash chuff");
+                CheckIndividualConfig(comp.ashChuffConfig, "ash chuff", nameof(comp.ashChuffConfig));
 
                 // Loops.
-                CheckArray(comp.chuffLoops, "chuff loops");
-                CheckArray(comp.waterChuffLoops, "water chuff loops");
-                CheckArray(comp.ashChuffLoops, "ash chuff loops");
+                CheckArray(comp.chuffLoops, "chuff loops", nameof(comp.chuffLoops));
+                CheckArray(comp.waterChuffLoops, "water chuff loops", nameof(comp.waterChuffLoops));
+                CheckArray(comp.ashChuffLoops, "ash chuff loops", nameof(comp.ashChuffLoops));
 
-                void CheckArray<T>(T[] array, string name)
+                void CheckArray<T>(T[] array, string name, string? highlight)
                 {
                     if (array.Any(x => x == null))
                     {
-                        result.Fail($"{comp.name}/{nameof(ChuffClipsSimReaderProxy)}: null entries in {name} array", comp);
+                        result.Fail($"{comp.name}/{nameof(ChuffClipsSimReaderProxy)}: null entries in {name} array", comp, highlight);
                     }
                 }
 
-                void CheckIndividualConfig(IndividualChuffAudioSourceConfig config, string name)
+                void CheckIndividualConfig(IndividualChuffAudioSourceConfig config, string name, string? highlight)
                 {
                     if (config == null)
                     {
-                        result.Fail($"{comp.name}/{nameof(ChuffClipsSimReaderProxy)}: {name} config is null", comp);
+                        result.Fail($"{comp.name}/{nameof(ChuffClipsSimReaderProxy)}: {name} config is null", comp, highlight);
                         return;
                     }
 

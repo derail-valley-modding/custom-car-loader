@@ -83,19 +83,19 @@ namespace CCL.Types.Proxies.Weather
             }
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (duplicates.Any(x => x == null))
             {
-                return this.FailForNullEntries(nameof(duplicates), out message);
+                return this.FailForNullEntries(nameof(duplicates), out message, out highlight);
             }
 
             if (wipers.Any(x => x == null))
             {
-                return this.FailForNullEntries(nameof(wipers), out message);
+                return this.FailForNullEntries(nameof(wipers), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

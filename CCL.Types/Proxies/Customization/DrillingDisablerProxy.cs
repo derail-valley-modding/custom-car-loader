@@ -8,9 +8,10 @@ namespace CCL.Types.Proxies.Customization
         [Tooltip("Whether or not to allow drilling for all child colliders. Overrides parent.")]
         public bool allowDrilling;
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             var colliders = GetComponentsInChildren<Collider>(true);
+            highlight = null;
 
             if (colliders.Length == 0)
             {
@@ -29,7 +30,7 @@ namespace CCL.Types.Proxies.Customization
                 }
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

@@ -51,17 +51,19 @@ namespace CCL.Types.Proxies.Headlights
             }
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (headlightSetupsFront.Any(x => x == null))
             {
-                return this.FailForNullEntries(nameof(headlightSetupsFront), out message);
+                return this.FailForNullEntries(nameof(headlightSetupsFront), out message, out highlight);
             }
 
             if (headlightSetupsRear.Any(x => x == null))
             {
-                return this.FailForNullEntries(nameof(headlightSetupsRear), out message);
+                return this.FailForNullEntries(nameof(headlightSetupsRear), out message, out highlight);
             }
+
+            highlight = null;
 
             if (this.GetComponentInParentInactive<CarLightsOptimizerProxy>() == null)
             {

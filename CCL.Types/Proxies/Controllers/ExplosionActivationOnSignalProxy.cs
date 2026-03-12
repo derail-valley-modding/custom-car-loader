@@ -24,14 +24,14 @@ namespace CCL.Types.Proxies.Controllers
             new PortIdField(this, nameof(explosionSignalPortId), explosionSignalPortId),
         };
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (explosionAnchor == null)
             {
-                return this.FailForNull(nameof(explosionAnchor), out message);
+                return this.FailForNull(nameof(explosionAnchor), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

@@ -11,6 +11,6 @@
 
     public interface ISelfValidation
     {
-        public SelfValidationResult Validate(out string message);
+        public SelfValidationResult Validate(out string message, out string? highlight);
     }
 }

@@ -8,6 +8,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -118,6 +119,7 @@ namespace CCL.Creator.Validators
             public static readonly GUIContent Critical = EditorGUIUtility.IconContent("Error");
             public static readonly GUIContent Skipped = EditorGUIUtility.IconContent("Toolbar Minus");
             public static readonly GUIContent Info = EditorGUIUtility.IconContent("UnityEditor.InspectorWindow");
+            public static readonly GUIContent ContextButton = EditorGUIUtility.IconContent("SceneViewLighting");
         }
 
         private static CarPackValidator s_window = null!;
@@ -468,7 +470,7 @@ namespace CCL.Creator.Validators
             if (result.HasContext)
             {
                 // Opens the offending object/component in the inspector.
-                if (GUILayout.Button(EditorGUIUtility.IconContent("SceneViewLighting"), width))
+                if (GUILayout.Button(IconContents.ContextButton, width))
                 {
                     // Open the prefab if needed.
                     var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(result.Context);
@@ -478,7 +480,8 @@ namespace CCL.Creator.Validators
                         AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
                     }
 
-                    Selection.SetActiveObjectWithContext(result.Context, result.Context);
+                    var stage = PrefabStageUtility.GetCurrentPrefabStage();
+                    Selection.SetActiveObjectWithContext(result.Context, stage != null ? stage.prefabContentsRoot : result.Context);
 
                     if (result.Highlight != null && CCLEditorSettings.Settings.HighlightRelevantFieldInValidation)
                     {
@@ -490,7 +493,7 @@ namespace CCL.Creator.Validators
             else if (result.HasSettingContext)
             {
                 // Opens project settings.
-                if (GUILayout.Button(EditorGUIUtility.IconContent("SceneViewLighting"), width))
+                if (GUILayout.Button(IconContents.ContextButton, width))
                 {
                     SettingsService.OpenProjectSettings(result.SettingsContext);
                 }

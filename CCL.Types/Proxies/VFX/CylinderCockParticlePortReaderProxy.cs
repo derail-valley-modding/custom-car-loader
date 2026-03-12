@@ -140,22 +140,22 @@ namespace CCL.Types.Proxies.VFX
             emissionRateMaxSpeedKmh = 60.0f;
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             foreach (var setup in cylinderSetups)
             {
                 if (setup.frontParticlesParent == null)
                 {
-                    return this.FailForNull(nameof(CylinderSetup.frontParticlesParent), out message);
+                    return this.FailForNull(nameof(CylinderSetup.frontParticlesParent), out message, out highlight);
                 }
 
                 if (setup.rearParticlesParent == null)
                 {
-                    return this.FailForNull(nameof(CylinderSetup.rearParticlesParent), out message);
+                    return this.FailForNull(nameof(CylinderSetup.rearParticlesParent), out message, out highlight);
                 }
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
 
         [Serializable]

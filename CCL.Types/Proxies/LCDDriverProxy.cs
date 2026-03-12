@@ -56,24 +56,26 @@ namespace CCL.Types.Proxies
             }
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (UseCustomModel)
             {
                 if (customStyle == null)
                 {
                     message = "a style prefab must be assigned when custom style is selected";
+                    highlight = nameof(customStyle);
                     return SelfValidationResult.Fail;
                 }
 
                 if (customStyle.transform.childCount != 18)
                 {
                     message = "custom style must have 18 children (dot, colon, and 16 segments) to work properly";
+                    highlight = null;
                     return SelfValidationResult.Fail;
                 }
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

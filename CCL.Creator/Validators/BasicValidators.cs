@@ -14,28 +14,30 @@ namespace CCL.Creator.Validators
         {
             if (livery.prefab == null)
             {
-                return CriticalFail("Livery must have a prefab assigned!", livery);
+                return CriticalFail("Livery must have a prefab assigned!", livery, nameof(livery.prefab));
             }
 
             if (string.IsNullOrWhiteSpace(livery.id))
             {
-                return Fail("Livery has no ID set", livery);
+                return Fail("Livery has no ID set", livery, nameof(livery.id));
             }
 
             var result = Pass();
 
             if (livery.icon == null)
             {
-                result.Warning($"Livery '{livery.id}' has no icon", livery);
+                result.Warning($"Livery '{livery.id}' has no icon", livery, nameof(livery.icon));
             }
 
             if (livery.LocoSpawnGroups.TryFind(x => x.IsDisallowedSpawn(), out var disallowed))
             {
-                result.Fail($"Livery '{livery.id}' is set to spawn on a disallowed track ({disallowed.Track})", livery);
+                result.Fail($"Livery '{livery.id}' is set to spawn on a disallowed track ({disallowed.Track})",
+                    livery, nameof(livery.LocoSpawnGroups));
             }
             else if (livery.LocoSpawnGroups.TryFind(x => x.IsDE2ExclusiveSpawn(), out var exlusive))
             {
-                result.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track ({exlusive.Track}), make sure this is intended", livery);
+                result.Warning($"Livery '{livery.id}' is set to spawn on a DE2 exclusive track ({exlusive.Track}), make sure this is intended",
+                    livery, nameof(livery.LocoSpawnGroups));
             }
 
             if (!ComponentUtil.HasComponent<CustomizationPlacementMeshesProxy>(livery.prefab))
@@ -46,11 +48,11 @@ namespace CCL.Creator.Validators
 
             if (livery.TrainsetLiveries.Any(string.IsNullOrWhiteSpace))
             {
-                result.Warning("Livery trainset has blank entries", livery);
+                result.Warning("Livery trainset has blank entries", livery, nameof(livery.TrainsetLiveries));
             }
             else if (livery.TrainsetLiveries.ContainsDuplicates())
             {
-                result.Warning("Livery trainset has duplicates", livery);
+                result.Warning("Livery trainset has duplicates", livery, nameof(livery.TrainsetLiveries));
             }
 
             if (livery.LocoSpawnGroups.Length > 0 && livery.UnlockableAsWorkTrain)

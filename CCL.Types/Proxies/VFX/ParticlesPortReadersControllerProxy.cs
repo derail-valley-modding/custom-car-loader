@@ -97,13 +97,14 @@ namespace CCL.Types.Proxies.VFX
             }
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             for (int i = 0; i < particlePortReaders.Count; i++)
             {
                 if (particlePortReaders[i].particlesParent == null)
                 {
                     message = $"port reader at index {i} has no parent";
+                    highlight = nameof(particlePortReaders);
                     return SelfValidationResult.Fail;
                 }
             }
@@ -113,11 +114,12 @@ namespace CCL.Types.Proxies.VFX
                 if (particleColorPortReaders[i].particlesParent == null)
                 {
                     message = $"color port reader at index {i} has no parent";
+                    highlight = nameof(particleColorPortReaders);
                     return SelfValidationResult.Fail;
                 }
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
 
         [Serializable]

@@ -54,19 +54,19 @@ namespace CCL.Creator.Validators
             {
                 if (!(comp is Component self)) continue;
 
-                switch (comp.Validate(out var message))
+                switch (comp.Validate(out var message, out var highlight))
                 {
                     case SelfValidationResult.Info:
                         result.AddInformation($"{id} - {message}");
                         continue;
                     case SelfValidationResult.Warning:
-                        result.Warning(AddCompToMessage(self, message), self);
+                        result.Warning(AddCompToMessage(self, message), self, highlight);
                         continue;
                     case SelfValidationResult.Fail:
-                        result.Fail(AddCompToMessage(self, message), self);
+                        result.Fail(AddCompToMessage(self, message), self, highlight);
                         continue;
                     case SelfValidationResult.Critical:
-                        result.CriticalFail(AddCompToMessage(self, message), self);
+                        result.CriticalFail(AddCompToMessage(self, message), self, highlight);
                         return count;
                     case SelfValidationResult.Pass:
                         continue;

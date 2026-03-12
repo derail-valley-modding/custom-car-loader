@@ -37,7 +37,8 @@ namespace CCL.Creator.Validators
                 {
                     if (go == null)
                     {
-                        result.Warning($"Control '{control.name}' has null entries in collider objects", control);
+                        result.Warning($"Control '{control.name}' has null entries in collider objects",
+                            control, nameof(control.colliderGameObjects));
                         break;
                     }
 
@@ -49,7 +50,8 @@ namespace CCL.Creator.Validators
 
                 if (!hasCol)
                 {
-                    result.Warning($"Control '{control.name}' does not have any colliders assigned, physical interaction will not work", control);
+                    result.Warning($"Control '{control.name}' does not have any colliders assigned, physical interaction will not work",
+                        control, nameof(control.colliderGameObjects));
                 }
 
                 if (control.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
@@ -79,7 +81,8 @@ namespace CCL.Creator.Validators
                 {
                     if (min > max)
                     {
-                        result.Warning($"{name} '{control.name}' limits bad setup: jointLimitMin must not be larger than jointLimitMax", control);
+                        result.Warning($"{name} '{control.name}' limits bad setup: jointLimitMin must not be larger than jointLimitMax",
+                            control, "jointLimitMin");
                     }
                 }
             }
@@ -88,7 +91,7 @@ namespace CCL.Creator.Validators
             {
                 if (string.IsNullOrEmpty(feeder.portId))
                 {
-                    result.Warning($"Missing Port ID in InteractablePortFeeder '{feeder.name}'", feeder);
+                    result.Warning($"Missing Port ID in InteractablePortFeeder '{feeder.name}'", feeder, nameof(feeder.portId));
                 }
             }
 

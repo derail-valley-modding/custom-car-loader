@@ -13,15 +13,16 @@ namespace CCL.Types.Proxies.Controls
             }
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (GetComponentInParent<ControlSpecProxy>())
             {
                 message = $"static area under a moving control defeats its purpose";
+                highlight = null;
                 return SelfValidationResult.Warning;
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }
