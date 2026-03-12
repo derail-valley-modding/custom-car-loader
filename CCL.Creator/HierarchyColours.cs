@@ -1,7 +1,6 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types;
 using CCL.Types.Proxies;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -18,7 +17,6 @@ namespace CCL.Creator
             Part
         };
 
-        private static readonly Dictionary<string, Texture2D?> s_icons = new Dictionary<string, Texture2D?>();
         private static readonly Vector2 OffsetStart = new Vector2(-2, 0);
         private static readonly Vector2 OffsetActive = new Vector2(3, -1);
         private static readonly Vector2 OffsetInactive = new Vector2(3, 0);
@@ -233,7 +231,7 @@ namespace CCL.Creator
                 case "[sim]":
                     if (go.GetComponent<Types.Proxies.Ports.SimConnectionsDefinitionProxy>() != null)
                     {
-                        content = EditorGUIUtility.IconContent("Favorite Icon");
+                        content = EditorGUIUtility.IconContent("AudioMixerController Icon");
                         txC = EditorHelpers.Colors.CONFIRM_ACTION;
                         content.tooltip = "The main simulation object";
                     }
@@ -259,7 +257,7 @@ namespace CCL.Creator
 
             void TrySetContentToTexture(string name, string tooltip = "")
             {
-                if (TryGetTexture(name, out var texture))
+                if (EditorTextureHandler.TryGetTexture("Icons/Hierarchy", name, out var texture))
                 {
                     content = new GUIContent(texture, tooltip);
                 }
@@ -348,42 +346,6 @@ namespace CCL.Creator
         private static Color Darken(Color color) => new Color(color.r * 0.3f, color.g * 0.3f, color.b * 0.3f, color.a);
 
         private static Color Transparent(Color color) => new Color(color.r, color.g, color.b, color.a * 0.65f);
-
-        private static Texture2D? LoadTexture(string name)
-        {
-            string assetPath = $"Assets/CarCreator/Icons/Hierarchy/{name}.png";
-
-            var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
-            if (texture)
-            {
-                s_icons.Add(name, texture);
-                return texture;
-            }
-            return null;
-        }
-
-        private static bool TryGetValidTexture(string name, out Texture2D texture)
-        {
-            if (s_icons.TryGetValue(name, out texture!))
-            {
-                return texture;
-            }
-            else
-            {
-                s_icons[name] = LoadTexture(name);
-            }
-
-            return false;
-        }
-
-        private static bool TryGetTexture(string name, out Texture2D texture)
-        {
-            // Check for a dark mode texture first.
-            if (DarkMode && TryGetValidTexture($"D_{name}", out texture)) return true;
-
-            // Fallback to light mode.
-            return TryGetValidTexture(name, out texture);
-        }
 
         private static bool IsUnderRoot(GameObject go) => go.transform.parent == go.transform.root;
     }

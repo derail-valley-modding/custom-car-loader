@@ -1,8 +1,10 @@
 ﻿using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace CCL.Types.Components.Simulation
 {
+    [AddComponentMenu("CCL/Components/Simulation/RPM Damage Calculator Definition")]
     public class RPMDamageCalculatorDefinition : SimComponentDefinitionProxy
     {
         public float MaxRPM;

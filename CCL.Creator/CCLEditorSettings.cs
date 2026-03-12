@@ -69,5 +69,12 @@ namespace CCL.Creator
         public bool DisplayWarningsForMissingMeshesInBogies = true;
         [Tooltip("Sorts all skipped validation steps to the bottom of the list")]
         public bool SortSkippedToBottom = true;
+        [Tooltip("Use icons rather than words on validation result display")]
+        public bool UseIconsOnResults = false;
+
+        [Header("Experimental")]
+        [Tooltip("Highlights the relevant field when clicking the check button in validation warnings/errors\n" +
+            "Does not work if the field isn't currently visible in the inspector (Unity 2019.4.40 bug)")]
+        public bool HighlightRelevantFieldInValidation = false;
     }
 }

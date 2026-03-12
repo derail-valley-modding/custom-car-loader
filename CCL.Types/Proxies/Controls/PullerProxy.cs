@@ -19,6 +19,7 @@ namespace CCL.Types.Proxies.Controls
 
         [Header("Configurable Joint")]
         public bool useCustomConnectionAnchor;
+        [EnableIf(nameof(useCustomConnectionAnchor))]
         public Transform connectionAnchor = null!;
         public Transform pivot = null!;
         public float linearLimit = 0.003f;

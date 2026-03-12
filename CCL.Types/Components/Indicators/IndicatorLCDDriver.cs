@@ -10,6 +10,7 @@ namespace CCL.Types.Components.Indicators
     {
         public LCDDriverProxy LCD = null!;
         public bool PadLeft = true;
+        public bool PadWithZeros = false;
         [Header("Optional")]
         [FuseId]
         public string FuseId = string.Empty;

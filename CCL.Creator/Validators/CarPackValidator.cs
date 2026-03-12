@@ -55,6 +55,8 @@ namespace CCL.Creator.Validators
         {
             public const float Padding = 4.0f;
 
+            public static readonly GUILayoutOption IconWidth = GUILayout.Width(18);
+
             public float Name = 30.0f;
             public float Result = 20.0f;
             public float Button = 20.0f;
@@ -106,6 +108,16 @@ namespace CCL.Creator.Validators
             }
 
             public static float TextSize(string text) => EditorStyles.label.CalcSize(new GUIContent(text)).x + Padding;
+        }
+
+        private class IconContents
+        {
+            public static readonly GUIContent Pass = new GUIContent(EditorTextureHandler.GetTexture("Icons/Validation", "Pass"));
+            public static readonly GUIContent Warning = new GUIContent(EditorTextureHandler.GetTexture("Icons/Validation", "Warning"));
+            public static readonly GUIContent Fail = EditorGUIUtility.IconContent("P4_DeletedLocal");
+            public static readonly GUIContent Critical = EditorGUIUtility.IconContent("Error");
+            public static readonly GUIContent Skipped = EditorGUIUtility.IconContent("Toolbar Minus");
+            public static readonly GUIContent Info = EditorGUIUtility.IconContent("UnityEditor.InspectorWindow");
         }
 
         private static CarPackValidator s_window = null!;
@@ -434,7 +446,14 @@ namespace CCL.Creator.Validators
 
                 EditorGUILayout.LabelField(GetName(result), options[0]);
 
-                EditorGUILayout.LabelField(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor, GUI.skin.label), options[1]);
+                if (CCLEditorSettings.Settings.UseIconsOnResults)
+                {
+                    EditorGUILayout.LabelField(GetIconStatus(result), TableWidths.IconWidth);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor, GUI.skin.label), options[1]);
+                }
 
                 DrawContextButton(result, options[2]);
 
@@ -449,7 +468,7 @@ namespace CCL.Creator.Validators
             if (result.HasContext)
             {
                 // Opens the offending object/component in the inspector.
-                if (GUILayout.Button("Go", width))
+                if (GUILayout.Button(EditorGUIUtility.IconContent("SceneViewLighting"), width))
                 {
                     // Open the prefab if needed.
                     var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(result.Context);
@@ -459,13 +478,19 @@ namespace CCL.Creator.Validators
                         AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
                     }
 
-                    Selection.activeObject = result.Context;
+                    Selection.SetActiveObjectWithContext(result.Context, result.Context);
+
+                    if (result.Highlight != null && CCLEditorSettings.Settings.HighlightRelevantFieldInValidation)
+                    {
+                        Highlighter.Highlight("Inspector", result.Highlight, HighlightSearchMode.Auto);
+                        GUIUtility.ExitGUI();
+                    }
                 }
             }
             else if (result.HasSettingContext)
             {
                 // Opens project settings.
-                if (GUILayout.Button("Go", width))
+                if (GUILayout.Button(EditorGUIUtility.IconContent("SceneViewLighting"), width))
                 {
                     SettingsService.OpenProjectSettings(result.SettingsContext);
                 }
@@ -473,7 +498,7 @@ namespace CCL.Creator.Validators
             else
             {
                 // Padding so the buttons aren't misaligned.
-                GUILayout.Label(" ", width, GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
+                GUILayout.Label("", GUILayout.Height(EditorGUIUtility.singleLineHeight + 1), width);
             }
         }
 
@@ -485,9 +510,16 @@ namespace CCL.Creator.Validators
             {
                 EditorGUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField($" ", options[0]);
+                EditorGUILayout.LabelField(" ", options[0]);
 
-                EditorGUILayout.LabelField(InfoKey, EditorHelpers.StyleWithTextColour(EditorHelpers.Colors.INFO, GUI.skin.label), options[1]);
+                if (CCLEditorSettings.Settings.UseIconsOnResults)
+                {
+                    EditorGUILayout.LabelField(IconContents.Info, TableWidths.IconWidth);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField(InfoKey, EditorHelpers.StyleWithTextColour(EditorHelpers.Colors.INFO, GUI.skin.label), options[1]);
+                }
 
                 GUILayout.Label(" ", options[2], GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
 
@@ -500,5 +532,14 @@ namespace CCL.Creator.Validators
         private static string GetName(ResultEntry entry) => $"{entry.TestName}: ";
         private static string GetStatus(ResultEntry entry) => Enum.GetName(typeof(ResultStatus), entry.Status);
         private static string GetMessage(ResultEntry entry) => entry.Message;
+        private static GUIContent GetIconStatus(ResultEntry entry) => entry.Status switch
+        {
+            ResultStatus.Pass => IconContents.Pass,
+            ResultStatus.Warning => IconContents.Warning,
+            ResultStatus.Failed => IconContents.Fail,
+            ResultStatus.Critical => IconContents.Fail,
+            ResultStatus.Skipped => IconContents.Skipped,
+            _ => IconContents.Warning
+        };
     }
 }

@@ -102,6 +102,7 @@ namespace CCL.Creator.Wizards
 
                     //Close the window when we are done building.
                     Close();
+                    GUIUtility.ExitGUI();
                     return;
                 }
             }

@@ -8,6 +8,7 @@ namespace CCL.Importer.Components.Indicators
     {
         public LCDDriver LCD = null!;
         public bool PadLeft = true;
+        public bool PadWithZeros = false;
         public string FuseId = string.Empty;
 
         private Fuse? _fuse;
@@ -65,7 +66,7 @@ namespace CCL.Importer.Components.Indicators
             if (PadLeft)
             {
                 // Dots and colons are part of the digits so pad them.
-                return text.PadLeft(LCD.numDigits + text.Count(c => c == '.') + text.Count(c => c == ':'));
+                return text.PadLeft(LCD.numDigits + text.Count(c => c == '.') + text.Count(c => c == ':'), PadWithZeros ? '0' : ' ');
             }
 
             return text;

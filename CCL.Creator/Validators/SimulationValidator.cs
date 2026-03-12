@@ -41,7 +41,7 @@ namespace CCL.Creator.Validators
             {
                 if (string.IsNullOrWhiteSpace(component.ID))
                 {
-                    result.Warning($"Component of type {component.GetType().Name} has an empty ID, this can cause problems");
+                    result.Warning($"Component of type {component.GetType().Name} has an empty ID, this can cause problems", component);
                 }
 
                 if (compIds.Contains(component.ID))
@@ -101,7 +101,7 @@ namespace CCL.Creator.Validators
                     {
                         if (!field.IsMultiValue && field.Required)
                         {
-                            result.Fail($"Port field {field.FullName} must be assigned", hasPortId is UObject obj ? obj : null);
+                            result.Fail($"Port field {field.FullName} must be assigned", hasPortId is UObject obj ? obj : null, field.FieldName);
                         }
 
                         continue;
