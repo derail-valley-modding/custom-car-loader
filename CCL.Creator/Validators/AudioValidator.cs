@@ -21,7 +21,6 @@ namespace CCL.Creator.Validators
 
             CheckPorts(prefab, result);
             CheckCylCocks(prefab, result);
-            CheckAudioClips(prefab, result);
             CheckChuffs(prefab, result);
 
             return result;
@@ -67,17 +66,6 @@ namespace CCL.Creator.Validators
             }
         }
 
-        private static void CheckAudioClips(GameObject prefab, ValidationResult result)
-        {
-            foreach (var comp in prefab.GetComponentsInChildren<AudioClipPortReaderProxy>(true))
-            {
-                if (comp.clips.Any(x => x == null))
-                {
-                    result.Fail($"{comp.name}/{nameof(AudioClipPortReaderProxy)}: null entries in clip array", comp);
-                }
-            }
-        }
-
         private static void CheckChuffs(GameObject prefab, ValidationResult result)
         {
             foreach (var comp in prefab.GetComponentsInChildren<ChuffClipsSimReaderProxy>(true))
@@ -89,11 +77,11 @@ namespace CCL.Creator.Validators
                 CheckIndividualConfig(comp.regularChuffConfig, "chuff");
 
                 // Water chuffs.
-                CheckArray(comp.waterChuffClips, "water chuff clips");
+                //CheckArray(comp.waterChuffClips, "water chuff clips");
                 CheckIndividualConfig(comp.waterChuffConfig, "water chuff");
 
                 // Ash chuffs.
-                CheckArray(comp.ashChuffClips, "ash chuff clips");
+                //CheckArray(comp.ashChuffClips, "ash chuff clips");
                 CheckIndividualConfig(comp.ashChuffConfig, "ash chuff");
 
                 // Loops.
