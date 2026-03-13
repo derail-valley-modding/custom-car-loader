@@ -12,11 +12,6 @@ namespace CCL.Creator.Wizards
             var window = GetWindow<ConverterWizard>();
             window.Show();
             window.titleContent = new GUIContent("CCL - Converter");
-
-            foreach (var item in window._conversions)
-            {
-                item.UpdateAll();
-            }
         }
 
         private ConvertBase[] _conversions = new[]
@@ -40,8 +35,20 @@ namespace CCL.Creator.Wizards
                 new ExtraUnit("Bars", Units.BarToPascal),
                 new ExtraUnit("PSI", Units.PSItoBar),
                 new ExtraUnit("kgf/cm²", Units.KGFCM2toPascal),
-                new ExtraUnit("Atmospheres", Units.KGFCM2toPascal)),
+                new ExtraUnit("Atmospheres", Units.KGFCM2toPascal))
+            { Value = Units.BarToPascal },
+
+            new ConvertBase("Energy", "Joule",
+                new ExtraUnit("Kilowatt-Hours", Units.KWHtoJoule))
         };
+
+        private void OnEnable()
+        {
+            foreach (var item in _conversions)
+            {
+                item.UpdateAll();
+            }
+        }
 
         private void OnGUI()
         {

@@ -54,6 +54,9 @@ namespace CCL.Types
         public const float KGFCM2toPascal = 98066.5f;
         public const float ATMtoPascal = 101325.0f;
 
+        // Energy.
+        public const float KWHtoJoule = 3600000.0f;
+
         public static float FromPrefix(float value, MetricPrefix prefix)
         {
             return prefix switch
