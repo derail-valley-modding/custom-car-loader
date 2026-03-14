@@ -249,14 +249,14 @@ namespace CCL.Creator.Wizards
                     _powerRating = 2;
                     _decade = 6;
                     break;
-                // H1-010
+                // H1-020
                 case 13:
                     _powertrain = Powertrain.H;
                     _poweredAxles = 1;
                     _totalAxles = 2;
                     _capacity = 0;
                     _powerRating = 0;
-                    _decade = 1;
+                    _decade = 2;
                     break;
                 // Just cook something up.
                 default:

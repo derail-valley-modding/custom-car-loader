@@ -32,6 +32,10 @@ namespace CCL.Types.Proxies
         public int numDigits = 17;
         public float spacing = -1.4f;
 
+        [SerializeField, RenderMethodButtons]
+        [MethodButton(nameof(CreateDigits), "Create Digits")]
+        private bool _buttons;
+
         public bool UseCustomModel => model == DigitStyle.CustomModel;
         public bool UseCustomMaterial => model == DigitStyle.CustomMaterial;
 
@@ -76,6 +80,20 @@ namespace CCL.Types.Proxies
             }
 
             return this.Pass(out message, out highlight);
+        }
+
+        private void CreateDigits()
+        {
+            if (!UseCustomModel || customStyle == null) return;
+
+            for (int i = 0; i < numDigits; i++)
+            {
+                var digit = Instantiate(customStyle, transform).transform;
+                digit.name = $"Digit {i}";
+                digit.localPosition = new Vector3(spacing * i, 0f, 0f);
+                digit.localRotation = Quaternion.identity;
+                digit.localScale = Vector3.one;
+            }
         }
     }
 }
