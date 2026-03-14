@@ -33,7 +33,7 @@ namespace CCL.Types.Proxies
         public float spacing = -1.4f;
 
         [SerializeField, RenderMethodButtons]
-        [MethodButton(nameof(CreateDigits), "Create Digits")]
+        [MethodButton(nameof(CreateDigits), "Create digits")]
         private bool _buttons;
 
         public bool UseCustomModel => model == DigitStyle.CustomModel;
