@@ -120,9 +120,13 @@ namespace CCL.Importer.Components
 
             CreateMap<PullableRope, PullableRopeInternal>().AutoCacheAndMap()
                 .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
+            CreateMap<Screw, ScrewInternal>().AutoCacheAndMap()
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
 
             ControlsInstantiator.TypeMap.Add(typeof(PullableRopeInternal),
                 new() { vr = typeof(PullableRopeVRTK), pc = typeof(PullableRopeNonVR) });
+            ControlsInstantiator.TypeMap.Add(typeof(ScrewInternal),
+                new() { vr = typeof(ScrewVRTK), pc = typeof(ScrewNonVR) });
         }
     }
 }

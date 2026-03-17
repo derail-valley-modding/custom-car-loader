@@ -95,6 +95,7 @@ namespace CCL.Creator.Wizards
                 if (GUILayout.Button("Remove null entries"))
                 {
                     SimConnections.executionOrder.RemoveAll(x => x == null);
+                    AssetHelper.SaveAsset(SimConnections);
                 }
 
                 return;

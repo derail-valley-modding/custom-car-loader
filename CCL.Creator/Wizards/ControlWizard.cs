@@ -135,6 +135,7 @@ namespace CCL.Creator.Wizards
             DVControlClass.Wheel => typeof(WheelProxy),
 
             DVControlClass.PullableRope => typeof(PullableRope),
+            DVControlClass.Screw => typeof(Screw),
 
             _ => throw new NotImplementedException(),
         };
@@ -209,6 +210,7 @@ namespace CCL.Creator.Wizards
             Wheel,
             // Custom.
             PullableRope = 1000,
+            Screw,
         }
     }
 }

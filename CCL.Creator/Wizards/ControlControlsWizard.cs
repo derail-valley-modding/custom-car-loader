@@ -136,7 +136,7 @@ namespace CCL.Creator.Wizards
         [SerializeField, Tooltip("If the input works in the opposite direction")]
         private bool _flip;
 
-        [MenuItem("GameObject/CCL/Setup Control Controls", false, MenuOrdering.Cab.Control)]
+        [MenuItem("GameObject/CCL/Setup Control Inputs", false, MenuOrdering.Cab.Control)]
         public static void ShowWindow(MenuCommand command)
         {
             var prev = s_window;
@@ -154,7 +154,7 @@ namespace CCL.Creator.Wizards
             s_window.Repaint();
         }
 
-        [MenuItem("GameObject/CCL/Setup Control Controls", true, MenuOrdering.Cab.Control)]
+        [MenuItem("GameObject/CCL/Setup Control Inputs", true, MenuOrdering.Cab.Control)]
         public static bool OnContextMenuValidate()
         {
             var go = Selection.activeGameObject;
