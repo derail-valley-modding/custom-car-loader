@@ -1,5 +1,4 @@
-﻿using CCL.Importer.Processing;
-using CCL.Types;
+﻿using CCL.Types;
 using CCL.Types.Catalog;
 using DV.ThingTypes;
 using DVLangHelper.Data;
@@ -55,13 +54,13 @@ namespace CCL.Importer.Types
 
         public void RemakePrefabs()
         {
-            prefab = ModelProcessor.CreateModifiablePrefab(prefab);
+            prefab = ObjectHelper.CreateModifiablePrefab(prefab);
 
-            if (interiorPrefab) interiorPrefab = ModelProcessor.CreateModifiablePrefab(interiorPrefab);
-            if (explodedInteriorPrefab) explodedInteriorPrefab = ModelProcessor.CreateModifiablePrefab(explodedInteriorPrefab);
+            if (interiorPrefab) interiorPrefab = ObjectHelper.CreateModifiablePrefab(interiorPrefab);
+            if (explodedInteriorPrefab) explodedInteriorPrefab = ObjectHelper.CreateModifiablePrefab(explodedInteriorPrefab);
 
-            if (externalInteractablesPrefab) externalInteractablesPrefab = ModelProcessor.CreateModifiablePrefab(externalInteractablesPrefab);
-            if (explodedExternalInteractablesPrefab) explodedExternalInteractablesPrefab = ModelProcessor.CreateModifiablePrefab(explodedExternalInteractablesPrefab);
+            if (externalInteractablesPrefab) externalInteractablesPrefab = ObjectHelper.CreateModifiablePrefab(externalInteractablesPrefab);
+            if (explodedExternalInteractablesPrefab) explodedExternalInteractablesPrefab = ObjectHelper.CreateModifiablePrefab(explodedExternalInteractablesPrefab);
         }
     }
 }

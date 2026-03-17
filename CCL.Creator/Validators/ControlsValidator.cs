@@ -31,14 +31,32 @@ namespace CCL.Creator.Validators
 
             foreach (var control in controls)
             {
-                if (control.colliderGameObjects.Length == 0)
+                var hasCol = false;
+
+                foreach (var go in control.colliderGameObjects)
                 {
-                    result.Warning($"Control '{control.name}' does not have any colliders assigned, physical interaction will not work", control);
+                    if (go == null)
+                    {
+                        result.Warning($"Control '{control.name}' has null entries in collider objects",
+                            control, nameof(control.colliderGameObjects));
+                        break;
+                    }
+
+                    if (ComponentUtil.HasComponent<Collider>(go))
+                    {
+                        hasCol = true;
+                    }
+                }
+
+                if (!hasCol)
+                {
+                    result.Warning($"Control '{control.name}' does not have any colliders assigned, physical interaction will not work",
+                        control, nameof(control.colliderGameObjects));
                 }
 
                 if (control.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
                 {
-                    result.Fail($"Control '{control.name}' - non-convex mesh colliders are not supported in controls");
+                    result.Fail($"Control '{control.name}' - non-convex mesh colliders are not supported in controls", control);
                 }
 
                 switch (control)
@@ -63,7 +81,8 @@ namespace CCL.Creator.Validators
                 {
                     if (min > max)
                     {
-                        result.Warning($"{name} '{control.name}' limits bad setup: jointLimitMin must not be larger than jointLimitMax", control);
+                        result.Warning($"{name} '{control.name}' limits bad setup: jointLimitMin must not be larger than jointLimitMax",
+                            control, "jointLimitMin");
                     }
                 }
             }
@@ -72,7 +91,7 @@ namespace CCL.Creator.Validators
             {
                 if (string.IsNullOrEmpty(feeder.portId))
                 {
-                    result.Warning($"Missing Port ID in InteractablePortFeeder '{feeder.name}'", feeder);
+                    result.Warning($"Missing Port ID in InteractablePortFeeder '{feeder.name}'", feeder, nameof(feeder.portId));
                 }
             }
 

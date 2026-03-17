@@ -31,10 +31,31 @@ namespace CCL.Types
         public const float Gravity = 9.81f;
 
         public const float ToKilo = 0.001f;
+        public const float FromKilo = 1000f;
+
+        // Length.
+        public const float InchToMetre = 0.0254f;
+        public const float FootToMetre = 0.3048f;
+        public const float MileToMetre = 1609.344f;
+
+        // Speed.
         public const float MStoKMH = 3.6f;
         public const float KMHtoMS = 1.0f / MStoKMH;
+        public const float MPHtoKMH = 1.609344f;
 
+        // Force.
+        public const float LBFtoNewton = 4.4482216152605f;
+        public const float KGFtoNewton = 9.806650f;
+
+        // Pressure.
         public const float BarToPascal = 100000.0f;
+        public const float PSItoPascal = 6894.757f;
+        public const float PSItoBar = 0.06895f;
+        public const float KGFCM2toPascal = 98066.5f;
+        public const float ATMtoPascal = 101325.0f;
+
+        // Energy.
+        public const float KWHtoJoule = 3600000.0f;
 
         public static float FromPrefix(float value, MetricPrefix prefix)
         {

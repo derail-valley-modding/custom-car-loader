@@ -25,7 +25,7 @@ namespace CCL.Types.Components.Simulation
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
-{
+        {
             new PortReferenceDefinition(DVPortValueType.CONTROL, "CONTROL", false),
             new PortReferenceDefinition(DVPortValueType.PRESSURE, "STEAM_PRESSURE", false),
             new PortReferenceDefinition(DVPortValueType.COAL, "FIREBOX_COAL_LEVEL", false),

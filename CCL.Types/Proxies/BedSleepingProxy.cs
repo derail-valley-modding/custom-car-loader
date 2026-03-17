@@ -10,14 +10,14 @@ namespace CCL.Types.Proxies
         public float waitBeforeUnfade = 1.5f;
         public Transform pillowTarget = null!;
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (pillowTarget == null)
             {
-                return this.FailForNull(nameof(pillowTarget), out message);
+                return this.FailForNull(nameof(pillowTarget), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
 
         private void OnDrawGizmos()

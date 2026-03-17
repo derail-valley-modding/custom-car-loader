@@ -8,13 +8,14 @@ namespace CCL.Types.Proxies.Weather
     {
         public WiperControllerProxy wiperController = null!;
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (wiperController == null)
             {
-                return this.FailForNull(nameof(wiperController), out message);
+                return this.FailForNull(nameof(wiperController), out message, out highlight);
             }
 
+            highlight = null;
             message = $"Make sure both the {nameof(WiperControllerProxy.speeds)} and {nameof(WiperControllerProxy.timeBetweenWipes)} arrays " +
                 $"have the same number of entries as the values for {controlId}";
             return SelfValidationResult.Info;

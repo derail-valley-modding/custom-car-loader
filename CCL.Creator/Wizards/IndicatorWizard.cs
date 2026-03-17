@@ -127,6 +127,7 @@ namespace CCL.Creator.Wizards
             IndicatorType.DeltaGauge => location.AddComponent<IndicatorGaugeDelta>(),
             IndicatorType.CustomShader => location.AddComponent<IndicatorShaderCustomValue>(),
             IndicatorType.TMP => location.AddComponent<IndicatorTMP>(),
+            IndicatorType.LCDDriver => location.AddComponent<IndicatorLCDDriver>(),
 
             _ => throw new NotImplementedException(),
         };
@@ -192,7 +193,8 @@ namespace CCL.Creator.Wizards
         // Custom.
         DeltaGauge = 1000,
         CustomShader,
-        TMP
+        TMP,
+        LCDDriver
     }
 
     internal enum IndicatorValueType

@@ -32,14 +32,14 @@ namespace CCL.Types.Proxies.Headlights
         public HeadlightsSubControllerBaseProxy[] subControllers = new HeadlightsSubControllerBaseProxy[0];
         public bool mainOffSetup;
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (subControllers.Any(x => x == null))
             {
-                return this.FailForNullEntries(nameof(subControllers), out message);
+                return this.FailForNullEntries(nameof(subControllers), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

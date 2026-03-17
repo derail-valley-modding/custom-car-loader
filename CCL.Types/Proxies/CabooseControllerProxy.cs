@@ -7,14 +7,14 @@ namespace CCL.Types.Proxies
     {
         public GameObject cabTeleportDestinationCollidersGO = null!;
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (cabTeleportDestinationCollidersGO == null)
             {
-                return this.FailForNull(nameof(cabTeleportDestinationCollidersGO), out  message);
+                return this.FailForNull(nameof(cabTeleportDestinationCollidersGO), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

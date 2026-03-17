@@ -11,8 +11,10 @@ namespace CCL.Types.Proxies.Indicators
             "Number of switchPercentages should always be indicatorModels.Count - 1, because we have implicit 0 percentage")]
         public float[] switchPercentage = new float[0];
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
+            highlight = null;
+
             if (switchPercentage.Length != indicatorModels.Length - 1)
             {
                 message = $"{nameof(switchPercentage)} should have 1 less item than {nameof(indicatorModels)}";
@@ -24,6 +26,7 @@ namespace CCL.Types.Proxies.Indicators
                 if (switchPercentage[i - 1] >= switchPercentage[i])
                 {
                     message = $"{nameof(switchPercentage)} values are not orderered from lowest to highest";
+                    highlight = nameof(switchPercentage);
                     return SelfValidationResult.Warning;
                 }
             }
@@ -37,7 +40,7 @@ namespace CCL.Types.Proxies.Indicators
                 }
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

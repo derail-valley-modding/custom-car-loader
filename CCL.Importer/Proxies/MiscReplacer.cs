@@ -9,6 +9,7 @@ using DV.Optimizers;
 using DV.RemoteControls;
 using DV.Simulation.Cars;
 using LocoSim.DVExtensions.Test;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace CCL.Importer.Proxies
         private static LCDDriver? s_locoRemoteLCD = null;
         private static LCDDriver? s_speedometerLCD = null;
         private static LCDDriver? s_clockLCD = null;
+        private static readonly Dictionary<Material, GameObject> s_customLCD = new();
 
         private static GameObject CabHighlightGlow => Extensions.GetCached(ref s_cabHightlightGlow,
             () => QuickAccess.Locomotives.DE2.prefab.transform.Find(CarPartNames.Cab.HIGHLIGHT_GLOW).gameObject);
@@ -140,7 +142,7 @@ namespace CCL.Importer.Proxies
 
         private void LCDAfter(LCDDriverProxy proxy, LCDDriver driver)
         {
-            if (proxy.UseCustomStyle)
+            if (proxy.UseCustomModel)
             {
                 if (proxy.customStyle != null)
                 {
@@ -150,6 +152,16 @@ namespace CCL.Importer.Proxies
 
                 CCLPlugin.Error("LCD Driver wants custom style, but no prefab was set! Defaulting to regular red.");
             }
+            else if (proxy.UseCustomMaterial)
+            {
+                if (proxy.customMaterial != null)
+                {
+                    driver.digitModelPrefab = GetPrefabForMaterial(proxy.customMaterial);
+                    return;
+                }
+
+                CCLPlugin.Error("LCD Driver wants custom material, but no material was set! Defaulting to regular red.");
+            }
 
             driver.digitModelPrefab = proxy.model switch
             {
@@ -157,6 +169,21 @@ namespace CCL.Importer.Proxies
                 LCDDriverProxy.DigitStyle.RegularBlack => ClockLCD.digitModelPrefab,
                 _ => LocoRemoteLCD.digitModelPrefab,
             };
+        }
+
+        private static GameObject GetPrefabForMaterial(Material mat)
+        {
+            if (s_customLCD.TryGetValue(mat, out var go)) return go;
+
+            go = ObjectHelper.CreateModifiablePrefab(LocoRemoteLCD.digitModelPrefab);
+            s_customLCD[mat] = go;
+
+            foreach (var renderer in go.GetComponentsInChildren<Renderer>(true))
+            {
+                renderer.sharedMaterial = mat;
+            }
+
+            return go;
         }
     }
 }

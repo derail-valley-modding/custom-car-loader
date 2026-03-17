@@ -94,7 +94,7 @@ namespace CCL.Types
             // Always draw in local space to avoid axis issues, then transform the local space around the axis.
             using (new MatrixScope(pivot.localToWorldMatrix * Matrix4x4.Rotate(Quaternion.FromToRotation(Vector3.back, axis))))
             {
-                var cross = Vector3.up * radius;
+                var cross = new Vector3(0, radius, 0);
 
                 // To line up for easier editing.
                 if (angleOffset != 0)
@@ -142,7 +142,7 @@ namespace CCL.Types
             // Always draw in local space to avoid axis issues, then transform the local space around the axis.
             using (new MatrixScope(pivot.localToWorldMatrix * Matrix4x4.Rotate(Quaternion.FromToRotation(Vector3.back, axis))))
             {
-                var cross = Vector3.up * radius;
+                var cross = new Vector3(0, radius, 0);
 
                 // To line up for easier editing.
                 if (angleOffset != 0)
@@ -191,7 +191,7 @@ namespace CCL.Types
             // Always draw in local space to avoid axis issues, then transform the local space around the axis.
             using (new MatrixScope(pivot.localToWorldMatrix * Matrix4x4.Rotate(Quaternion.FromToRotation(Vector3.back, axis))))
             {
-                var cross = Vector3.up * radius;
+                var cross = new Vector3(0, radius, 0);
 
                 // To line up for easier editing.
                 if (angleOffset != 0)
@@ -237,7 +237,7 @@ namespace CCL.Types
             // Always draw in local space to avoid axis issues, then transform the local space around the axis.
             using (new MatrixScope(pivot.localToWorldMatrix * Matrix4x4.Rotate(Quaternion.FromToRotation(Vector3.back, axis))))
             {
-                var cross = Vector3.up * radius;
+                var cross = new Vector3(0, radius, 0);
 
                 // To line up for easier editing.
                 if (angleOffset != 0)

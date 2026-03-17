@@ -17,19 +17,19 @@ namespace CCL.Types.Proxies.Headlights
         public HeadlightProxy[] headlights = new HeadlightProxy[0];
         public Light[] lightSources = new Light[0];
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (headlights.Any(x => x == null))
             {
-                return this.FailForNullEntries(nameof(headlights), out message);
+                return this.FailForNullEntries(nameof(headlights), out message, out highlight);
             }
 
             if (lightSources.Any(x => x == null))
             {
-                return this.FailForNullEntries(nameof(lightSources), out message);
+                return this.FailForNullEntries(nameof(lightSources), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

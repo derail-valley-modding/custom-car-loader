@@ -11,6 +11,8 @@
             public const int Settings = 102;
             public const int LanguagePreview = 200;
             public const int Calculator = 300;
+            public const int Converter = 301;
+            public const int Naming = 302;
             public const int About = 10000;
         }
 

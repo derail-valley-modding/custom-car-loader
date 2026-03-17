@@ -17,18 +17,27 @@ namespace CCL.Types.Proxies
             RegularBlack = 0,
             RegularRed = 100,
             TransparentRed = 101,
-            Custom = 10000
+            CustomModel = 10000,
+            CustomMaterial = 10001,
         }
 
         [Tooltip("Can display 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, -, +")]
         public string displayedString = string.Empty;
         public DigitStyle model = DigitStyle.RegularRed;
-        [EnableIf(nameof(UseCustomStyle))]
+        [EnableIf(nameof(UseCustomModel))]
         public GameObject? customStyle;
+        [EnableIf(nameof(UseCustomMaterial))]
+        public Material? customMaterial;
+        [Min(1)]
         public int numDigits = 17;
         public float spacing = -1.4f;
 
-        public bool UseCustomStyle => model == DigitStyle.Custom;
+        [SerializeField, RenderMethodButtons]
+        [MethodButton(nameof(CreateDigits), "Create digits")]
+        private bool _buttons;
+
+        public bool UseCustomModel => model == DigitStyle.CustomModel;
+        public bool UseCustomMaterial => model == DigitStyle.CustomMaterial;
 
         private void OnDrawGizmos()
         {
@@ -51,24 +60,40 @@ namespace CCL.Types.Proxies
             }
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
-            if (UseCustomStyle)
+            if (UseCustomModel)
             {
                 if (customStyle == null)
                 {
                     message = "a style prefab must be assigned when custom style is selected";
+                    highlight = nameof(customStyle);
                     return SelfValidationResult.Fail;
                 }
 
                 if (customStyle.transform.childCount != 18)
                 {
                     message = "custom style must have 18 children (dot, colon, and 16 segments) to work properly";
+                    highlight = null;
                     return SelfValidationResult.Fail;
                 }
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
+        }
+
+        private void CreateDigits()
+        {
+            if (!UseCustomModel || customStyle == null) return;
+
+            for (int i = 0; i < numDigits; i++)
+            {
+                var digit = Instantiate(customStyle, transform).transform;
+                digit.name = $"Digit {i}";
+                digit.localPosition = new Vector3(spacing * i, 0f, 0f);
+                digit.localRotation = Quaternion.identity;
+                digit.localScale = Vector3.one;
+            }
         }
     }
 }

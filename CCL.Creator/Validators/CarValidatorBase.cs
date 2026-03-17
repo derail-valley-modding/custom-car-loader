@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
+
+using UObject = UnityEngine.Object;
 
 namespace CCL.Creator.Validators
 {
@@ -70,18 +73,18 @@ namespace CCL.Creator.Validators
         public abstract ValidationResult Validate(CustomCarType car);
 
         /// <summary>Create a new result with a single failure entry</summary>
-        protected ValidationResult Fail(string message, UnityEngine.Object? context = null)
+        protected ValidationResult Fail(string message, UObject? context = null, string? highlight = null)
         {
             var result = new ValidationResult(TestName);
-            result.Fail(message, context);
+            result.Fail(message, context, highlight);
             return result;
         }
 
         /// <summary>Create a new result with a single critical failure (critical failures stop validation)</summary>
-        protected ValidationResult CriticalFail(string message, UnityEngine.Object? context = null)
+        protected ValidationResult CriticalFail(string message, UObject? context = null, string? highlight = null)
         {
             var result = new ValidationResult(TestName);
-            result.CriticalFail(message, context);
+            result.CriticalFail(message, context, highlight);
             return result;
         }
 
@@ -186,23 +189,23 @@ namespace CCL.Creator.Validators
         }
 
         /// <summary>Add a warning message to this result. If status is currently Passing, this will escalate it to Warning level</summary>
-        public void Warning(string message, UnityEngine.Object? context = null)
+        public void Warning(string message, UObject? context = null, string? highlight = null)
         {
-            _warnings.Add(new ResultEntry(TestName, ResultStatus.Warning, message, context));
+            _warnings.Add(new ResultEntry(TestName, ResultStatus.Warning, message, context, highlight));
             Escalate(ResultStatus.Warning);
         }
 
         /// <summary>Add a failure message to this result. If status is currently Warning or below, this will escalate it to Failure level</summary>
-        public void Fail(string message, UnityEngine.Object? context = null)
+        public void Fail(string message, UObject? context = null, string? highlight = null)
         {
-            _warnings.Add(new ResultEntry(TestName, ResultStatus.Failed, message, context));
+            _warnings.Add(new ResultEntry(TestName, ResultStatus.Failed, message, context, highlight));
             Escalate(ResultStatus.Failed);
         }
 
         /// <summary>Add a critical failure message to this result. Status will be escalated to Critical and no more validators will be run</summary>
-        public void CriticalFail(string message, UnityEngine.Object? context = null)
+        public void CriticalFail(string message, UObject? context = null, string? highlight = null)
         {
-            _warnings.Add(new ResultEntry(TestName, ResultStatus.Critical, message, context));
+            _warnings.Add(new ResultEntry(TestName, ResultStatus.Critical, message, context, highlight));
             Escalate(ResultStatus.Critical);
         }
 
@@ -238,15 +241,17 @@ namespace CCL.Creator.Validators
         public string TestName;
         public ResultStatus Status;
         public string Message;
-        public UnityEngine.Object? Context;
+        public UObject? Context;
+        public string? Highlight;
         public string? SettingsContext;
 
-        public ResultEntry(string testName, ResultStatus status, string message = "", UnityEngine.Object? context = null)
+        public ResultEntry(string testName, ResultStatus status, string message = "", UObject? context = null, string? highlight = null)
         {
             TestName = testName;
             Status = status;
             Message = message;
             Context = context;
+            Highlight = highlight;
             SettingsContext = null;
         }
 

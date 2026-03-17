@@ -8,6 +8,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -45,13 +46,17 @@ namespace CCL.Creator.Validators
             public CarResults(string carId, List<ValidationResult> results)
             {
                 CarId = carId;
-                Results = results;
+                Results = CCLEditorSettings.Settings.SortSkippedToBottom ?
+                    results.OrderBy(x => x.Status == ResultStatus.Skipped).ToList() :
+                    results;
             }
         }
 
         private class TableWidths
         {
             public const float Padding = 4.0f;
+
+            public static readonly GUILayoutOption IconWidth = GUILayout.Width(18);
 
             public float Name = 30.0f;
             public float Result = 20.0f;
@@ -104,6 +109,17 @@ namespace CCL.Creator.Validators
             }
 
             public static float TextSize(string text) => EditorStyles.label.CalcSize(new GUIContent(text)).x + Padding;
+        }
+
+        private class IconContents
+        {
+            public static readonly GUIContent Pass = new GUIContent(EditorTextureHandler.GetTexture("Icons/Validation", "Pass"));
+            public static readonly GUIContent Warning = new GUIContent(EditorTextureHandler.GetTexture("Icons/Validation", "Warning"));
+            public static readonly GUIContent Fail = EditorGUIUtility.IconContent("P4_DeletedLocal");
+            public static readonly GUIContent Critical = EditorGUIUtility.IconContent("Error");
+            public static readonly GUIContent Skipped = EditorGUIUtility.IconContent("Toolbar Minus");
+            public static readonly GUIContent Info = EditorGUIUtility.IconContent("UnityEditor.InspectorWindow");
+            public static readonly GUIContent ContextButton = EditorGUIUtility.IconContent("SceneViewLighting");
         }
 
         private static CarPackValidator s_window = null!;
@@ -309,41 +325,6 @@ namespace CCL.Creator.Validators
         private void ValidateCar(CustomCarType car)
         {
             var results = new List<ValidationResult>();
-            var carResult = new ValidationResult("Car Setup");
-            results.Add(carResult);
-
-            // Validate specific settings related to the CarType here so
-            // they aren't duplicated for each livery.
-            if (string.IsNullOrWhiteSpace(car.id))
-            {
-                carResult.CriticalFail("Car ID is empty!", car);
-                goto AddResults;
-            }
-
-            if (car.liveries.Count == 0)
-            {
-                carResult.CriticalFail("Car has no liveries!", car);
-                goto AddResults;
-            }
-
-            if (car.liveries.ContainsDuplicates(x => x.id))
-            {
-                carResult.CriticalFail("Car has duplicate livery IDs!", car);
-                goto AddResults;
-            }
-
-            if (car.KindSelection != DVTrainCarKind.Car)
-            {
-                if (car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
-                {
-                    carResult.Warning("Car is not of generic car kind but has no delete prevention set", car);
-                }
-
-                if (car.carIdPrefix != "-")
-                {
-                    carResult.Warning("Car is not of generic car kind but ID prefix is not \"-\"", car);
-                }
-            }
 
             foreach (var validator in SortedSteps)
             {
@@ -360,7 +341,6 @@ namespace CCL.Creator.Validators
                 }
             }
 
-        AddResults:
             _results.Add(new CarResults(car.id, results));
         }
 
@@ -468,7 +448,14 @@ namespace CCL.Creator.Validators
 
                 EditorGUILayout.LabelField(GetName(result), options[0]);
 
-                EditorGUILayout.LabelField(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor, GUI.skin.label), options[1]);
+                if (CCLEditorSettings.Settings.UseIconsOnResults)
+                {
+                    EditorGUILayout.LabelField(GetIconStatus(result), TableWidths.IconWidth);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField(GetStatus(result), EditorHelpers.StyleWithTextColour(result.StatusColor, GUI.skin.label), options[1]);
+                }
 
                 DrawContextButton(result, options[2]);
 
@@ -483,7 +470,7 @@ namespace CCL.Creator.Validators
             if (result.HasContext)
             {
                 // Opens the offending object/component in the inspector.
-                if (GUILayout.Button("Go", width))
+                if (GUILayout.Button(IconContents.ContextButton, width))
                 {
                     // Open the prefab if needed.
                     var prefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(result.Context);
@@ -493,13 +480,20 @@ namespace CCL.Creator.Validators
                         AssetDatabase.OpenAsset(AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath));
                     }
 
-                    Selection.activeObject = result.Context;
+                    var stage = PrefabStageUtility.GetCurrentPrefabStage();
+                    Selection.SetActiveObjectWithContext(result.Context, stage != null ? stage.prefabContentsRoot : result.Context);
+
+                    if (result.Highlight != null && CCLEditorSettings.Settings.HighlightRelevantFieldInValidation)
+                    {
+                        Highlighter.Highlight("Inspector", result.Highlight, HighlightSearchMode.Auto);
+                        GUIUtility.ExitGUI();
+                    }
                 }
             }
             else if (result.HasSettingContext)
             {
                 // Opens project settings.
-                if (GUILayout.Button("Go", width))
+                if (GUILayout.Button(IconContents.ContextButton, width))
                 {
                     SettingsService.OpenProjectSettings(result.SettingsContext);
                 }
@@ -507,7 +501,7 @@ namespace CCL.Creator.Validators
             else
             {
                 // Padding so the buttons aren't misaligned.
-                GUILayout.Label(" ", width, GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
+                GUILayout.Label("", GUILayout.Height(EditorGUIUtility.singleLineHeight + 1), width);
             }
         }
 
@@ -519,9 +513,16 @@ namespace CCL.Creator.Validators
             {
                 EditorGUILayout.BeginHorizontal();
 
-                EditorGUILayout.LabelField($" ", options[0]);
+                EditorGUILayout.LabelField(" ", options[0]);
 
-                EditorGUILayout.LabelField(InfoKey, EditorHelpers.StyleWithTextColour(EditorHelpers.Colors.INFO, GUI.skin.label), options[1]);
+                if (CCLEditorSettings.Settings.UseIconsOnResults)
+                {
+                    EditorGUILayout.LabelField(IconContents.Info, TableWidths.IconWidth);
+                }
+                else
+                {
+                    EditorGUILayout.LabelField(InfoKey, EditorHelpers.StyleWithTextColour(EditorHelpers.Colors.INFO, GUI.skin.label), options[1]);
+                }
 
                 GUILayout.Label(" ", options[2], GUILayout.Height(EditorGUIUtility.singleLineHeight + 1));
 
@@ -534,5 +535,14 @@ namespace CCL.Creator.Validators
         private static string GetName(ResultEntry entry) => $"{entry.TestName}: ";
         private static string GetStatus(ResultEntry entry) => Enum.GetName(typeof(ResultStatus), entry.Status);
         private static string GetMessage(ResultEntry entry) => entry.Message;
+        private static GUIContent GetIconStatus(ResultEntry entry) => entry.Status switch
+        {
+            ResultStatus.Pass => IconContents.Pass,
+            ResultStatus.Warning => IconContents.Warning,
+            ResultStatus.Failed => IconContents.Fail,
+            ResultStatus.Critical => IconContents.Fail,
+            ResultStatus.Skipped => IconContents.Skipped,
+            _ => IconContents.Warning
+        };
     }
 }

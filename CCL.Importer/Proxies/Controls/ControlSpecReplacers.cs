@@ -15,26 +15,19 @@ namespace CCL.Importer.Proxies.Controls
         public ControlSpecReplacer()
         {
             CreateMap<LeverProxy, Lever>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)))
-                .AfterMap(ControlSpecAfter);
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
             CreateMap<PullerProxy, Puller>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)))
-                .AfterMap(ControlSpecAfter);
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
             CreateMap<RotaryProxy, Rotary>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)))
-                .AfterMap(ControlSpecAfter);
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
             CreateMap<ToggleSwitchProxy, ToggleSwitch>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)))
-                .AfterMap(ControlSpecAfter);
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
             CreateMap<WheelProxy, Wheel>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)))
-                .AfterMap(ControlSpecAfter);
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
             CreateMap<ButtonProxy, Button>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)))
-                .AfterMap(ControlSpecAfter);
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
             CreateMap<GizmoProxy, Gizmo>().AutoCacheAndMap()
-                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)))
-                .AfterMap(ControlSpecAfter);
+                .ForMember(d => d.nonVrStaticInteractionArea, o => o.MapFrom(s => Mapper.GetFromCache(s.nonVrStaticInteractionArea)));
 
             CreateMap<ExternalControlDefinitionProxy, ExternalControlDefinition>().AutoCacheAndMap();
             CreateMap<GenericControlDefinitionProxy, GenericControlDefinition>().AutoCacheAndMap();
@@ -50,14 +43,6 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<ThrottleGammaPowerConversionDefinitionProxy, ThrottleGammaPowerConversionDefinition>().AutoCacheAndMap();
 
             CreateMap<ShovelCoalPileProxy, ShovelCoalPile>().AutoCacheAndMap();
-        }
-
-        private void ControlSpecAfter(ControlSpecProxy _, ControlSpec spec)
-        {
-            foreach (var obj in spec.colliderGameObjects)
-            {
-                obj.SetLayer(DVLayer.Interactable);
-            }
         }
     }
 }

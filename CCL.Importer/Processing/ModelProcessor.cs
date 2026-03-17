@@ -85,15 +85,6 @@ namespace CCL.Importer.Processing
             if (Car.explodedExternalInteractablesPrefab) ModelUtil.SetLayersRecursiveAndExclude(Car.explodedExternalInteractablesPrefab, DVLayer.Interactable, DVLayer.Train_Walkable);
         }
 
-        public static GameObject CreateModifiablePrefab(GameObject gameObject)
-        {
-            GameObject newFab = Object.Instantiate(gameObject, ObjectHelper.Holder);
-
-            // No (Clone), makes it look bad.
-            newFab.name = gameObject.name;
-            return newFab;
-        }
-
         public static void HandleCustomSerialization(GameObject prefab)
         {
             foreach (var component in prefab.GetComponentsInChildrenByInterface<ICustomSerialized>())

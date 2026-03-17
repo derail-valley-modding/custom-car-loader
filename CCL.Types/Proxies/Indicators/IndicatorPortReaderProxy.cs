@@ -15,6 +15,7 @@ namespace CCL.Types.Proxies.Indicators
         public string indicatorRangeScalerPortId = string.Empty;
         [FuseId]
         public string fuseId = string.Empty;
+        public bool useZeroAsDefaultValue;
 
         [Header("Value modifiers")]
         public float valueMultiplier = 1f;

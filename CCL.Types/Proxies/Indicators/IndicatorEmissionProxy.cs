@@ -24,11 +24,12 @@ namespace CCL.Types.Proxies.Indicators
         public Color glareColor = Color.white;
         public Renderer glareRenderer = null!;
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (renderers.Length == 0 && GetComponentsInChildren<Renderer>().Length == 0)
             {
-                message = "no renderers assigned.";
+                message = "no renderers assigned";
+                highlight = nameof(renderers);
                 return SelfValidationResult.Fail;
             }
 
@@ -36,12 +37,11 @@ namespace CCL.Types.Proxies.Indicators
             {
                 if (renderer == null)
                 {
-                    message = "renderer is null.";
-                    return SelfValidationResult.Fail;
+                    return this.FailForNullEntries(nameof(renderers), out message, out highlight);
                 }
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
     }
 }

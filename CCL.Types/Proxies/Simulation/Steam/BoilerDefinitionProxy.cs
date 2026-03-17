@@ -58,7 +58,7 @@ namespace CCL.Types.Proxies.Simulation.Steam
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "ENTHALPY"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_IN"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.POWER, "POWER_OUT")
-    };
+        };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {

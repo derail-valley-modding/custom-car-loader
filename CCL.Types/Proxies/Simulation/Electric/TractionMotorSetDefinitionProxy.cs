@@ -153,14 +153,14 @@ namespace CCL.Types.Proxies.Simulation.Electric
             configurations = JSONObject.FromJson(_configs, () => configurations);
         }
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (poweredWheelsManager == null)
             {
-                return this.FailForNull(nameof(poweredWheelsManager), out message);
+                return this.FailForNull(nameof(poweredWheelsManager), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
 
         #region Defaults

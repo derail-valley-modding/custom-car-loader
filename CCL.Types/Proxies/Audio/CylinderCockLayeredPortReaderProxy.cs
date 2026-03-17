@@ -1,4 +1,5 @@
-﻿using CCL.Types.Proxies.Ports;
+﻿using CCL.Types.Components;
+using CCL.Types.Proxies.Ports;
 using System.Collections.Generic;
 using UnityEngine;
 

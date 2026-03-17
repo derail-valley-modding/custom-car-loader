@@ -15,14 +15,14 @@ namespace CCL.Types.Proxies.Indicators
         public float gizmoRadius = 0.1f;
         public float angleOffset = 0;
 
-        public SelfValidationResult Validate(out string message)
+        public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (needle == null)
             {
-                return this.FailForNull(nameof(needle), out message);
+                return this.FailForNull(nameof(needle), out message, out highlight);
             }
 
-            return this.Pass(out message);
+            return this.Pass(out message, out highlight);
         }
 
         private void OnDrawGizmos()

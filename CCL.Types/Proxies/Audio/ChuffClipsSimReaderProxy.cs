@@ -104,6 +104,7 @@ namespace CCL.Types.Proxies.Audio
         public float spread;
         public float minDistance = 1f;
         public float maxDistance = 500f;
-        public DVAudioMixerGroup mixerGroup;
+        [Tooltip("Should use Chuffs for the regular chuffs, and Outdoors for water and ash chuffs")]
+        public DVAudioMixerGroup mixerGroup = DVAudioMixerGroup.Chuffs;
     }
 }

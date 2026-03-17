@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Weather
 {
     [AddComponentMenu("CCL/Proxies/Weather/Window Proxy")]
-    public class WindowProxy : MonoBehaviour
+    public class WindowProxy : MonoBehaviour, ISelfValidation
     {
         public bool simulate = true;
         public MeshRenderer[] visuals = new MeshRenderer[0];
@@ -20,6 +21,7 @@ namespace CCL.Types.Proxies.Weather
 
         [RenderMethodButtons, SerializeField]
         [MethodButton(nameof(SetupDuplicates), "Setup Duplicates")]
+        [MethodButton(nameof(CreateWindowEdges), "Create Edges")]
         private bool _buttonRender;
 
         private void OnDrawGizmosSelected()
@@ -61,6 +63,39 @@ namespace CCL.Types.Proxies.Weather
                 window.simulate = false;
                 window.duplicates = new WindowProxy[0];
             }
+        }
+
+        private void CreateWindowEdges()
+        {
+            windowEdges = new Transform[4];
+            Create(0, 0.5f * new Vector2(sizeInMeters.x, sizeInMeters.y));
+            Create(1, 0.5f * new Vector2(sizeInMeters.x, 0f - sizeInMeters.y));
+            Create(2, 0.5f * new Vector2(0f - sizeInMeters.x, 0f - sizeInMeters.y));
+            Create(3, 0.5f * new Vector2(0f - sizeInMeters.x, sizeInMeters.y));
+
+            void Create(int index, Vector2 pos)
+            {
+                var t = new GameObject("window edge").transform;
+                t.parent = transform;
+                t.localRotation = Quaternion.identity;
+                t.localPosition = pos;
+                windowEdges[index] = t;
+            }
+        }
+
+        public SelfValidationResult Validate(out string message, out string? highlight)
+        {
+            if (duplicates.Any(x => x == null))
+            {
+                return this.FailForNullEntries(nameof(duplicates), out message, out highlight);
+            }
+
+            if (wipers.Any(x => x == null))
+            {
+                return this.FailForNullEntries(nameof(wipers), out message, out highlight);
+            }
+
+            return this.Pass(out message, out highlight);
         }
     }
 }

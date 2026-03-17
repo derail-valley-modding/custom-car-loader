@@ -1,5 +1,4 @@
-﻿using CCL.Importer.Processing;
-using CCL.Importer.Types;
+﻿using CCL.Importer.Types;
 using CCL.Types.Catalog;
 using CCL.Types.Catalog.Diagram;
 using DV.Booklets;
@@ -45,7 +44,7 @@ namespace CCL.Importer
         {
             CCLPlugin.Log($"Generating catalog page for '{livery.id}'...");
 
-            var page = ModelProcessor.CreateModifiablePrefab(TransformDE2.gameObject).transform;
+            var page = ObjectHelper.CreateModifiablePrefab(TransformDE2.gameObject).transform;
             page.gameObject.SetActive(true);
             var paper = page.GetComponent<VehicleCatalogPageTemplatePaper>();
             paper.carLivery = livery;

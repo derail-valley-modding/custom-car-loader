@@ -39,9 +39,15 @@ namespace CCL.Creator.Validators
             // Check for duplicate component IDs or port IDs.
             foreach (var component in components)
             {
+                if (string.IsNullOrWhiteSpace(component.ID))
+                {
+                    result.Warning($"Component of type {component.GetType().Name} has an empty ID, this can cause problems",
+                        component, nameof(component.ID));
+                }
+
                 if (compIds.Contains(component.ID))
                 {
-                    result.Fail($"Duplicate component ID {component.ID}");
+                    result.Fail($"Duplicate component ID {component.ID}", component, nameof(component.ID));
                 }
                 else
                 {
@@ -54,7 +60,7 @@ namespace CCL.Creator.Validators
 
                     if (portIds.Contains(fullId))
                     {
-                        result.Fail($"Duplicate port ID {fullId}");
+                        result.Fail($"Duplicate port ID {fullId}", component);
                     }
                     else
                     {
@@ -68,21 +74,25 @@ namespace CCL.Creator.Validators
             {
                 if (!CheckPortExists(components, connection.fullPortIdOut) || !CheckPortExists(components, connection.fullPortIdIn))
                 {
-                    result.Warning($"Invalid port connection \"{connection.fullPortIdOut}\"->\"{connection.fullPortIdIn}\"", connectionDef);
+                    result.Warning($"Invalid port connection \"{connection.fullPortIdOut}\"->\"{connection.fullPortIdIn}\"",
+                        connectionDef, nameof(connectionDef.connections));
                 }
             }
 
+            // Check port reference connections.
             foreach (var connection in connectionDef.portReferenceConnections)
             {
                 if (!CheckPortExists(components, connection.portId) || !CheckPortReferenceExists(components, connection.portReferenceId))
                 {
                     if (string.IsNullOrEmpty(connection.portId))
                     {
-                        result.Warning($"Empty ref connection \"{connection.portReferenceId}\"", connectionDef);
+                        result.Warning($"Empty ref connection \"{connection.portReferenceId}\"",
+                            connectionDef, nameof(connectionDef.portReferenceConnections));
                     }
                     else
                     {
-                        result.Warning($"Invalid ref connection \"{connection.portReferenceId}\"->\"{connection.portId}\"", connectionDef);
+                        result.Warning($"Invalid ref connection \"{connection.portReferenceId}\"->\"{connection.portId}\"",
+                            connectionDef, nameof(connectionDef.portReferenceConnections));
                     }
                 }
             }
@@ -96,7 +106,7 @@ namespace CCL.Creator.Validators
                     {
                         if (!field.IsMultiValue && field.Required)
                         {
-                            result.Fail($"Port field {field.FullName} must be assigned", hasPortId is UObject obj ? obj : null);
+                            result.Fail($"Port field {field.FullName} must be assigned", hasPortId is UObject obj ? obj : null, field.FieldName);
                         }
 
                         continue;
@@ -107,7 +117,7 @@ namespace CCL.Creator.Validators
                         if (!CheckPortExists(components, id))
                         {
                             result.Warning($"Port field {field.FullName} target \"{id}\" was not found",
-                                hasPortId is UObject obj ? obj : null);
+                                hasPortId is UObject obj ? obj : null, field.FieldName);
                         }
                     }
                 }
@@ -121,7 +131,7 @@ namespace CCL.Creator.Validators
                     {
                         if (!field.IsMultiValue && field.Required)
                         {
-                            result.Fail($"Fuse field {field.FullName} must be assigned", hasFuseId is UObject obj ? obj : null);
+                            result.Fail($"Fuse field {field.FullName} must be assigned", hasFuseId is UObject obj ? obj : null, field.FieldName);
                         }
 
                         continue;
@@ -132,7 +142,7 @@ namespace CCL.Creator.Validators
                         if (!CheckFuseExists(components, id))
                         {
                             result.Warning($"Fuse field {field.FullName} target \"{id}\" was not found",
-                                hasFuseId is UObject obj ? obj : null);
+                                hasFuseId is UObject obj ? obj : null, field.FieldName);
                         }
                     }
                 }

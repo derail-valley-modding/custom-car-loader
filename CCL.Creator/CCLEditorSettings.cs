@@ -63,5 +63,18 @@ namespace CCL.Creator
         [Tooltip("Extra Paint asset names to display in paint fields\n" +
             "Only works on fields that support custom values")]
         public string[] ExtraPaints = new string[0];
+
+        [Header("Validation")]
+        [Tooltip("Displays warnings if there are missing meshes in the bogie transforms")]
+        public bool DisplayWarningsForMissingMeshesInBogies = true;
+        [Tooltip("Sorts all skipped validation steps to the bottom of the list")]
+        public bool SortSkippedToBottom = true;
+        [Tooltip("Use icons rather than words on validation result display")]
+        public bool UseIconsOnResults = false;
+
+        [Header("Experimental")]
+        [Tooltip("Highlights the relevant field when clicking the check button in validation warnings/errors\n" +
+            "Does not work if the field isn't currently visible in the inspector (Unity 2019.4.40 bug)")]
+        public bool HighlightRelevantFieldInValidation = false;
     }
 }

@@ -30,5 +30,14 @@ namespace CCL.Importer
             Object.DontDestroyOnLoad(go);
             s_failures = go.transform;
         }
+
+        public static GameObject CreateModifiablePrefab(GameObject gameObject)
+        {
+            GameObject newFab = Object.Instantiate(gameObject, Holder);
+
+            // No (Clone), makes it look bad.
+            newFab.name = gameObject.name;
+            return newFab;
+        }
     }
 }

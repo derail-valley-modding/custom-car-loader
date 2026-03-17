@@ -85,7 +85,23 @@ namespace CCL.Creator.Wizards
         {
             if (!SimConnections) Close();
 
-            var componentInfos = SimConnections.executionOrder?.Select(c => new ComponentInfo(c, _sortMode)).ToList() ?? new List<ComponentInfo>(0);
+            SimConnections.executionOrder ??= new List<SimComponentDefinitionProxy>();
+
+            if (SimConnections.executionOrder.Any(x => x == null))
+            {
+                EditorGUILayout.HelpBox("Please remove any empty entries from the execution order before using the simulation setup wizard\n" +
+                    "Alternatively, you can press the button below to remove them automatically", MessageType.Error);
+
+                if (GUILayout.Button("Remove null entries"))
+                {
+                    SimConnections.executionOrder.RemoveAll(x => x == null);
+                    AssetHelper.SaveAsset(SimConnections);
+                }
+
+                return;
+            }
+
+            var componentInfos = SimConnections.executionOrder.Select(c => new ComponentInfo(c, _sortMode)).ToList();
 
             var haveIds = new List<ComponentInfo>();
             foreach (var hasFields in SimConnections.transform.root.GetComponentsInChildren<IHasPortIdFields>())

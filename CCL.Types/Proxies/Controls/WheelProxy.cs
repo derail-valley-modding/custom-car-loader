@@ -46,8 +46,6 @@ namespace CCL.Types.Proxies.Controls
         public float gizmoScale = 0.5f;
         public float angleOffset = 0;
 
-        protected const int GIZMO_SEGMENTS = 40;
-
         public override void OnValidate()
         {
             jointLimitMin = Mathf.Clamp(jointLimitMin, -177f, 177f);

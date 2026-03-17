@@ -22,77 +22,8 @@ namespace CCL.Creator.Validators
                 result.Fail($"{livery.id} - Rear bogie type not defined", livery);
             }
 
-            var bogieF = livery.prefab!.transform.FindSafe(CarPartNames.Bogies.FRONT);
-            if (!bogieF)
-            {
-                result.Fail($"{livery.id} - Missing front bogie transform", livery.prefab);
-            }
-            else
-            {
-                if (bogieF!.transform.position.y != 0)
-                {
-                    result.Fail($"{livery.id} - BogieF must be at y=0", bogieF);
-                }
-
-                if (livery.UseCustomFrontBogie)
-                {
-                    var bogieCar = bogieF.FindSafe(CarPartNames.Bogies.BOGIE_CAR);
-                    if (!bogieCar)
-                    {
-                        result.Fail($"{livery.id} - Missing {CarPartNames.Bogies.BOGIE_CAR} child for custom front bogie");
-                    }
-                    else
-                    {
-                        foreach (MeshFilter filter in bogieCar!.GetComponentsInChildren<MeshFilter>(true))
-                        {
-                            if (filter.sharedMesh == null)
-                            {
-                                result.Warning($"{livery.id} - {filter.name} is missing a mesh", filter);
-                            }
-                            else if (!filter.sharedMesh.isReadable)
-                            {
-                                result.Warning($"{livery.id} - Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled", filter.sharedMesh);
-                            }
-                        }
-                    }
-                }
-            }
-
-            var bogieR = livery.prefab.transform.FindSafe(CarPartNames.Bogies.REAR);
-            if (!bogieR)
-            {
-                result.Fail($"{livery.id} - Missing rear bogie transform", livery);
-            }
-            else
-            {
-                if (bogieR!.transform.position.y != 0)
-                {
-                    result.Fail($"{livery.id} - BogieR must be at y=0", bogieR);
-                }
-
-                if (livery.UseCustomRearBogie)
-                {
-                    var bogieCar = bogieR.FindSafe(CarPartNames.Bogies.BOGIE_CAR);
-                    if (!bogieCar)
-                    {
-                        result.Fail($"{livery.id} - Missing {CarPartNames.Bogies.BOGIE_CAR} child for custom rear bogie");
-                    }
-                    else
-                    {
-                        foreach (MeshFilter filter in bogieCar!.GetComponentsInChildren<MeshFilter>(true))
-                        {
-                            if (filter.sharedMesh == null)
-                            {
-                                result.Warning($"{livery.id} - {filter.name} is missing a mesh", filter);
-                            }
-                            else if (!filter.sharedMesh.isReadable)
-                            {
-                                result.Warning($"{livery.id} - Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled", filter.sharedMesh);
-                            }
-                        }
-                    }
-                }
-            }
+            CheckBogie(livery.prefab!.transform.FindSafe(CarPartNames.Bogies.FRONT), true);
+            CheckBogie(livery.prefab.transform.FindSafe(CarPartNames.Bogies.REAR), true);
 
             if (livery.parentType != null && livery.parentType.UseCustomGauge && !livery.UseCustomFrontBogie && !livery.UseCustomRearBogie)
             {
@@ -100,6 +31,61 @@ namespace CCL.Creator.Validators
             }
 
             return result;
+
+            void CheckBogie(Transform? bogie, bool isFront)
+            {
+                if (bogie == null)
+                {
+                    result.Fail($"{livery.id} - Missing {GetPosition(isFront)} bogie transform", livery);
+                    return;
+                }
+
+                if (bogie.transform.position.y != 0)
+                {
+                    result.Fail($"{livery.id} - {GetName(isFront)} must be at Y = 0", bogie);
+                }
+
+                // Not a custom bogie, return.
+                if (!(isFront ? livery.UseCustomFrontBogie : livery.UseCustomRearBogie)) return;
+
+                var bogieCar = bogie.FindSafe(CarPartNames.Bogies.BOGIE_CAR);
+
+                if (bogieCar == null)
+                {
+                    result.Fail($"{livery.id} - Missing {CarPartNames.Bogies.BOGIE_CAR} child for custom {GetPosition(isFront)} bogie", bogie);
+                    return;
+                }
+
+                CheckMeshes(bogieCar);
+            }
+
+            void CheckMeshes(Transform bogieCar)
+            {
+                foreach (MeshFilter filter in bogieCar!.GetComponentsInChildren<MeshFilter>(true))
+                {
+                    if (filter.sharedMesh == null)
+                    {
+                        if (CCLEditorSettings.Settings.DisplayWarningsForMissingMeshesInBogies)
+                        {
+                            result.Warning($"{livery.id} - {filter.name} is missing a mesh", filter);
+                        }
+                    }
+                    else if (!filter.sharedMesh.isReadable)
+                    {
+                        result.Warning($"{livery.id} - Mesh {filter.sharedMesh.name} on {filter.name} doesn't have Read/Write enabled", filter.sharedMesh);
+                    }
+                }
+            }
+
+            static string GetPosition(bool isFront)
+            {
+                return isFront ? "front" : "rear";
+            }
+
+            static string GetName(bool isFront)
+            {
+                return isFront ? CarPartNames.Bogies.FRONT : CarPartNames.Bogies.REAR;
+            }
         }
     }
 }

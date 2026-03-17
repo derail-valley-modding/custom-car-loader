@@ -164,21 +164,24 @@ namespace CCL.Types
 
         #region Validation
 
-        public static SelfValidationResult Pass(this ISelfValidation component, out string message)
+        public static SelfValidationResult Pass(this ISelfValidation component, out string message, out string? highlight)
         {
             message = string.Empty;
+            highlight = null;
             return SelfValidationResult.Pass;
         }
 
-        public static SelfValidationResult FailForNull(this ISelfValidation component, string name, out string message)
+        public static SelfValidationResult FailForNull(this ISelfValidation component, string name, out string message, out string? highlight)
         {
             message = $"{name} cannot be null";
+            highlight = name;
             return SelfValidationResult.Fail;
         }
 
-        public static SelfValidationResult FailForNullEntries(this ISelfValidation component, string name, out string message)
+        public static SelfValidationResult FailForNullEntries(this ISelfValidation component, string name, out string message, out string? highlight)
         {
             message = $"{name} cannot have null entries";
+            highlight = name;
             return SelfValidationResult.Fail;
         }
 
