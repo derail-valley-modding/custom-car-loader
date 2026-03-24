@@ -34,5 +34,7 @@
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator"/>
+		<Copy SourceFiles="$(TargetDir)/DVLangHelper.Data.dll" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator"/>
+		<Copy SourceFiles="$(TargetDir)/default_translations.json" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator"/>
 	</Target>
 </Project>
