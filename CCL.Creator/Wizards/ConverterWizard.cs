@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using UnityEditor;
 using UnityEngine;
 
@@ -32,16 +33,16 @@ namespace CCL.Creator.Wizards
                 new ExtraUnit("Kilograms-Force", Units.KGFtoNewton)),
 
             new ConvertBase("Pressure", "Pascals",
-                new ExtraUnit("Bars", Units.BarToPascal),
+                new ExtraUnit("Bars", Units.BarToPascal) { Highlight = true },
                 new ExtraUnit("PSI", Units.PSItoBar),
                 new ExtraUnit("kgf/cm²", Units.KGFCM2toPascal),
-                new ExtraUnit("Atmospheres", Units.KGFCM2toPascal))
-            { Value = Units.BarToPascal },
+                new ExtraUnit("Atmospheres", Units.ATMtoPascal))
+            { Value = Units.BarToPascal, Highlight = false },
 
             new ConvertBase("Energy", "Joules",
-                new ExtraUnit("Megajoules", Units.FromMega),
+                new ExtraUnit("Megajoules", Units.FromMega) { Highlight = true },
                 new ExtraUnit("Kilowatt-Hours", Units.KWHtoJoule))
-            { Value = Units.FromMega },
+            { Value = Units.FromMega, Highlight = false },
         };
 
         private void OnEnable()
@@ -77,7 +78,10 @@ namespace CCL.Creator.Wizards
 
             using (var scope = new EditorGUI.ChangeCheckScope())
             {
-                conversion.Value = EditorGUILayout.FloatField(conversion.Unit, conversion.Value);
+                using (new GUIColorScope(newContent: GetContentColor(conversion.Highlight)))
+                {
+                    conversion.Value = EditorGUILayout.FloatField(conversion.Unit, conversion.Value);
+                }
 
                 if (scope.changed)
                 {
@@ -88,7 +92,11 @@ namespace CCL.Creator.Wizards
             foreach (var item in conversion.Units)
             {
                 using var scope = new EditorGUI.ChangeCheckScope();
-                item.Value = EditorGUILayout.FloatField(item.Unit, item.Value);
+
+                using (new GUIColorScope(newContent: GetContentColor(item.Highlight)))
+                {
+                    item.Value = EditorGUILayout.FloatField(item.Unit, item.Value);
+                }
 
                 if (scope.changed)
                 {
@@ -101,6 +109,13 @@ namespace CCL.Creator.Wizards
 
             EditorGUILayout.Space();
             EditorGUILayout.EndFoldoutHeaderGroup();
+
+            static Color GetContentColor(bool highlight)
+            {
+                if (highlight) return Color.Lerp(GUI.color, EditorHelpers.Colors.CONFIRM_ACTION, 0.3f);
+
+                return GUI.contentColor;
+            }
         }
 
         private class ConvertBase
@@ -110,6 +125,7 @@ namespace CCL.Creator.Wizards
             public string Unit;
             public float Value = 1;
             public ExtraUnit[] Units;
+            public bool Highlight = true;
 
             public ConvertBase(string title, string unit, params ExtraUnit[] units)
             {
@@ -132,6 +148,7 @@ namespace CCL.Creator.Wizards
             public string Unit;
             public float Value;
             public float ConversionFactor;
+            public bool Highlight;
 
             public ExtraUnit(string unit, float conversionFactor)
             {

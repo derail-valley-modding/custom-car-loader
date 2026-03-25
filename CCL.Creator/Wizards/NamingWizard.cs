@@ -456,7 +456,7 @@ namespace CCL.Creator.Wizards
                 // 5% Garratt.
                 if (random > 0.95)
                 {
-                    trailing = Mathf.Max(trailing - 1, 0);
+                    trailing = Mathf.Max(trailing - 2, 0);
                     _whyteInput = $"{leading}-{drivers}-{trailing}+{trailing}-{drivers}-{leading}";
                     _poweredAxles = drivers;
                 }
