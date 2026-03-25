@@ -38,8 +38,10 @@ namespace CCL.Creator.Wizards
                 new ExtraUnit("Atmospheres", Units.KGFCM2toPascal))
             { Value = Units.BarToPascal },
 
-            new ConvertBase("Energy", "Joule",
+            new ConvertBase("Energy", "Joules",
+                new ExtraUnit("Megajoules", Units.FromMega),
                 new ExtraUnit("Kilowatt-Hours", Units.KWHtoJoule))
+            { Value = Units.FromMega },
         };
 
         private void OnEnable()

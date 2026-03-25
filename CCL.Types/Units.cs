@@ -32,6 +32,8 @@ namespace CCL.Types
 
         public const float ToKilo = 0.001f;
         public const float FromKilo = 1000f;
+        public const float ToMega = 0.000001f;
+        public const float FromMega = 1000000f;
 
         // Length.
         public const float InchToMetre = 0.0254f;

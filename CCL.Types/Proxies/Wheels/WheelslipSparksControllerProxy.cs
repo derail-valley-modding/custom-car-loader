@@ -50,7 +50,7 @@ namespace CCL.Types.Proxies.Wheels
         private WheelSparksDefinition SetupWheel(PoweredWheelProxy wheel)
         {
             Transform t = wheel.transform;
-            Transform contacts = t.Find(CarPartNames.Bogies.CONTACT_POINTS);
+            Transform contacts = t.parent.Find(CarPartNames.Bogies.CONTACT_POINTS);
 
             if (contacts == null)
             {
@@ -135,11 +135,6 @@ namespace CCL.Types.Proxies.Wheels
                     }
                 }
             }
-        }
-
-        private static void AutoSetup(WheelslipSparksControllerProxy proxy)
-        {
-            proxy.AutoSetup();
         }
     }
 }
