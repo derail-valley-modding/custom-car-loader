@@ -33,6 +33,8 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="setlocal enableextensions&#xD;&#xA;if not exist &quot;$(SolutionDir)$(OutDir)CarCreator\&quot; md &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;endlocal&#xD;&#xA;xcopy /d /y &quot;$(TargetPath)&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\DVLangHelper.Data.dll&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;&#xD;&#xA;xcopy /d /y &quot;$(TargetDir)\default_translations.json&quot; &quot;$(SolutionDir)$(OutDir)CarCreator\&quot;" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator"/>
+		<Copy SourceFiles="$(TargetDir)/DVLangHelper.Data.dll" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator"/>
+		<Copy SourceFiles="$(TargetDir)/default_translations.json" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator"/>
 	</Target>
 </Project>
