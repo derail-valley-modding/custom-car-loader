@@ -171,7 +171,7 @@ namespace CCL.Importer
                 if (StationSpawnChanceData.Data.TryGetValue(item.id, out var chances))
                 {
                     // Get the chance for this ID.
-                    var chance = chances.GetChance(livery);
+                    var chance = chances.GetChance(livery.parentType);
 
                     if (chance > 0)
                     {

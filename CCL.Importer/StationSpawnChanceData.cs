@@ -21,24 +21,51 @@ namespace CCL.Importer
                 SpawnGroups = spawner.locoTypeGroupsToSpawn;
             }
 
+            public float GetChance(TrainCarType_v2 type)
+            {
+                // If there are no groups, chance is 0. Failsafe to prevent division by 0.
+                if (SpawnGroups.Count == 0) return 0.0f;
+                // Chance is # of groups with the type divided by total groups.
+                return SpawnGroups.Count(x => x.liveries.Any(l => l.parentType == type)) / (float)SpawnGroups.Count;
+            }
+
             public float GetChance(TrainCarLivery livery)
             {
                 // If there are no groups, chance is 0. Failsafe to prevent division by 0.
                 if (SpawnGroups.Count == 0) return 0.0f;
                 // Chance is # of groups with the livery divided by total groups.
-                return SpawnGroups.Count(x => x.liveries.Any(l => l.parentType == livery.parentType)) / (float)SpawnGroups.Count;
+                return SpawnGroups.Count(x => x.liveries.Any(l => l == livery)) / (float)SpawnGroups.Count;
             }
 
             // For debugging, displays the group in RUE without needing to check every livery individually.
             private string QuickString => $"[{string.Join("], [", SpawnGroups.Select(x => string.Join(", ", x.liveries.Select(l => l.id))))}]";
         }
 
-        private Dictionary<TrainCarLivery, float> _chances = new();
+        private Dictionary<TrainCarType_v2, float> _chancesT = new();
+        private Dictionary<TrainCarLivery, float> _chancesL = new();
         private List<StationSpawnTrack> _spawnTracks = new();
+
+        public float GetChance(TrainCarType_v2 type)
+        {
+            if (_chancesT.TryGetValue(type, out var chance)) return chance;
+
+            // Start inverted.
+            chance = 1.0f;
+
+            foreach (var track in _spawnTracks)
+            {
+                // Calculate chance of not spawning.
+                chance *= 1.0f - track.GetChance(type);
+            }
+
+            // Complement of chance of not spawning is the chance of spawning at least 1.
+            _chancesT[type] = chance = 1 - chance;
+            return chance;
+        }
 
         public float GetChance(TrainCarLivery livery)
         {
-            if (_chances.TryGetValue(livery, out var chance)) return chance;
+            if (_chancesL.TryGetValue(livery, out var chance)) return chance;
 
             // Start inverted.
             chance = 1.0f;
@@ -50,7 +77,7 @@ namespace CCL.Importer
             }
 
             // Complement of chance of not spawning is the chance of spawning at least 1.
-            _chances[livery] = chance = 1 - chance;
+            _chancesL[livery] = chance = 1 - chance;
             return chance;
         }
 

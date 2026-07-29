@@ -1,9 +1,13 @@
 ﻿using CCL.Importer.Components;
 using CommandTerminal;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using UnityEngine;
+using static DV.UI.ATutorialsMenuProvider;
 
 namespace CCL.Importer
 {
@@ -152,9 +156,9 @@ namespace CCL.Importer
         }
 
         [RegisterCommand("CCL.SpawnChance",
-            Help = "Calculates the spawn chance of a locomotive spawning at a station",
-            Hint = "CCL.SpawnChance HB LocoS282B",
-            MinArgCount = 2, MaxArgCount = 2)]
+            Help = "Calculates the spawn chance of a locomotive spawning at a station\nUse \"ALL\" in place of the station ID to show chances on all stations",
+            Hint = "CCL.SpawnChance HB LocoS282B T",
+            MinArgCount = 2, MaxArgCount = 3)]
         public static void CalculateSpawnChance(CommandArg[] args)
         {
             if (args.Length < 2)
@@ -163,20 +167,97 @@ namespace CCL.Importer
                 return;
             }
 
-            if (StationSpawnChanceData.Data.TryGetValue(args[0].String, out var data))
+            string id = args[1].String;
+
+            if (!DV.Globals.G.Types.TryGetLivery(id, out var livery))
             {
-                if (DV.Globals.G.Types.TryGetLivery(args[1].String, out var livery))
+                Debug.LogWarning($"Could not find livery '{id}'");
+                return;
+            }
+
+            int sort = 0;
+
+            if (args.Length > 2)
+            {
+                switch (args[2].String.ToLower())
                 {
-                    Debug.Log($"Spawn chance for livery '{args[1].String}' at '{args[0].String}' is {data.GetChance(livery):P1}");
+                    case "l":
+                        sort = 1;
+                        break;
+                    case "t":
+                        sort = 2;
+                        break;
+                    default:
+                        Debug.LogWarning($"Unknown sort type '{args[2].String}', default to alphabetical");
+                        break;
+                }
+            }
+
+            var station = args[0].String.ToUpper();
+
+            if (station == "ALL")
+            {
+                var sb = new StringBuilder($"Listing all spawn chances for livery '{id}':");
+                var list = new List<(string S, float CL, float CT)>();
+                var flag = true;
+
+                foreach (var data in StationSpawnChanceData.Data)
+                {
+                    var chanceT = data.Value.GetChance(livery.parentType);
+                    var chanceL = data.Value.GetChance(livery);
+
+                    if (chanceT <= 0) continue;
+                    if (chanceT != chanceL) flag = false;
+
+                    list.Add((data.Key, chanceL, chanceT));
+                }
+
+                if (list.Count > 0)
+                {
+                    sb.Append(flag ? "\n Station  |   Type" : "\n Station  |  Livery  |   Type");
+                    list.Sort();
+
+                    switch (sort)
+                    {
+                        case 1:
+                            list = list.OrderBy(x => -x.CL).ToList();
+                            break;
+                        case 2:
+                            list = list.OrderBy(x => -x.CT).ToList();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    foreach (var (s, cl, ct) in list)
+                    {
+                        sb.Append(flag ? $"\n {s,-8} | {ct,8:P1}" : $"\n {s,-8} | {cl,8:P1} | {ct,8:P1}");
+                    }
+
+                    Debug.Log(sb.ToString());
                 }
                 else
                 {
-                    Debug.LogWarning($"Could not find livery '{args[1].String}'");
+                    Debug.LogWarning($"Livery '{id}' does not spawn at any station");
+                }
+            }
+            else if (StationSpawnChanceData.Data.TryGetValue(station, out var data))
+            {
+                var chanceT = data.GetChance(livery.parentType);
+                var chanceL = data.GetChance(livery);
+
+                if (chanceT > 0)
+                {
+                    Debug.Log($"Spawn chance for livery '{id}' at '{station}' is: {chanceL:P1} / {chanceT:P1}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Livery '{id}' does not spawn at {station}");
                 }
             }
             else
             {
-                Debug.LogWarning($"Could not find station '{args[0].String}'");
+                Debug.LogWarning($"Could not find station '{station}'");
             }
         }
     }
