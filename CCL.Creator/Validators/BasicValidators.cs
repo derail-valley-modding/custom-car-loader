@@ -24,6 +24,11 @@ namespace CCL.Creator.Validators
 
             var result = Pass();
 
+            if (livery.id.IndexOf(' ') > 0)
+            {
+                result.Warning("Livery ID should not contain spaces", livery);
+            }
+
             if (livery.icon == null)
             {
                 result.Warning($"Livery '{livery.id}' has no icon", livery, nameof(livery.icon));

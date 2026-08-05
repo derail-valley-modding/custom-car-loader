@@ -3,11 +3,8 @@ using CommandTerminal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Channels;
 using System.Text;
 using UnityEngine;
-using static DV.UI.ATutorialsMenuProvider;
 
 namespace CCL.Importer
 {
@@ -158,16 +155,51 @@ namespace CCL.Importer
         [RegisterCommand("CCL.SpawnChance",
             Help = "Calculates the spawn chance of a locomotive spawning at a station\nUse \"ALL\" in place of the station ID to show chances on all stations",
             Hint = "CCL.SpawnChance HB LocoS282B T",
-            MinArgCount = 2, MaxArgCount = 3)]
+            MinArgCount = 1, MaxArgCount = 3)]
         public static void CalculateSpawnChance(CommandArg[] args)
         {
-            if (args.Length < 2)
+            var station = args[0].String.ToUpper();
+
+            // Just station ID, so show all liveries that spawn in it.
+            if (args.Length == 1)
             {
-                Debug.LogError("Missing arguments!");
+                if (StationSpawnChanceData.Data.TryGetValue(station, out var data))
+                {
+                    var sb = new StringBuilder($"Listing all spawn chances for station '{station}':");
+                    var list = new List<(string S, float CL, float CT)>();
+                    var flag = true;
+
+                    foreach (var item in data.GetAllLiveries())
+                    {
+                        var chanceT = data.GetChance(item.parentType);
+                        var chanceL = data.GetChance(item);
+
+                        if (chanceT <= 0) continue;
+                        if (chanceT != chanceL) flag = false;
+
+                        list.Add((item.id, chanceL, chanceT));
+                    }
+
+                    sb.Append(flag ? $"\n {"Livery ID",-32} |   Type" : $"\n {"Livery ID",-32} |  Livery  |   Type");
+                    list.Sort();
+
+                    foreach (var (s, cl, ct) in list)
+                    {
+                        sb.Append(flag ? $"\n {s,-32} | {ct,8:P1}" : $"\n {s,-32} | {cl,8:P1} | {ct,8:P1}");
+                    }
+
+                    Debug.Log(sb.ToString());
+                }
+                else
+                {
+                    Debug.LogWarning($"Could not find station '{station}'");
+                }
+
                 return;
             }
 
-            string id = args[1].String;
+            // From here we need the livery ID, so check if it exists.
+            var id = args[1].String;
 
             if (!DV.Globals.G.Types.TryGetLivery(id, out var livery))
             {
@@ -175,6 +207,7 @@ namespace CCL.Importer
                 return;
             }
 
+            // Check if there's a sorting mode argument.
             int sort = 0;
 
             if (args.Length > 2)
@@ -193,8 +226,8 @@ namespace CCL.Importer
                 }
             }
 
-            var station = args[0].String.ToUpper();
-
+            // If the station ID is "ALL", show the livery on all stations.
+            // Else just show it in the relevant station, if it exists.
             if (station == "ALL")
             {
                 var sb = new StringBuilder($"Listing all spawn chances for livery '{id}':");

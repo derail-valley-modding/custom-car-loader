@@ -81,6 +81,11 @@ namespace CCL.Importer
             return chance;
         }
 
+        public HashSet<TrainCarLivery> GetAllLiveries()
+        {
+            return _spawnTracks.SelectMany(x => x.SpawnGroups.SelectMany(y => y.liveries)).ToHashSet();
+        }
+
         public static void AddData(string id, StationLocoSpawner spawner)
         {
             if (!Data.TryGetValue(id, out var data))
