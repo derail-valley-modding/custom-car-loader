@@ -23,16 +23,16 @@ namespace CCL.Importer.Types
         public bool HideBackCoupler;
 
         public string[] TrainsetLiveries = new string[0];
-        public int MaxRepeatedSpawn = 0;
-        public bool AllowOnRegionalRoutes = true;
-        public bool AllowOnExpressRoutes = true;
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
         public bool UnlockableAsWorkTrain = false;
         public float UnlockPrice = 30000.0f;
         public float SummonPrice = 5000.0f;
-        public float DemonstratorPartsOrderCost = 0f;
-        public float DemonstratorPartsInstallationCost = 0f;
         public CatalogPage? CatalogPage = null;
+        public int MaxRepeatedSpawn = 0;
+        public bool AllowOnRegionalRoutes = true;
+        public bool AllowOnExpressRoutes = true;
+        public float DemonstratorPartsOrderCost = 15000.0f;
+        public float DemonstratorPartsInstallationCost = 10000.0f;
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
