@@ -64,13 +64,11 @@ namespace CCL.Types
 
         [Header("Demonstrator Quest - optional")]
         [Tooltip("Cost to order replacement parts for this locomotive during a demonstrator quest.\n" +
-            "Provided for other mods implementing demonstrator features.\n" +
-            "Leave at 0 if not used.")]
-        public float DemonstratorPartsOrderCost = 0f;
+            "Provided for other mods implementing demonstrator features.")]
+        public float DemonstratorPartsOrderCost = 15000.0f;
         [Tooltip("Cost to install replacement parts for this locomotive during a demonstrator quest.\n" +
-            "Provided for other mods implementing demonstrator features.\n" +
-            "Leave at 0 if not used.")]
-        public float DemonstratorPartsInstallationCost = 0f;
+            "Provided for other mods implementing demonstrator features.")]
+        public float DemonstratorPartsInstallationCost = 10000.0f;
 
         [Header("Catalog - optional")]
         public CatalogPage? CatalogPage = null;
