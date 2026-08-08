@@ -33,6 +33,9 @@ namespace CCL.Importer.Types
         public bool AllowOnExpressRoutes = true;
         public float DemonstratorPartsOrderCost = 15000.0f;
         public float DemonstratorPartsInstallationCost = 10000.0f;
+        public Texture2D? DemonstratorPoster;
+        public Sprite? DemonstratorIcon;
+        public Sprite? DemonstratorRustedIcon;
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;

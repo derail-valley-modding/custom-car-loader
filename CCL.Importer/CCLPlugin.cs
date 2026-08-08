@@ -42,7 +42,7 @@ namespace CCL.Importer
             if (!VersionCheck())
             {
                 Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
-                CarManager.LoadFailures.Add("[CCL] Unsupported version");
+                CarManager.LoadFailures.Add("[CCL] Unsupported game version");
                 ObjectHelper.CreateFailuresHolder();
                 return false;
             }

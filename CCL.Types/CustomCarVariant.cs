@@ -75,10 +75,16 @@ namespace CCL.Types
         [Tooltip("Only affects Passenger Jobs")]
         public bool AllowOnExpressRoutes = true;
         [Space]
-        [Tooltip("Cost to order replacement parts for this locomotive during a demonstrator quest")]
+        [Tooltip("Cost to order replacement parts for this vehicle during a demonstrator quest")]
         public float DemonstratorPartsOrderCost = 15000.0f;
-        [Tooltip("Cost to install replacement parts for this locomotive during a demonstrator quest")]
+        [Tooltip("Cost to install replacement parts for this vehicle during a demonstrator quest")]
         public float DemonstratorPartsInstallationCost = 10000.0f;
+        [Tooltip("Texture to use in the museum posters for this vehicle")]
+        public Texture2D? DemonstratorPoster;
+        [Tooltip("Livery icon for the demonstrator paint")]
+        public Sprite? DemonstratorIcon;
+        [Tooltip("Livery icon for the rusty demonstrator paint")]
+        public Sprite? DemonstratorRustedIcon;
 
         [RenderMethodButtons, SerializeField]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
