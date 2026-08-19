@@ -1,4 +1,4 @@
-﻿using System;
+﻿using DV.Tutorial.QT;
 using UnityEngine;
 
 namespace CCL.Importer.Components
@@ -102,6 +102,8 @@ namespace CCL.Importer.Components
 
         private void LockLOD()
         {
+            if (QuickTutorialHost.IsTutorialRunning) return;
+
             if (_coupledF != null && KeepFrontCoupledLoaded)
             {
                 _coupledF.physicsLod.LockHighestLOD();
@@ -115,6 +117,8 @@ namespace CCL.Importer.Components
 
         private void UnlockLOD(bool front, bool rear)
         {
+            if (QuickTutorialHost.IsTutorialRunning) return;
+
             if (_coupledF != null && front)
             {
                 _coupledF.physicsLod.UnlockHighestLOD();

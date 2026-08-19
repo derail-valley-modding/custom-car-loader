@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using CCL.Types.Proxies.Controls;
+using CCL.Types.Proxies.Weather;
 using System.Linq;
 using UnityEngine;
 
@@ -130,6 +131,14 @@ namespace CCL.Creator.Validators
                         break;
                     default:
                         break;
+                }
+            }
+
+            foreach (var openable in prefab.GetComponentsInChildren<OpenableControlProxy>())
+            {
+                if (!ComponentUtil.HasComponent<ControlSpecProxy>(openable))
+                {
+                    result.Fail($"OpenableControl lacks control", openable);
                 }
             }
 
