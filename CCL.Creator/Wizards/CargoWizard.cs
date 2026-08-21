@@ -436,41 +436,98 @@ namespace CCL.Creator.Wizards
             { "EmptyNovae", 6000 },
             { "EmptyTraeg", 6000 },
             { "EmptyChemlek", 6000 },
-            { "EmptyNeoGamma", 6000 }
+            { "EmptyNeoGamma", 6000 },
+            // Pax mod.
+            { OtherMods.PassengerJobs.CARGO_ID, OtherMods.PassengerJobs.CARGO_MASS }
         };
+
+        private const int DefaultPassengerCount = 68;
+        private const float Size1 = 100;
+        private const float Size2 = 70;
+
+        private Vector2 _massScroll = Vector2.zero;
+        private GUILayoutOption _widthMassColumn = GUILayout.Width(Size1);
 
         private void DrawMassVisualiser()
         {
             EditorGUI.BeginChangeCheck();
 
+            var widthWindow = EditorGUIUtility.currentViewWidth - 14;
+            EditorGUIUtility.labelWidth = widthWindow - Size1 - Size2;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Cargo ID", "Amount");
+            EditorGUILayout.LabelField("Mass (kg)", _widthMassColumn);
+            EditorGUILayout.EndHorizontal();
+
+            _massScroll = EditorGUILayout.BeginScrollView(_massScroll);
+
             foreach (var item in _setup.Entries)
             {
-                DrawMass(item);
+                DrawMass(item, widthWindow);
             }
 
             if (EditorGUI.EndChangeCheck())
             {
                 SaveChanges();
             }
+
+            EditorGUILayout.EndScrollView();
+
+            if (GUILayout.Button("Reset All to Default"))
+            {
+                foreach (var item in _setup.Entries)
+                {
+                    item.AmountPerCar = 1;
+                }
+
+                SaveChanges();
+            }
         }
 
-        private void DrawMass(CargoEntry entry)
+        private void DrawMass(CargoEntry entry, float widthWindow)
         {
             EditorGUILayout.BeginHorizontal();
 
-            entry.AmountPerCar = EditorGUILayout.FloatField(entry.AmountPerCar, GUILayout.Width(60.0f));
+            entry.AmountPerCar = EditorGUILayout.FloatField(entry.CargoId, entry.AmountPerCar);
 
             if (s_massMap.TryGetValue(entry.CargoId, out float mass))
             {
-                mass /= 1000.0f;
-                EditorGUILayout.LabelField(entry.CargoId, $"{mass * entry.AmountPerCar:F2}/{mass:F2} t");
+                EditorGUI.BeginChangeCheck();
+                var scaledMass = EditorGUILayout.FloatField(mass * entry.AmountPerCar, _widthMassColumn);
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    entry.AmountPerCar = scaledMass / mass;
+                }
             }
             else
             {
-                EditorGUILayout.LabelField(entry.CargoId, $"Unknown Mass");
+                EditorGUILayout.LabelField("Unknown", _widthMassColumn);
             }
 
             EditorGUILayout.EndHorizontal();
+
+            if (entry.CargoId == OtherMods.PassengerJobs.CARGO_ID)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.BeginHorizontal();
+                EditorGUI.BeginChangeCheck();
+                var paxCount = EditorGUILayout.IntField("Number of Passengers", Mathf.RoundToInt(entry.AmountPerCar * DefaultPassengerCount));
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    entry.AmountPerCar = (float)paxCount / DefaultPassengerCount;
+                }
+
+                EditorGUILayout.Space(Size1 - 16);
+                EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
+            }
+
+            // Amount can't be less than 0.
+            entry.AmountPerCar = Mathf.Max(0, entry.AmountPerCar);
+            EditorGUIUtility.labelWidth = 0;
         }
 
         #endregion

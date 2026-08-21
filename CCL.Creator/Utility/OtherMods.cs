@@ -6,6 +6,12 @@ namespace CCL.Creator.Utility
 {
     internal static class OtherMods
     {
+        public class PassengerJobs
+        {
+            public const string CARGO_ID = "Passengers";
+            public const float CARGO_MASS = 3000;
+        }
+
         public const string PASSENGER_JOBS = "PassengerJobs";
         public const string CUSTOM_CARGO = "DVCustomCargo";
         public const string CUSTOM_LICENSES = "DVCustomLicenses";
@@ -47,12 +53,12 @@ namespace CCL.Creator.Utility
 
         public static bool RequiresPassengerJobsMod(CustomCarType carType)
         {
-            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == "Passengers");
+            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == PassengerJobs.CARGO_ID);
         }
 
         public static bool RequiresCustomCargoMod(CustomCarType carType)
         {
-            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId != "Passengers" && !Utilities.IsVanillaCargo(x.CargoId));
+            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId != PassengerJobs.CARGO_ID && !Utilities.IsVanillaCargo(x.CargoId));
         }
 
         public static bool RequiresCustomLicenseMod(CustomCarType carType)

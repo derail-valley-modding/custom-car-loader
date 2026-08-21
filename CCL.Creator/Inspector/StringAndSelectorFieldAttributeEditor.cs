@@ -124,7 +124,10 @@ namespace CCL.Creator.Inspector
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            OnGUIWithExtraOptions(position, property, label, CCLEditorSettings.Settings.ExtraCargos);
+            // Add passengers as an extra custom option always.
+            var options = new HashSet<string> { OtherMods.PassengerJobs.CARGO_ID };
+            options.UnionWith(CCLEditorSettings.Settings.ExtraCargos);
+            OnGUIWithExtraOptions(position, property, label, options);
         }
     }
 
