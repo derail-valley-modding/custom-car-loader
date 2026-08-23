@@ -30,7 +30,7 @@ namespace CCL.Creator.Wizards
             new GUIContent("Set Prefabs",
                 "Assign prefabs to cargo automatically"),
             new GUIContent("Mass Visualiser",
-                "Check cargo masses and multipliers")
+                "Change cargo mass or amount directly")
         };
 
         private SerializedObject _editor = null!;

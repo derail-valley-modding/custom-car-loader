@@ -133,7 +133,7 @@ namespace CCL.Creator.Wizards
             _isSlug = false;
             _multipleWorking = 0;
 
-            switch (Random.Range(0, 14))
+            switch (Random.Range(0, 16))
             {
                 // DE2-480
                 case 0:
@@ -199,6 +199,15 @@ namespace CCL.Creator.Wizards
                     _powerRating = 1;
                     _decade = 5;
                     break;
+                // DM1P-150
+                case 7:
+                    _powertrain = Powertrain.DM;
+                    _poweredAxles = 1;
+                    _totalAxles = 2;
+                    _capacity = 1;
+                    _powerRating = 1;
+                    _decade = 5;
+                    break;
                 // S060-440
                 case 8:
                     _powertrain = Powertrain.S;
@@ -240,8 +249,17 @@ namespace CCL.Creator.Wizards
                     _powerRating = 9;
                     _decade = 6;
                     break;
-                // BE2-260
+                // WE2P-380
                 case 12:
+                    _powertrain = Powertrain.WE;
+                    _poweredAxles = 2;
+                    _totalAxles = 4;
+                    _capacity = 1;
+                    _powerRating = 3;
+                    _decade = 8;
+                    break;
+                // BE2-260
+                case 13:
                     _powertrain = Powertrain.BE;
                     _poweredAxles = 2;
                     _totalAxles = 2;
@@ -250,7 +268,7 @@ namespace CCL.Creator.Wizards
                     _decade = 6;
                     break;
                 // H1-020
-                case 13:
+                case 14:
                     _powertrain = Powertrain.H;
                     _poweredAxles = 1;
                     _totalAxles = 2;
