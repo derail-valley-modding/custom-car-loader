@@ -36,7 +36,7 @@ namespace CCL.Creator.Validators
                 {
                     if (hashId.Contains(cargo.CargoId))
                     {
-                        result.Warning($"Repeated instance of cargo '{cargo.CargoId}'");
+                        result.Fail($"Repeated instance of cargo '{cargo.CargoId}'");
                     }
                     else
                     {

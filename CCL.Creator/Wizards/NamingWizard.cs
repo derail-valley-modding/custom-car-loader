@@ -257,6 +257,7 @@ namespace CCL.Creator.Wizards
                     _capacity = 1;
                     _powerRating = 3;
                     _decade = 8;
+                    _multipleWorking = Random.Range(1, 5);
                     break;
                 // BE2-260
                 case 13:
