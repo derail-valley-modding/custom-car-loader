@@ -70,9 +70,9 @@ namespace CCL.Types
             "Leave at 0 to ignore")]
         public int MaxRepeatedSpawn = 0;
         [Space]
-        [Tooltip("Only affects Passenger Jobs")]
+        [Tooltip("Spawn this livery in regional routes in Passenger Jobs")]
         public bool AllowOnRegionalRoutes = true;
-        [Tooltip("Only affects Passenger Jobs")]
+        [Tooltip("Spawn this livery in express routes in Passenger Jobs")]
         public bool AllowOnExpressRoutes = true;
         [Space]
         [Tooltip("Cost to order replacement parts for this vehicle during a demonstrator quest")]
@@ -85,6 +85,12 @@ namespace CCL.Types
         public Sprite? DemonstratorIcon;
         [Tooltip("Livery icon for the rusty demonstrator paint")]
         public Sprite? DemonstratorRustedIcon;
+        [Tooltip("The prefab for the parts cargo, when loaded on the DM1U")]
+        public GameObject? PartsCargoPrefabDM1U;
+        [Tooltip("The prefab for the parts cargo, when loaded on the Utility Flatbed")]
+        public GameObject? PartsCargoPrefabFlatbed;
+        [Tooltip("The mass of the parts cargo")]
+        public float PartsCargoMass = 10000.0f;
 
         [RenderMethodButtons, SerializeField]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]

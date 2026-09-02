@@ -23,25 +23,24 @@ namespace CCL.Creator.Validators
             {
                 var cargo = car.CargoSetup.Entries[i];
 
-                if (cargo.AmountPerCar <= 0)
-                {
-                    result.Fail("Cannot have 0 or negative cargo amount per car");
-                }
-
                 if (string.IsNullOrWhiteSpace(cargo.CargoId))
                 {
-                    result.Fail("Cargo ID is empty");
+                    result.Fail("Cargo ID is empty", car.CargoSetup);
+                    continue;
+                }
+
+                if (cargo.AmountPerCar <= 0)
+                {
+                    result.Fail($"Cargo {cargo.CargoId} - Cannot have 0 or negative cargo amount per car", car.CargoSetup);
+                }
+
+                if (hashId.Contains(cargo.CargoId))
+                {
+                    result.Fail($"Repeated cargo ID '{cargo.CargoId}'", car.CargoSetup);
                 }
                 else
                 {
-                    if (hashId.Contains(cargo.CargoId))
-                    {
-                        result.Fail($"Repeated instance of cargo '{cargo.CargoId}'");
-                    }
-                    else
-                    {
-                        hashId.Add(cargo.CargoId);
-                    }
+                    hashId.Add(cargo.CargoId);
                 }
 
                 if (cargo.Models != null)
