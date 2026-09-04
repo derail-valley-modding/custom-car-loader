@@ -28,6 +28,8 @@ namespace CCL.Importer.Components.Controllers
         const string OCSActivationEventName = "catenary_activated";
         const string OCSDeactivationEventName = "catenary_deactivated";
 
+        private static readonly float _hugeHeight = Mathf.Sqrt(float.MaxValue) / 2.0f;
+
         private static Type? _OCSType = null;
         private static MethodInfo? _getWireHeightAndVoltageInfo = null;
         private static PropertyInfo? _OCSObjectInfo = null;
@@ -41,6 +43,8 @@ namespace CCL.Importer.Components.Controllers
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
+        public string initialHeightPortId = string.Empty;
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string headHeightPortId = string.Empty;
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string wireHeightPortId = string.Empty;
@@ -51,8 +55,8 @@ namespace CCL.Importer.Components.Controllers
 
         private Func<Transform, Transform, Transform, Transform, float, (float?, float)>? GetWireHeightAndVoltage = null;
         private TrainCar? _unit = null;
-        private Port? _headHeight = null, _wireHeight = null, _wireVoltage = null, _inputCurrent = null;
-        private Vector3 _lastTipPosition = new Vector3(0.0f, Pantograph._hugeHeight, 0.0f);
+        private Port? _initialHeadHeight = null, _headHeight = null, _wireHeight = null, _wireVoltage = null, _inputCurrent = null;
+        private Vector3 _lastTipPosition = new Vector3(0.0f, _hugeHeight, 0.0f);
         private float _lastHeadMidpointHeight;
 
         public override bool ExternalTick => true;
@@ -141,7 +145,8 @@ namespace CCL.Importer.Components.Controllers
                 Destroy(this);
                 return;
             }
-            if (!simFlow.TryGetPort(headHeightPortId, out _headHeight) ||
+            if (!simFlow.TryGetPort(initialHeightPortId, out _initialHeadHeight) ||
+                !simFlow.TryGetPort(headHeightPortId, out _headHeight) ||
                 !simFlow.TryGetPort(wireHeightPortId, out _wireHeight) ||
                 !simFlow.TryGetPort(wireVoltagePortId, out _wireVoltage) ||
                 !simFlow.TryGetPort(inputCurrentPortId, out _inputCurrent))
@@ -157,8 +162,10 @@ namespace CCL.Importer.Components.Controllers
                 Destroy(this);
                 return;
             }
+
             TryGetOCSType();
             SetUpCatenaryConnection();
+            (_initialHeadHeight.Value, _) = GetHeadMidpointHeight();
         }
 
 		private (float height, bool positionChanged) GetHeadMidpointHeight()
@@ -181,12 +188,12 @@ namespace CCL.Importer.Components.Controllers
         {
             if (GetWireHeightAndVoltage == null)
             {
-                _wireHeight!.Value = float.NaN;
+                _wireHeight!.Value = -1.0f;
                 _wireVoltage!.Value = 0.0f;
             }
             else
             {
-                int raisedPantographs = Pantograph.RaisedPantogrpahsCount(_unit!);
+                int raisedPantographs = Pantograph.RaisedPantogrpahsCount(_unit!) ?? -1;
                 float inputCurrent = _inputCurrent!.Value;
                 if (raisedPantographs <= 0 || float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
                     inputCurrent = 0.0f;
@@ -198,7 +205,7 @@ namespace CCL.Importer.Components.Controllers
                 {
                     float? wireHeight;
                     (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent);
-                    _wireHeight!.Value = wireHeight ?? float.NaN;
+                    _wireHeight!.Value = wireHeight ?? -1.0f;
                 }
             }
         }

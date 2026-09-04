@@ -17,6 +17,8 @@ namespace CCL.Types.Components.Controllers
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
+        public string initialHeightPortId = string.Empty;
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string headHeightPortId = string.Empty;
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string wireHeightPortId = string.Empty;
@@ -27,7 +29,11 @@ namespace CCL.Types.Components.Controllers
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         { 
-            new PortIdField(this, nameof(wireHeightPortId), wireHeightPortId, DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC)
+            new PortIdField(this, nameof(initialHeightPortId), initialHeightPortId, DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC),
+            new PortIdField(this, nameof(headHeightPortId), headHeightPortId, DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC),
+            new PortIdField(this, nameof(wireHeightPortId), wireHeightPortId, DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC),
+            new PortIdField(this, nameof(wireVoltagePortId), wireVoltagePortId, DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS),
+            new PortIdField(this, nameof(inputCurrentPortId), inputCurrentPortId, DVPortValueType.AMPS)
         };
     }
 }
