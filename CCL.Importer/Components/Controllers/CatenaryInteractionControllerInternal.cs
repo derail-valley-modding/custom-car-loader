@@ -50,6 +50,7 @@ namespace CCL.Importer.Components.Controllers
         private Func<Transform, Transform, Transform, Transform, float, (float?, float)>? GetWireHeightAndVoltage = null;
         private TrainCar? _unit = null;
         private Port? _wireHeight = null, _wireVoltage = null, _inputCurrent = null;
+        private Vector3 _lastTipPosition = new Vector3(0.0f, Pantograph._hugeHeight, 0.0f);
 
         public override bool ExternalTick => true;
 
@@ -165,12 +166,20 @@ namespace CCL.Importer.Components.Controllers
             }
             else
             {
+                int raisedPantographs = Pantograph.RaisedPantogrpahsCount(_unit!);
                 float inputCurrent = _inputCurrent!.Value;
-                if (float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
+                if (raisedPantographs <= 0 || float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
                     inputCurrent = 0.0f;
-                float? wireHeight;
-                (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent);
-                _wireHeight!.Value = wireHeight ?? float.NaN;
+                else
+                    inputCurrent /= raisedPantographs;
+                Vector3 tipPosition = contactStripFirstEnd!.position;
+                if (Mathf.Abs(inputCurrent) > 0.1f || (tipPosition - _lastTipPosition).sqrMagnitude > 0.01f)
+                {
+                    _lastTipPosition = tipPosition;
+                    float? wireHeight;
+                    (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent / raisedPantographs);
+                    _wireHeight!.Value = wireHeight ?? float.NaN;
+                }
             }
         }
     }
