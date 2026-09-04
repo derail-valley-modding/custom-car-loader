@@ -41,6 +41,8 @@ namespace CCL.Importer.Components.Controllers
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
+        public string headHeightPortId = string.Empty;
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string wireHeightPortId = string.Empty;
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, true)]
         public string wireVoltagePortId = string.Empty;
@@ -49,8 +51,9 @@ namespace CCL.Importer.Components.Controllers
 
         private Func<Transform, Transform, Transform, Transform, float, (float?, float)>? GetWireHeightAndVoltage = null;
         private TrainCar? _unit = null;
-        private Port? _wireHeight = null, _wireVoltage = null, _inputCurrent = null;
+        private Port? _headHeight = null, _wireHeight = null, _wireVoltage = null, _inputCurrent = null;
         private Vector3 _lastTipPosition = new Vector3(0.0f, Pantograph._hugeHeight, 0.0f);
+        private float _lastHeadMidpointHeight;
 
         public override bool ExternalTick => true;
 
@@ -138,7 +141,8 @@ namespace CCL.Importer.Components.Controllers
                 Destroy(this);
                 return;
             }
-            if (!simFlow.TryGetPort(wireHeightPortId, out _wireHeight) ||
+            if (!simFlow.TryGetPort(headHeightPortId, out _headHeight) ||
+                !simFlow.TryGetPort(wireHeightPortId, out _wireHeight) ||
                 !simFlow.TryGetPort(wireVoltagePortId, out _wireVoltage) ||
                 !simFlow.TryGetPort(inputCurrentPortId, out _inputCurrent))
             { 
@@ -157,6 +161,22 @@ namespace CCL.Importer.Components.Controllers
             SetUpCatenaryConnection();
         }
 
+		private (float height, bool positionChanged) GetHeadMidpointHeight()
+		{
+			Vector3 currentTipPosition = contactStripFirstEnd!.position;
+			Vector3 positionDifference = currentTipPosition - _lastTipPosition;
+            bool positionChanged;
+			if (Math.Abs(positionDifference.x) + Math.Abs(positionDifference.z) < 0.1f && Math.Abs(positionDifference.y) < 0.003f)
+                positionChanged = false;
+            else
+			{
+				positionChanged = true;
+                _lastTipPosition = currentTipPosition;
+				_lastHeadMidpointHeight = _unit!.transform.InverseTransformPoint((currentTipPosition + contactStripSecondEnd!.position) / 2.0f).y;
+			}
+			return (_lastHeadMidpointHeight, positionChanged);
+		}
+
         public override void Tick(float deltaTime)
         {
             if (GetWireHeightAndVoltage == null)
@@ -172,12 +192,12 @@ namespace CCL.Importer.Components.Controllers
                     inputCurrent = 0.0f;
                 else
                     inputCurrent /= raisedPantographs;
-                Vector3 tipPosition = contactStripFirstEnd!.position;
-                if (Mathf.Abs(inputCurrent) > 0.1f || (tipPosition - _lastTipPosition).sqrMagnitude > 0.01f)
+                bool headPositionChanged;
+                (_headHeight!.Value, headPositionChanged) = GetHeadMidpointHeight();
+                if (Mathf.Abs(inputCurrent) > 0.1f || headPositionChanged)
                 {
-                    _lastTipPosition = tipPosition;
                     float? wireHeight;
-                    (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent / raisedPantographs);
+                    (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent);
                     _wireHeight!.Value = wireHeight ?? float.NaN;
                 }
             }

@@ -17,6 +17,8 @@ namespace CCL.Types.Components.Controllers
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
+        public string headHeightPortId = string.Empty;
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string wireHeightPortId = string.Empty;
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, true)]
         public string wireVoltagePortId = string.Empty;
