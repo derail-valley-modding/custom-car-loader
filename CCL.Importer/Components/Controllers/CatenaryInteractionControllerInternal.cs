@@ -42,9 +42,14 @@ namespace CCL.Importer.Components.Controllers
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string wireHeightPortId = string.Empty;
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, true)]
+        public string wireVoltagePortId = string.Empty;
+        [PortId(DVPortValueType.AMPS)]
+        public string inputCurrentPortId = string.Empty;
 
         private Func<Transform, Transform, Transform, Transform, float, (float?, float)>? GetWireHeightAndVoltage = null;
-        private Port? _wireHeight = null;
+        private TrainCar? _unit = null;
+        private Port? _wireHeight = null, _wireVoltage = null, _inputCurrent = null;
 
         public override bool ExternalTick => true;
 
@@ -126,19 +131,47 @@ namespace CCL.Importer.Components.Controllers
 
         public override void Init(TrainCar car, SimulationFlow simFlow)
         {
-            Debug.Log($"OCSI {car.ID}");
-            if (!simFlow.TryGetPort(wireHeightPortId, out _wireHeight))
-                Debug.Log("OCSI NP");
-            else
-                Debug.Log($"OCSI P {_wireHeight.Value}");
+            if (pantographBase == null || contactStripFirstEnd == null || contactStripSecondEnd == null)
+            {
+                Debug.LogError($"Pantograph control transforms not set; catenary interaction controller disabled", this);
+                Destroy(this);
+                return;
+            }
+            if (!simFlow.TryGetPort(wireHeightPortId, out _wireHeight) ||
+                !simFlow.TryGetPort(wireVoltagePortId, out _wireVoltage) ||
+                !simFlow.TryGetPort(inputCurrentPortId, out _inputCurrent))
+            { 
+                Debug.LogError($"Referenced port(s) not set; catenary interaction controller disabled", this);
+                Destroy(this);
+                return;
+            }
+            _unit = TrainCar.Resolve(gameObject);
+            if (_unit == null)
+            { 
+                Debug.LogError($"Car unresolved; catenary interaction controller disabled", this);
+                Destroy(this);
+                return;
+            }
             TryGetOCSType();
             SetUpCatenaryConnection();
-            Debug.Log($"OCSI {GetWireHeightAndVoltage?.ToString() ?? "<null>"}");
         }
 
         public override void Tick(float deltaTime)
         {
-            Debug.Log("OCSI TK");
+            if (GetWireHeightAndVoltage == null)
+            {
+                _wireHeight!.Value = float.NaN;
+                _wireVoltage!.Value = 0.0f;
+            }
+            else
+            {
+                float inputCurrent = _inputCurrent!.Value;
+                if (float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
+                    inputCurrent = 0.0f;
+                float? wireHeight;
+                (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent);
+                _wireHeight!.Value = wireHeight ?? float.NaN;
+            }
         }
     }
 }

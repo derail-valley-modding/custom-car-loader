@@ -18,6 +18,10 @@ namespace CCL.Types.Components.Controllers
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string wireHeightPortId = string.Empty;
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, true)]
+        public string wireVoltagePortId = string.Empty;
+        [PortId(DVPortValueType.AMPS)]
+        public string inputCurrentPortId = string.Empty;
 
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         { 
