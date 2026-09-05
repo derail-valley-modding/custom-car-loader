@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using CCL.Importer.Components.Simulation.Electric;
+using CCL.Types.Components.Simulation.Electric;
 
+using DV.Damage;
 using DV.JObjectExtstensions;
 using DV.ServicePenalty;
 using DV.Simulation.Cars;
@@ -139,6 +141,7 @@ namespace CCL.Importer.Implementations
                 return null;
             JObject savedData = new();
             savedData.SetDouble("energyConsumed", _energyConsumed);
+            //savedData.SetFloat
             return savedData;
         }
 
@@ -156,10 +159,18 @@ namespace CCL.Importer.Implementations
 
         [HarmonyPatch("InitializeDebtComponents")]
         [HarmonyPrefix]
-        private static void InitializeDebtComponentsPrefix(Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers)
+        private static void InitializeDebtComponentsPrefix(DamageController? ___dmgController, 
+            Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers, out bool __state)
         {
-            if (___resourceToResourceContainers == null)
+            __state = false;
+            if (___dmgController == null || ___resourceToResourceContainers == null)
                 return;
+            var unit = TrainCar.Resolve(___dmgController.gameObject);
+            if (unit == null || unit.gameObject.GetComponentInChildren<ElectricityMeterDefinitionInternal>() == null)
+                return;
+            
+            __state = true;
+            Debug.Log($"EMTR I1 {unit.ID}");
             bool hasElectricChargeContainer = false;
             foreach (KeyValuePair<ResourceType, List<ResourceContainer>> trackedResource in ___resourceToResourceContainers)
             {
@@ -178,9 +189,9 @@ namespace CCL.Importer.Implementations
         [HarmonyPatch("InitializeDebtComponents")]
         [HarmonyPostfix]
         private static void InitializeDebtComponentsPostfix(SimulatedCarDebtTracker? __instance,
-            Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers)
+            Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers, bool __state)
         {
-            if (__instance != null && ___resourceToResourceContainers != null)
+            if (__state && __instance != null && ___resourceToResourceContainers != null)
             {
                 _initialElectricCharge[__instance] = 0.0f;
                 foreach (ResourceContainer electricChargeContainer in ___resourceToResourceContainers[ResourceType.ElectricCharge])
@@ -195,9 +206,11 @@ namespace CCL.Importer.Implementations
         {
             if (__instance == null || !_initialElectricCharge.TryGetValue(__instance, out float initialCharge))
                 return;
+
+            // Reset the start value of the debt component to vanilla setting for consistency
             foreach (DebtComponent currentFee in __instance.GetTrackedDebts())
             {
-                if (currentFee.Type == ResourceType.ElectricCharge)
+                if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.ContainsKey(__instance))
                 { 
                     Debug.Log($"EMTR U1 {currentFee.StartValue} {initialCharge}");
                     currentFee.UpdateStartValue(initialCharge);
@@ -237,7 +250,7 @@ namespace CCL.Importer.Implementations
             {
                 meter._energyConsumed               = 0.0;
                 meter._electricChargeConsumed.Value = 0.0f;
-                meter._masterFuse?.ChangeState(false);
+                //meter._masterFuse?.ChangeState(false);
             }
         }
     }
