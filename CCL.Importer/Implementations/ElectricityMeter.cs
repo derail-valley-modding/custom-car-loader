@@ -1,17 +1,21 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-using HarmonyLib;
-using Newtonsoft.Json.Linq;
-using UnityEngine;
+using CCL.Importer.Components.Simulation.Electric;
 
 using DV.JObjectExtstensions;
 using DV.ServicePenalty;
 using DV.Simulation.Cars;
 using DV.ThingTypes;
 using DV.Utils;
+
+using HarmonyLib;
+
 using LocoSim.Implementations;
 
-using CCL.Importer.Components.Simulation.Electric;
+using Newtonsoft.Json.Linq;
+
+using UnityEngine;
 
 namespace CCL.Importer.Implementations
 {
@@ -32,9 +36,10 @@ namespace CCL.Importer.Implementations
             }
         }
         
-        private static Dictionary<TrainCar, ElectricityMeter> _carsWithMeters = new();
-        private static Dictionary<TrainCar, SimulatedCarDebtTracker> _newTrackers = new();
+        private static readonly Dictionary<TrainCar, ElectricityMeter> _carsWithMeters = new();
+        private static readonly Dictionary<TrainCar, SimulatedCarDebtTracker> _newTrackers = new();
         private static readonly Dictionary<SimulatedCarDebtTracker, ElectricityMeter> _feeTrackers = new();
+        private static readonly Dictionary<SimulatedCarDebtTracker, float> _initialElectricCharge = new();
         
         private readonly TrainCar? _unit;
         private SimulatedCarDebtTracker? _feeTracker;
@@ -106,6 +111,7 @@ namespace CCL.Importer.Implementations
             if (_feeTracker != null && _feeTrackers.ContainsKey(_feeTracker))
             {
                 _feeTrackers.Remove(_feeTracker);
+                _initialElectricCharge.Remove(_feeTracker);
                 _feeTracker = null;
             }
             if (_carsWithMeters.ContainsKey(unit))
@@ -150,15 +156,56 @@ namespace CCL.Importer.Implementations
 
         [HarmonyPatch("InitializeDebtComponents")]
         [HarmonyPrefix]
-        private static void InitializeDebtComponentsPrefix(SimulatedCarDebtTracker? __instance, 
+        private static void InitializeDebtComponentsPrefix(Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers)
+        {
+            if (___resourceToResourceContainers == null)
+                return;
+            bool hasElectricChargeContainer = false;
+            foreach (KeyValuePair<ResourceType, List<ResourceContainer>> trackedResource in ___resourceToResourceContainers)
+            {
+                Debug.Log($"EMTR I1 {trackedResource.Key} {trackedResource.Value.Count}");
+                if (trackedResource.Key == ResourceType.ElectricCharge)
+                {
+                    hasElectricChargeContainer = true;
+                    break;
+                }
+            }
+            Debug.Log($"EMTR I1 {hasElectricChargeContainer}");
+            if (!hasElectricChargeContainer)
+                ___resourceToResourceContainers[ResourceType.ElectricCharge] = new();
+        }
+
+        [HarmonyPatch("InitializeDebtComponents")]
+        [HarmonyPostfix]
+        private static void InitializeDebtComponentsPostfix(SimulatedCarDebtTracker? __instance,
             Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers)
         {
-            if (__instance == null || ___resourceToResourceContainers == null)
-                return;
-            foreach (KeyValuePair<ResourceType, List<ResourceContainer>> trackedResource in ___resourceToResourceContainers)
-                Debug.Log($"EMTR {trackedResource.Key} {trackedResource.Value.Count}");
+            if (__instance != null && ___resourceToResourceContainers != null)
+            {
+                _initialElectricCharge[__instance] = 0.0f;
+                foreach (ResourceContainer electricChargeContainer in ___resourceToResourceContainers[ResourceType.ElectricCharge])
+                    _initialElectricCharge[__instance] += electricChargeContainer.amountReadOut.Value;
+                Debug.Log($"EMTR I2 {_initialElectricCharge[__instance]}");
+            }
         }
-        
+
+        [HarmonyPatch("UpdateDebtValues")]
+        [HarmonyPrefix]
+        private static void UpdateDebtValuesPrefix(SimulatedCarDebtTracker? __instance)
+        {
+            if (__instance == null || !_initialElectricCharge.TryGetValue(__instance, out float initialCharge))
+                return;
+            foreach (DebtComponent currentFee in __instance.GetTrackedDebts())
+            {
+                if (currentFee.Type == ResourceType.ElectricCharge)
+                { 
+                    Debug.Log($"EMTR U1 {currentFee.StartValue} {initialCharge}");
+                    currentFee.UpdateStartValue(initialCharge);
+                    break;
+                }
+            }
+        }
+
         [HarmonyPatch("UpdateDebtValues")]
         [HarmonyPostfix]
         private static void UpdateDebtValuesPostfix(SimulatedCarDebtTracker? __instance)
@@ -169,7 +216,15 @@ namespace CCL.Importer.Implementations
             {
                 if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.TryGetValue(__instance, out ElectricityMeter meter))
                 { 
-                    currentFee.UpdateEndValue(currentFee.EndValue - Mathf.Max((float) meter._energyConsumed, 0.0f));
+                    float newEndValue = currentFee.EndValue - Mathf.Max((float) meter._energyConsumed, 0.0f);
+                    if (newEndValue >= 0.0f)
+                        currentFee.UpdateEndValue(newEndValue);
+                    else if (_initialElectricCharge.TryGetValue(__instance, out float initialCharge))
+                    {
+                        currentFee.UpdateEndValue(0.0f);
+                        currentFee.UpdateStartValue(initialCharge - newEndValue);
+                    }
+                    Debug.Log($"EMTR U2 {currentFee.StartValue} {currentFee.EndValue} {currentFee.StartToEndDiff}");
                     break;
                 }
             }
