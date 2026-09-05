@@ -18,7 +18,7 @@ using static UnityEngine.UI.CanvasScaler;
 
 namespace CCL.Importer.Components.Controllers
 {
-    internal class CatenaryInteractionControllerInternal : ASimInitializedController
+    internal class PantographSimControllerInternal : ASimInitializedController
     {
         #region OCS interface
 
@@ -28,8 +28,6 @@ namespace CCL.Importer.Components.Controllers
         const string OCSActivationEventName = "catenary_activated";
         const string OCSDeactivationEventName = "catenary_deactivated";
 
-        private static readonly float _hugeHeight = Mathf.Sqrt(float.MaxValue) / 2.0f;
-
         private static Type? _OCSType = null;
         private static MethodInfo? _getWireHeightAndVoltageInfo = null;
         private static PropertyInfo? _OCSObjectInfo = null;
@@ -37,7 +35,7 @@ namespace CCL.Importer.Components.Controllers
 
         #endregion
 
-        private static readonly Dictionary<TrainCar, List<CatenaryInteractionControllerInternal>> _allCatenaryControllers = new();
+        private static readonly Dictionary<TrainCar, List<PantographSimControllerInternal>> _allCatenaryControllers = new();
 
         public Transform? pantographBase;
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
@@ -54,9 +52,9 @@ namespace CCL.Importer.Components.Controllers
         public string inputCurrentPortId = string.Empty;
 
         private Func<Transform, Transform, Transform, Transform, float, (float?, float)>? GetWireHeightAndVoltage = null;
-        private TrainCar? _unit = null;
-        private Port? _initialHeadHeight = null, _headHeight = null, _wireHeight = null, _wireVoltage = null, _inputCurrent = null;
-        private Vector3 _lastTipPosition = new Vector3(0.0f, _hugeHeight, 0.0f);
+        private TrainCar? _unit;
+        private Port? _initialHeadHeight, _headHeight, _wireHeight, _wireVoltage, _inputCurrent;
+        private Vector3 _lastTipPosition = new(0.0f, float.MinValue, 0.0f);
         private float _lastHeadMidpointHeight;
 
         public override bool ExternalTick => true;
@@ -102,9 +100,9 @@ namespace CCL.Importer.Components.Controllers
                     return;
                 }
                 CCLPlugin.LogVerbose("Catenary activated, restoring overhead power access");
-                foreach (List<CatenaryInteractionControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
+                foreach (List<PantographSimControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
                 {
-                    foreach (CatenaryInteractionControllerInternal controller in carCatenaryControllers)
+                    foreach (PantographSimControllerInternal controller in carCatenaryControllers)
                         controller.SetUpCatenaryConnection();
                 }
             }
@@ -114,34 +112,43 @@ namespace CCL.Importer.Components.Controllers
         {
             CCLPlugin.LogVerbose("Catenary deactivated, turning off overhead power");
             _OCSInstance = null;
-            foreach (List<CatenaryInteractionControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
+            foreach (List<PantographSimControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
             {
-                foreach (CatenaryInteractionControllerInternal controller in carCatenaryControllers)
-                { 
-                    controller.GetWireHeightAndVoltage = null;
-                    //controller._pantographToggle.Value = 0.0f;
-                }
+                foreach (PantographSimControllerInternal controller in carCatenaryControllers)
+                    controller.DisablePower();
             }
         }
 
-        private void SetUpCatenaryConnection()
+        private void DisablePower()
         {
             GetWireHeightAndVoltage = null;
+            _wireHeight!.Value = -1.0f;
+            _wireVoltage!.Value = 0.0f;
+        }
+        
+        private void SetUpCatenaryConnection()
+        {
             if (_OCSInstance == null || _getWireHeightAndVoltageInfo == null)
-                return;
+            { 
+                DisablePower();
+                return; 
+            }
             GetWireHeightAndVoltage = _getWireHeightAndVoltageInfo.CreateDelegate(typeof(Func<Transform, Transform, Transform, Transform, float, (float?, float)>), _OCSInstance)
                 as Func<Transform, Transform, Transform, Transform, float, (float?, float)>;
-            if (GetWireHeightAndVoltage == null)
-                CCLPlugin.Error($"Unable to connect car {TrainCar.Resolve(gameObject).name} to OCS, pantograph will not receive power");
+            if (GetWireHeightAndVoltage != null)
+                CCLPlugin.LogVerbose($"Connection to OCS successfully established for car {_unit!.name}");
             else
-                CCLPlugin.LogVerbose($"Connection to OCS successfully established for car {TrainCar.Resolve(gameObject).name}");
+            { 
+                Debug.LogError($"Unable to connect car {_unit!.name} to OCS, pantograph will not receive power", this); 
+                DisablePower();
+            }
         }
 
         public override void Init(TrainCar car, SimulationFlow simFlow)
         {
             if (pantographBase == null || contactStripFirstEnd == null || contactStripSecondEnd == null)
             {
-                Debug.LogError($"Pantograph control transforms not set; catenary interaction controller disabled", this);
+                Debug.LogError($"Pantograph control transforms not set, pantograph sim controller disabled", this);
                 Destroy(this);
                 return;
             }
@@ -151,14 +158,14 @@ namespace CCL.Importer.Components.Controllers
                 !simFlow.TryGetPort(wireVoltagePortId, out _wireVoltage) ||
                 !simFlow.TryGetPort(inputCurrentPortId, out _inputCurrent))
             { 
-                Debug.LogError($"Referenced port(s) not set; catenary interaction controller disabled", this);
+                Debug.LogError($"Referenced ports not set, pantograph sim controller disabled", this);
                 Destroy(this);
                 return;
             }
             _unit = TrainCar.Resolve(gameObject);
             if (_unit == null)
             { 
-                Debug.LogError($"Car unresolved; catenary interaction controller disabled", this);
+                Debug.LogError($"Car unresolved, pantograph sim controller disabled", this);
                 Destroy(this);
                 return;
             }
@@ -173,7 +180,7 @@ namespace CCL.Importer.Components.Controllers
 			Vector3 currentTipPosition = contactStripFirstEnd!.position;
 			Vector3 positionDifference = currentTipPosition - _lastTipPosition;
             bool positionChanged;
-			if (Math.Abs(positionDifference.x) + Math.Abs(positionDifference.z) < 0.1f && Math.Abs(positionDifference.y) < 0.003f)
+			if (Math.Abs(positionDifference.y) < 0.003f && Math.Abs(positionDifference.x) + Math.Abs(positionDifference.z) < 0.1f)
                 positionChanged = false;
             else
 			{
@@ -187,26 +194,30 @@ namespace CCL.Importer.Components.Controllers
         public override void Tick(float deltaTime)
         {
             if (GetWireHeightAndVoltage == null)
-            {
-                _wireHeight!.Value = -1.0f;
-                _wireVoltage!.Value = 0.0f;
-            }
+                return;
+            int raisedPantographs = Pantograph.RaisedPantogrpahsCount(_unit) ?? -1;
+            float inputCurrent = _inputCurrent!.Value;
+            if (raisedPantographs <= 0 || float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
+                inputCurrent = 0.0f;
             else
+                inputCurrent /= raisedPantographs;
+            bool headPositionChanged;
+            (_headHeight!.Value, headPositionChanged) = GetHeadMidpointHeight();
+            if (Mathf.Abs(inputCurrent) > 0.1f || headPositionChanged)
             {
-                int raisedPantographs = Pantograph.RaisedPantogrpahsCount(_unit!) ?? -1;
-                float inputCurrent = _inputCurrent!.Value;
-                if (raisedPantographs <= 0 || float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
-                    inputCurrent = 0.0f;
-                else
-                    inputCurrent /= raisedPantographs;
-                bool headPositionChanged;
-                (_headHeight!.Value, headPositionChanged) = GetHeadMidpointHeight();
-                if (Mathf.Abs(inputCurrent) > 0.1f || headPositionChanged)
-                {
-                    float? wireHeight;
-                    (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent);
-                    _wireHeight!.Value = wireHeight ?? -1.0f;
-                }
+                float? wireHeight;
+                (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent);
+                _wireHeight!.Value = wireHeight ?? -1.0f;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_unit is not null && _allCatenaryControllers.ContainsKey(_unit))
+            {
+                foreach (PantographSimControllerInternal controller in _allCatenaryControllers[_unit])
+                    controller.DisablePower();
+                _allCatenaryControllers.Remove(_unit);
             }
         }
     }

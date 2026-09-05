@@ -114,7 +114,7 @@ namespace CCL.Importer.Components
                 .ForMember(d => d.Ropes, o => o.MapFrom(s => Mapper.GetFromCache(s.Ropes)))
                 .ForMember(d => d.DistanceSlowSqr, o => o.MapFrom(s => s.DistanceSlow * s.DistanceSlow))
                 .ForMember(d => d.DistanceDisableSqr, o => o.MapFrom(s => s.DistanceDisable * s.DistanceDisable));
-            CreateMap<CatenaryInteractionController, CatenaryInteractionControllerInternal>().AutoCacheAndMap();
+            CreateMap<PantographSimController, PantographSimControllerInternal>().AutoCacheAndMap();
         }
 
         private void MapControls()

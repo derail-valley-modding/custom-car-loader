@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using CCL.Types.Components.Simulation.Electric;
 using CCL.Types.Proxies.Ports;
 
 using UnityEngine;
 
 namespace CCL.Types.Components.Controllers
 {
-    [AddComponentMenu("CCL/Components/Controllers/Catenary Interaction Controller")]
-    public class CatenaryInteractionController : MonoBehaviour, IHasPortIdFields
+    [AddComponentMenu("CCL/Components/Controllers/Pantograph Sim Controller")]
+    public class PantographSimController : MonoBehaviour, IHasPortIdFields
     {
         public Transform? pantographBase;
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
@@ -35,5 +36,19 @@ namespace CCL.Types.Components.Controllers
             new PortIdField(this, nameof(wireVoltagePortId), wireVoltagePortId, DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS),
             new PortIdField(this, nameof(inputCurrentPortId), inputCurrentPortId, DVPortValueType.AMPS)
         };
+
+        public void ConnectPantograph(PantographDefinition pantographProxy)
+        {
+            initialHeightPortId = pantographProxy.GetFullPortId("INITIAL_HEAD_HEIGHT");
+            headHeightPortId = pantographProxy.GetFullPortId("HEAD_HEIGHT");
+            wireHeightPortId = pantographProxy.GetFullPortId("WIRE_HEIGHT");
+            wireVoltagePortId = pantographProxy.GetFullPortId("WIRE_VOLTAGE");
+        }
+
+        private void Reset()
+        {
+            if (gameObject.TryGetComponent<PantographDefinition>(out PantographDefinition pantographProxy))
+                ConnectPantograph(pantographProxy);
+        }
     }
 }
