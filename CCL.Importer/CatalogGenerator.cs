@@ -294,6 +294,17 @@ namespace CCL.Importer
             layout = Object.Instantiate(layout, root);
             layout.localPosition = new Vector3(DiagramComponent.WIDTH, DiagramComponent.HEIGHT, 0);
 
+            foreach (var body in layout.GetComponentsInChildren<VehicleBody>())
+            {
+                // This is needed so the extra body parts are always behind the rest.
+                body.transform.SetParent(root, true);
+                body.transform.SetAsFirstSibling();
+
+                var instance = (RectTransform)Object.Instantiate(root.Find(Paths.Diagrams.TallVehicle), body.transform);
+                instance.gameObject.SetActive(true);
+                instance.sizeDelta = body.RectTransform.sizeDelta;
+            }
+
             foreach (var bogie in layout.GetComponentsInChildren<BogieLayout>())
             {
                 if (bogie.Wheels.Length == 0)

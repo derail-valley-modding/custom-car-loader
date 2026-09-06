@@ -138,5 +138,24 @@ namespace CCL.Creator.Inspector.Catalog
                 return color;
             }
         }
+
+        [DrawGizmo(GizmoType.InSelectionHierarchy | GizmoType.NotInSelectionHierarchy)]
+        private static void DrawGizmoVehicleBody(VehicleBody body, GizmoType gizmoType)
+        {
+            var t = (RectTransform)body.transform;
+            var centre = t.position;
+            var offsetV = new Vector3(0, t.sizeDelta.y / 2, 0);
+            var offsetH = new Vector3(t.sizeDelta.x / 2, 0, 0);
+
+            var points = new[]
+            {
+                centre + offsetV + offsetH,
+                centre + offsetV - offsetH,
+                centre - offsetV - offsetH,
+                centre - offsetV + offsetH
+            };
+
+            Handles.DrawSolidRectangleWithOutline(points, s_empty, Color.white);
+        }
     }
 }
