@@ -202,18 +202,23 @@ namespace CCL.Importer.Implementations
 
         [HarmonyPatch("UpdateDebtValues")]
         [HarmonyPrefix]
-        private static void UpdateDebtValuesPrefix(SimulatedCarDebtTracker? __instance)
+        private static void UpdateDebtValuesPrefix(SimulatedCarDebtTracker? __instance, out float? __state)
         {
-            if (__instance == null || !_initialElectricCharge.TryGetValue(__instance, out float initialCharge))
+            __state = null;
+            if (__instance == null)
                 return;
 
-            // Reset the start value of the debt component to vanilla setting for consistency
+            // Reset the start and snapshot values of the debt component to vanilla settings for consistency
             foreach (DebtComponent currentFee in __instance.GetTrackedDebts())
             {
                 if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.ContainsKey(__instance))
                 { 
-                    Debug.Log($"EMTR U1 {currentFee.StartValue} {initialCharge}");
-                    currentFee.UpdateStartValue(initialCharge);
+                    Debug.Log($"EMTR U1 {currentFee.StartValue} {_initialElectricCharge[__instance]} {currentFee.HasSnapshot} {currentFee.SnapshotValue}");
+                    if (currentFee.HasSnapshot)
+                        __state = currentFee.StartValue - currentFee.SnapshotValue;
+                    currentFee.UpdateStartValue(_initialElectricCharge[__instance]);
+                    if (__state != null)
+                        currentFee.SetSnapshot(currentFee.StartValue - (float) __state);
                     break;
                 }
             }
@@ -221,7 +226,7 @@ namespace CCL.Importer.Implementations
 
         [HarmonyPatch("UpdateDebtValues")]
         [HarmonyPostfix]
-        private static void UpdateDebtValuesPostfix(SimulatedCarDebtTracker? __instance)
+        private static void UpdateDebtValuesPostfix(SimulatedCarDebtTracker? __instance, float? __state)
         {
             if (__instance == null)
                 return;
@@ -230,14 +235,17 @@ namespace CCL.Importer.Implementations
                 if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.TryGetValue(__instance, out ElectricityMeter meter))
                 { 
                     float newEndValue = currentFee.EndValue - Mathf.Max((float) meter._energyConsumed, 0.0f);
-                    if (newEndValue >= 0.0f)
+                    float minimum = (__state != null) ? Mathf.Min(newEndValue, currentFee.SnapshotValue) : newEndValue;
+                    if (minimum >= 0.0f)
                         currentFee.UpdateEndValue(newEndValue);
-                    else if (_initialElectricCharge.TryGetValue(__instance, out float initialCharge))
+                    else
                     {
                         currentFee.UpdateEndValue(0.0f);
-                        currentFee.UpdateStartValue(initialCharge - newEndValue);
+                        currentFee.UpdateStartValue(_initialElectricCharge[__instance] - minimum);
+                        if (__state != null)
+                            currentFee.SetSnapshot(currentFee.StartValue - (float) __state);
                     }
-                    Debug.Log($"EMTR U2 {currentFee.StartValue} {currentFee.EndValue} {currentFee.StartToEndDiff}");
+                    Debug.Log($"EMTR U2 {currentFee.StartValue} {currentFee.EndValue} {currentFee.StartToEndDiff} {__state?.ToString() ?? "<null>"}");
                     break;
                 }
             }
