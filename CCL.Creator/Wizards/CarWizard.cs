@@ -107,7 +107,8 @@ namespace CCL.Creator.Wizards
                 "Car Name", _carSettings.Name);
 
             _carSettings.ID = RenderTextbox(
-                "This will be the unique identifier for your car - we will also apply it to the default livery",
+                "This will be the unique identifier for your car - we will also apply it to the default livery\n" +
+                "Avoid spaces in ID fields",
                 "Car ID", _carSettings.ID);
 
             _carSettings.Kind = RenderEnum(
@@ -122,7 +123,7 @@ namespace CCL.Creator.Wizards
             {
                 _carSettings.Role = RenderEnum(
                     "Pick the role of the car",
-                    "Role", _carSettings.Role);
+                    "Cargo Role", _carSettings.Role);
             }
 
             EditorHelpers.DrawSeparator();

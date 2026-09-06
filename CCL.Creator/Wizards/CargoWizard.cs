@@ -462,19 +462,23 @@ namespace CCL.Creator.Wizards
 
             _massScroll = EditorGUILayout.BeginScrollView(_massScroll);
 
-            foreach (var item in _setup.Entries)
+            if (_setup != null)
             {
-                DrawMass(item, widthWindow);
-            }
+                foreach (var item in _setup.Entries)
+                {
+                    DrawMass(item, widthWindow);
+                }
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                SaveChanges();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    SaveChanges();
+                }
             }
 
             EditorGUILayout.EndScrollView();
+            GUI.enabled = HasSetup;
 
-            if (GUILayout.Button("Reset All to Default"))
+            if (GUILayout.Button("Reset All to Default") && _setup != null)
             {
                 foreach (var item in _setup.Entries)
                 {
@@ -483,6 +487,8 @@ namespace CCL.Creator.Wizards
 
                 SaveChanges();
             }
+
+            GUI.enabled = true;
         }
 
         private void DrawMass(CargoEntry entry, float widthWindow)
