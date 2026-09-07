@@ -19,8 +19,8 @@ namespace CCL.Types.Components.Simulation.Electric
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
-            new PortReferenceDefinition(DVPortValueType.VOLTS, "SUPPLY_VOLTAGE", false),
-            new PortReferenceDefinition(DVPortValueType.AMPS, "CURRENT_DRAW", false)
+            new PortReferenceDefinition(DVPortValueType.VOLTS, "SUPPLY_VOLTAGE"),
+            new PortReferenceDefinition(DVPortValueType.AMPS, "CURRENT_DRAW")
         };
     }
 }

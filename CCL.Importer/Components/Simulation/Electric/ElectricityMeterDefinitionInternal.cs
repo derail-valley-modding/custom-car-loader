@@ -11,8 +11,8 @@ namespace CCL.Importer.Components.Simulation.Electric
 
         public readonly PortDefinition electricChargeConsumed = new(PortType.READONLY_OUT, PortValueType.ELECTRIC_CHARGE, "ENERGY_CONSUMED");
 
-        public readonly PortReferenceDefinition supplyVoltage = new(PortValueType.VOLTS, "SUPPLY_VOLTAGE", false);
-        public readonly PortReferenceDefinition currentDraw = new(PortValueType.AMPS,"CURRENT_DRAW", false);
+        public readonly PortReferenceDefinition supplyVoltage = new(PortValueType.VOLTS, "SUPPLY_VOLTAGE");
+        public readonly PortReferenceDefinition currentDraw = new(PortValueType.AMPS,"CURRENT_DRAW");
 
         public override SimComponent InstantiateImplementation() => new ElectricityMeter(this);
     }

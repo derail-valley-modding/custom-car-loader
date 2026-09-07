@@ -8,9 +8,6 @@ namespace CCL.Types.Components.Simulation.Electric
     [AddComponentMenu("CCL/Components/Simulation/Electric/Pantograph Definition")]
     public class PantographDefinition : SimComponentDefinitionProxy, IHasFuseIdFields
     {
-        [Min(1.0f), Tooltip("Used to calculate normalized voltage port")]
-        public float nominalVoltage = 1500.0f;
-        
         [Min(0.01f), Tooltip("Pantograph head movement speed in m/s")]
         public float headMovementSpeed = 1.0f;
 
@@ -30,14 +27,14 @@ namespace CCL.Types.Components.Simulation.Electric
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, "HEAD_HEIGHT"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, "WIRE_VOLTAGE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE_NORMALIZED"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPH_RAISE"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "PANTOGRAPH_RAISE_NORMALIZED")
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPH_RAISE_NORMALIZED"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "PANTOGRAPH_IN_CONTACT")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]
         {
-            new PortReferenceDefinition(DVPortValueType.CONTROL, "TOGGLE", true)
+            new PortReferenceDefinition(DVPortValueType.CONTROL, "TOGGLE")
         };
 
         public IEnumerable<FuseIdField> ExposedFuseIdFields => new[]

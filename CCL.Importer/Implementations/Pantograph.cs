@@ -13,53 +13,43 @@ namespace CCL.Importer.Implementations
     internal class Pantograph : SimComponent
     {
         private static readonly Dictionary<TrainCar, List<Pantograph>> _allPantographs = new();
-        private static readonly Dictionary<TrainCar, int> _nextPantographID = new(), _raisedPantographMask = new(), _raisedPantographCount = new();
         
         private readonly FuseReference _powerFuse;
         private readonly Port _wireHeight, _initialHeadHeight, _headHeight, _raiseReadOut, _raiseNormalizedReadOut;
-        private readonly Port _wireVoltage, _voltageReadOut, _voltageNormalizedReadOut;
+        private readonly Port _wireVoltage, _voltageReadOut;
+        private readonly Port _inContact;
         private readonly PortReference _pantographToggle;
         private readonly TrainCar?  _unit;
 
-        private readonly float _nominalVoltage;
         private readonly float _maximumRaise, _headMovementSpeed, _contactTolerance;
-        private readonly int _IDMask, _IDInvertedMask;
         
-        private bool _disabled = false, _isInContact = false;
+        private bool _disabled = false;
         private float _minimumRaise = 0.0f, _maximumRaiseDifference;
-
-        public static int? RaisedPantogrpahsCount(TrainCar? vehicle)
-        {
-            return (vehicle == null || !_raisedPantographCount.TryGetValue(vehicle, out int raisedPantographs)) ? null : raisedPantographs;
-        }
 
         public Pantograph(PantographDefinitionInternal definition): base(definition.ID)
         {
-            _nominalVoltage = definition.nominalVoltage;
             _headMovementSpeed = definition.headMovementSpeed;
             _maximumRaise = definition.maximumRaise;
             _contactTolerance  = definition.contactTolerance;
 
             _powerFuse = AddFuseReference(definition.powerFuseId);
+
             _wireHeight = AddPort(definition.wireHeight);
             _initialHeadHeight = AddPort(definition.initialHeadHeight);
             _headHeight = AddPort(definition.headHeight);
             _wireVoltage = AddPort(definition.wireVoltage);
             _voltageReadOut = AddPort(definition.supplyVoltage);
-            _voltageNormalizedReadOut = AddPort(definition.supplyVoltageNormalized);
             _raiseReadOut = AddPort(definition.pantographRaise);
             _raiseNormalizedReadOut = AddPort(definition.pantographRaiseNormalized);
-            _pantographToggle = AddPortReference(definition.toggle);
+            _inContact = AddPort(definition.pantographInContact);
             _initialHeadHeight.ValueUpdatedInternally += CheckInitialHeight;
+
+            _pantographToggle = AddPortReference(definition.toggle);
 
             CheckInitialHeight(_initialHeadHeight.Value);
             if (_disabled)
-                return;
-            if (_nominalVoltage <= 0.0f)
-            {
-                CCLPlugin.Error("Nominal voltage negative or zero, pantograph disabled");
-                _disabled = true;
-                return;
+            { 
+                return; 
             }
             if (_headMovementSpeed <= 0.0f)
             {
@@ -78,30 +68,20 @@ namespace CCL.Importer.Implementations
             
             if (_allPantographs.TryGetValue(unit, out List<Pantograph> installedPantographs))
             {
-                if (_nextPantographID[unit] >= 30)
-                {
-                    CCLPlugin.Error("Cannot have more than 30 pantographs on a car");
-                    _disabled = true;
-                    return;
-                }
-                _IDMask = 1 << _nextPantographID[unit]++;
                 installedPantographs.Add(this);
             }
             else
             {
-                _IDMask = 1;
-                _allPantographs[unit] = new() { this };
-                _nextPantographID[unit] = 1;
-                _raisedPantographMask[unit] = _raisedPantographCount[unit] = 0;
                 unit.OnDestroyCar += OnCarDestroyed;
             }
-            _IDInvertedMask = ~_IDMask;
         }
 
         private void CheckInitialHeight(float initialHeight)
         {
             if (_disabled)
-                return;
+            { 
+                return; 
+            }
             if (_maximumRaise <= initialHeight)
             {
                 CCLPlugin.Error("Maximum reach is below initial position, pantograph disabled");
@@ -115,7 +95,9 @@ namespace CCL.Importer.Implementations
         private void OnCarDestroyed(TrainCar unit)
         {
             if (unit == null || !_allPantographs.ContainsKey(unit))
-                return;
+            { 
+                return; 
+            }
             unit.OnDestroyCar -= OnCarDestroyed;
             foreach (Pantograph currentPantograph in _allPantographs[unit])
             {
@@ -124,42 +106,19 @@ namespace CCL.Importer.Implementations
             }
             _allPantographs[unit].Clear();
             _allPantographs.Remove(unit);
-            _nextPantographID.Remove(unit);
-            _raisedPantographMask.Remove(unit);
-            _raisedPantographCount.Remove(unit);
         }
 
-        private bool TrackContactState(float wireHeight, bool pantographOn)
+        private bool IsInContact(float wireHeight, bool pantographOn)
         {
-            TrainCar unit = _unit!;
-            if (_disabled)
-                return false;
-            bool wasInContact = (_raisedPantographMask[unit] & _IDMask) != 0;
-            bool nowInContact;
-            if (!pantographOn || wireHeight < 0.0f)
-                nowInContact = false;
-            else
-                nowInContact = Mathf.Abs(wireHeight - _headHeight.Value) <= _contactTolerance;
-            if (nowInContact != wasInContact)
-            {
-                if (nowInContact)
-                {
-                    _raisedPantographMask [unit] |= _IDMask;
-                    _raisedPantographCount[unit]++;
-                }
-                else
-                {
-                    _raisedPantographMask [unit] &= _IDInvertedMask;
-                    _raisedPantographCount[unit]--;
-                }
-            }
-            return nowInContact;
+            return wireHeight >= 0.0f && Mathf.Abs(wireHeight - _headHeight.Value) <= _contactTolerance;
         }
         
         private void Move(float delta, float raiseHeight, bool pantographOn)
         {
             if (_disabled)
-                return;
+            { 
+                return; 
+            }
             float currentRaise = _raiseReadOut.Value + _minimumRaise;
             float targetRaise, raiseDifference;
             if (pantographOn)
@@ -191,24 +150,30 @@ namespace CCL.Importer.Implementations
         public override void Tick(float delta)
         {
             if (_disabled)
-                return;
+            { 
+                return; 
+            }
             bool pantographOn = _pantographToggle.Value >= 0.5f && _powerFuse.State;
             float wireHeight = _wireHeight.Value;
             float raiseHeight;
             if (!pantographOn)
+            {
                 raiseHeight = _minimumRaise;
+            }
             else
-                raiseHeight = (wireHeight > 0.0f) ? wireHeight : _maximumRaise;
+            { 
+                raiseHeight = (wireHeight > 0.0f) ? wireHeight : _maximumRaise; 
+            }
             Move(delta, raiseHeight, pantographOn);
-            _isInContact = TrackContactState(wireHeight, pantographOn);
-            if (!_isInContact)
-                _voltageReadOut.Value = _voltageNormalizedReadOut.Value = 0.0f;
+            if (IsInContact(wireHeight, pantographOn))
+            {
+                _inContact.Value = _voltageReadOut.Value = 0.0f;
+            }
             else
             {
-                float voltage = _wireVoltage.Value;
-                _voltageReadOut.Value = voltage;
-                _voltageNormalizedReadOut.Value = voltage / _nominalVoltage;
+                _inContact.Value = 1.0f;
+                _voltageReadOut.Value = _wireVoltage.Value;
             }
-        }
+		}
     }
 }

@@ -175,32 +175,33 @@ namespace CCL.Importer.Components.Controllers
             (_initialHeadHeight.Value, _) = GetHeadMidpointHeight();
         }
 
-		private (float height, bool positionChanged) GetHeadMidpointHeight()
-		{
-			Vector3 currentTipPosition = contactStripFirstEnd!.position;
-			Vector3 positionDifference = currentTipPosition - _lastTipPosition;
+        private (float height, bool positionChanged) GetHeadMidpointHeight()
+        {
+            Vector3 currentTipPosition = contactStripFirstEnd!.position;
+            Vector3 positionDifference = currentTipPosition - _lastTipPosition;
             bool positionChanged;
-			if (Math.Abs(positionDifference.y) < 0.003f && Math.Abs(positionDifference.x) + Math.Abs(positionDifference.z) < 0.1f)
+            if (Math.Abs(positionDifference.y) < 0.003f && Math.Abs(positionDifference.x) + Math.Abs(positionDifference.z) < 0.1f)
                 positionChanged = false;
             else
-			{
-				positionChanged = true;
+            {
+                positionChanged = true;
                 _lastTipPosition = currentTipPosition;
-				_lastHeadMidpointHeight = _unit!.transform.InverseTransformPoint((currentTipPosition + contactStripSecondEnd!.position) / 2.0f).y;
-			}
-			return (_lastHeadMidpointHeight, positionChanged);
-		}
+                _lastHeadMidpointHeight = _unit!.transform.InverseTransformPoint((currentTipPosition + contactStripSecondEnd!.position) / 2.0f).y;
+            }
+            return (_lastHeadMidpointHeight, positionChanged);
+        }
 
         public override void Tick(float deltaTime)
         {
             if (GetWireHeightAndVoltage == null)
-                return;
-            int raisedPantographs = Pantograph.RaisedPantogrpahsCount(_unit) ?? -1;
+            { 
+                return; 
+            }
             float inputCurrent = _inputCurrent!.Value;
-            if (raisedPantographs <= 0 || float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
+            if (float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
+            {
                 inputCurrent = 0.0f;
-            else
-                inputCurrent /= raisedPantographs;
+            }
             bool headPositionChanged;
             (_headHeight!.Value, headPositionChanged) = GetHeadMidpointHeight();
             if (Mathf.Abs(inputCurrent) > 0.1f || headPositionChanged)
