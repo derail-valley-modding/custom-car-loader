@@ -30,7 +30,8 @@ namespace CCL.Types.Components.Simulation.Electric
         {
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "SUPPLY_VOLTAGE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "SUPPLY_VOLTAGE_NORMALIZED"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "PANTOGRAPHS_INPUT_CURRENT")
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.AMPS, "PANTOGRAPH_INPUT_CURRENT"),
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPHS_RAISED_COUNT")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => _inputsFromPantographs ?? base.ExposedPortReferences;

@@ -16,26 +16,31 @@ namespace CCL.Importer.Implementations
     internal class RoofBusBar : SimComponent
     {
         private readonly float _nominalVoltage;
-        private readonly Port _supplyVoltage, _supplyVoltageNormalized, _pantographInputCurrent;
+        private readonly Port _supplyVoltage, _supplyVoltageNormalized, _pantographInputCurrent, _raisedCount;
         private readonly Port[]? _inContact;
         private readonly PortReference[]? _inputsFromPantographs, _pantographVoltages;
         private readonly bool[]? _raisedPantographs;
 
         private int _raisedPantographsCount = 0;
 
-        private Action<float> CreateContactHandler(int pantograph)
+        private Action<float> CreateContactHandler(int pantographIndex)
         {
             return delegate (float contactState)
             {
                 bool nowInContact = contactState >= 0.5f;
-                if (_raisedPantographs![pantograph] != nowInContact)
+                if (_raisedPantographs![pantographIndex] != nowInContact)
                 {
                     if (nowInContact)
-                        _raisedPantographsCount++;
+                    {
+                        _raisedCount.Value = ++_raisedPantographsCount;
+                    }
                     else
-                        _raisedPantographsCount--;
+                    { 
+                        _raisedCount.Value = --_raisedPantographsCount; 
+                    }
                 }
-                _raisedPantographs[pantograph] = nowInContact;
+                _raisedPantographs[pantographIndex] = nowInContact;
+                Debug.Log($"RBB P{pantographIndex} {nowInContact} {_raisedPantographsCount}");
             };
         }
 
@@ -44,6 +49,7 @@ namespace CCL.Importer.Implementations
             _supplyVoltage = AddPort(definition.supplyVoltage);
             _supplyVoltageNormalized = AddPort(definition.supplyVoltageNormalized);
             _pantographInputCurrent = AddPort(definition.pantographsInputCurrent);
+            _raisedCount = AddPort(definition.raisedPantographsCount);
             
             if (definition.nominalVoltage <= 0.0f)
             { 
@@ -82,6 +88,9 @@ namespace CCL.Importer.Implementations
                 for (int pantographIndex = 0; pantographIndex < pantographsCount; pantographIndex++)
                 {
                     _inContact[pantographIndex] = _inputsFromPantographs[pantographIndex * 2].GetPort();
+                    Action<float> ContactHandler = CreateContactHandler(pantographIndex);
+                    _inContact[pantographIndex].ValueUpdatedInternally += ContactHandler;
+                    ContactHandler(_inContact[pantographIndex].Value);
                     Debug.Log($"RBB [{pantographIndex}] {_inContact[pantographIndex]?.id ?? "<null>"} {_inContact[pantographIndex]?.type.ToString() ?? "<null>"} {_inContact[pantographIndex]?.valueType.ToString() ?? "<null>"} {_pantographVoltages[pantographIndex]?.id ?? "<null>"}");
                 }
             }

@@ -23,16 +23,8 @@ namespace CCL.Importer.Components.Simulation.Electric
         public readonly PortDefinition supplyVoltage = new(PortType.READONLY_OUT, PortValueType.VOLTS, "SUPPLY_VOLTAGE");
         public readonly PortDefinition supplyVoltageNormalized = new(PortType.READONLY_OUT, PortValueType.VOLTS, "SUPPLY_VOLTAGE_NORMALIZED");
         public readonly PortDefinition pantographsInputCurrent = new(PortType.READONLY_OUT, PortValueType.AMPS, "PANTOGRAPHS_INPUT_CURRENT");
+        public readonly PortDefinition raisedPantographsCount = new(PortType.READONLY_OUT, PortValueType.AMPS, "PANTOGRAPHS_RAISED_COUNT");
         
-        public override SimComponent InstantiateImplementation()
-        {
-            Debug.Log($"RBB {inputsFromPantographs?.Length.ToString() ?? "<null>"}");
-            if (inputsFromPantographs != null)
-            {
-                for (int index = 0; index < inputsFromPantographs.Length; ++index)
-                    Debug.Log($"RBB [{index}] {inputsFromPantographs[index].ID} {inputsFromPantographs[index].valueType}");
-            }
-            return new RoofBusBar(this);
-        }
+        public override SimComponent InstantiateImplementation() => new RoofBusBar(this);
     }
 }
