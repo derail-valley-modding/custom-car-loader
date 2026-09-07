@@ -85,9 +85,11 @@ namespace CCL.Types
         public Sprite? DemonstratorIcon;
         [Tooltip("Livery icon for the rusty demonstrator paint")]
         public Sprite? DemonstratorRustedIcon;
-        [Tooltip("The prefab for the parts cargo, when loaded on the DM1U")]
+        [Tooltip("The model to use for the demonstrator parts")]
+        public PartsCargoModel PartsModel = PartsCargoModel.GenericBox;
+        [Tooltip("The prefab for the parts cargo, when loaded on the DM1U"), EnableIf(nameof(UseCustomPartsModel))]
         public GameObject? PartsCargoPrefabDM1U;
-        [Tooltip("The prefab for the parts cargo, when loaded on the Utility Flatbed")]
+        [Tooltip("The prefab for the parts cargo, when loaded on the Utility Flatbed"), EnableIf(nameof(UseCustomPartsModel))]
         public GameObject? PartsCargoPrefabFlatbed;
         [Tooltip("The mass of the parts cargo")]
         public float PartsCargoMass = 10000.0f;
@@ -100,6 +102,7 @@ namespace CCL.Types
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
         public bool UseCustomBuffers => BufferType == BufferType.Custom;
+        public bool UseCustomPartsModel => PartsModel == PartsCargoModel.Custom;
 
         public IEnumerable<GameObject> AllPrefabs
         {

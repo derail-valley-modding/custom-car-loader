@@ -51,4 +51,13 @@
         Front,
         Rear
     }
+
+    public enum PartsCargoModel
+    {
+        GenericBox,
+        BoilerS060,
+        WheelsS282,
+        EngineDE6,
+        Custom = 1000
+    }
 }

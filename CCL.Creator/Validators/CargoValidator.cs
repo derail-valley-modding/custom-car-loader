@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -80,9 +81,17 @@ namespace CCL.Creator.Validators
             {
                 result.Warning($"Cargo {model.name} bounding {CarPartNames.Colliders.COLLISION} collider is missing", collidersRoot);
             }
-            else if (collision != null && InvalidOrigin(collision))
+            else if (collision != null)
             {
-                result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.COLLISION} is not at the local origin", model);
+                if (InvalidOrigin(collision))
+                {
+                    result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.COLLISION} is not at the local origin", model);
+                }
+
+                if (collision.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
+                {
+                    result.Fail($"Cargo {model.name} - Non-convex mesh colliders are not supported for car collisions");
+                }
             }
 
             // Walkable collider.

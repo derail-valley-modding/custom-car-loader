@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies
 {
     [AddComponentMenu("CCL/Proxies/Explosion Model Handler Proxy")]
-    public class ExplosionModelHandlerProxy : MonoBehaviour, ICustomSerialized
+    public class ExplosionModelHandlerProxy : MonoBehaviour, ICustomSerialized, ISelfValidation
     {
         [Serializable]
         public class MaterialSwapData
         {
             public Material swapMaterial = null!;
             public GameObject[] affectedGameObjects = new GameObject[0];
+
+            public bool AnyNull()
+            {
+                return swapMaterial == null || affectedGameObjects.Any(x => x == null);
+            }
         }
 
         [Serializable]
@@ -19,14 +25,17 @@ namespace CCL.Types.Proxies
         {
             public GameObject gameObjectToReplace = null!;
             public GameObject replacePrefab = null!;
+
+            public bool AnyNull()
+            {
+                return gameObjectToReplace == null || replacePrefab == null;
+            }
         }
 
         [Tooltip("All of these GameObjects will be disabled on explosion")]
         public GameObject[] gameObjectsToDisable = new GameObject[0];
-
         [Tooltip("These will swap 2 GameObjects")]
         public GameObjectSwapData[] gameObjectSwaps = new GameObjectSwapData[0];
-
         [Tooltip("These will replace the material on all renderers of a GameObject")]
         public MaterialSwapData[] materialSwaps = new MaterialSwapData[0];
 
@@ -92,6 +101,26 @@ namespace CCL.Types.Proxies
                     affectedGameObjects = affectedGosTemp[i]
                 };
             }
+        }
+
+        public SelfValidationResult Validate(out string message, out string? highlight)
+        {
+            if (gameObjectsToDisable.Any(x => x == null))
+            {
+                return this.FailForNullEntries(nameof(gameObjectsToDisable), out message, out highlight);
+            }
+
+            if (gameObjectSwaps.Any(x => x == null || x.AnyNull()))
+            {
+                return this.FailForNullEntries(nameof(gameObjectSwaps), out message, out highlight);
+            }
+
+            if (materialSwaps.Any(x => x == null || x.AnyNull()))
+            {
+                return this.FailForNullEntries(nameof(materialSwaps), out message, out highlight);
+            }
+
+            return this.Pass(out message, out highlight);
         }
     }
 }
