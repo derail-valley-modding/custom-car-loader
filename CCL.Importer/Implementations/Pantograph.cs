@@ -165,7 +165,7 @@ namespace CCL.Importer.Implementations
                 raiseHeight = (wireHeight > 0.0f) ? wireHeight : _maximumRaise; 
             }
             Move(delta, raiseHeight, pantographOn);
-            if (IsInContact(wireHeight, pantographOn))
+            if (!IsInContact(wireHeight, pantographOn))
             {
                 _inContact.Value = _voltageReadOut.Value = 0.0f;
             }
