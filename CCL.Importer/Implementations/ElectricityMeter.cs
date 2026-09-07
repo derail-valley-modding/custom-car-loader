@@ -1,23 +1,17 @@
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
-using CCL.Importer.Components.Simulation.Electric;
-using CCL.Types.Components.Simulation.Electric;
+using HarmonyLib;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 using DV.Damage;
 using DV.JObjectExtstensions;
 using DV.ServicePenalty;
 using DV.Simulation.Cars;
 using DV.ThingTypes;
-using DV.Utils;
-
-using HarmonyLib;
-
 using LocoSim.Implementations;
 
-using Newtonsoft.Json.Linq;
-
-using UnityEngine;
+using CCL.Importer.Components.Simulation.Electric;
 
 namespace CCL.Importer.Implementations
 {
@@ -27,13 +21,15 @@ namespace CCL.Importer.Implementations
         [HarmonyPatch(typeof(SimController), "OnLogicCarInitialized")]
         private static class LogicCarInitializer
         {
-            public static void Postfix(TrainCar? ___train, SimulatedCarDebtTracker? ___debt)
+            private static void Postfix(TrainCar? ___train, SimulatedCarDebtTracker? ___debt)
             {
                 if (___train != null && ___debt != null)
                 {
                     _newTrackers[___train] = ___debt;
                     if (_carsWithMeters.TryGetValue(___train, out ElectricityMeter meter))
+                    {
                         meter.TrySetupFeeTracker();
+                    }
                 }
             }
         }
@@ -46,7 +42,6 @@ namespace CCL.Importer.Implementations
         private readonly TrainCar? _unit;
         private SimulatedCarDebtTracker? _feeTracker;
         
-        private readonly FuseReference? _masterFuse = null;
         private readonly Port _electricChargeConsumed;
         private readonly PortReference _supplyVoltage, _currentDraw;
 
@@ -59,8 +54,6 @@ namespace CCL.Importer.Implementations
         {
             _energyConsumptionFactor = definition.electricChargeConsumptionFactor / (1000.0f * 3600.0f);
 
-            if (!string.IsNullOrEmpty(definition.masterControlFuseId))
-                _masterFuse = AddFuseReference(definition.masterControlFuseId);
             _electricChargeConsumed = AddPort(definition.electricChargeConsumed);
             _supplyVoltage = AddPortReference(definition.supplyVoltage);
             _currentDraw = AddPortReference(definition.currentDraw);
@@ -81,9 +74,13 @@ namespace CCL.Importer.Implementations
             _carsWithMeters[_unit] = this;
             TrySetupFeeTracker();
             if (gameParams == null)
+            {
                 _unit.LogicCarInitialized += AdjustEnergyConsumptionFactor;
+            }
             else
+            {
                 AdjustEnergyConsumptionFactor();
+            }
             _unit.OnDestroyCar += DisposeFeeTracker;
         }
 
@@ -99,7 +96,9 @@ namespace CCL.Importer.Implementations
         private void TrySetupFeeTracker()
         {
             if (_unit == null || !_carsWithMeters.ContainsKey(_unit) || !_newTrackers.ContainsKey(_unit))
+            {
                 return;
+            }
             _feeTracker = _newTrackers[_unit];
             _feeTrackers[_feeTracker] = this;
             _newTrackers.Remove(_unit);
@@ -117,16 +116,22 @@ namespace CCL.Importer.Implementations
                 _feeTracker = null;
             }
             if (_carsWithMeters.ContainsKey(unit))
+            {
                 _carsWithMeters.Remove(unit);
+            }
             if (_newTrackers.ContainsKey(unit))
-                _newTrackers.Remove(unit);
+            { 
+                _newTrackers.Remove(unit); 
+            }
             CCLPlugin.LogVerbose($"Removed fee tracker for car {unit.ID}");
         }
 
         public override void Tick(float delta)
         {
             if (_feeTracker == null)
-                return;
+            { 
+                return; 
+            }
             float load = _currentDraw.Value, voltage = _supplyVoltage.Value;
             if (load != 0.0f && !float.IsNaN(load) && !float.IsInfinity(load) && !float.IsNaN(voltage) && !float.IsInfinity(voltage))
             {
@@ -138,10 +143,11 @@ namespace CCL.Importer.Implementations
         public override JObject? GetSaveStateData()
         {
             if (_feeTracker == null)
-                return null;
+            { 
+                return null; 
+            }
             JObject savedData = new();
             savedData.SetDouble("energyConsumed", _energyConsumed);
-            //savedData.SetFloat
             return savedData;
         }
 
@@ -151,7 +157,9 @@ namespace CCL.Importer.Implementations
             {
                 _energyConsumed = savedData.GetDouble("energyConsumed") ?? 0.0;
                 if (double.IsNaN(_energyConsumed) || double.IsInfinity(_energyConsumed))
-                    _energyConsumed = 0.0;
+                { 
+                    _energyConsumed = 0.0; 
+                }
                 _electricChargeConsumed.Value = (float) _energyConsumed;
                 _feeTracker?.UpdateDebtValues();
             }
@@ -164,10 +172,14 @@ namespace CCL.Importer.Implementations
         {
             __state = false;
             if (___dmgController == null || ___resourceToResourceContainers == null)
-                return;
+            { 
+                return; 
+            }
             var unit = TrainCar.Resolve(___dmgController.gameObject);
             if (unit == null || unit.gameObject.GetComponentInChildren<ElectricityMeterDefinitionInternal>() == null)
-                return;
+            { 
+                return; 
+            }
             
             __state = true;
             Debug.Log($"EMTR I1 {unit.ID}");
@@ -183,7 +195,9 @@ namespace CCL.Importer.Implementations
             }
             Debug.Log($"EMTR I1 {hasElectricChargeContainer}");
             if (!hasElectricChargeContainer)
-                ___resourceToResourceContainers[ResourceType.ElectricCharge] = new();
+            { 
+                ___resourceToResourceContainers[ResourceType.ElectricCharge] = new(); 
+            }
         }
 
         [HarmonyPatch("InitializeDebtComponents")]
@@ -195,7 +209,9 @@ namespace CCL.Importer.Implementations
             {
                 _initialElectricCharge[__instance] = 0.0f;
                 foreach (ResourceContainer electricChargeContainer in ___resourceToResourceContainers[ResourceType.ElectricCharge])
-                    _initialElectricCharge[__instance] += electricChargeContainer.amountReadOut.Value;
+                { 
+                    _initialElectricCharge[__instance] += electricChargeContainer.amountReadOut.Value; 
+                }
                 Debug.Log($"EMTR I2 {_initialElectricCharge[__instance]}");
             }
         }
@@ -206,7 +222,9 @@ namespace CCL.Importer.Implementations
         {
             __state = null;
             if (__instance == null)
-                return;
+            { 
+                return; 
+            }
 
             // Reset the start and snapshot values of the debt component to vanilla settings for consistency
             foreach (DebtComponent currentFee in __instance.GetTrackedDebts())
@@ -215,10 +233,14 @@ namespace CCL.Importer.Implementations
                 { 
                     Debug.Log($"EMTR U1 {currentFee.StartValue} {_initialElectricCharge[__instance]} {currentFee.HasSnapshot} {currentFee.SnapshotValue}");
                     if (currentFee.HasSnapshot)
-                        __state = currentFee.StartValue - currentFee.SnapshotValue;
+                    { 
+                        __state = currentFee.StartValue - currentFee.SnapshotValue; 
+                    }
                     currentFee.UpdateStartValue(_initialElectricCharge[__instance]);
                     if (__state != null)
-                        currentFee.SetSnapshot(currentFee.StartValue - (float) __state);
+                    { 
+                        currentFee.SetSnapshot(currentFee.StartValue - (float) __state); 
+                    }
                     break;
                 }
             }
@@ -229,7 +251,9 @@ namespace CCL.Importer.Implementations
         private static void UpdateDebtValuesPostfix(SimulatedCarDebtTracker? __instance, float? __state)
         {
             if (__instance == null)
-                return;
+            { 
+                return; 
+            }
             foreach (DebtComponent currentFee in __instance.GetTrackedDebts())
             {
                 if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.TryGetValue(__instance, out ElectricityMeter meter))
@@ -237,13 +261,17 @@ namespace CCL.Importer.Implementations
                     float newEndValue = currentFee.EndValue - Mathf.Max((float) meter._energyConsumed, 0.0f);
                     float minimum = (__state != null) ? Mathf.Min(newEndValue, currentFee.SnapshotValue) : newEndValue;
                     if (minimum >= 0.0f)
-                        currentFee.UpdateEndValue(newEndValue);
+                    { 
+                        currentFee.UpdateEndValue(newEndValue); 
+                    }
                     else
                     {
                         currentFee.UpdateEndValue(0.0f);
                         currentFee.UpdateStartValue(_initialElectricCharge[__instance] - minimum);
                         if (__state != null)
-                            currentFee.SetSnapshot(currentFee.StartValue - (float) __state);
+                        { 
+                            currentFee.SetSnapshot(currentFee.StartValue - (float) __state); 
+                        }
                     }
                     Debug.Log($"EMTR U2 {currentFee.StartValue} {currentFee.EndValue} {currentFee.StartToEndDiff} {__state?.ToString() ?? "<null>"}");
                     break;
@@ -251,14 +279,14 @@ namespace CCL.Importer.Implementations
             }
         }
 
-        [HarmonyPatch("ResetState"), HarmonyPostfix]
+        [HarmonyPatch("ResetState")]
+        [HarmonyPostfix]
         private static void ResetStatePostfix(SimulatedCarDebtTracker? __instance)
         {
             if (__instance != null && _feeTrackers.TryGetValue(__instance, out ElectricityMeter meter))
             {
-                meter._energyConsumed               = 0.0;
+                meter._energyConsumed = 0.0;
                 meter._electricChargeConsumed.Value = 0.0f;
-                //meter._masterFuse?.ChangeState(false);
             }
         }
     }

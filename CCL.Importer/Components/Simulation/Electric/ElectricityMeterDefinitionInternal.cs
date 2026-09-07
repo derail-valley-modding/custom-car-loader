@@ -5,17 +5,15 @@ using LocoSim.Implementations;
 
 namespace CCL.Importer.Components.Simulation.Electric
 {
-	public class ElectricityMeterDefinitionInternal : SimComponentDefinition
-	{
-		public float electricChargeConsumptionFactor;
+    public class ElectricityMeterDefinitionInternal : SimComponentDefinition
+    {
+        public float electricChargeConsumptionFactor;
 
-		public string masterControlFuseId = string.Empty;
+        public readonly PortDefinition electricChargeConsumed = new(PortType.READONLY_OUT, PortValueType.ELECTRIC_CHARGE, "ENERGY_CONSUMED");
 
-		public readonly PortDefinition electricChargeConsumed = new(PortType.READONLY_OUT, PortValueType.ELECTRIC_CHARGE, "ENERGY_CONSUMED");
+        public readonly PortReferenceDefinition supplyVoltage = new(PortValueType.VOLTS, "SUPPLY_VOLTAGE", false);
+        public readonly PortReferenceDefinition currentDraw = new(PortValueType.AMPS,"CURRENT_DRAW", false);
 
-		public readonly PortReferenceDefinition supplyVoltage = new(PortValueType.VOLTS, "SUPPLY_VOLTAGE", writeAllowed: false);
-		public readonly PortReferenceDefinition currentDraw   = new(PortValueType.AMPS ,   "CURRENT_DRAW", writeAllowed: false);
-
-		public override SimComponent InstantiateImplementation() => new ElectricityMeter(this);
-	}
+        public override SimComponent InstantiateImplementation() => new ElectricityMeter(this);
+    }
 }
