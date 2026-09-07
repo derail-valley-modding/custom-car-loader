@@ -197,6 +197,7 @@ namespace CCL.Importer.Components.Controllers
             { 
                 return; 
             }
+
             float inputCurrent = _inputCurrent!.Value;
             if (float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
             {
