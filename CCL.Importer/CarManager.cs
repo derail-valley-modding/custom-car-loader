@@ -59,6 +59,13 @@ namespace CCL.Importer
         {
             if (newState)
             {
+                if (CCLPlugin.IsBadNumberManager(modEntry))
+                {
+                    CCLPlugin.Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
+                    LoadFailures.Add("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
+                    ObjectHelper.CreateFailuresHolder();
+                }
+
                 LoadCarDefinitions(modEntry);
             }
         }

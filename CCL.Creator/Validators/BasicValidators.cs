@@ -65,6 +65,30 @@ namespace CCL.Creator.Validators
                 result.Warning("Livery can spawn in the world but is also set as a work train, this can result in unintended behaviour", livery);
             }
 
+            // Demo stuff checks.
+            if (livery.UseCustomPartsModel)
+            {
+                if (livery.PartsCargoPrefabDM1U == null)
+                {
+                    result.Warning($"Livery '{livery.id}' is set to use custom demonstrator parts model, but has no prefab to load on the DM1U-150",
+                        livery, nameof(livery.PartsCargoPrefabDM1U));
+                }
+                else
+                {
+                    CargoValidator.CheckModelVariant(result, livery.PartsCargoPrefabDM1U);
+                }
+
+                if (livery.PartsCargoPrefabFlatbed == null)
+                {
+                    result.Warning($"Livery '{livery.id}' is set to use custom demonstrator parts model, but has no prefab to load on the Utility Flatbed",
+                        livery, nameof(livery.PartsCargoPrefabFlatbed));
+                }
+                else
+                {
+                    CargoValidator.CheckModelVariant(result, livery.PartsCargoPrefabFlatbed);
+                }
+            }
+
             return result;
         }
     }

@@ -75,9 +75,9 @@ namespace CCL.Types
         [Tooltip("Spawn this livery in express routes in Passenger Jobs")]
         public bool AllowOnExpressRoutes = true;
         [Space]
-        [Tooltip("Cost to order replacement parts for this vehicle during a demonstrator quest")]
+        [Tooltip("Cost to order replacement parts for this vehicle during a demonstrator quest"), Min(0)]
         public float DemonstratorPartsOrderCost = 15000.0f;
-        [Tooltip("Cost to install replacement parts for this vehicle during a demonstrator quest")]
+        [Tooltip("Cost to install replacement parts for this vehicle during a demonstrator quest"), Min(0)]
         public float DemonstratorPartsInstallationCost = 10000.0f;
         [Tooltip("Texture to use in the museum posters for this vehicle")]
         public Texture2D? DemonstratorPoster;
@@ -115,6 +115,9 @@ namespace CCL.Types
 
                 if (externalInteractablesPrefab != null) yield return externalInteractablesPrefab;
                 if (explodedExternalInteractablesPrefab != null) yield return explodedExternalInteractablesPrefab;
+
+                if (PartsCargoPrefabDM1U != null) yield return PartsCargoPrefabDM1U;
+                if (PartsCargoPrefabFlatbed != null) yield return PartsCargoPrefabFlatbed;
             }
         }
 

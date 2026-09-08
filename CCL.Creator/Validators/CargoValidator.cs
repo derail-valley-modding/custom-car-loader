@@ -58,7 +58,7 @@ namespace CCL.Creator.Validators
             return result;
         }
 
-        private void CheckModelVariant(ValidationResult result, GameObject model)
+        public static void CheckModelVariant(ValidationResult result, GameObject model)
         {
             // Check colliders.
             var collidersRoot = model.transform.FindSafe(CarPartNames.Colliders.ROOT);
