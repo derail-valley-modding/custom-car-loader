@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
 using UnityEngine;
 
 using LocoSim.Implementations;
@@ -78,47 +75,36 @@ namespace CCL.Importer.Implementations
 
         private void CheckInitialHeight(float initialHeight)
         {
-            if (_disabled)
+            if (!_disabled)
             { 
-                return; 
+                if (_maximumRaise <= initialHeight)
+                {
+                    CCLPlugin.Error("Maximum reach is below initial position, pantograph disabled");
+                    _disabled = true;
+                    return;
+                }
+                _minimumRaise = initialHeight;
+                _maximumRaiseDifference = _maximumRaise - initialHeight;
             }
-            if (_maximumRaise <= initialHeight)
-            {
-                CCLPlugin.Error("Maximum reach is below initial position, pantograph disabled");
-                _disabled = true;
-                return;
-            }
-            _minimumRaise = initialHeight;
-            _maximumRaiseDifference = _maximumRaise - initialHeight;
         }
         
         private void OnCarDestroyed(TrainCar unit)
         {
-            if (unit == null || !_allPantographs.ContainsKey(unit))
+            if (unit != null && _allPantographs.ContainsKey(unit))
             { 
-                return; 
+                unit.OnDestroyCar -= OnCarDestroyed;
+                foreach (Pantograph currentPantograph in _allPantographs[unit])
+                {
+                    currentPantograph._disabled = true;
+                    currentPantograph._initialHeadHeight.ValueUpdatedInternally -= currentPantograph.CheckInitialHeight;
+                }
+                _allPantographs[unit].Clear();
+                _allPantographs.Remove(unit);
             }
-            unit.OnDestroyCar -= OnCarDestroyed;
-            foreach (Pantograph currentPantograph in _allPantographs[unit])
-            {
-                currentPantograph._disabled = true;
-                currentPantograph._initialHeadHeight.ValueUpdatedInternally -= currentPantograph.CheckInitialHeight;
-            }
-            _allPantographs[unit].Clear();
-            _allPantographs.Remove(unit);
         }
 
-        private bool IsInContact(float wireHeight, bool pantographOn)
-        {
-            return wireHeight >= 0.0f && Mathf.Abs(wireHeight - _headHeight.Value) <= _contactTolerance;
-        }
-        
         private void Move(float delta, float raiseHeight, bool pantographOn)
         {
-            if (_disabled)
-            { 
-                return; 
-            }
             float currentRaise = _raiseReadOut.Value + _minimumRaise;
             float targetRaise, raiseDifference;
             if (pantographOn)
@@ -165,7 +151,7 @@ namespace CCL.Importer.Implementations
                 raiseHeight = (wireHeight > 0.0f) ? wireHeight : _maximumRaise; 
             }
             Move(delta, raiseHeight, pantographOn);
-            if (!IsInContact(wireHeight, pantographOn))
+            if (wireHeight <= 0.0f || Mathf.Abs(wireHeight - _headHeight.Value) > _contactTolerance)
             {
                 _inContact.Value = _voltageReadOut.Value = 0.0f;
             }
@@ -174,6 +160,6 @@ namespace CCL.Importer.Implementations
                 _inContact.Value = 1.0f;
                 _voltageReadOut.Value = _wireVoltage.Value;
             }
-		}
+        }
     }
 }
