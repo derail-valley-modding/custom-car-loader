@@ -66,6 +66,19 @@ namespace CCL.Creator.Validators
             }
 
             // Demo stuff checks.
+            if (livery.DemonstratorPoster != null)
+            {
+                var poster = livery.DemonstratorPoster;
+                if (poster.height != poster.width)
+                {
+                    result.Fail($"Livery '{livery.id}' demonstrator poster is not a square texture");
+                }
+                else if (poster.height != 512 || poster.width != 512)
+                {
+                    result.Warning($"Livery '{livery.id}' demonstrator poster size should be 512x512px");
+                }
+            }
+
             if (livery.UseCustomPartsModel)
             {
                 if (livery.PartsCargoPrefabDM1U == null)

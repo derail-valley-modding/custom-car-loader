@@ -83,7 +83,9 @@ namespace CCL.Types
         public TranslationData DemonstratorPartName = new TranslationData();
         [Tooltip("The shortened name of the demonstrator parts cargo")]
         public TranslationData DemonstratorPartNameShort = new TranslationData();
-        [Tooltip("Texture to use in the museum posters for this vehicle")]
+        [Tooltip("Texture to use in the museum posters for this vehicle\n" +
+            "The texture size should be a 512x512px square\n" +
+            "The top 112px will be hidden behind the name box of the poster")]
         public Texture2D? DemonstratorPoster;
         [Tooltip("Livery icon for the demonstrator paint")]
         public Sprite? DemonstratorIcon;
