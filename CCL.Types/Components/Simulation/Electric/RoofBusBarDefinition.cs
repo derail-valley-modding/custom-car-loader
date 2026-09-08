@@ -13,7 +13,7 @@ namespace CCL.Types.Components.Simulation.Electric
         [Min(1.0f), Tooltip("Used to calculate normalized voltage port")]
         public float nominalVoltage = 1500.0f;
         
-        [Delayed]
+        [Min(1), Delayed]
         public int pantographCount = 1;
         
         private PortReferenceDefinition[]? _allInputs;
