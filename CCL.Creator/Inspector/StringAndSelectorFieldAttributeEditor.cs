@@ -126,6 +126,12 @@ namespace CCL.Creator.Inspector
         {
             // Add passengers as an extra custom option always.
             var options = new HashSet<string> { OtherMods.PassengerJobs.CARGO_ID };
+
+            if (CCLEditorSettings.Settings.IncludeIdsFromOtherMods)
+            {
+                options.UnionWith(OtherMods.CustomCargoIds);
+            }
+
             options.UnionWith(CCLEditorSettings.Settings.ExtraCargos);
             OnGUIWithExtraOptions(position, property, label, options);
         }

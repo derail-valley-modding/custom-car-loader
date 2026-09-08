@@ -329,7 +329,7 @@ namespace CCL.Creator.Wizards
 
         #region Mass Visualiser
 
-        private static Dictionary<string, float> s_massMap = new Dictionary<string, float>()
+        private static readonly Dictionary<string, float> s_massMap = new Dictionary<string, float>()
         {
             { "Coal", 56000 },
             { "IronOre", 62000 },
@@ -438,10 +438,75 @@ namespace CCL.Creator.Wizards
             { "EmptyChemlek", 6000 },
             { "EmptyNeoGamma", 6000 },
             // Pax mod.
-            { OtherMods.PassengerJobs.CARGO_ID, OtherMods.PassengerJobs.CARGO_MASS }
+            { OtherMods.PassengerJobs.CARGO_ID, OtherMods.PassengerJobs.CARGO_MASS },
+            // Other cargo mods.
+            { OtherMods.GenericContainerCargo.EMPTY_ID, OtherMods.GenericContainerCargo.EMPTY_MASS },
+            { OtherMods.GenericContainerCargo.CHEMICALS_ID, OtherMods.GenericContainerCargo.CHEMICALS_MASS },
+            { OtherMods.GenericContainerCargo.CLOTHING_ID, OtherMods.GenericContainerCargo.CLOTHING_MASS },
+            { OtherMods.GenericContainerCargo.ELECTRONICS_ID, OtherMods.GenericContainerCargo.ELECTRONICS_MASS },
+            { OtherMods.GenericContainerCargo.TOOLING_ID, OtherMods.GenericContainerCargo.TOOLING_MASS },
+        };
+        private static readonly Dictionary<string, int> s_unitMap = new Dictionary<string, int>()
+        {
+            { "ScrapContainers", 1 },
+            { "ElectronicsIskar", 1 },
+            { "ElectronicsKrugmann", 1 },
+            { "ElectronicsAAG", 1 },
+            { "ElectronicsNovae", 1 },
+            { "ElectronicsTraeg", 1 },
+            { "ToolsIskar", 1 },
+            { "ToolsBrohm", 1 },
+            { "ToolsAAG", 1 },
+            { "ToolsNovae", 1 },
+            { "ToolsTraeg", 1 },
+            { "ClothingObco", 1 },
+            { "ClothingNeoGamma", 1 },
+            { "ClothingNovae", 1 },
+            { "ClothingTraeg", 1 },
+            { "ChemicalsIskar", 1 },
+            { "ChemicalsSperex", 1 },
+            { "NewCars", 10 },
+            { "ImportedNewCars", 8 },
+            { "Tractors", 3 },
+            { "Excavators", 1 },
+            { "MiningTrucks", 1 },
+            { "CityBuses", 1 },
+            { "SemiTrailers", 1 },
+            { "Trams", 1 },
+            { "ForestryTrailers", 2 },
+            { "Tanks", 1 },
+            { "MilitaryTrucks", 2 },
+            { "AttackHelicopsters", 1 },
+            { "Missiles", 1 },
+            { "MilitaryCars", 3 },
+            { "TrainPartsDE2", 1 },
+            { "TrainPartsDE6", 1 },
+            { "TrainPartsDH4", 1 },
+            { "TrainPartsDM3", 1 },
+            { "TrainPartsS060", 1 },
+            { "TrainPartsS282A", 1 },
+            { "EmptySunOmni", 1 },
+            { "EmptyIskar", 1 },
+            { "EmptyObco", 1 },
+            { "EmptyGoorsk", 1 },
+            { "EmptyKrugmann", 1 },
+            { "EmptyBrohm", 1 },
+            { "EmptyAAG", 1 },
+            { "EmptySperex", 1 },
+            { "EmptyNovae", 1 },
+            { "EmptyTraeg", 1 },
+            { "EmptyChemlek", 1 },
+            { "EmptyNeoGamma", 1 },
+            // Pax mod.
+            { OtherMods.PassengerJobs.CARGO_ID, 68 },
+            // Other cargo mods.
+            { OtherMods.GenericContainerCargo.EMPTY_ID, 1 },
+            { OtherMods.GenericContainerCargo.CHEMICALS_ID, 1 },
+            { OtherMods.GenericContainerCargo.CLOTHING_ID, 1 },
+            { OtherMods.GenericContainerCargo.ELECTRONICS_ID, 1 },
+            { OtherMods.GenericContainerCargo.TOOLING_ID, 1 },
         };
 
-        private const int DefaultPassengerCount = 68;
         private const float Size1 = 100;
         private const float Size2 = 70;
 
@@ -476,6 +541,7 @@ namespace CCL.Creator.Wizards
             }
 
             EditorGUILayout.EndScrollView();
+            EditorGUIUtility.labelWidth = 0;
             GUI.enabled = HasSetup;
 
             if (GUILayout.Button("Reset All to Default") && _setup != null)
@@ -514,26 +580,26 @@ namespace CCL.Creator.Wizards
 
             EditorGUILayout.EndHorizontal();
 
-            if (entry.CargoId == OtherMods.PassengerJobs.CARGO_ID)
+            if (s_unitMap.TryGetValue(entry.CargoId, out var units))
             {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                var paxCount = EditorGUILayout.IntField("Number of Passengers", Mathf.RoundToInt(entry.AmountPerCar * DefaultPassengerCount));
+                var count = EditorGUILayout.IntField("Units", Mathf.RoundToInt(entry.AmountPerCar * units));
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    entry.AmountPerCar = (float)paxCount / DefaultPassengerCount;
+                    entry.AmountPerCar = (float)count / units;
                 }
 
-                EditorGUILayout.Space(Size1 - 16);
+                EditorGUILayout.LabelField(string.Empty, _widthMassColumn);
                 EditorGUILayout.EndHorizontal();
                 EditorGUI.indentLevel--;
             }
 
             // Amount can't be less than 0.
             entry.AmountPerCar = Mathf.Max(0, entry.AmountPerCar);
-            EditorGUIUtility.labelWidth = 0;
+            EditorGUILayout.Space();
         }
 
         #endregion
