@@ -85,10 +85,15 @@ namespace CCL.Importer.Implementations
             {
                 for (int pantographIndex = 0; pantographIndex < _inContact.Length; pantographIndex++)
                 {
-                    _inContact[pantographIndex] = _inputsFromPantographs[pantographIndex * 2].GetPort();
-                    Action<float> ContactHandler = CreateContactHandler(pantographIndex);
-                    _inContact[pantographIndex].ValueUpdatedInternally += ContactHandler;
-                    ContactHandler(_inContact[pantographIndex].Value);
+                    Port? inContactPort = _inContact[pantographIndex] = _inputsFromPantographs[pantographIndex * 2].GetPort();
+                    if (inContactPort == null || !_pantographVoltages[pantographIndex].IsConnected)
+                        CCLPlugin.Warning($"Empty pantograph connection {pantographIndex} to bus bar");
+                    else
+                    {
+                        Action<float> ContactHandler = CreateContactHandler(pantographIndex);
+                        inContactPort.ValueUpdatedInternally += ContactHandler;
+                        ContactHandler(inContactPort.Value);
+                    }
                 }
             }
         }
