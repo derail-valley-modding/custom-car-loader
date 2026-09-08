@@ -38,25 +38,5 @@ namespace CCL.Types.Components.Simulation.Electric
         {
             new FuseIdField(this, nameof(powerFuseId), powerFuseId, true)
         };
-
-        /*
-        public SelfValidationResult Validate(out string message, out string? highlight)
-        {
-            if (pantographBase == null)
-                return this.FailForNull(nameof(pantographBase), out message, out highlight);
-            if (contactStripFirstEnd == null)
-                return this.FailForNull(nameof(contactStripFirstEnd), out message, out highlight);
-            if (contactStripSecondEnd == null)
-                return this.FailForNull(nameof(contactStripSecondEnd), out message, out highlight);
-            float initialHeight = Mathf.Max(contactStripFirstEnd.position.y, contactStripSecondEnd.position.y);
-            if (maximumRaise <= initialHeight)
-            {
-                message = $"{nameof(maximumRaise)} is below pantograph's initial position ({initialHeight})";
-                highlight = nameof(maximumRaise);
-                return SelfValidationResult.Fail;
-            }
-            return this.Pass(out message, out highlight);
-        }
-        */
     }
 }

@@ -8,7 +8,7 @@ using CCL.Types.Proxies.Ports;
 namespace CCL.Types.Components.Controllers
 {
     [AddComponentMenu("CCL/Components/Controllers/Pantograph Sim Controller")]
-    public class PantographSimController : MonoBehaviour, IHasPortIdFields
+    public class PantographSimController : MonoBehaviour, IHasPortIdFields, ISelfValidation
     {
         public Transform? pantographBase;
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
@@ -37,6 +37,29 @@ namespace CCL.Types.Components.Controllers
             new PortIdField(this, nameof(wireVoltagePortId), wireVoltagePortId, DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS),
             new PortIdField(this, nameof(inputCurrentPortId), inputCurrentPortId, DVPortValueType.AMPS)
         };
+
+        public SelfValidationResult Validate(out string message, out string? highlight)
+        {
+            if (pantographBase == null)
+                return this.FailForNull(nameof(pantographBase), out message, out highlight);
+            if (contactStripFirstEnd == null)
+                return this.FailForNull(nameof(contactStripFirstEnd), out message, out highlight);
+            if (contactStripSecondEnd == null)
+                return this.FailForNull(nameof(contactStripSecondEnd), out message, out highlight);
+            if (pantographBase == contactStripFirstEnd || pantographBase == contactStripSecondEnd)
+            {
+                message = "pantographBase should not be identical to contactStripFirstEnd or contactStripSecondEnd";
+                highlight = "pantographBase";
+                return SelfValidationResult.Warning;
+            }
+            if (contactStripFirstEnd == contactStripSecondEnd)
+            {
+                message = "contactStripFirstEnd and contactStripSecondEnd should not be identical";
+                highlight = "contactStripFirstEnd and contactStripSecondEnd";
+                return SelfValidationResult.Warning;
+            }
+            return this.Pass(out message, out highlight);
+        }
 
         public void ConnectPantograph(PantographDefinition pantographProxy)
         {
