@@ -243,6 +243,8 @@ namespace CCL.Creator.Wizards
             livery.FrontBogie = GetBogieFromBase(settings.BaseCarType);
             livery.RearBogie = livery.FrontBogie;
             livery.parentType = carType;
+            livery.DemonstratorPartName = TranslationData.Default($"{settings.Name} Drivetrain");
+            livery.DemonstratorPartNameShort = TranslationData.Default($"{settings.Name} Drivetrain");
 
             carType.liveries = new List<CustomCarVariant>() { livery };
             carType.ForceValidation();

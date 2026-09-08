@@ -38,6 +38,9 @@ namespace CCL.Importer
                     CCLPlugin.Translations.AddTranslations(livery.CatalogPageNameTranslationKey, livery.CatalogPage.PageName);
                     CCLPlugin.Translations.AddTranslations(livery.CatalogNicknameTranslationKey, livery.CatalogPage.Nickname);
                 }
+
+                CCLPlugin.Translations.AddTranslations(livery.DemoPartsNameTranslationKey, livery.DemonstratorPartName);
+                CCLPlugin.Translations.AddTranslations(livery.DemoPartsNameShortTranslationKey, livery.DemonstratorPartNameShort);
             }
 
             CargoInjector.InjectLoadableCargos(carType);

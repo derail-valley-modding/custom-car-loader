@@ -79,6 +79,10 @@ namespace CCL.Types
         public float DemonstratorPartsOrderCost = 15000.0f;
         [Tooltip("Cost to install replacement parts for this vehicle during a demonstrator quest"), Min(0)]
         public float DemonstratorPartsInstallationCost = 10000.0f;
+        [Tooltip("The name of the demonstrator parts cargo")]
+        public TranslationData DemonstratorPartName = new TranslationData();
+        [Tooltip("The shortened name of the demonstrator parts cargo")]
+        public TranslationData DemonstratorPartNameShort = new TranslationData();
         [Tooltip("Texture to use in the museum posters for this vehicle")]
         public Texture2D? DemonstratorPoster;
         [Tooltip("Livery icon for the demonstrator paint")]
@@ -93,6 +97,10 @@ namespace CCL.Types
         public GameObject? PartsCargoPrefabFlatbed;
         [Tooltip("The mass of the parts cargo")]
         public float PartsCargoMass = 10000.0f;
+        [SerializeField, HideInInspector]
+        private string? _demoPartNameJson = string.Empty;
+        [SerializeField, HideInInspector]
+        private string? _demoPartNameShortJson = string.Empty;
 
         [RenderMethodButtons, SerializeField]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
@@ -136,6 +144,8 @@ namespace CCL.Types
             NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
 
             _spawnGroupJson = JSONObject.ToJson(LocoSpawnGroups);
+            _demoPartNameJson = JSONObject.ToJson(DemonstratorPartName);
+            _demoPartNameShortJson = JSONObject.ToJson(DemonstratorPartNameShort);
         }
 
         public void ForceValidation()
@@ -171,6 +181,8 @@ namespace CCL.Types
             }
 
             LocoSpawnGroups = JSONObject.FromJson(_spawnGroupJson, () => LocoSpawnGroups);
+            DemonstratorPartName = JSONObject.FromJson(_demoPartNameJson, () => TranslationData.Default());
+            DemonstratorPartNameShort = JSONObject.FromJson(_demoPartNameShortJson, () => TranslationData.Default());
         }
     }
 }
