@@ -1,20 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-using CCL.Importer.Implementations;
-using CCL.Types.Proxies.Ports;
-
-using DV.Simulation.Controllers;
-
-using LocoSim.Implementations;
 
 using UnityEngine;
 
-using static UnityEngine.UI.CanvasScaler;
+using DV.Simulation.Controllers;
+using LocoSim.Implementations;
+
+using CCL.Types.Proxies.Ports;
 
 namespace CCL.Importer.Components.Controllers
 {
@@ -39,6 +32,7 @@ namespace CCL.Importer.Components.Controllers
 
         public Transform? pantographBase;
         public Transform? contactStripFirstEnd, contactStripSecondEnd;
+        public float contactTolerance = 0.2f;
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
         public string initialHeightPortId = string.Empty;
@@ -48,12 +42,14 @@ namespace CCL.Importer.Components.Controllers
         public string wireHeightPortId = string.Empty;
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, true)]
         public string wireVoltagePortId = string.Empty;
+        [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, true)]
+        public string isInContactPortId = string.Empty;
         [PortId(DVPortValueType.AMPS)]
         public string inputCurrentPortId = string.Empty;
 
         private Func<Transform, Transform, Transform, Transform, float, (float?, float)>? GetWireHeightAndVoltage = null;
         private TrainCar? _unit;
-        private Port? _initialHeadHeight, _headHeight, _wireHeight, _wireVoltage, _inputCurrent;
+        private Port? _initialHeadHeight, _headHeight, _wireHeight, _wireVoltage, _inContact, _inputCurrent;
         private Vector3 _lastTipPosition = new(0.0f, float.MinValue, 0.0f);
         private float _lastHeadMidpointHeight;
 
@@ -156,6 +152,7 @@ namespace CCL.Importer.Components.Controllers
                 !simFlow.TryGetPort(headHeightPortId, out _headHeight) ||
                 !simFlow.TryGetPort(wireHeightPortId, out _wireHeight) ||
                 !simFlow.TryGetPort(wireVoltagePortId, out _wireVoltage) ||
+                !simFlow.TryGetPort(isInContactPortId, out _inContact) ||
                 !simFlow.TryGetPort(inputCurrentPortId, out _inputCurrent))
             { 
                 Debug.LogError($"Referenced ports not set, pantograph sim controller disabled", this);
@@ -198,18 +195,28 @@ namespace CCL.Importer.Components.Controllers
                 return; 
             }
 
-            float inputCurrent = _inputCurrent!.Value;
+            float inputCurrent = (_inContact!.Value >= 0.5f) ? _inputCurrent!.Value : 0.0f;
             if (float.IsNaN(inputCurrent) || float.IsInfinity(inputCurrent))
             {
                 inputCurrent = 0.0f;
             }
-            bool headPositionChanged;
-            (_headHeight!.Value, headPositionChanged) = GetHeadMidpointHeight();
+            (float headHeight, bool headPositionChanged) = GetHeadMidpointHeight();
+            _headHeight!.Value = headHeight;
             if (Mathf.Abs(inputCurrent) > 0.1f || headPositionChanged)
             {
                 float? wireHeight;
                 (wireHeight, _wireVoltage!.Value) = GetWireHeightAndVoltage(_unit!.transform, pantographBase!, contactStripFirstEnd!, contactStripSecondEnd!, inputCurrent);
-                _wireHeight!.Value = wireHeight ?? -1.0f;
+                if (wireHeight == null)
+                {
+                    _wireHeight!.Value = -1.0f;
+                    _inContact.Value = 0.0f;
+                }
+                else
+                {
+                    float realWireHeight = (float) wireHeight;
+                    _wireHeight!.Value = realWireHeight;
+                    _inContact.Value = (Mathf.Abs(realWireHeight - headHeight) <= contactTolerance) ? 1.0f : 0.0f;
+                }
             }
         }
 

@@ -14,9 +14,6 @@ namespace CCL.Types.Components.Simulation.Electric
         [Min(0.0f), Tooltip("Maximum reach height. The minimum height is taken from initial position. Must match the reach from pantograph animation")]
         public float maximumRaise;
 
-        [Min(0.01f), Tooltip("Maximum vertical offset between wire and strip midpoint for a contact to register")]
-        public float contactTolerance = 0.2f;
-
         [FuseId(true)]
         public string powerFuseId = string.Empty;
 
@@ -26,10 +23,10 @@ namespace CCL.Types.Components.Simulation.Electric
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, "INITIAL_HEAD_HEIGHT"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, "HEAD_HEIGHT"),
             new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, "WIRE_VOLTAGE"),
+            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "PANTOGRAPH_IN_CONTACT"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPH_RAISE"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPH_RAISE_NORMALIZED"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.STATE, "PANTOGRAPH_IN_CONTACT")
+            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPH_RAISE_NORMALIZED")
         };
 
         public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => new[]

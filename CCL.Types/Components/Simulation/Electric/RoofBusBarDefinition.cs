@@ -1,13 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using UnityEngine;
 
 using CCL.Types.Json;
 using CCL.Types.Proxies.Ports;
-
-using UnityEngine;
 
 namespace CCL.Types.Components.Simulation.Electric
 {
@@ -20,11 +16,12 @@ namespace CCL.Types.Components.Simulation.Electric
         [Delayed]
         public int pantographCount = 1;
         
-        private PortReferenceDefinition[]? _inputsFromPantographs;
+        private PortReferenceDefinition[]? _allInputs;
+        
         [SerializeField, HideInInspector]
         private string? _savedInputs;
 
-        public PortReferenceDefinition[]? inputsFromPantographs => _inputsFromPantographs;
+        public PortReferenceDefinition[]? allInputs => _allInputs;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
@@ -34,27 +31,28 @@ namespace CCL.Types.Components.Simulation.Electric
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPHS_RAISED_COUNT")
         };
 
-        public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => _inputsFromPantographs ?? base.ExposedPortReferences;
+        public override IEnumerable<PortReferenceDefinition> ExposedPortReferences => _allInputs ?? base.ExposedPortReferences;
 
         public override void OnValidate()
         {
             base.OnValidate();
 
-            if (_inputsFromPantographs == null || _inputsFromPantographs.Length != pantographCount)
+            if (_allInputs == null || _allInputs.Length != pantographCount)
             {
-                _inputsFromPantographs = new PortReferenceDefinition[pantographCount * 2];
+                _allInputs = new PortReferenceDefinition[pantographCount * 2 + 1];
                 for (int pantograph = 0; pantograph < pantographCount; pantograph++)
                 {
-                    _inputsFromPantographs[pantograph * 2] = new PortReferenceDefinition(DVPortValueType.STATE, $"PANTOGRAPH_IN_CONTACT_{pantograph}");
-                    _inputsFromPantographs[pantograph * 2 + 1] = new PortReferenceDefinition(DVPortValueType.VOLTS, $"PANTOGRAPH_VOLTAGE_{pantograph}");
+                    _allInputs[pantograph * 2] = new PortReferenceDefinition(DVPortValueType.STATE, $"PANTOGRAPH_IN_CONTACT_{pantograph}");
+                    _allInputs[pantograph * 2 + 1] = new PortReferenceDefinition(DVPortValueType.VOLTS, $"PANTOGRAPH_VOLTAGE_{pantograph}");
                 }
+                _allInputs[pantographCount * 2] = new PortReferenceDefinition(DVPortValueType.AMPS, "CURRENT_DRAW");
             }
-            _savedInputs = JSONObject.ToJson(_inputsFromPantographs);
+            _savedInputs = JSONObject.ToJson(_allInputs);
         }
         
         public void AfterImport()
         {
-            _inputsFromPantographs = string.IsNullOrWhiteSpace(_savedInputs) ? null : JSONObject.FromJson<PortReferenceDefinition[]>(_savedInputs);
+            _allInputs = string.IsNullOrWhiteSpace(_savedInputs) ? null : JSONObject.FromJson<PortReferenceDefinition[]>(_savedInputs);
         }
     }
 }

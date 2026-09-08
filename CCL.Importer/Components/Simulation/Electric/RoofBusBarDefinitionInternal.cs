@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using UnityEngine;
-
-using CCL.Importer.Implementations;
-
 using LocoSim.Definitions;
 using LocoSim.Implementations;
+
+using CCL.Importer.Implementations;
 
 namespace CCL.Importer.Components.Simulation.Electric
 {
@@ -18,12 +10,12 @@ namespace CCL.Importer.Components.Simulation.Electric
         public float nominalVoltage = 1500.0f;
         public int pantographCount = 1;
 
-        public PortReferenceDefinition[]? inputsFromPantographs;
+        public PortReferenceDefinition[]? allInputs;
 
         public readonly PortDefinition supplyVoltage = new(PortType.READONLY_OUT, PortValueType.VOLTS, "SUPPLY_VOLTAGE");
         public readonly PortDefinition supplyVoltageNormalized = new(PortType.READONLY_OUT, PortValueType.VOLTS, "SUPPLY_VOLTAGE_NORMALIZED");
-        public readonly PortDefinition pantographsInputCurrent = new(PortType.READONLY_OUT, PortValueType.AMPS, "PANTOGRAPHS_INPUT_CURRENT");
-        public readonly PortDefinition raisedPantographsCount = new(PortType.READONLY_OUT, PortValueType.AMPS, "PANTOGRAPHS_RAISED_COUNT");
+        public readonly PortDefinition pantographInputCurrent = new(PortType.READONLY_OUT, PortValueType.AMPS, "PANTOGRAPH_INPUT_CURRENT");
+        public readonly PortDefinition raisedPantographsCount = new(PortType.READONLY_OUT, PortValueType.GENERIC, "PANTOGRAPHS_RAISED_COUNT");
         
         public override SimComponent InstantiateImplementation() => new RoofBusBar(this);
     }

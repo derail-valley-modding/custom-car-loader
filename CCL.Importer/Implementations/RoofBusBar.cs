@@ -1,15 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using UnityEngine;
 
-using CCL.Importer.Components.Simulation.Electric;
-using CCL.Types.Components.Simulation.Electric;
-
+using LocoSim.Definitions;
 using LocoSim.Implementations;
+
+using CCL.Importer.Components.Simulation.Electric;
 
 namespace CCL.Importer.Implementations
 {
@@ -19,7 +16,8 @@ namespace CCL.Importer.Implementations
         private readonly Port _supplyVoltage, _supplyVoltageNormalized, _pantographInputCurrent, _raisedCount;
         private readonly Port[]? _inContact;
         private readonly PortReference[]? _inputsFromPantographs, _pantographVoltages;
-        private readonly bool[]? _raisedPantographs;
+        private readonly PortReference? _currentDraw;
+        private readonly bool[]? _pantographRaised;
 
         private int _raisedPantographsCount = 0;
 
@@ -28,7 +26,7 @@ namespace CCL.Importer.Implementations
             return delegate (float contactState)
             {
                 bool nowInContact = contactState >= 0.5f;
-                if (_raisedPantographs![pantographIndex] != nowInContact)
+                if (_pantographRaised![pantographIndex] != nowInContact)
                 {
                     if (nowInContact)
                     {
@@ -39,40 +37,41 @@ namespace CCL.Importer.Implementations
                         _raisedCount.Value = --_raisedPantographsCount; 
                     }
                 }
-                _raisedPantographs[pantographIndex] = nowInContact;
-                Debug.Log($"RBB P{pantographIndex} {nowInContact} {_raisedPantographsCount}");
+                _pantographRaised[pantographIndex] = nowInContact;
             };
         }
 
         public RoofBusBar(RoofBusBarDefinitionInternal definition) : base(definition.ID)
         {
+            _nominalVoltage = definition.nominalVoltage;
+            
             _supplyVoltage = AddPort(definition.supplyVoltage);
             _supplyVoltageNormalized = AddPort(definition.supplyVoltageNormalized);
-            _pantographInputCurrent = AddPort(definition.pantographsInputCurrent);
+            _pantographInputCurrent = AddPort(definition.pantographInputCurrent);
             _raisedCount = AddPort(definition.raisedPantographsCount);
             
-            if (definition.nominalVoltage <= 0.0f)
+            if (_nominalVoltage <= 0.0f)
             { 
-                CCLPlugin.Error("Nominal voltage negative or zero, overhead power will not be collected"); 
+                CCLPlugin.Error("Bus bar nominal voltage negative or zero, overhead power will not be collected"); 
                 return;
             }
-            if (definition.inputsFromPantographs == null || definition.inputsFromPantographs.Length == 0)
+            if (definition.allInputs == null || definition.allInputs.Length < 3 || (definition.allInputs.Length & 1) == 0)
             { 
-                CCLPlugin.Error("Bus bar has no inputs set"); 
+                CCLPlugin.Error("Bus bar has no or invalid number of inputs, overhead power will not be collected"); 
                 return;
             }
             
+            PortReferenceDefinition[] allInputs = definition.allInputs;
+            int lastInputIndex = definition.allInputs.Length - 1;
             _inputsFromPantographs =
             (
-                from currentReference in definition.inputsFromPantographs
-                select AddPortReference(currentReference)
+                from index in Enumerable.Range(0, lastInputIndex)
+                select AddPortReference(allInputs[index])
             ).ToArray();
-            Debug.Log($"RBB {_inputsFromPantographs.Length}");
-            for (int index = 0; index < _inputsFromPantographs.Length; ++index)
-                Debug.Log($"RBB [{index}] {_inputsFromPantographs[index].id}");
+            _currentDraw = AddPortReference(allInputs[lastInputIndex]);
             int pantographsCount = _inputsFromPantographs.Length / 2;
             _inContact = new Port[pantographsCount];
-            _raisedPantographs = new bool[pantographsCount];
+            _pantographRaised = new bool[pantographsCount];
             _pantographVoltages = 
             (
                 from pantographIndex in Enumerable.Range(0, pantographsCount)
@@ -80,23 +79,40 @@ namespace CCL.Importer.Implementations
             ).ToArray();
         }
 
-		public override void InitializationAfterConnecting()
-		{
+        public override void InitializationAfterConnecting()
+        {
             if (_inputsFromPantographs != null && _inContact != null && _pantographVoltages != null)
             {
-                int pantographsCount = _inputsFromPantographs.Length / 2;
-                for (int pantographIndex = 0; pantographIndex < pantographsCount; pantographIndex++)
+                for (int pantographIndex = 0; pantographIndex < _inContact.Length; pantographIndex++)
                 {
                     _inContact[pantographIndex] = _inputsFromPantographs[pantographIndex * 2].GetPort();
                     Action<float> ContactHandler = CreateContactHandler(pantographIndex);
                     _inContact[pantographIndex].ValueUpdatedInternally += ContactHandler;
                     ContactHandler(_inContact[pantographIndex].Value);
-                    Debug.Log($"RBB [{pantographIndex}] {_inContact[pantographIndex]?.id ?? "<null>"} {_inContact[pantographIndex]?.type.ToString() ?? "<null>"} {_inContact[pantographIndex]?.valueType.ToString() ?? "<null>"} {_pantographVoltages[pantographIndex]?.id ?? "<null>"}");
                 }
             }
-		}
+        }
 
         public override void Tick(float delta)
-        {}
+        {
+            if (_raisedPantographsCount == 0)
+            {
+                _supplyVoltage.Value = _supplyVoltageNormalized.Value = _pantographInputCurrent.Value = 0.0f;
+            }
+            else
+            {
+                float voltage = 0.0f;
+                for (int pantographIndex = 0; pantographIndex < _pantographVoltages!.Length; pantographIndex++)
+                {
+                    if (_pantographRaised![pantographIndex])
+                    { 
+                        voltage = Mathf.Max(voltage, _pantographVoltages[pantographIndex].Value); 
+                    }
+                }
+                _supplyVoltage.Value = voltage;
+                _supplyVoltageNormalized.Value = voltage / _nominalVoltage;
+                _pantographInputCurrent.Value = _currentDraw!.Value / _raisedPantographsCount;
+            }
+        }
     }
 }

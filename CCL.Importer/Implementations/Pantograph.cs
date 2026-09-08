@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 using UnityEngine;
 
 using LocoSim.Implementations;
@@ -18,7 +19,7 @@ namespace CCL.Importer.Implementations
         private readonly PortReference _pantographToggle;
         private readonly TrainCar?  _unit;
 
-        private readonly float _maximumRaise, _headMovementSpeed, _contactTolerance;
+        private readonly float _maximumRaise, _headMovementSpeed;
         
         private bool _disabled = false;
         private float _minimumRaise = 0.0f, _maximumRaiseDifference;
@@ -27,7 +28,6 @@ namespace CCL.Importer.Implementations
         {
             _headMovementSpeed = definition.headMovementSpeed;
             _maximumRaise = definition.maximumRaise;
-            _contactTolerance  = definition.contactTolerance;
 
             _powerFuse = AddFuseReference(definition.powerFuseId);
 
@@ -151,15 +151,7 @@ namespace CCL.Importer.Implementations
                 raiseHeight = (wireHeight > 0.0f) ? wireHeight : _maximumRaise; 
             }
             Move(delta, raiseHeight, pantographOn);
-            if (wireHeight <= 0.0f || Mathf.Abs(wireHeight - _headHeight.Value) > _contactTolerance)
-            {
-                _inContact.Value = _voltageReadOut.Value = 0.0f;
-            }
-            else
-            {
-                _inContact.Value = 1.0f;
-                _voltageReadOut.Value = _wireVoltage.Value;
-            }
+            _voltageReadOut.Value = (_inContact.Value >= 0.5f) ? _wireVoltage.Value : 0.0f;
         }
     }
 }
