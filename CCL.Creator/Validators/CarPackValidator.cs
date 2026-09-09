@@ -285,7 +285,7 @@ namespace CCL.Creator.Validators
 
             if (PlayerSettings.colorSpace != UnityEngine.ColorSpace.Linear)
             {
-                _settingsResult.Warning("Colour space is not set to linear");
+                _settingsResult.Fail("Colour space is not set to linear");
                 _settingsResult.AddSettingsContextToLast("Project/Player");
             }
 
@@ -294,25 +294,25 @@ namespace CCL.Creator.Validators
 
             if (!PlayerSettings.virtualRealitySupported)
             {
-                _settingsResult.Warning("VR support isn't enabled");
+                _settingsResult.Fail("VR support isn't enabled");
                 _settingsResult.AddSettingsContextToLast("Project/Player");
             }
 
             string[] sdks = PlayerSettings.GetVirtualRealitySDKs(BuildTargetGroup.Standalone);
             if (!sdks.Contains("Oculus"))
             {
-                _settingsResult.Warning("Oculus support isn't enabled");
+                _settingsResult.Fail("Oculus support isn't enabled");
                 _settingsResult.AddSettingsContextToLast("Project/Player");
             }
             if (!sdks.Contains("OpenVR"))
             {
-                _settingsResult.Warning("OpenVR support isn't enabled");
+                _settingsResult.Fail("OpenVR support isn't enabled");
                 _settingsResult.AddSettingsContextToLast("Project/Player");
             }
 
             if (!PlayerSettings.singlePassStereoRendering)
             {
-                _settingsResult.Warning("VR Stereo Rendering Mode isn't set to Single Pass");
+                _settingsResult.Fail("VR Stereo Rendering Mode isn't set to Single Pass");
                 _settingsResult.AddSettingsContextToLast("Project/Player");
             }
 

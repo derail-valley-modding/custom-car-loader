@@ -1,5 +1,6 @@
 ﻿using CCL.Types;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -23,25 +24,24 @@ namespace CCL.Creator.Validators
             {
                 var cargo = car.CargoSetup.Entries[i];
 
-                if (cargo.AmountPerCar <= 0)
-                {
-                    result.Fail("Cannot have 0 or negative cargo amount per car");
-                }
-
                 if (string.IsNullOrWhiteSpace(cargo.CargoId))
                 {
-                    result.Fail("Cargo ID is empty");
+                    result.Fail("Cargo ID is empty", car.CargoSetup);
+                    continue;
+                }
+
+                if (cargo.AmountPerCar <= 0)
+                {
+                    result.Fail($"Cargo {cargo.CargoId} - Cannot have 0 or negative cargo amount per car", car.CargoSetup);
+                }
+
+                if (hashId.Contains(cargo.CargoId))
+                {
+                    result.Fail($"Repeated cargo ID '{cargo.CargoId}'", car.CargoSetup);
                 }
                 else
                 {
-                    if (hashId.Contains(cargo.CargoId))
-                    {
-                        result.Warning($"Repeated instance of cargo '{cargo.CargoId}'");
-                    }
-                    else
-                    {
-                        hashId.Add(cargo.CargoId);
-                    }
+                    hashId.Add(cargo.CargoId);
                 }
 
                 if (cargo.Models != null)
@@ -58,7 +58,7 @@ namespace CCL.Creator.Validators
             return result;
         }
 
-        private void CheckModelVariant(ValidationResult result, GameObject model)
+        public static void CheckModelVariant(ValidationResult result, GameObject model)
         {
             // Check colliders.
             var collidersRoot = model.transform.FindSafe(CarPartNames.Colliders.ROOT);
@@ -81,9 +81,17 @@ namespace CCL.Creator.Validators
             {
                 result.Warning($"Cargo {model.name} bounding {CarPartNames.Colliders.COLLISION} collider is missing", collidersRoot);
             }
-            else if (collision != null && InvalidOrigin(collision))
+            else if (collision != null)
             {
-                result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.COLLISION} is not at the local origin", model);
+                if (InvalidOrigin(collision))
+                {
+                    result.Warning($"Cargo {model.name} - {CarPartNames.Colliders.COLLISION} is not at the local origin", model);
+                }
+
+                if (collision.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
+                {
+                    result.Fail($"Cargo {model.name} - Non-convex mesh colliders are not supported for car collisions");
+                }
             }
 
             // Walkable collider.

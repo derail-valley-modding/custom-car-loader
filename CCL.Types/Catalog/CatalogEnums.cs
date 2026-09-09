@@ -19,16 +19,27 @@ namespace CCL.Types.Catalog
     public enum VehicleRole
     {
         None = 0,
+        [Tooltip("The vehicle can perform light shunting duties")]
         LightShunting = 10,
+        [Tooltip("The vehicle can perform heavy shunting duties")]
         HeavyShunting,
+        [Tooltip("The vehicle can perform light hauling duties")]
         LightHauling = 20,
+        [Tooltip("The vehicle can perform heavy hauling duties")]
         HeavyHauling,
+        [Tooltip("The vehicle supplies fuel/resources to another unit")]
         FuelSupply = 30,
+        [Tooltip("The vehicle transports specialised crew onboard itself")]
         CrewTransport = 40,
+        [Tooltip("The vehicle acts as support for a specialised crew")]
         CrewSupport,
+        [Tooltip("The vehicle transports passengers onboard itself")]
         PassengerTransport = 50,
+        [Tooltip("The vehicle transports freight onboard itself")]
         FreightTransport,
+        [Tooltip("The vehicle transports utilities/tools onboard itself")]
         UtilityTransport,
+        [Tooltip("The vehicle is used for track maintenance duties")]
         TrackMaintenance = 60
     }
 

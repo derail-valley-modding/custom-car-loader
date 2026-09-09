@@ -23,22 +23,33 @@ namespace CCL.Importer.Types
         public bool HideBackCoupler;
 
         public string[] TrainsetLiveries = new string[0];
-        public int MaxRepeatedSpawn = 0;
-        public bool AllowOnRegionalRoutes = true;
-        public bool AllowOnExpressRoutes = true;
         public LocoSpawnGroup[] LocoSpawnGroups = new LocoSpawnGroup[0];
         public bool UnlockableAsWorkTrain = false;
         public float UnlockPrice = 30000.0f;
         public float SummonPrice = 5000.0f;
-        public float DemonstratorPartsOrderCost = 0f;
-        public float DemonstratorPartsInstallationCost = 0f;
         public CatalogPage? CatalogPage = null;
+        public int MaxRepeatedSpawn = 0;
+        public bool AllowOnRegionalRoutes = true;
+        public bool AllowOnExpressRoutes = true;
+        public float DemonstratorPartsOrderCost = 15000.0f;
+        public float DemonstratorPartsInstallationCost = 10000.0f;
+        public TranslationData DemonstratorPartName = new();
+        public TranslationData DemonstratorPartNameShort = new();
+        public Texture2D? DemonstratorPoster;
+        public Sprite? DemonstratorIcon;
+        public Sprite? DemonstratorRustedIcon;
+        public PartsCargoModel PartsModel = PartsCargoModel.GenericBox;
+        public GameObject? PartsCargoPrefabDM1U;
+        public GameObject? PartsCargoPrefabFlatbed;
+        public float PartsCargoMass = 10000.0f;
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
         public bool UseCustomBuffers => BufferType == BufferType.Custom;
         public string CatalogPageNameTranslationKey => $"ccl/vc/pagename/{id}";
         public string CatalogNicknameTranslationKey => $"ccl/vc/nickname/{id}";
+        public string DemoPartsNameTranslationKey => $"ccl/cargo/tp_{id}";
+        public string DemoPartsNameShortTranslationKey => $"ccl/cargo/tp_{id}";
 
         public IEnumerable<GameObject> AllPrefabs
         {

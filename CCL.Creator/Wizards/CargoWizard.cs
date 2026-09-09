@@ -30,7 +30,7 @@ namespace CCL.Creator.Wizards
             new GUIContent("Set Prefabs",
                 "Assign prefabs to cargo automatically"),
             new GUIContent("Mass Visualiser",
-                "Check cargo masses and multipliers")
+                "Change cargo mass or amount directly")
         };
 
         private SerializedObject _editor = null!;
@@ -329,7 +329,7 @@ namespace CCL.Creator.Wizards
 
         #region Mass Visualiser
 
-        private static Dictionary<string, float> s_massMap = new Dictionary<string, float>()
+        private static readonly Dictionary<string, float> s_massMap = new Dictionary<string, float>()
         {
             { "Coal", 56000 },
             { "IronOre", 62000 },
@@ -436,41 +436,170 @@ namespace CCL.Creator.Wizards
             { "EmptyNovae", 6000 },
             { "EmptyTraeg", 6000 },
             { "EmptyChemlek", 6000 },
-            { "EmptyNeoGamma", 6000 }
+            { "EmptyNeoGamma", 6000 },
+            // Pax mod.
+            { OtherMods.PassengerJobs.CARGO_ID, OtherMods.PassengerJobs.CARGO_MASS },
+            // Other cargo mods.
+            { OtherMods.GenericContainerCargo.EMPTY_ID, OtherMods.GenericContainerCargo.EMPTY_MASS },
+            { OtherMods.GenericContainerCargo.CHEMICALS_ID, OtherMods.GenericContainerCargo.CHEMICALS_MASS },
+            { OtherMods.GenericContainerCargo.CLOTHING_ID, OtherMods.GenericContainerCargo.CLOTHING_MASS },
+            { OtherMods.GenericContainerCargo.ELECTRONICS_ID, OtherMods.GenericContainerCargo.ELECTRONICS_MASS },
+            { OtherMods.GenericContainerCargo.TOOLING_ID, OtherMods.GenericContainerCargo.TOOLING_MASS },
         };
+        private static readonly Dictionary<string, int> s_unitMap = new Dictionary<string, int>()
+        {
+            { "ScrapContainers", 1 },
+            { "ElectronicsIskar", 1 },
+            { "ElectronicsKrugmann", 1 },
+            { "ElectronicsAAG", 1 },
+            { "ElectronicsNovae", 1 },
+            { "ElectronicsTraeg", 1 },
+            { "ToolsIskar", 1 },
+            { "ToolsBrohm", 1 },
+            { "ToolsAAG", 1 },
+            { "ToolsNovae", 1 },
+            { "ToolsTraeg", 1 },
+            { "ClothingObco", 1 },
+            { "ClothingNeoGamma", 1 },
+            { "ClothingNovae", 1 },
+            { "ClothingTraeg", 1 },
+            { "ChemicalsIskar", 1 },
+            { "ChemicalsSperex", 1 },
+            { "NewCars", 10 },
+            { "ImportedNewCars", 8 },
+            { "Tractors", 3 },
+            { "Excavators", 1 },
+            { "MiningTrucks", 1 },
+            { "CityBuses", 1 },
+            { "SemiTrailers", 1 },
+            { "Trams", 1 },
+            { "ForestryTrailers", 2 },
+            { "Tanks", 1 },
+            { "MilitaryTrucks", 2 },
+            { "AttackHelicopsters", 1 },
+            { "Missiles", 1 },
+            { "MilitaryCars", 3 },
+            { "TrainPartsDE2", 1 },
+            { "TrainPartsDE6", 1 },
+            { "TrainPartsDH4", 1 },
+            { "TrainPartsDM3", 1 },
+            { "TrainPartsS060", 1 },
+            { "TrainPartsS282A", 1 },
+            { "EmptySunOmni", 1 },
+            { "EmptyIskar", 1 },
+            { "EmptyObco", 1 },
+            { "EmptyGoorsk", 1 },
+            { "EmptyKrugmann", 1 },
+            { "EmptyBrohm", 1 },
+            { "EmptyAAG", 1 },
+            { "EmptySperex", 1 },
+            { "EmptyNovae", 1 },
+            { "EmptyTraeg", 1 },
+            { "EmptyChemlek", 1 },
+            { "EmptyNeoGamma", 1 },
+            // Pax mod.
+            { OtherMods.PassengerJobs.CARGO_ID, 68 },
+            // Other cargo mods.
+            { OtherMods.GenericContainerCargo.EMPTY_ID, 1 },
+            { OtherMods.GenericContainerCargo.CHEMICALS_ID, 1 },
+            { OtherMods.GenericContainerCargo.CLOTHING_ID, 1 },
+            { OtherMods.GenericContainerCargo.ELECTRONICS_ID, 1 },
+            { OtherMods.GenericContainerCargo.TOOLING_ID, 1 },
+        };
+
+        private const float Size1 = 100;
+        private const float Size2 = 70;
+
+        private Vector2 _massScroll = Vector2.zero;
+        private GUILayoutOption _widthMassColumn = GUILayout.Width(Size1);
 
         private void DrawMassVisualiser()
         {
             EditorGUI.BeginChangeCheck();
 
-            foreach (var item in _setup.Entries)
+            var widthWindow = EditorGUIUtility.currentViewWidth - 14;
+            EditorGUIUtility.labelWidth = widthWindow - Size1 - Size2;
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Cargo ID", "Amount");
+            EditorGUILayout.LabelField("Mass (kg)", _widthMassColumn);
+            EditorGUILayout.EndHorizontal();
+
+            _massScroll = EditorGUILayout.BeginScrollView(_massScroll);
+
+            if (_setup != null)
             {
-                DrawMass(item);
+                foreach (var item in _setup.Entries)
+                {
+                    DrawMass(item, widthWindow);
+                }
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    SaveChanges();
+                }
             }
 
-            if (EditorGUI.EndChangeCheck())
+            EditorGUILayout.EndScrollView();
+            EditorGUIUtility.labelWidth = 0;
+            GUI.enabled = HasSetup;
+
+            if (GUILayout.Button("Reset All to Default") && _setup != null)
             {
+                foreach (var item in _setup.Entries)
+                {
+                    item.AmountPerCar = 1;
+                }
+
                 SaveChanges();
             }
+
+            GUI.enabled = true;
         }
 
-        private void DrawMass(CargoEntry entry)
+        private void DrawMass(CargoEntry entry, float widthWindow)
         {
             EditorGUILayout.BeginHorizontal();
 
-            entry.AmountPerCar = EditorGUILayout.FloatField(entry.AmountPerCar, GUILayout.Width(60.0f));
+            entry.AmountPerCar = EditorGUILayout.FloatField(entry.CargoId, entry.AmountPerCar);
 
             if (s_massMap.TryGetValue(entry.CargoId, out float mass))
             {
-                mass /= 1000.0f;
-                EditorGUILayout.LabelField(entry.CargoId, $"{mass * entry.AmountPerCar:F2}/{mass:F2} t");
+                EditorGUI.BeginChangeCheck();
+                var scaledMass = EditorGUILayout.FloatField(mass * entry.AmountPerCar, _widthMassColumn);
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    entry.AmountPerCar = scaledMass / mass;
+                }
             }
             else
             {
-                EditorGUILayout.LabelField(entry.CargoId, $"Unknown Mass");
+                EditorGUILayout.LabelField("Unknown", _widthMassColumn);
             }
 
             EditorGUILayout.EndHorizontal();
+
+            if (s_unitMap.TryGetValue(entry.CargoId, out var units))
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.BeginHorizontal();
+                EditorGUI.BeginChangeCheck();
+                var count = EditorGUILayout.IntField("Units", Mathf.RoundToInt(entry.AmountPerCar * units));
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    entry.AmountPerCar = (float)count / units;
+                }
+
+                EditorGUILayout.LabelField(string.Empty, _widthMassColumn);
+                EditorGUILayout.EndHorizontal();
+                EditorGUI.indentLevel--;
+            }
+
+            // Amount can't be less than 0.
+            entry.AmountPerCar = Mathf.Max(0, entry.AmountPerCar);
+            EditorGUILayout.Space();
         }
 
         #endregion

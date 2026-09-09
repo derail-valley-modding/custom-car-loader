@@ -1,6 +1,8 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types;
 using CCL.Types.Proxies.Simulation.Steam;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Creator.Validators
@@ -87,12 +89,53 @@ namespace CCL.Creator.Validators
                 result.Fail(AddCompToMessage(self, "editor-only component must be removed before exporting"), self);
             }
 
+            count += TestLODs(prefab, result);
+
             return count;
 
             static string AddCompToMessage(Component comp, string message)
             {
                 return $"{comp.name}/{comp.GetType().Name}: {message}";
             }
+        }
+
+        private static int TestLODs(GameObject prefab, ValidationResult result)
+        {
+            var dict = new Dictionary<LODGroup, HashSet<Renderer>>();
+            int count = 0;
+
+            foreach (var group in prefab.GetComponentsInChildren<LODGroup>(true))
+            {
+                var set = new HashSet<Renderer>();
+
+                foreach (var lod in group.GetLODs())
+                {
+                    set.UnionWith(lod.renderers);
+                }
+
+                foreach (var renderer in set)
+                {
+                    var groups = new HashSet<LODGroup> { group };
+
+                    foreach (var pair in dict)
+                    {
+                        if (pair.Value.Contains(renderer))
+                        {
+                            groups.Add(pair.Key);
+                        }
+                    }
+
+                    if (groups.Count > 1)
+                    {
+                        result.Fail($"Renderer {renderer.name} is in multiple LOD Groups: {string.Join(", ", groups.Select(x => x.name))}", renderer);
+                    }
+                }
+
+                dict.Add(group, set);
+                count++;
+            }
+
+            return count;
         }
 
         private static int TestLubricatorRatchet(CustomCarVariant livery, ValidationResult result)

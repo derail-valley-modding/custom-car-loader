@@ -128,9 +128,17 @@ namespace CCL.Importer
             mat.SetVector(ShaderProps.SightGlassGlassTint, settings.GlassTint);
             mat.SetFloat(ShaderProps.SightGlassThickness, settings.PipeThickness);
 
+            TrySetTexture(mat, ShaderProps.MainTex, settings.BackgroundTexture);
+            TrySetTexture(mat, ShaderProps.SightGlassGlass, settings.GlassTexture);
+
             settings.Cache(mat);
 
             return mat;
+        }
+
+        private static void TrySetTexture(Material mat, int id, Texture2D? tex)
+        {
+            if (tex != null) mat.SetTexture(id, tex);
         }
     }
 }

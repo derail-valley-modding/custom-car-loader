@@ -361,6 +361,10 @@ namespace CCL.Creator.Wizards
                         PoweredAxles = tms.numberOfTractionMotors;
                         break;
 
+                    case GameObject prefab:
+                        Guess(prefab.GetComponentInChildren<TractionMotorSetDefinitionProxy>());
+                        break;
+
                     default:
                         break;
                 }
@@ -392,7 +396,6 @@ namespace CCL.Creator.Wizards
                     EditorGUILayout.HelpBox("Please link your current traction motor configuration in the field above", MessageType.Info);
                     return;
                 }
-
 
                 for (int i = 0; i < Definition.configurations.Length; i++)
                 {

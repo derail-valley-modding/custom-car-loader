@@ -93,6 +93,14 @@ namespace CCL.Importer.Patches
 
             return list;
         }
+
+        // Replace the job payment data with our own class.
+        [HarmonyPostfix, HarmonyPatch(nameof(StationProceduralJobGenerator.ExtractPaymentCalculationData))]
+        private static void ExtractPaymentCalculationDataPostix(List<CarTypesPerCargoTypeData> carTypesPerCargoData, ref PaymentCalculationData __result)
+        {
+            if (__result == null) return;
+            __result = ExtendedPaymentData.FromRegular(__result, carTypesPerCargoData);
+        }
     }
 
     [HarmonyPatch(typeof(StationProceduralJobGenerator))]
