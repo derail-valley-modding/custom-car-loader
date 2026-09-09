@@ -182,18 +182,15 @@ namespace CCL.Importer.Implementations
             }
             
             __state = true;
-            Debug.Log($"EMTR I1 {unit.ID}");
             bool hasElectricChargeContainer = false;
             foreach (KeyValuePair<ResourceType, List<ResourceContainer>> trackedResource in ___resourceToResourceContainers)
             {
-                Debug.Log($"EMTR I1 {trackedResource.Key} {trackedResource.Value.Count}");
                 if (trackedResource.Key == ResourceType.ElectricCharge)
                 {
                     hasElectricChargeContainer = true;
                     break;
                 }
             }
-            Debug.Log($"EMTR I1 {hasElectricChargeContainer}");
             if (!hasElectricChargeContainer)
             { 
                 ___resourceToResourceContainers[ResourceType.ElectricCharge] = new(); 
@@ -212,7 +209,6 @@ namespace CCL.Importer.Implementations
                 { 
                     _initialElectricCharge[__instance] += electricChargeContainer.amountReadOut.Value; 
                 }
-                Debug.Log($"EMTR I2 {_initialElectricCharge[__instance]}");
             }
         }
 
@@ -231,7 +227,6 @@ namespace CCL.Importer.Implementations
             {
                 if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.ContainsKey(__instance))
                 { 
-                    Debug.Log($"EMTR U1 {currentFee.StartValue} {_initialElectricCharge[__instance]} {currentFee.HasSnapshot} {currentFee.SnapshotValue}");
                     if (currentFee.HasSnapshot)
                     { 
                         __state = currentFee.StartValue - currentFee.SnapshotValue; 
@@ -273,7 +268,6 @@ namespace CCL.Importer.Implementations
                             currentFee.SetSnapshot(currentFee.StartValue - (float) __state); 
                         }
                     }
-                    Debug.Log($"EMTR U2 {currentFee.StartValue} {currentFee.EndValue} {currentFee.StartToEndDiff} {__state?.ToString() ?? "<null>"}");
                     break;
                 }
             }
