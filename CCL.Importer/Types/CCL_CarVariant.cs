@@ -42,6 +42,7 @@ namespace CCL.Importer.Types
         public GameObject? PartsCargoPrefabDM1U;
         public GameObject? PartsCargoPrefabFlatbed;
         public float PartsCargoMass = 10000.0f;
+        public GameObject? LockedGaragePrefab;
 
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
@@ -49,7 +50,7 @@ namespace CCL.Importer.Types
         public string CatalogPageNameTranslationKey => $"ccl/vc/pagename/{id}";
         public string CatalogNicknameTranslationKey => $"ccl/vc/nickname/{id}";
         public string DemoPartsNameTranslationKey => $"ccl/cargo/tp_{id}";
-        public string DemoPartsNameShortTranslationKey => $"ccl/cargo/tp_{id}";
+        public string DemoPartsNameShortTranslationKey => $"ccl/cargo/tp_{id}_short";
 
         public IEnumerable<GameObject> AllPrefabs
         {

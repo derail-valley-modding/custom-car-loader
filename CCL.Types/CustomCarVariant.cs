@@ -99,6 +99,8 @@ namespace CCL.Types
         public GameObject? PartsCargoPrefabFlatbed;
         [Tooltip("The mass of the parts cargo")]
         public float PartsCargoMass = 10000.0f;
+        [Tooltip("The prefab used inside a locked garage")]
+        public GameObject? LockedGaragePrefab;
         [SerializeField, HideInInspector]
         private string? _demoPartNameJson = string.Empty;
         [SerializeField, HideInInspector]
