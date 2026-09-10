@@ -5,6 +5,7 @@ using CCL.Types;
 using DV;
 using DV.ThingTypes;
 using HarmonyLib;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Importer
@@ -23,7 +24,13 @@ namespace CCL.Importer
 
                 if (!Globals.G.Types.TryGetCargo(entry.CargoId, out var matchCargo))
                 {
-                    CCLPlugin.Error($"Couldn't find  cargo '{entry.CargoId}'");
+                    CCLPlugin.Error($"Couldn't find cargo '{entry.CargoId}'");
+                    continue;
+                }
+
+                if (matchCargo.loadableCarTypes.Any(x => x.carType == carType))
+                {
+                    CCLPlugin.Error($"Cargo '{entry.CargoId}' already has entry for car '{carType.id}', skipping");
                     continue;
                 }
 

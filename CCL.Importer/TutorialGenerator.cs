@@ -533,6 +533,9 @@ namespace CCL.Importer
                 }
                 else
                 {
+                    // Reverser forward, since this was actually before the sander step.
+                    c.AddOverridableControl(InteriorControlsManager.ControlType.Reverser, 1f, 1f, QTSemantic.GoForward);
+
                     // Disengage brakes.
                     c.AddControl(InteriorControlsManager.ControlType.Handbrake, 0f, 0f, QTSemantic.Disengage);
                     c.AddOverridableControl(loco.brakeSystem.hasIndependentBrake ?

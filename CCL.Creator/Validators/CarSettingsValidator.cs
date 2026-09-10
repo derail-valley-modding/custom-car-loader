@@ -28,6 +28,11 @@ namespace CCL.Creator.Validators
                 return result;
             }
 
+            if (car.id.IndexOf(' ') > 0)
+            {
+                result.Warning("Car ID should not contain spaces", car);
+            }
+
             if (car.KindSelection != DVTrainCarKind.Car)
             {
                 if (car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)

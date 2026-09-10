@@ -47,8 +47,8 @@ namespace CCL.Types
         public bool HideBackCoupler = false;
 
         [Header("Trainset - optional")]
-        [Tooltip("This is used to tell if this vehicle is part of a set of vehicles\n" +
-            "Examples are a locomotive and her tender (S282A + S282B)\n" +
+        [Tooltip("This is used to tell if this livery is part of a set of vehicles, " +
+            "such as a locomotive and her tender (S282A + S282B)\n" +
             "Order is important")]
         public string[] TrainsetLiveries = new string[0];
 
@@ -62,16 +62,6 @@ namespace CCL.Types
         public float UnlockPrice = 30000.0f;
         public float SummonPrice = 5000.0f;
 
-        [Header("Demonstrator Quest - optional")]
-        [Tooltip("Cost to order replacement parts for this locomotive during a demonstrator quest.\n" +
-            "Provided for other mods implementing demonstrator features.\n" +
-            "Leave at 0 if not used.")]
-        public float DemonstratorPartsOrderCost = 0f;
-        [Tooltip("Cost to install replacement parts for this locomotive during a demonstrator quest.\n" +
-            "Provided for other mods implementing demonstrator features.\n" +
-            "Leave at 0 if not used.")]
-        public float DemonstratorPartsInstallationCost = 0f;
-
         [Header("Catalog - optional")]
         public CatalogPage? CatalogPage = null;
 
@@ -79,10 +69,40 @@ namespace CCL.Types
         [Tooltip("Used by other mods to limit or enable repetitive spawning\n" +
             "Leave at 0 to ignore")]
         public int MaxRepeatedSpawn = 0;
-        [Tooltip("Only affects Passenger Jobs")]
+        [Space]
+        [Tooltip("Spawn this livery in regional routes in Passenger Jobs")]
         public bool AllowOnRegionalRoutes = true;
-        [Tooltip("Only affects Passenger Jobs")]
+        [Tooltip("Spawn this livery in express routes in Passenger Jobs")]
         public bool AllowOnExpressRoutes = true;
+        [Space]
+        [Tooltip("Cost to order replacement parts for this vehicle during a demonstrator quest"), Min(0)]
+        public float DemonstratorPartsOrderCost = 15000.0f;
+        [Tooltip("Cost to install replacement parts for this vehicle during a demonstrator quest"), Min(0)]
+        public float DemonstratorPartsInstallationCost = 10000.0f;
+        [Tooltip("The name of the demonstrator parts cargo")]
+        public TranslationData DemonstratorPartName = new TranslationData();
+        [Tooltip("The shortened name of the demonstrator parts cargo")]
+        public TranslationData DemonstratorPartNameShort = new TranslationData();
+        [Tooltip("Texture to use in the museum posters for this vehicle\n" +
+            "The texture size should be a 512x512px square\n" +
+            "The top 112px will be hidden behind the name box of the poster")]
+        public Texture2D? DemonstratorPoster;
+        [Tooltip("Livery icon for the demonstrator paint")]
+        public Sprite? DemonstratorIcon;
+        [Tooltip("Livery icon for the rusty demonstrator paint")]
+        public Sprite? DemonstratorRustedIcon;
+        [Tooltip("The model to use for the demonstrator parts")]
+        public PartsCargoModel PartsModel = PartsCargoModel.GenericBox;
+        [Tooltip("The prefab for the parts cargo, when loaded on the DM1U"), EnableIf(nameof(UseCustomPartsModel))]
+        public GameObject? PartsCargoPrefabDM1U;
+        [Tooltip("The prefab for the parts cargo, when loaded on the Utility Flatbed"), EnableIf(nameof(UseCustomPartsModel))]
+        public GameObject? PartsCargoPrefabFlatbed;
+        [Tooltip("The mass of the parts cargo")]
+        public float PartsCargoMass = 10000.0f;
+        [SerializeField, HideInInspector]
+        private string? _demoPartNameJson = string.Empty;
+        [SerializeField, HideInInspector]
+        private string? _demoPartNameShortJson = string.Empty;
 
         [RenderMethodButtons, SerializeField]
         [MethodButton("CCL.Creator.Wizards.CarPrefabManipulators:AlignBogieColliders", "Align Bogie Colliders")]
@@ -92,6 +112,7 @@ namespace CCL.Types
         public bool UseCustomFrontBogie => FrontBogie == BogieType.Custom;
         public bool UseCustomRearBogie => RearBogie == BogieType.Custom;
         public bool UseCustomBuffers => BufferType == BufferType.Custom;
+        public bool UseCustomPartsModel => PartsModel == PartsCargoModel.Custom;
 
         public IEnumerable<GameObject> AllPrefabs
         {
@@ -104,6 +125,9 @@ namespace CCL.Types
 
                 if (externalInteractablesPrefab != null) yield return externalInteractablesPrefab;
                 if (explodedExternalInteractablesPrefab != null) yield return explodedExternalInteractablesPrefab;
+
+                if (PartsCargoPrefabDM1U != null) yield return PartsCargoPrefabDM1U;
+                if (PartsCargoPrefabFlatbed != null) yield return PartsCargoPrefabFlatbed;
             }
         }
 
@@ -122,6 +146,8 @@ namespace CCL.Types
             NameTranslationJson = JSONObject.ToJson(NameTranslations.Items);
 
             _spawnGroupJson = JSONObject.ToJson(LocoSpawnGroups);
+            _demoPartNameJson = JSONObject.ToJson(DemonstratorPartName);
+            _demoPartNameShortJson = JSONObject.ToJson(DemonstratorPartNameShort);
         }
 
         public void ForceValidation()
@@ -157,6 +183,8 @@ namespace CCL.Types
             }
 
             LocoSpawnGroups = JSONObject.FromJson(_spawnGroupJson, () => LocoSpawnGroups);
+            DemonstratorPartName = JSONObject.FromJson(_demoPartNameJson, () => TranslationData.Default());
+            DemonstratorPartNameShort = JSONObject.FromJson(_demoPartNameShortJson, () => TranslationData.Default());
         }
     }
 }

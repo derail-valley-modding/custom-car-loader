@@ -1,5 +1,6 @@
 ﻿using CCL.Importer.Types;
 using DV;
+using DVLangHelper.Data;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,11 +39,27 @@ namespace CCL.Importer
                     CCLPlugin.Translations.AddTranslations(livery.CatalogPageNameTranslationKey, livery.CatalogPage.PageName);
                     CCLPlugin.Translations.AddTranslations(livery.CatalogNicknameTranslationKey, livery.CatalogPage.Nickname);
                 }
+
+                if (IsValidTranslation(livery.DemonstratorPartName))
+                {
+                    CCLPlugin.Translations.AddTranslations(livery.DemoPartsNameTranslationKey, livery.DemonstratorPartName);
+                }
+                if (IsValidTranslation(livery.DemonstratorPartNameShort))
+                {
+                    CCLPlugin.Translations.AddTranslations(livery.DemoPartsNameShortTranslationKey, livery.DemonstratorPartNameShort);
+                }
             }
 
             CargoInjector.InjectLoadableCargos(carType);
 
             return true;
+        }
+
+        private static bool IsValidTranslation(TranslationData? data)
+        {
+            if (data == null || data.Items.Count == 0) return false;
+
+            return !data.Items.All(x => string.IsNullOrEmpty(x.Value));
         }
     }
 }

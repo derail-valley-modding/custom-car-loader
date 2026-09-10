@@ -13,7 +13,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "3.1.7";
+        public const string Version = "3.1.9";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
@@ -42,9 +42,16 @@ namespace CCL.Importer
             if (!VersionCheck())
             {
                 Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
-                CarManager.LoadFailures.Add("[CCL] Unsupported version");
+                CarManager.LoadFailures.Add("[CCL] Unsupported game version");
                 ObjectHelper.CreateFailuresHolder();
                 return false;
+            }
+
+            if (UnityModManager.modEntries.Any(IsBadNumberManager))
+            {
+                Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
+                CarManager.LoadFailures.Add("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
+                ObjectHelper.CreateFailuresHolder();
             }
 
             // Build caches before any car is loaded, to only get vanilla resources.
@@ -119,5 +126,15 @@ namespace CCL.Importer
         }
 
         private static bool VersionCheck() => int.Parse(BuildInfo.BUILDBOT_INFO.Substring(5)) >= ExporterConstants.BUILD_INT;
+
+        internal static bool IsBadNumberManager(UnityModManager.ModEntry modEntry)
+        {
+            if (modEntry.Active && modEntry.Info.Id == "NumberManager")
+            {
+                return new System.Version(modEntry.Info.Version) <= new System.Version(4, 0, 2);
+            }
+
+            return false;
+        }
     }
 }

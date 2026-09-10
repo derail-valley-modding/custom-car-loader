@@ -24,6 +24,11 @@ namespace CCL.Creator.Validators
 
             var result = Pass();
 
+            if (livery.id.IndexOf(' ') > 0)
+            {
+                result.Warning("Livery ID should not contain spaces", livery);
+            }
+
             if (livery.icon == null)
             {
                 result.Warning($"Livery '{livery.id}' has no icon", livery, nameof(livery.icon));
@@ -58,6 +63,43 @@ namespace CCL.Creator.Validators
             if (livery.LocoSpawnGroups.Length > 0 && livery.UnlockableAsWorkTrain)
             {
                 result.Warning("Livery can spawn in the world but is also set as a work train, this can result in unintended behaviour", livery);
+            }
+
+            // Demo stuff checks.
+            if (livery.DemonstratorPoster != null)
+            {
+                var poster = livery.DemonstratorPoster;
+                if (poster.height != poster.width)
+                {
+                    result.Fail($"Livery '{livery.id}' demonstrator poster is not a square texture");
+                }
+                else if (poster.height != 512 || poster.width != 512)
+                {
+                    result.Warning($"Livery '{livery.id}' demonstrator poster size should be 512x512px");
+                }
+            }
+
+            if (livery.UseCustomPartsModel)
+            {
+                if (livery.PartsCargoPrefabDM1U == null)
+                {
+                    result.Warning($"Livery '{livery.id}' is set to use custom demonstrator parts model, but has no prefab to load on the DM1U-150",
+                        livery, nameof(livery.PartsCargoPrefabDM1U));
+                }
+                else
+                {
+                    CargoValidator.CheckModelVariant(result, livery.PartsCargoPrefabDM1U);
+                }
+
+                if (livery.PartsCargoPrefabFlatbed == null)
+                {
+                    result.Warning($"Livery '{livery.id}' is set to use custom demonstrator parts model, but has no prefab to load on the Utility Flatbed",
+                        livery, nameof(livery.PartsCargoPrefabFlatbed));
+                }
+                else
+                {
+                    CargoValidator.CheckModelVariant(result, livery.PartsCargoPrefabFlatbed);
+                }
             }
 
             return result;

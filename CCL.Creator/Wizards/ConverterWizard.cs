@@ -28,7 +28,7 @@ namespace CCL.Creator.Wizards
                 new ExtraUnit("Miles/hour", Units.MPHtoKMH),
                 new ExtraUnit("Metres/second", Units.KMHtoMS)),
 
-            new ConvertBase("Mass", "Kilogram",
+            new ConvertBase("Mass", "Kilograms",
                 new ExtraUnit("Pounds", Units.LBtoKG),
                 new ExtraUnit("Tonnes", Units.FromKilo),
                 new ExtraUnit("Long Tons", Units.LongTtoKG),

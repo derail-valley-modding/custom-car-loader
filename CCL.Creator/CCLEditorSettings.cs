@@ -43,6 +43,8 @@ namespace CCL.Creator
         [Header("Editor Behaviour")]
         [Tooltip("Highlights GameObjects with specific names in the hierarchy window")]
         public bool HighlightSpecialGameObjectNames = true;
+        [Tooltip("Whether or not to include IDs from other mods in fields that support them (certain cargo packs, etc)")]
+        public bool IncludeIdsFromOtherMods = true;
 
         [Header("Port Display")]
         [Tooltip("Whether or not to display the port code on fields ([Port], [Fuse]...)")]

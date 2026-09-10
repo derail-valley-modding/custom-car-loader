@@ -6,8 +6,6 @@ namespace CCL.Creator.Utility
     [AddComponentMenu("CCL Editor/Car Prefab Checker")]
     internal class CarPrefabChecker : MonoBehaviour, IEditorComponent
     {
-        private const float HalfGauge = 1.435f / 2;
-
         private static readonly Color s_bogies = Color.Lerp(Color.green, Color.white, 0.35f);
         private static readonly Color s_couplers = Color.Lerp(Color.blue, Color.white, 0.35f);
         private static readonly Color s_com = Color.Lerp(Color.red, Color.white, 0.35f);
@@ -20,7 +18,8 @@ namespace CCL.Creator.Utility
         public Transform? CoM;
         public int Gauge = 1435;
 
-        private float ActualGauge => Gauge / 2000f;
+        private float HalfGauge => Gauge / 2000f;
+        private float ActualGauge => Gauge / 1000f;
 
         public void OnValidate()
         {
@@ -37,7 +36,7 @@ namespace CCL.Creator.Utility
         {
             Gizmos.color = Color.grey;
 
-            var gauge = ActualGauge;
+            var gauge = HalfGauge;
             var track1 = new Vector3(gauge, 0, -20);
             var track2 = new Vector3(gauge, 0, 20);
             var arrow1 = new Vector3(-gauge, 0, -1.5f);
@@ -57,11 +56,11 @@ namespace CCL.Creator.Utility
 
             if (BogieF != null)
             {
-                Gizmos.DrawLine(BogieF.position, BogieF.position + Vector3.up * 2);
+                DrawBogie(BogieF);
             }
             if (BogieR != null)
             {
-                Gizmos.DrawLine(BogieR.position, BogieR.position + Vector3.up * 2);
+                DrawBogie(BogieR);
             }
 
             Gizmos.color = s_couplers;
@@ -80,6 +79,23 @@ namespace CCL.Creator.Utility
             if (CoM != null)
             {
                 Gizmos.DrawWireSphere(CoM.position, 0.25f);
+            }
+        }
+
+        private void DrawBogie(Transform bogie)
+        {
+            Gizmos.DrawLine(bogie.position, bogie.position + Vector3.up * 2);
+
+            bogie = bogie.Find(CarPartNames.Bogies.BOGIE_CAR);
+
+            if (bogie == null) return;
+
+            foreach (Transform t in bogie)
+            {
+                if (t.name == CarPartNames.Bogies.AXLE)
+                {
+                    Gizmos.DrawLine(t.position - t.right * ActualGauge, t.position + t.right * ActualGauge);
+                }
             }
         }
     }

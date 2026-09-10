@@ -26,7 +26,11 @@ namespace CCL.Types
         public ProceduralMaterialDefinitions? ProceduralMaterials;
         public ExtraTranslations? ExtraTranslations;
         [Tooltip("Additional mod dependencies go here\n" +
-            "CCL will automatically add Custom Cargo, Custom Licenses, and Passenger Jobs if needed")]
+            "CCL will automatically add the following mods if needed:\n" +
+            "• Custom Cargo\n" +
+            "• Custom Licenses\n" +
+            "• Passenger Jobs\n" +
+            "• Gauge")]
         public List<string> AdditionalDependencies = new List<string>();
 
         [RenderMethodButtons, SerializeField]
