@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using CCL.Importer.Components.Controllers;
 using CCL.Importer.Components.Controls;
 using CCL.Importer.Components.Headlights;
@@ -83,6 +83,9 @@ namespace CCL.Importer.Components
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<PantographDefinition, PantographDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<RoofBusBarDefinition, RoofBusBarDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<ElectricityMeterDefinition, ElectricityMeterDefinitionInternal>().AutoCacheAndMap();
         }
 
         private void FuseInverterAfter(FuseInverterDefinition fake, FuseInverterDefinitionInternal real)
@@ -113,6 +116,7 @@ namespace CCL.Importer.Components
                 .ForMember(d => d.Ropes, o => o.MapFrom(s => Mapper.GetFromCache(s.Ropes)))
                 .ForMember(d => d.DistanceSlowSqr, o => o.MapFrom(s => s.DistanceSlow * s.DistanceSlow))
                 .ForMember(d => d.DistanceDisableSqr, o => o.MapFrom(s => s.DistanceDisable * s.DistanceDisable));
+            CreateMap<PantographSimController, PantographSimControllerInternal>().AutoCacheAndMap();
         }
 
         private void MapControls()

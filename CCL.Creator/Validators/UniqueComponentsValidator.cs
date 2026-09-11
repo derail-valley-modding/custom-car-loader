@@ -1,4 +1,5 @@
-﻿using CCL.Types;
+using CCL.Types;
+using CCL.Types.Components.Simulation.Electric;
 using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controllers;
 using CCL.Types.Proxies.Controls;
@@ -36,6 +37,7 @@ namespace CCL.Creator.Validators
             NoMoreThanOne<FireboxSimControllerProxy>(prefab);
             NoMoreThanOne<RemoteControllerModuleProxy>(prefab);
             NoMoreThanOne<LubricatorRatchetDriverProxy>(prefab);
+            NoMoreThanOne<ElectricityMeterDefinition>(prefab);
 
             return result ?? Skip();
 
