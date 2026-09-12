@@ -1,0 +1,11 @@
+{
+  "Id": "DVCustomCarLoader",
+  "Author": "Katycat",
+  "DisplayName": "Custom Car Loader",
+  "Version": "2.0.3",
+  "ManagerVersion": "0.27.3",
+  "AssemblyName": "CCL.Importer.dll",
+  "EntryMethod": "CCL.Importer.CCLPlugin.Load",
+  "HomePage": "https://www.nexusmods.com/derailvalley/mods/324",
+  "Repository": "https://foxden.cc/static/derail_valley/ccl_repository.json"
+}
