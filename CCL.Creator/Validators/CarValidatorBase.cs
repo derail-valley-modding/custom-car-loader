@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 
 using UObject = UnityEngine.Object;
@@ -149,7 +148,7 @@ namespace CCL.Creator.Validators
 
     internal enum ResultStatus
     {
-        Pass, Skipped, Warning, Failed, Critical
+        Skipped = -1, Pass, Warning, Failed, Critical
     }
 
     /// <summary>Used to bundle the validation status and any warning messages from a particular validator</summary>

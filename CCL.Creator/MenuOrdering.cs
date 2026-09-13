@@ -15,6 +15,7 @@
             public const int Naming = 302;
             public const int About = 10000;
             public const int Wiki = 10001;
+            public const int Releases = 10002;
         }
 
         public static class Cab

@@ -69,6 +69,8 @@ namespace CCL.Creator
         [Header("Validation")]
         [Tooltip("Displays warnings if there are missing meshes in the bogie transforms")]
         public bool DisplayWarningsForMissingMeshesInBogies = true;
+        [Tooltip("Displays warnings if there are empty port connections")]
+        public bool DisplayWarningsForEmptyPortConnections = true;
         [Tooltip("Sorts all skipped validation steps to the bottom of the list")]
         public bool SortSkippedToBottom = true;
         [Tooltip("Use icons rather than words on validation result display")]
