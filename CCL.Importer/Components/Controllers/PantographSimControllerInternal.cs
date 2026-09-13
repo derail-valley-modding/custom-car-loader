@@ -31,7 +31,8 @@ namespace CCL.Importer.Components.Controllers
         private static readonly Dictionary<TrainCar, List<PantographSimControllerInternal>> _allCatenaryControllers = new();
 
         public Transform? pantographBase;
-        public Transform? contactStripFirstEnd, contactStripSecondEnd;
+        public Transform? contactStripFirstEnd;
+        public Transform? contactStripSecondEnd;
         public float contactTolerance = 0.2f;
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
@@ -49,7 +50,12 @@ namespace CCL.Importer.Components.Controllers
 
         private Func<Transform, Transform, Transform, Transform, float, (float?, float)>? GetWireHeightAndVoltage = null;
         private TrainCar? _unit;
-        private Port? _initialHeadHeight, _headHeight, _wireHeight, _wireVoltage, _inContact, _inputCurrent;
+        private Port? _initialHeadHeight; 
+        private Port? _headHeight; 
+        private Port? _wireHeight;
+        private Port? _wireVoltage;
+        private Port? _inContact;
+        private Port? _inputCurrent;
         private Vector3 _lastTipPosition = new(0.0f, float.MinValue, 0.0f);
         private float _lastHeadMidpointHeight;
 

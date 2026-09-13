@@ -43,7 +43,9 @@ namespace CCL.Importer.Implementations
         private SimulatedCarDebtTracker? _feeTracker;
         
         private readonly Port _electricChargeConsumed;
-        private readonly PortReference _supplyVoltage, _currentDraw;
+
+        private readonly PortReference _supplyVoltage;
+        private readonly PortReference _currentDraw;
 
         private float _energyConsumptionFactor;
         private double _energyConsumed = 0.0;

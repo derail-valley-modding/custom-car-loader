@@ -11,7 +11,7 @@ namespace CCL.Types.Components.Simulation.Electric
         [Min(0.01f), Tooltip("Pantograph head movement speed in m/s")]
         public float headMovementSpeed = 1.0f;
 
-        [Min(0.0f), Tooltip("Maximum reach height. The minimum height is taken from initial position. Must match the reach from pantograph animation")]
+        [Min(0.0f), Tooltip("Maximum reach height above a rail head. The minimum height is taken from initial position. Must match the reach from pantograph animation")]
         public float maximumRaise;
 
         [FuseId(true)]

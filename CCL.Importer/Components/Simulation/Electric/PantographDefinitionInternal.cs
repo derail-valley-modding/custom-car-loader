@@ -7,7 +7,8 @@ namespace CCL.Importer.Components.Simulation.Electric
 {
     internal class PantographDefinitionInternal : SimComponentDefinition
     {
-        public float maximumRaise, headMovementSpeed;
+        public float maximumRaise;
+        public float headMovementSpeed;
 
         public string powerFuseId = string.Empty;
 

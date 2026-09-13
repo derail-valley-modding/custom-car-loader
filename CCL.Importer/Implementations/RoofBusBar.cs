@@ -13,10 +13,17 @@ namespace CCL.Importer.Implementations
     internal class RoofBusBar : SimComponent
     {
         private readonly float _nominalVoltage;
-        private readonly Port _supplyVoltage, _supplyVoltageNormalized, _pantographInputCurrent, _raisedCount;
+
+        private readonly Port _supplyVoltage;
+        private readonly Port _supplyVoltageNormalized;
+        private readonly Port _pantographInputCurrent;
+        private readonly Port _raisedCount;
         private readonly Port[]? _inContact;
-        private readonly PortReference[]? _inputsFromPantographs, _pantographVoltages;
+
+        private readonly PortReference[]? _inputsFromPantographs;
+        private readonly PortReference[]? _pantographVoltages;
         private readonly PortReference? _currentDraw;
+
         private readonly bool[]? _pantographRaised;
 
         private int _raisedPantographsCount = 0;

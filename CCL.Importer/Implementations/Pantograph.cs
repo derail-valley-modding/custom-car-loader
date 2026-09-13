@@ -13,9 +13,16 @@ namespace CCL.Importer.Implementations
         private static readonly Dictionary<TrainCar, List<Pantograph>> _allPantographs = new();
         
         private readonly FuseReference _powerFuse;
-        private readonly Port _wireHeight, _initialHeadHeight, _headHeight, _raiseReadOut, _raiseNormalizedReadOut;
-        private readonly Port _wireVoltage, _voltageReadOut;
+        private readonly Port _wireHeight;
+        private readonly Port _initialHeadHeight;
+        private readonly Port _headHeight;
+        private readonly Port _raiseReadOut;
+        private readonly Port _raiseNormalizedReadOut;
+
+        private readonly Port _wireVoltage;
+        private readonly Port _voltageReadOut;
         private readonly Port _inContact;
+
         private readonly PortReference _pantographToggle;
         private readonly TrainCar?  _unit;
 

@@ -11,7 +11,8 @@ namespace CCL.Types.Components.Controllers
     public class PantographSimController : MonoBehaviour, IHasPortIdFields, ISelfValidation
     {
         public Transform? pantographBase;
-        public Transform? contactStripFirstEnd, contactStripSecondEnd;
+        public Transform? contactStripFirstEnd;
+        public Transform? contactStripSecondEnd;
         
         [Min(0.01f), Tooltip("Maximum vertical offset between wire and strip midpoint for a contact to register")]
         public float contactTolerance = 0.2f;
@@ -41,21 +42,27 @@ namespace CCL.Types.Components.Controllers
         public SelfValidationResult Validate(out string message, out string? highlight)
         {
             if (pantographBase == null)
-                return this.FailForNull(nameof(pantographBase), out message, out highlight);
+            { 
+                return this.FailForNull(nameof(pantographBase), out message, out highlight); 
+            }
             if (contactStripFirstEnd == null)
-                return this.FailForNull(nameof(contactStripFirstEnd), out message, out highlight);
+            { 
+                return this.FailForNull(nameof(contactStripFirstEnd), out message, out highlight); 
+            }
             if (contactStripSecondEnd == null)
-                return this.FailForNull(nameof(contactStripSecondEnd), out message, out highlight);
+            { 
+                return this.FailForNull(nameof(contactStripSecondEnd), out message, out highlight); 
+            }
             if (pantographBase == contactStripFirstEnd || pantographBase == contactStripSecondEnd)
             {
-                message = "pantographBase should not be identical to contactStripFirstEnd or contactStripSecondEnd";
-                highlight = "pantographBase";
+                message = $"{nameof(pantographBase)} should not be identical to {nameof(contactStripFirstEnd)} or {nameof(contactStripSecondEnd)}";
+                highlight = nameof(pantographBase);
                 return SelfValidationResult.Warning;
             }
             if (contactStripFirstEnd == contactStripSecondEnd)
             {
-                message = "contactStripFirstEnd and contactStripSecondEnd should not be identical";
-                highlight = "contactStripFirstEnd and contactStripSecondEnd";
+                message = $"{nameof(contactStripFirstEnd)} and {nameof(contactStripSecondEnd)} should not be identical";
+                highlight = nameof(contactStripSecondEnd);
                 return SelfValidationResult.Warning;
             }
             return this.Pass(out message, out highlight);
