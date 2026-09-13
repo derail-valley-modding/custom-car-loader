@@ -1,41 +1,62 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using CCL.Importer.Components.Simulation.Electric;
-using CCL.Importer.Implementations;
+using HarmonyLib;
+using UnityEngine;
 
 using DV.Damage;
 using DV.ServicePenalty;
 using DV.Simulation.Cars;
 using DV.ThingTypes;
-
-using HarmonyLib;
-
 using LocoSim.Implementations;
 
-using UnityEngine;
+using CCL.Importer.Components.Simulation.Electric;
+using CCL.Importer.Implementations;
 
 namespace CCL.Importer.Patches
 {
+    #region Ownership tracking
+
+    [HarmonyPatch(typeof(OwnedCarsStateController), "RegisterCarStateTracker")]
+    internal static class PrivateVehicleRegistar
+    {
+        private static void Postfix(TrainCar? car, LocoDebtTrackerBase? carDebtTracker)
+        {
+            if (car != null)
+            { 
+                ElectricityMeter.ReplaceTrackerOnOwnershipChange(car, carDebtTracker as SimulatedCarDebtTracker); 
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(LocoDebtController), "RegisterLocoDebtTracker")]
+    internal static class CompanyVehicleRegistar
+    {
+        private static void Postfix(TrainCar? car, LocoDebtTrackerBase? locoDebtTracker)
+        {
+            if (car != null)
+            { 
+                ElectricityMeter.ReplaceTrackerOnOwnershipChange(car, locoDebtTracker as SimulatedCarDebtTracker); 
+            }
+        }
+    }
+
+    #endregion
+
     [HarmonyPatch(typeof(SimController), "OnLogicCarInitialized")]
     internal static class LogicCarInitializerPatch
     {
         private static void Postfix(SimController? __instance)
         {
             TrainCar? vehicle = __instance?.train;
-            SimulatedCarDebtTracker? feeTracker = __instance?.debt;
-            if (vehicle != null && feeTracker != null)
+            if (vehicle != null)
             {
-                ElectricityMeter.AddNewTracker(vehicle, feeTracker);
+                ElectricityMeter.AssignNewTracker(vehicle, __instance?.debt);
             }
         }
     }
         
     [HarmonyPatch(typeof(SimulatedCarDebtTracker))]
-    internal class ElectricityMeterPatches
+    internal static class ElectricityMeterPatches
     {
         [HarmonyPatch("InitializeDebtComponents")]
         [HarmonyPrefix]

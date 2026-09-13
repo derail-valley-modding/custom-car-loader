@@ -1,14 +1,12 @@
 using System.Collections.Generic;
 
-using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-using DV.Damage;
 using DV.JObjectExtstensions;
 using DV.ServicePenalty;
-using DV.Simulation.Cars;
 using DV.ThingTypes;
+using DV.Utils;
 using LocoSim.Implementations;
 
 using CCL.Importer.Components.Simulation.Electric;
@@ -17,13 +15,64 @@ namespace CCL.Importer.Implementations
 {
     public class ElectricityMeter : SimComponent
     {
+        private class PrivateVehicleMeter : LocoDebtTrackerBase
+        {
+            const float startValue = 524287.0f;
+        
+            public PrivateVehicleMeter(TrainCar vehicle)
+            {
+                debtData = new(vehicle.ID, vehicle.carType, InitializeDebtComponents());
+            }
+        
+            public override DebtComponent[] InitializeDebtComponents()
+            {
+                return new DebtComponent[] 
+                { 
+                    new(startValue, ResourceType.ElectricCharge) 
+                };
+            }
+
+            public override bool IsDebtOnlyEnvironmental() => false;
+
+            public override void ResetState()
+            {
+                if (_feeTrackers.TryGetValue(this, out ElectricityMeter meter))
+                {
+                    meter.Reset();
+                }
+            }
+
+            public override void TurnOffDebtSources()
+            {
+                if (_feeTrackers.TryGetValue(this, out ElectricityMeter meter))
+                { 
+                    meter._unit?.SimController?.controlsOverrider?.SetNeutralState(); 
+                }
+            }
+
+            public override void UpdateDebtValues()
+            {
+                if (_feeTrackers.TryGetValue(this, out ElectricityMeter meter))
+                {
+                    foreach (DebtComponent current_fee in GetTrackedDebts())
+                    {
+                        if (current_fee.Type == ResourceType.ElectricCharge)
+                        { 
+                            current_fee.UpdateEndValue(Mathf.Clamp(startValue - (float) meter._energyConsumed, 0.0f, startValue));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         private static readonly Dictionary<TrainCar, ElectricityMeter> _carsWithMeters = new();
-        private static readonly Dictionary<TrainCar, SimulatedCarDebtTracker> _newTrackers = new();
-        private static readonly Dictionary<SimulatedCarDebtTracker, ElectricityMeter> _feeTrackers = new();
+        private static readonly Dictionary<TrainCar, LocoDebtTrackerBase> _newTrackers = new();
+        private static readonly Dictionary<LocoDebtTrackerBase, ElectricityMeter> _feeTrackers = new();
         private static readonly Dictionary<SimulatedCarDebtTracker, float> _initialElectricCharge = new();
         
         private readonly TrainCar? _unit;
-        private SimulatedCarDebtTracker? _feeTracker;
+        private LocoDebtTrackerBase? _feeTracker;
         
         private readonly Port _electricChargeConsumed;
 
@@ -34,7 +83,7 @@ namespace CCL.Importer.Implementations
         private double _energyConsumed = 0.0;
 
         public static Dictionary<SimulatedCarDebtTracker, float> initialElectricCharge => _initialElectricCharge;
-        public static Dictionary<SimulatedCarDebtTracker, ElectricityMeter> feeTrackers => _feeTrackers;
+        public static Dictionary<LocoDebtTrackerBase, ElectricityMeter> feeTrackers => _feeTrackers;
         
         public double energyConsumed => _energyConsumed;
         public override bool HasSaveData => true;
@@ -82,26 +131,65 @@ namespace CCL.Importer.Implementations
             }
         }
 
-        internal static void AddNewTracker(TrainCar vehicle, SimulatedCarDebtTracker newTracker)
+        internal static void AssignNewTracker(TrainCar vehicle, SimulatedCarDebtTracker? standardTracker)
         {
-            _newTrackers[vehicle] = newTracker;
-            if (_carsWithMeters.TryGetValue(vehicle, out ElectricityMeter meter))
+            if (!vehicle.playerSpawnedCar)
             {
-                meter.TrySetupFeeTracker();
+                bool trackerAssigned;
+                if (vehicle.uniqueCar)
+                {
+                    _newTrackers[vehicle] = new PrivateVehicleMeter(vehicle);
+                    SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(vehicle, _newTrackers[vehicle]);
+                    trackerAssigned = true;
+                }
+                else if (standardTracker != null)
+                { 
+                    _newTrackers[vehicle] = standardTracker; 
+                    trackerAssigned = true;
+                }
+                else
+                { 
+                    trackerAssigned = false;
+                }
+                if (trackerAssigned && _carsWithMeters.TryGetValue(vehicle, out ElectricityMeter meter))
+                {
+                    meter.TrySetupFeeTracker();
+                }
+            }
+        }
+
+        internal static void ReplaceTrackerOnOwnershipChange(TrainCar vehicle, SimulatedCarDebtTracker? standardTracker)
+        { 
+            TrainCar? unit = null;
+            ElectricityMeter? meter = null;
+            foreach (KeyValuePair<LocoDebtTrackerBase, ElectricityMeter> currentTracker in _feeTrackers)
+            {
+                meter = currentTracker.Value;
+                unit = meter._unit;
+                if (unit == vehicle && (currentTracker.Key is PrivateVehicleMeter) != unit.uniqueCar)
+                {
+                    meter.DisposeFeeTracker(unit);
+                    meter.Reset();      // Any leftover fees on a privately owned vehicle are staged and documented by the call above
+                    if (unit.uniqueCar || standardTracker != null)
+                    {
+                        CCLPlugin.LogVerbose($"Re-registering fee tracker for {(unit.uniqueCar ? "private" : "DVRT")} vehicle {unit.ID}");
+                        _carsWithMeters[unit] = meter;
+                        AssignNewTracker(unit, standardTracker);
+                    }
+                    break;
+                }
             }
         }
 
         private void TrySetupFeeTracker()
         {
-            if (_unit == null || !_carsWithMeters.ContainsKey(_unit) || !_newTrackers.ContainsKey(_unit))
+            if (_unit != null && _carsWithMeters.ContainsKey(_unit) && _newTrackers.TryGetValue(_unit, out _feeTracker))
             {
-                return;
+                _feeTrackers[_feeTracker] = this;
+                _newTrackers.Remove(_unit);
+                _feeTracker.UpdateDebtValues();
+                CCLPlugin.LogVerbose($"Set up a fee tracker <{_feeTracker.GetType()}> for car {_unit.ID}");
             }
-            _feeTracker = _newTrackers[_unit];
-            _feeTrackers[_feeTracker] = this;
-            _newTrackers.Remove(_unit);
-            _feeTracker.UpdateDebtValues();
-            CCLPlugin.LogVerbose($"Set up a fee tracker for car {_unit.ID}");
         }
 
         private void DisposeFeeTracker(TrainCar unit)
@@ -110,7 +198,15 @@ namespace CCL.Importer.Implementations
             if (_feeTracker != null && _feeTrackers.ContainsKey(_feeTracker))
             {
                 _feeTrackers.Remove(_feeTracker);
-                _initialElectricCharge.Remove(_feeTracker);
+                if (_feeTracker is PrivateVehicleMeter)
+                { 
+                    SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(_feeTracker);
+                    CCLPlugin.LogVerbose($"Staged remaining fees on car {unit.ID}");
+                }
+                else if (_feeTracker is SimulatedCarDebtTracker standardTracker)
+                {
+                    _initialElectricCharge.Remove(standardTracker);
+                }
                 _feeTracker = null;
             }
             if (_carsWithMeters.ContainsKey(unit))
