@@ -15,25 +15,8 @@ using CCL.Importer.Components.Simulation.Electric;
 
 namespace CCL.Importer.Implementations
 {
-    [HarmonyPatch(typeof(SimulatedCarDebtTracker))]
     public class ElectricityMeter : SimComponent
     {
-        [HarmonyPatch(typeof(SimController), "OnLogicCarInitialized")]
-        private static class LogicCarInitializer
-        {
-            private static void Postfix(TrainCar? ___train, SimulatedCarDebtTracker? ___debt)
-            {
-                if (___train != null && ___debt != null)
-                {
-                    _newTrackers[___train] = ___debt;
-                    if (_carsWithMeters.TryGetValue(___train, out ElectricityMeter meter))
-                    {
-                        meter.TrySetupFeeTracker();
-                    }
-                }
-            }
-        }
-        
         private static readonly Dictionary<TrainCar, ElectricityMeter> _carsWithMeters = new();
         private static readonly Dictionary<TrainCar, SimulatedCarDebtTracker> _newTrackers = new();
         private static readonly Dictionary<SimulatedCarDebtTracker, ElectricityMeter> _feeTrackers = new();
@@ -50,6 +33,10 @@ namespace CCL.Importer.Implementations
         private float _energyConsumptionFactor;
         private double _energyConsumed = 0.0;
 
+        public static Dictionary<SimulatedCarDebtTracker, float> initialElectricCharge => _initialElectricCharge;
+        public static Dictionary<SimulatedCarDebtTracker, ElectricityMeter> feeTrackers => _feeTrackers;
+        
+        public double energyConsumed => _energyConsumed;
         public override bool HasSaveData => true;
         
         public ElectricityMeter(ElectricityMeterDefinitionInternal definition) : base(definition.ID)
@@ -92,6 +79,15 @@ namespace CCL.Importer.Implementations
             {
                 _unit.LogicCarInitialized -= AdjustEnergyConsumptionFactor;
                 _energyConsumptionFactor *= gameParams.ResourceConsumptionModifier;
+            }
+        }
+
+        internal static void AddNewTracker(TrainCar vehicle, SimulatedCarDebtTracker newTracker)
+        {
+            _newTrackers[vehicle] = newTracker;
+            if (_carsWithMeters.TryGetValue(vehicle, out ElectricityMeter meter))
+            {
+                meter.TrySetupFeeTracker();
             }
         }
 
@@ -142,6 +138,12 @@ namespace CCL.Importer.Implementations
             }
         }
 
+        internal void Reset()
+        {
+            _energyConsumed = 0.0;
+            _electricChargeConsumed.Value = 0.0f;
+        }
+
         public override JObject? GetSaveStateData()
         {
             if (_feeTracker == null)
@@ -164,125 +166,6 @@ namespace CCL.Importer.Implementations
                 }
                 _electricChargeConsumed.Value = (float) _energyConsumed;
                 _feeTracker?.UpdateDebtValues();
-            }
-        }
-
-        [HarmonyPatch("InitializeDebtComponents")]
-        [HarmonyPrefix]
-        private static void InitializeDebtComponentsPrefix(DamageController? ___dmgController, 
-            Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers, out bool __state)
-        {
-            __state = false;
-            if (___dmgController == null || ___resourceToResourceContainers == null)
-            { 
-                return; 
-            }
-            var unit = TrainCar.Resolve(___dmgController.gameObject);
-            if (unit == null || unit.gameObject.GetComponentInChildren<ElectricityMeterDefinitionInternal>() == null)
-            { 
-                return; 
-            }
-            
-            __state = true;
-            bool hasElectricChargeContainer = false;
-            foreach (KeyValuePair<ResourceType, List<ResourceContainer>> trackedResource in ___resourceToResourceContainers)
-            {
-                if (trackedResource.Key == ResourceType.ElectricCharge)
-                {
-                    hasElectricChargeContainer = true;
-                    break;
-                }
-            }
-            if (!hasElectricChargeContainer)
-            { 
-                ___resourceToResourceContainers[ResourceType.ElectricCharge] = new(); 
-            }
-        }
-
-        [HarmonyPatch("InitializeDebtComponents")]
-        [HarmonyPostfix]
-        private static void InitializeDebtComponentsPostfix(SimulatedCarDebtTracker? __instance,
-            Dictionary<ResourceType, List<ResourceContainer>>? ___resourceToResourceContainers, bool __state)
-        {
-            if (__state && __instance != null && ___resourceToResourceContainers != null)
-            {
-                _initialElectricCharge[__instance] = 0.0f;
-                foreach (ResourceContainer electricChargeContainer in ___resourceToResourceContainers[ResourceType.ElectricCharge])
-                { 
-                    _initialElectricCharge[__instance] += electricChargeContainer.amountReadOut.Value; 
-                }
-            }
-        }
-
-        [HarmonyPatch("UpdateDebtValues")]
-        [HarmonyPrefix]
-        private static void UpdateDebtValuesPrefix(SimulatedCarDebtTracker? __instance, out float? __state)
-        {
-            __state = null;
-            if (__instance == null)
-            { 
-                return; 
-            }
-
-            // Reset the start and snapshot values of the debt component to vanilla settings for consistency
-            foreach (DebtComponent currentFee in __instance.GetTrackedDebts())
-            {
-                if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.ContainsKey(__instance))
-                { 
-                    if (currentFee.HasSnapshot)
-                    { 
-                        __state = currentFee.StartValue - currentFee.SnapshotValue; 
-                    }
-                    currentFee.UpdateStartValue(_initialElectricCharge[__instance]);
-                    if (__state != null)
-                    { 
-                        currentFee.SetSnapshot(currentFee.StartValue - (float) __state); 
-                    }
-                    break;
-                }
-            }
-        }
-
-        [HarmonyPatch("UpdateDebtValues")]
-        [HarmonyPostfix]
-        private static void UpdateDebtValuesPostfix(SimulatedCarDebtTracker? __instance, float? __state)
-        {
-            if (__instance == null)
-            { 
-                return; 
-            }
-            foreach (DebtComponent currentFee in __instance.GetTrackedDebts())
-            {
-                if (currentFee.Type == ResourceType.ElectricCharge && _feeTrackers.TryGetValue(__instance, out ElectricityMeter meter))
-                { 
-                    float newEndValue = currentFee.EndValue - Mathf.Max((float) meter._energyConsumed, 0.0f);
-                    float minimum = (__state != null) ? Mathf.Min(newEndValue, currentFee.SnapshotValue) : newEndValue;
-                    if (minimum >= 0.0f)
-                    { 
-                        currentFee.UpdateEndValue(newEndValue); 
-                    }
-                    else
-                    {
-                        currentFee.UpdateEndValue(0.0f);
-                        currentFee.UpdateStartValue(_initialElectricCharge[__instance] - minimum);
-                        if (__state != null)
-                        { 
-                            currentFee.SetSnapshot(currentFee.StartValue - (float) __state); 
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-
-        [HarmonyPatch("ResetState")]
-        [HarmonyPostfix]
-        private static void ResetStatePostfix(SimulatedCarDebtTracker? __instance)
-        {
-            if (__instance != null && _feeTrackers.TryGetValue(__instance, out ElectricityMeter meter))
-            {
-                meter._energyConsumed = 0.0;
-                meter._electricChargeConsumed.Value = 0.0f;
             }
         }
     }
