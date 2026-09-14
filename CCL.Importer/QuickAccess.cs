@@ -138,6 +138,7 @@ namespace CCL.Importer
             private static Material? s_sightGlassS060;
             private static Material? s_bodyDE2;
             private static Material? s_bodyDE2new;
+            private static Material? s_bodyDE2rust;
             private static Material? s_primerDE2;
 
             public static Material ExplodedDE2Cab => Extensions.GetCached(ref s_explodedDE2cab,
@@ -148,12 +149,20 @@ namespace CCL.Importer
                 () => GetDVRTNew().substitutions[0].original);
             public static Material BodyDE2New => Extensions.GetCached(ref s_bodyDE2new,
                 () => GetDVRTNew().substitutions[0].substitute);
+            public static Material BodyDE2Rust => Extensions.GetCached(ref s_bodyDE2rust,
+                () => GetRelicRusty().substitutions[0].substitute);
             public static Material PrimerDE2 => Extensions.GetCached(ref s_primerDE2,
                 () => GetPrimer().substitutions[0].substitute);
 
             private static PaintTheme GetDVRTNew()
             {
                 PaintTheme.TryLoad("DVRT_New", out var theme);
+                return theme;
+            }
+
+            private static PaintTheme GetRelicRusty()
+            {
+                PaintTheme.TryLoad("Relic_Rusty", out var theme);
                 return theme;
             }
 

@@ -19,6 +19,7 @@ namespace CCL.Types
             PaintDetailsRusted,
             [Tooltip("Please include a dummy texture in the secondary Normal Map field of the material")]
             Primer,
+            TransparencyWithFog,
         }
 
         [Serializable]

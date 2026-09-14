@@ -57,7 +57,7 @@ namespace CCL.Importer.Processing
 
         private static readonly Dictionary<ShaderGrabber.GrabbableShader, Shader> s_shaderCache = new();
 
-        private static Shader GetShader(ShaderGrabber.GrabbableShader shader)
+        public static Shader GetShader(ShaderGrabber.GrabbableShader shader)
         {
             if (s_shaderCache.TryGetValue(shader, out Shader s))
             {

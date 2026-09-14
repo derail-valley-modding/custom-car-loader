@@ -53,6 +53,9 @@ namespace CCL.Importer
                 case ProceduralMaterialDefinitions.MaterialType.Primer:
                     GeneratePrimer(definition.Original);
                     return;
+                case ProceduralMaterialDefinitions.MaterialType.TransparencyWithFog:
+                    GenerateTransparencyWithFog(definition.Original);
+                    break;
                 default:
                     return;
             }
@@ -88,7 +91,7 @@ namespace CCL.Importer
 
         public static void GeneratePaintDetailsRusted(Material original)
         {
-            var mat = QuickAccess.Materials.BodyDE2;
+            var mat = QuickAccess.Materials.BodyDE2Rust;
 
             original.SetTexture(ShaderProps.DetailAlbedoMap, mat.GetTexture(ShaderProps.DetailAlbedoMap));
             original.SetTexture(ShaderProps.DetailNormalMap, mat.GetTexture(ShaderProps.DetailNormalMap));
@@ -105,6 +108,11 @@ namespace CCL.Importer
             original.SetFloat(ShaderProps.OcclusionStrength, strength);
             original.SetTexture(ShaderProps.OcclusionMap, ao);
             original.SetTexture(ShaderProps.NormalMap, normal);
+        }
+
+        public static void GenerateTransparencyWithFog(Material original)
+        {
+            original.shader = Shader.Find("TransparencyWithFog");
         }
 
         public static Material GenerateMaterial(IGeneratedMaterial generator)
