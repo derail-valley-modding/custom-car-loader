@@ -169,7 +169,10 @@ namespace CCL.Importer.Implementations
                 if (unit == vehicle && (currentTracker.Key is PrivateVehicleMeter) != unit.uniqueCar)
                 {
                     meter.DisposeFeeTracker(unit);
-                    meter.Reset();      // Any leftover fees on a privately owned vehicle are staged and documented by the call above
+                    if (!unit.uniqueCar)
+                    {   
+                        meter.Reset();      // Any leftover electricity bill on a privately owned vehicle is staged and documented by the call above
+                    }
                     if (unit.uniqueCar || standardTracker != null)
                     {
                         CCLPlugin.LogVerbose($"Re-registering fee tracker for {(unit.uniqueCar ? "private" : "DVRT")} vehicle {unit.ID}");
