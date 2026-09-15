@@ -112,6 +112,8 @@ namespace CCL.Importer.Implementations
 
         private void Move(float delta, float raiseHeight, bool pantographOn)
         {
+            const float proximitySlowdown = 0.2f;
+
             float currentRaise = _raiseReadOut.Value + _minimumRaise;
             float targetRaise, raiseDifference;
             if (pantographOn)
@@ -126,14 +128,14 @@ namespace CCL.Importer.Implementations
             }
             if (raiseDifference > 0.006f)
             {
-                float movementSpeed = Mathf.Min(_headMovementSpeed, raiseDifference / 0.2f);
+                float movementSpeed = Mathf.Min(_headMovementSpeed, raiseDifference / proximitySlowdown);
                 currentRaise = Mathf.Min(currentRaise + movementSpeed * delta, _maximumRaise);
                 _raiseReadOut.Value = currentRaise - _minimumRaise;
                 _raiseNormalizedReadOut.Value = Mathf.Clamp((currentRaise - _minimumRaise) / _maximumRaiseDifference, 0.0f, 0.999f);
             }
             else if (raiseDifference < -0.006f)
             {
-                float movementSpeed = Mathf.Min(_headMovementSpeed, raiseDifference / (-0.2f));
+                float movementSpeed = Mathf.Min(_headMovementSpeed, raiseDifference / (-proximitySlowdown));
                 currentRaise = Mathf.Max(currentRaise - movementSpeed * delta, _minimumRaise);
                 _raiseReadOut.Value = currentRaise - _minimumRaise;
                 _raiseNormalizedReadOut.Value = Mathf.Clamp((currentRaise - _minimumRaise) / _maximumRaiseDifference, 0.0f, 0.999f);
