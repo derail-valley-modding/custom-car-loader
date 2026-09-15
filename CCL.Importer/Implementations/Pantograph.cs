@@ -8,21 +8,13 @@ using CCL.Importer.Components.Simulation.Electric;
 
 namespace CCL.Importer.Implementations
 {
-    internal class Pantograph : SimComponent
+    internal class Pantograph : PowerCollectorCommonPorts
     {
         private static readonly Dictionary<TrainCar, List<Pantograph>> _allPantographs = new();
         
         private readonly FuseReference _powerFuse;
-        private readonly Port _wireHeight;
-        private readonly Port _initialHeadHeight;
-        private readonly Port _headHeight;
         private readonly Port _raiseReadOut;
         private readonly Port _raiseNormalizedReadOut;
-
-        private readonly Port _wireVoltage;
-        private readonly Port _voltageReadOut;
-        private readonly Port _inContact;
-
         private readonly PortReference _pantographToggle;
         private readonly TrainCar?  _unit;
 
@@ -31,24 +23,16 @@ namespace CCL.Importer.Implementations
         private bool _disabled = false;
         private float _minimumRaise = 0.0f, _maximumRaiseDifference;
 
-        public Pantograph(PantographDefinitionInternal definition): base(definition.ID)
+        public Pantograph(PantographDefinitionInternal definition): base(definition)
         {
             _headMovementSpeed = definition.headMovementSpeed;
             _maximumRaise = definition.maximumRaise;
 
             _powerFuse = AddFuseReference(definition.powerFuseId);
-
-            _wireHeight = AddPort(definition.wireHeight);
-            _initialHeadHeight = AddPort(definition.initialHeadHeight);
-            _headHeight = AddPort(definition.headHeight);
-            _wireVoltage = AddPort(definition.wireVoltage);
-            _voltageReadOut = AddPort(definition.supplyVoltage);
             _raiseReadOut = AddPort(definition.pantographRaise);
             _raiseNormalizedReadOut = AddPort(definition.pantographRaiseNormalized);
-            _inContact = AddPort(definition.pantographInContact);
-            _initialHeadHeight.ValueUpdatedInternally += CheckInitialHeight;
-
             _pantographToggle = AddPortReference(definition.toggle);
+            _initialHeadHeight.ValueUpdatedInternally += CheckInitialHeight;
 
             CheckInitialHeight(_initialHeadHeight.Value);
             if (_disabled)

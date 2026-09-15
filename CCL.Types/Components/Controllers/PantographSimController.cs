@@ -68,19 +68,19 @@ namespace CCL.Types.Components.Controllers
             return this.Pass(out message, out highlight);
         }
 
-        public void ConnectPantograph(PantographDefinition pantographProxy)
+        public void ConnectPantograph(PowerCollectorCommonPortsDefinition powerCollectorProxy)
         {
-            initialHeightPortId = pantographProxy.GetFullPortId("INITIAL_HEAD_HEIGHT");
-            headHeightPortId = pantographProxy.GetFullPortId("HEAD_HEIGHT");
-            wireHeightPortId = pantographProxy.GetFullPortId("WIRE_HEIGHT");
-            wireVoltagePortId = pantographProxy.GetFullPortId("WIRE_VOLTAGE");
-            isInContactPortId = pantographProxy.GetFullPortId("PANTOGRAPH_IN_CONTACT");
+            initialHeightPortId = powerCollectorProxy.GetFullPortId("INITIAL_HEAD_HEIGHT");
+            headHeightPortId = powerCollectorProxy.GetFullPortId("HEAD_HEIGHT");
+            wireHeightPortId = powerCollectorProxy.GetFullPortId("WIRE_HEIGHT");
+            wireVoltagePortId = powerCollectorProxy.GetFullPortId("WIRE_VOLTAGE");
+            isInContactPortId = powerCollectorProxy.GetFullPortId("PANTOGRAPH_IN_CONTACT");
         }
 
         private void Reset()
         {
-            if (gameObject.TryGetComponent<PantographDefinition>(out PantographDefinition pantographProxy))
-                ConnectPantograph(pantographProxy);
+            if (gameObject.TryGetComponent<PowerCollectorCommonPortsDefinition>(out PowerCollectorCommonPortsDefinition powerCollectorProxy))
+                ConnectPantograph(powerCollectorProxy);
         }
     }
 }

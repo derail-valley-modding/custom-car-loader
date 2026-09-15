@@ -6,7 +6,7 @@ using CCL.Types.Proxies.Ports;
 namespace CCL.Types.Components.Simulation.Electric
 {
     [AddComponentMenu("CCL/Components/Simulation/Electric/Pantograph Definition")]
-    public class PantographDefinition : SimComponentDefinitionProxy, IHasFuseIdFields
+    public class PantographDefinition : PowerCollectorCommonPortsDefinition, IHasFuseIdFields
     {
         [Min(0.01f), Tooltip("Pantograph head movement speed in m/s")]
         public float headMovementSpeed = 1.0f;
@@ -17,14 +17,8 @@ namespace CCL.Types.Components.Simulation.Electric
         [FuseId(true)]
         public string powerFuseId = string.Empty;
 
-        public override IEnumerable<PortDefinition> ExposedPorts => new[]
+        public override IEnumerable<PortDefinition> ExposedPorts => new List<PortDefinition>(base.ExposedPorts)
         {
-            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, "WIRE_HEIGHT"),
-            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, "INITIAL_HEAD_HEIGHT"),
-            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, "HEAD_HEIGHT"),
-            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.VOLTS, "WIRE_VOLTAGE"),
-            new PortDefinition(DVPortType.EXTERNAL_IN, DVPortValueType.STATE, "PANTOGRAPH_IN_CONTACT"),
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPH_RAISE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "PANTOGRAPH_RAISE_NORMALIZED")
         };
