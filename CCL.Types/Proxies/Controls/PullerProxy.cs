@@ -36,13 +36,15 @@ namespace CCL.Types.Proxies.Controls
             if (useCustomConnectionAnchor && connectionAnchor == null) return;
 
             Vector3 movedOffset = Vector3.up * linearLimit;
+            var start = invertDirection ? END_COLOR : START_COLOR;
+            var end = invertDirection ? START_COLOR : END_COLOR;
 
             using (GizmoUtil.MatrixScope.LocalTransform(useCustomConnectionAnchor ? connectionAnchor : transform))
             {
-                GizmoUtil.DrawGradientLine(movedOffset, -movedOffset, START_COLOR, END_COLOR);
-                Gizmos.color = START_COLOR;
+                GizmoUtil.DrawGradientLine(movedOffset, -movedOffset, start, end);
+                Gizmos.color = start;
                 Gizmos.DrawWireSphere(movedOffset, 0.01f);
-                Gizmos.color = END_COLOR;
+                Gizmos.color = end;
                 Gizmos.DrawWireSphere(-movedOffset, 0.01f);
             }
         }
@@ -63,19 +65,13 @@ namespace CCL.Types.Proxies.Controls
 
                 if (invertDirection)
                 {
-                    if (dot > -0.95f || dot < -1.05f)
-                    {
-                        message = "puller and anchor are not aligned";
-                        return SelfValidationResult.Warning;
-                    }
+                    dot = -dot;
                 }
-                else
+
+                if (dot < 0.95f || dot > 1.05f)
                 {
-                    if (dot < 0.95f || dot > 1.05f)
-                    {
-                        message = "puller and anchor are not aligned";
-                        return SelfValidationResult.Warning;
-                    }
+                    message = "puller and anchor are not aligned";
+                    return SelfValidationResult.Warning;
                 }
             }
 

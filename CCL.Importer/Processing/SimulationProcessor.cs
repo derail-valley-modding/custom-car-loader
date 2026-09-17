@@ -185,8 +185,7 @@ namespace CCL.Importer.Processing
 
             AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
             AddController<RopeInitialiseController, RopeBehaviour>(prefab);
-
-            // Add more wrapper controllers here - or possibly use MEF to initialize wrapper controllers?
+            AddController<CarUncouplerFeedersController, CarUncouplerFeederInternal>(prefab);
 
             // Order port feeders for priority.
             if (prefab.TryGetComponent(out InteractablePortFeedersController controller))

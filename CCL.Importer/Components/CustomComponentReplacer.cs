@@ -43,6 +43,7 @@ namespace CCL.Importer.Components
         private void MapCoupling()
         {
             CreateMap<CarAutoCoupler, CarAutoCouplerInternal>().AutoCacheAndMap();
+            CreateMap<CarUncouplerFeeder, CarUncouplerFeederInternal>().AutoCacheAndMap();
             CreateMap<RigidCoupler, RigidCouplerInternal>().AutoCacheAndMap();
             CreateMap<VirtualHandbrakeOverrider, VirtualHandbrakeOverriderInternal>().AutoCacheAndMap();
             CreateMap<DuplicateHandbrakeOverrider, DuplicateHandbrakeOverriderInternal>().AutoCacheAndMap();
