@@ -22,9 +22,16 @@ namespace CCL.Importer
         private static IMapper? _map;
         public static IMapper M => _map ??= _config.CreateMapper();
 
-        // This interface is only used to be able to store the generic type without the generics.
-        private interface ICacheConfig
+        // This interface ensures only the right methods are exposed to the public.
+        public interface IMapConfig
         {
+            public void SetCustomMapper(IMapper mapper);
+        }
+
+        // This interface is only used to be able to store the generic type without the generics.
+        private interface ICacheConfig : IMapConfig
+        {
+
             public void StoreComponentsInChildrenInCache(GameObject prefab);
 
             public void ConvertFromCache();
@@ -48,16 +55,9 @@ namespace CCL.Importer
                 _shouldMap = shouldMap;
             }
 
-            public CacheConfig(IMapper customMapper)
+            public void SetCustomMapper(IMapper mapper)
             {
-                _shouldMap = null;
-                _mapper = customMapper;
-            }
-
-            public CacheConfig(IMapper customMapper, Predicate<TSource> shouldMap)
-            {
-                _shouldMap = shouldMap;
-                _mapper = customMapper;
+                _mapper = mapper;
             }
 
             public void StoreComponentsInChildrenInCache(GameObject prefab)
@@ -103,11 +103,13 @@ namespace CCL.Importer
         /// </summary>
         /// <typeparam name="TSource">The proxy component type.</typeparam>
         /// <typeparam name="TDestination">The real component type.</typeparam>
-        internal static void AddConfig<TSource, TDestination>()
+        internal static IMapConfig AddConfig<TSource, TDestination>()
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            s_configCache.Add(new CacheConfig<TSource, TDestination>());
+            var config = new CacheConfig<TSource, TDestination>();
+            s_configCache.Add(config);
+            return config;
         }
 
         /// <summary>
@@ -116,38 +118,13 @@ namespace CCL.Importer
         /// <typeparam name="TSource">The proxy component type.</typeparam>
         /// <typeparam name="TDestination">The real component type.</typeparam>
         /// <param name="shouldMap">The condition that must be met for the map to be possible.</param>
-        internal static void AddConfig<TSource, TDestination>(Predicate<TSource> shouldMap)
+        internal static IMapConfig AddConfig<TSource, TDestination>(Predicate<TSource> shouldMap)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            s_configCache.Add(new CacheConfig<TSource, TDestination>(shouldMap));
-        }
-
-        /// <summary>
-        /// Adds a type map config to be automatically processed, with a custom mapper.
-        /// </summary>
-        /// <typeparam name="TSource">The proxy component type.</typeparam>
-        /// <typeparam name="TDestination">The real component type.</typeparam>
-        /// <param name="customMapper">The custom mapper implementation.</param>
-        internal static void AddConfigWithMapper<TSource, TDestination>(IMapper customMapper)
-            where TSource : MonoBehaviour
-            where TDestination : MonoBehaviour
-        {
-            s_configCache.Add(new CacheConfig<TSource, TDestination>(customMapper));
-        }
-
-        /// <summary>
-        /// Adds a type map config to be automatically processed, with a custom mapper.
-        /// </summary>
-        /// <typeparam name="TSource">The proxy component type.</typeparam>
-        /// <typeparam name="TDestination">The real component type.</typeparam>
-        /// <param name="customMapper">The custom mapper implementation.</param>
-        /// <param name="shouldMap">The condition that must be met for the map to be possible.</param>
-        internal static void AddConfigWithMapper<TSource, TDestination>(IMapper customMapper, Predicate<TSource> shouldMap)
-            where TSource : MonoBehaviour
-            where TDestination : MonoBehaviour
-        {
-            s_configCache.Add(new CacheConfig<TSource, TDestination>(customMapper, shouldMap));
+            var config = new CacheConfig<TSource, TDestination>(shouldMap);
+            s_configCache.Add(config);
+            return config;
         }
 
         /// <summary>

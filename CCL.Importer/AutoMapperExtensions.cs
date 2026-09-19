@@ -15,7 +15,7 @@ namespace CCL.Importer
         /// <typeparam name="TDestination">The real component.</typeparam>
         /// <param name="cfg">The mapping expression.</param>
         /// <returns>Itself</returns>
-        public static IMappingExpression<TSource, TDestination> AutoCacheAndMap<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
+        internal static IMappingExpression<TSource, TDestination> AutoCacheAndMap<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
@@ -32,7 +32,7 @@ namespace CCL.Importer
         /// <param name="cfg">The mapping expression.</param>
         /// <param name="predicate">The conditions that have to be met for a proxy to be replaced.</param>
         /// <returns>Itself</returns>
-        public static IMappingExpression<TSource, TDestination> AutoCacheAndMap<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg,
+        internal static IMappingExpression<TSource, TDestination> AutoCacheAndMap<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg,
             Predicate<TSource> predicate)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
@@ -47,14 +47,14 @@ namespace CCL.Importer
         /// <typeparam name="TSource">The proxy component.</typeparam>
         /// <typeparam name="TDestination">The real component.</typeparam>
         /// <param name="cfg">The mapping expression.</param>
-        /// <param name="customMapper">The custom mapper implementation.</param>
+        /// <param name="cacheConfig">The mapper configuration for further processing.</param>
         /// <returns>Itself</returns>
-        public static IMappingExpression<TSource, TDestination> AutoCacheAndMapWithCustom<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg,
-            IMapper customMapper)
+        public static IMappingExpression<TSource, TDestination> AutoCacheAndMap<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg,
+            out Mapper.IMapConfig cacheConfig)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            Mapper.AddConfigWithMapper<TSource, TDestination>(customMapper);
+            cacheConfig = Mapper.AddConfig<TSource, TDestination>();
             return cfg;
         }
 
@@ -65,15 +65,15 @@ namespace CCL.Importer
         /// <typeparam name="TSource">The proxy component.</typeparam>
         /// <typeparam name="TDestination">The real component.</typeparam>
         /// <param name="cfg">The mapping expression.</param>
-        /// <param name="customMapper">The custom mapper implementation.</param>
         /// <param name="predicate">The conditions that have to be met for a proxy to be replaced.</param>
+        /// <param name="cacheConfig">The mapper configuration for further processing.</param>
         /// <returns>Itself</returns>
         public static IMappingExpression<TSource, TDestination> AutoCacheAndMap<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg,
-            IMapper customMapper, Predicate<TSource> predicate)
+            Predicate<TSource> predicate, out Mapper.IMapConfig cacheConfig)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            Mapper.AddConfigWithMapper<TSource, TDestination>(customMapper, predicate);
+            cacheConfig = Mapper.AddConfig<TSource, TDestination>(predicate);
             return cfg;
         }
 
