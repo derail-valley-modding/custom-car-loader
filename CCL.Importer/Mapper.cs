@@ -36,6 +36,7 @@ namespace CCL.Importer
         {
             private Predicate<TSource>? _shouldMap;
             private TSource[] _sourceComponents = null!;
+            private IMapper? _mapper;
 
             public CacheConfig()
             {
@@ -45,6 +46,18 @@ namespace CCL.Importer
             public CacheConfig(Predicate<TSource> shouldMap)
             {
                 _shouldMap = shouldMap;
+            }
+
+            public CacheConfig(IMapper customMapper)
+            {
+                _shouldMap = null;
+                _mapper = customMapper;
+            }
+
+            public CacheConfig(IMapper customMapper, Predicate<TSource> shouldMap)
+            {
+                _shouldMap = shouldMap;
+                _mapper = customMapper;
             }
 
             public void StoreComponentsInChildrenInCache(GameObject prefab)
@@ -69,13 +82,16 @@ namespace CCL.Importer
 
             public void ConvertFromCache()
             {
+                // Use the custom mapper if specified.
+                var mapper = _mapper ?? M;
+
                 // This is only ever called right after the previous one,
                 // so it should NEVER be null.
                 foreach (MonoBehaviour source in _sourceComponents)
                 {
                     if (!s_componentMapCache.TryGetValue(source, out MonoBehaviour cached) || s_mapped.Contains(cached)) continue;
 
-                    M.Map(source, cached);
+                    mapper.Map(source, cached);
                     UnityEngine.Object.Destroy(source);
                     s_mapped.Add(cached);
                 }
@@ -105,6 +121,33 @@ namespace CCL.Importer
             where TDestination : MonoBehaviour
         {
             s_configCache.Add(new CacheConfig<TSource, TDestination>(shouldMap));
+        }
+
+        /// <summary>
+        /// Adds a type map config to be automatically processed, with a custom mapper.
+        /// </summary>
+        /// <typeparam name="TSource">The proxy component type.</typeparam>
+        /// <typeparam name="TDestination">The real component type.</typeparam>
+        /// <param name="customMapper">The custom mapper implementation.</param>
+        internal static void AddConfigWithMapper<TSource, TDestination>(IMapper customMapper)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            s_configCache.Add(new CacheConfig<TSource, TDestination>(customMapper));
+        }
+
+        /// <summary>
+        /// Adds a type map config to be automatically processed, with a custom mapper.
+        /// </summary>
+        /// <typeparam name="TSource">The proxy component type.</typeparam>
+        /// <typeparam name="TDestination">The real component type.</typeparam>
+        /// <param name="customMapper">The custom mapper implementation.</param>
+        /// <param name="shouldMap">The condition that must be met for the map to be possible.</param>
+        internal static void AddConfigWithMapper<TSource, TDestination>(IMapper customMapper, Predicate<TSource> shouldMap)
+            where TSource : MonoBehaviour
+            where TDestination : MonoBehaviour
+        {
+            s_configCache.Add(new CacheConfig<TSource, TDestination>(customMapper, shouldMap));
         }
 
         /// <summary>
@@ -219,7 +262,7 @@ namespace CCL.Importer
         /// </summary>
         /// <param name="source">The source (usually proxy) component.</param>
         /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, <c>null</c>.</returns>
-        internal static MonoBehaviour GetFromCache(MonoBehaviour source)
+        public static MonoBehaviour GetFromCache(MonoBehaviour source)
         {
             s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
             return output;
@@ -230,7 +273,7 @@ namespace CCL.Importer
         /// </summary>
         /// <param name="source">The enumerable of source (usually proxies) components.</param>
         /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <c>null</c> values.</returns>
-        internal static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
+        public static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
         {
             return source.Select(scr => GetFromCache(scr));
         }
@@ -240,7 +283,7 @@ namespace CCL.Importer
         /// </summary>
         /// <param name="source">The source (usually proxy) component.</param>
         /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, it will return instead <paramref name="source"/>.</returns>
-        internal static MonoBehaviour GetFromCacheOrSelf(MonoBehaviour source)
+        public static MonoBehaviour GetFromCacheOrSelf(MonoBehaviour source)
         {
             s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
             return output ?? source;
@@ -254,12 +297,12 @@ namespace CCL.Importer
         /// A collection of <see cref="MonoBehaviour"/>. If there is no mapped version for a given one, it will be the original <see cref="MonoBehaviour"/>
         /// that was in <paramref name="source"/>.
         /// </returns>
-        internal static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
+        public static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
         {
             return source.Select(scr => GetFromCacheOrSelf(scr));
         }
 
-        public static void ClearComponentCache()
+        internal static void ClearComponentCache()
         {
             s_componentMapCache.Clear();
             s_mapped.Clear();
