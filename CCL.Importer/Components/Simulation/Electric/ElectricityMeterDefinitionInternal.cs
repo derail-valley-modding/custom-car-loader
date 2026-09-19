@@ -1,7 +1,7 @@
-using CCL.Importer.Implementations;
-
 using LocoSim.Definitions;
 using LocoSim.Implementations;
+
+using CCL.Importer.Implementations;
 
 namespace CCL.Importer.Components.Simulation.Electric
 {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-using CCL.Types.Proxies.Ports;
-
 using UnityEngine;
+
+using CCL.Types.Proxies.Ports;
 
 namespace CCL.Types.Components.Simulation.Electric
 {

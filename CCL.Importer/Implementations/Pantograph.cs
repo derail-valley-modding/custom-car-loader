@@ -18,10 +18,12 @@ namespace CCL.Importer.Implementations
         private readonly PortReference _pantographToggle;
         private readonly TrainCar?  _unit;
 
-        private readonly float _maximumRaise, _headMovementSpeed;
+        private readonly float _maximumRaise;
+        private readonly float _headMovementSpeed;
         
         private bool _disabled = false;
-        private float _minimumRaise = 0.0f, _maximumRaiseDifference;
+        private float _minimumRaise = 0.0f;
+        private float _maximumRaiseDifference;
 
         public Pantograph(PantographDefinitionInternal definition): base(definition)
         {
@@ -79,17 +81,17 @@ namespace CCL.Importer.Implementations
             }
         }
         
-        private void OnCarDestroyed(TrainCar unit)
+        private void OnCarDestroyed(TrainCar? unit)
         {
-            if (unit != null && _allPantographs.ContainsKey(unit))
+            if (unit != null && _allPantographs.TryGetValue(unit, out List<Pantograph> installedPantographs))
             { 
                 unit.OnDestroyCar -= OnCarDestroyed;
-                foreach (Pantograph currentPantograph in _allPantographs[unit])
+                foreach (Pantograph currentPantograph in installedPantographs)
                 {
                     currentPantograph._disabled = true;
                     currentPantograph._initialHeadHeight.ValueUpdatedInternally -= currentPantograph.CheckInitialHeight;
                 }
-                _allPantographs[unit].Clear();
+                installedPantographs.Clear();
                 _allPantographs.Remove(unit);
             }
         }
@@ -99,7 +101,8 @@ namespace CCL.Importer.Implementations
             const float proximitySlowdown = 0.2f;
 
             float currentRaise = _raiseReadOut.Value + _minimumRaise;
-            float targetRaise, raiseDifference;
+            float targetRaise;
+            float raiseDifference;
             if (pantographOn)
             {
                 targetRaise = raiseHeight;

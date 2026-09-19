@@ -14,7 +14,7 @@ namespace CCL.Types.Components.Controllers
         public Transform? contactStripFirstEnd;
         public Transform? contactStripSecondEnd;
         
-        [Min(0.01f), Tooltip("Maximum vertical offset between wire and strip midpoint for a contact to register")]
+        [Min(0.01f), Tooltip("Maximum vertical offset between wire and strip midpoint for contact to register")]
         public float contactTolerance = 0.2f;
 
         [PortId(DVPortType.EXTERNAL_IN, DVPortValueType.GENERIC, true)]
@@ -68,7 +68,7 @@ namespace CCL.Types.Components.Controllers
             return this.Pass(out message, out highlight);
         }
 
-        public void ConnectPantograph(PowerCollectorCommonPortsDefinition powerCollectorProxy)
+        public void ConnectPowerCollector(PowerCollectorCommonPortsDefinition powerCollectorProxy)
         {
             initialHeightPortId = powerCollectorProxy.GetFullPortId("INITIAL_HEAD_HEIGHT");
             headHeightPortId = powerCollectorProxy.GetFullPortId("HEAD_HEIGHT");
@@ -80,7 +80,9 @@ namespace CCL.Types.Components.Controllers
         private void Reset()
         {
             if (gameObject.TryGetComponent<PowerCollectorCommonPortsDefinition>(out PowerCollectorCommonPortsDefinition powerCollectorProxy))
-                ConnectPantograph(powerCollectorProxy);
+            {
+                ConnectPowerCollector(powerCollectorProxy); 
+            }
         }
     }
 }

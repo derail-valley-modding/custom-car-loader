@@ -94,7 +94,9 @@ namespace CCL.Importer.Implementations
                 {
                     Port? inContactPort = _inContact[pantographIndex] = _inputsFromPantographs[pantographIndex * 2].GetPort();
                     if (inContactPort == null || !_pantographVoltages[pantographIndex].IsConnected)
-                        CCLPlugin.Warning($"Empty pantograph connection {pantographIndex} to bus bar");
+                    { 
+                        CCLPlugin.Warning($"Empty pantograph connection {pantographIndex} to bus bar"); 
+                    }
                     else
                     {
                         Action<float> ContactHandler = CreateContactHandler(pantographIndex);

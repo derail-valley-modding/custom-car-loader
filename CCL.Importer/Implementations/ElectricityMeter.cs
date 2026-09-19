@@ -17,7 +17,7 @@ namespace CCL.Importer.Implementations
     {
         private class PrivateVehicleMeter : LocoDebtTrackerBase
         {
-            const float startValue = 524287.0f;
+            private const float startValue = 524287.0f;
         
             public PrivateVehicleMeter(TrainCar vehicle)
             {
@@ -133,28 +133,30 @@ namespace CCL.Importer.Implementations
 
         internal static void AssignNewTracker(TrainCar vehicle, SimulatedCarDebtTracker? standardTracker)
         {
-            if (!vehicle.playerSpawnedCar)
+            if (vehicle.playerSpawnedCar)
             {
-                bool trackerAssigned;
-                if (vehicle.uniqueCar)
-                {
-                    _newTrackers[vehicle] = new PrivateVehicleMeter(vehicle);
-                    SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(vehicle, _newTrackers[vehicle]);
-                    trackerAssigned = true;
-                }
-                else if (standardTracker != null)
-                { 
-                    _newTrackers[vehicle] = standardTracker; 
-                    trackerAssigned = true;
-                }
-                else
-                { 
-                    trackerAssigned = false;
-                }
-                if (trackerAssigned && _carsWithMeters.TryGetValue(vehicle, out ElectricityMeter meter))
-                {
-                    meter.TrySetupFeeTracker();
-                }
+                return;
+            }
+
+            bool trackerAssigned;
+            if (vehicle.uniqueCar)
+            {
+                _newTrackers[vehicle] = new PrivateVehicleMeter(vehicle);
+                SingletonBehaviour<LocoDebtController>.Instance.RegisterLocoDebtTracker(vehicle, _newTrackers[vehicle]);
+                trackerAssigned = true;
+            }
+            else if (standardTracker != null)
+            { 
+                _newTrackers[vehicle] = standardTracker; 
+                trackerAssigned = true;
+            }
+            else
+            { 
+                trackerAssigned = false;
+            }
+            if (trackerAssigned && _carsWithMeters.TryGetValue(vehicle, out ElectricityMeter meter))
+            {
+                meter.TrySetupFeeTracker();
             }
         }
 
@@ -171,12 +173,13 @@ namespace CCL.Importer.Implementations
                     meter.DisposeFeeTracker(unit);
                     if (!unit.uniqueCar)
                     {   
-                        meter.Reset();      // Any leftover electricity bill on a privately owned vehicle is staged and documented by the call above
+                        meter.Reset();      // Any leftover electricity bill on a privately owned vehicle is staged and documented by the dispose call above
                     }
                     if (unit.uniqueCar || standardTracker != null)
                     {
                         CCLPlugin.LogVerbose($"Re-registering fee tracker for {(unit.uniqueCar ? "private" : "DVRT")} vehicle {unit.ID}");
                         _carsWithMeters[unit] = meter;
+                        unit.OnDestroyCar += meter.DisposeFeeTracker;
                         AssignNewTracker(unit, standardTracker);
                     }
                     break;
@@ -195,45 +198,44 @@ namespace CCL.Importer.Implementations
             }
         }
 
-        private void DisposeFeeTracker(TrainCar unit)
+        private void DisposeFeeTracker(TrainCar? unit)
         {
+            if (unit == null)
+            {
+                return;
+            }
+
             unit.OnDestroyCar -= DisposeFeeTracker;
-            if (_feeTracker != null && _feeTrackers.ContainsKey(_feeTracker))
+            if (_feeTracker != null)
             {
                 _feeTrackers.Remove(_feeTracker);
-                if (_feeTracker is PrivateVehicleMeter)
-                { 
-                    SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(_feeTracker);
-                    CCLPlugin.LogVerbose($"Staged remaining fees on car {unit.ID}");
-                }
-                else if (_feeTracker is SimulatedCarDebtTracker standardTracker)
+                if (_feeTracker is SimulatedCarDebtTracker standardTracker)
                 {
                     _initialElectricCharge.Remove(standardTracker);
                 }
+                else if (_feeTracker is PrivateVehicleMeter)
+                { 
+                    SingletonBehaviour<LocoDebtController>.Instance.StageLocoDebtOnLocoDestroy(_feeTracker);
+                    CCLPlugin.LogVerbose($"Staged remaining electricity fees on car {unit.ID}");
+                }
                 _feeTracker = null;
             }
-            if (_carsWithMeters.ContainsKey(unit))
-            {
-                _carsWithMeters.Remove(unit);
-            }
-            if (_newTrackers.ContainsKey(unit))
-            { 
-                _newTrackers.Remove(unit); 
-            }
+            _carsWithMeters.Remove(unit);
+            _newTrackers.Remove(unit); 
             CCLPlugin.LogVerbose($"Removed fee tracker for car {unit.ID}");
         }
 
         public override void Tick(float delta)
         {
-            if (_feeTracker == null)
+            if (_feeTracker != null)
             { 
-                return; 
-            }
-            float load = _currentDraw.Value, voltage = _supplyVoltage.Value;
-            if (load != 0.0f && !float.IsNaN(load) && !float.IsInfinity(load) && !float.IsNaN(voltage) && !float.IsInfinity(voltage))
-            {
-                _energyConsumed += load * voltage * _energyConsumptionFactor * delta;
-                _electricChargeConsumed.Value = (float) _energyConsumed;
+                float load = _currentDraw.Value;
+                float voltage = _supplyVoltage.Value;
+                if (load != 0.0f && !float.IsNaN(load) && !float.IsInfinity(load) && !float.IsNaN(voltage) && !float.IsInfinity(voltage))
+                {
+                    _energyConsumed += load * voltage * _energyConsumptionFactor * delta;
+                    _electricChargeConsumed.Value = (float) _energyConsumed;
+                }
             }
         }
 
@@ -256,16 +258,23 @@ namespace CCL.Importer.Implementations
 
         public override void SetSaveStateData(JObject? savedData)
         {
-            if (savedData != null)
+            if (savedData == null)
+            {
+                Reset();
+            }
+            else
             {
                 _energyConsumed = savedData.GetDouble("energyConsumed") ?? 0.0;
                 if (double.IsNaN(_energyConsumed) || double.IsInfinity(_energyConsumed))
                 { 
-                    _energyConsumed = 0.0; 
+                    Reset();
                 }
-                _electricChargeConsumed.Value = (float) _energyConsumed;
-                _feeTracker?.UpdateDebtValues();
+                else
+                {
+                    _electricChargeConsumed.Value = (float) _energyConsumed;
+                }
             }
+            _feeTracker?.UpdateDebtValues();
         }
     }
 }

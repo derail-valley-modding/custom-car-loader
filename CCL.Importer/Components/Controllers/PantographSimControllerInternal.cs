@@ -15,11 +15,11 @@ namespace CCL.Importer.Components.Controllers
     {
         #region OCS interface
 
-        const string OCSClassName = "electric_sim.catenary.overhead_equipment, electric_sim";
-        const string OCSPropertyName = "system";
-        const string OCSWireHeightAndVoltageMethodName = "relative_wire_height_and_voltage";
-        const string OCSActivationEventName = "catenary_activated";
-        const string OCSDeactivationEventName = "catenary_deactivated";
+        private const string OCSClassName = "electric_sim.catenary.overhead_equipment, electric_sim";
+        private const string OCSPropertyName = "system";
+        private const string OCSWireHeightAndVoltageMethodName = "relative_wire_height_and_voltage";
+        private const string OCSActivationEventName = "catenary_activated";
+        private const string OCSDeactivationEventName = "catenary_deactivated";
 
         private static Type? _OCSType = null;
         private static MethodInfo? _getWireHeightAndVoltageInfo = null;
@@ -28,7 +28,7 @@ namespace CCL.Importer.Components.Controllers
 
         #endregion
 
-        private static readonly Dictionary<TrainCar, List<PantographSimControllerInternal>> _allCatenaryControllers = new();
+        private static readonly Dictionary<TrainCar, HashSet<PantographSimControllerInternal>> _allCatenaryControllers = new();
 
         public Transform? pantographBase;
         public Transform? contactStripFirstEnd;
@@ -102,10 +102,12 @@ namespace CCL.Importer.Components.Controllers
                     return;
                 }
                 CCLPlugin.LogVerbose("Catenary activated, restoring overhead power access");
-                foreach (List<PantographSimControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
+                foreach (HashSet<PantographSimControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
                 {
                     foreach (PantographSimControllerInternal controller in carCatenaryControllers)
-                        controller.SetUpCatenaryConnection();
+                    { 
+                        controller.SetUpCatenaryConnection(); 
+                    }
                 }
             }
         }
@@ -114,10 +116,12 @@ namespace CCL.Importer.Components.Controllers
         {
             CCLPlugin.LogVerbose("Catenary deactivated, turning off overhead power");
             _OCSInstance = null;
-            foreach (List<PantographSimControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
+            foreach (HashSet<PantographSimControllerInternal> carCatenaryControllers in _allCatenaryControllers.Values)
             {
                 foreach (PantographSimControllerInternal controller in carCatenaryControllers)
-                    controller.DisablePower();
+                { 
+                    controller.DisablePower(); 
+                }
             }
         }
 
@@ -165,16 +169,25 @@ namespace CCL.Importer.Components.Controllers
                 Destroy(this);
                 return;
             }
-            _unit = TrainCar.Resolve(gameObject);
-            if (_unit == null)
+            var unit = TrainCar.Resolve(gameObject);
+            if (unit == null)
             { 
                 Debug.LogError($"Car unresolved, pantograph sim controller disabled", this);
                 Destroy(this);
                 return;
             }
+            _unit = unit;
 
             TryGetOCSType();
             SetUpCatenaryConnection();
+            if (_allCatenaryControllers.TryGetValue(unit, out HashSet<PantographSimControllerInternal> pantographContollers))
+            { 
+                pantographContollers.Add(this); 
+            }
+            else
+            { 
+                _allCatenaryControllers[unit] = new() { this }; 
+            }
             (_initialHeadHeight.Value, _) = GetHeadMidpointHeight();
         }
 
@@ -228,11 +241,15 @@ namespace CCL.Importer.Components.Controllers
 
         private void OnDestroy()
         {
-            if (_unit is not null && _allCatenaryControllers.ContainsKey(_unit))
+            DisablePower();
+            TrainCar? unit = _unit;
+            if (unit is not null && _allCatenaryControllers.TryGetValue(unit, out HashSet<PantographSimControllerInternal> pantographControllers))
             {
-                foreach (PantographSimControllerInternal controller in _allCatenaryControllers[_unit])
-                    controller.DisablePower();
-                _allCatenaryControllers.Remove(_unit);
+                pantographControllers.Remove(this);
+                if (pantographControllers.Count == 0)
+                { 
+                    _allCatenaryControllers.Remove(unit); 
+                }
             }
         }
     }
