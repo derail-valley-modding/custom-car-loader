@@ -17,23 +17,17 @@ namespace CCL.Importer
         private static readonly HashSet<MonoBehaviour> s_mapped = new();
         // Mapper needs to be declared after the caches, or it will cause reflection problems,
         // as the config will try to access the caches.
-        private static readonly MapperConfiguration _config = new(Configure);
+        private static readonly MapperConfiguration s_config = new(Configure);
 
-        private static IMapper? _map;
-        public static IMapper M => _map ??= _config.CreateMapper();
-
-        // This interface ensures only the right methods are exposed to the public.
-        public interface IMapConfig
-        {
-            public void SetCustomMapper(IMapper mapper);
-        }
+        private static List<ICacheConfig>? s_configBlock;
+        private static IMapper? s_map;
+        public static IMapper M => s_map ??= s_config.CreateMapper();
 
         // This interface is only used to be able to store the generic type without the generics.
-        private interface ICacheConfig : IMapConfig
+        private interface ICacheConfig
         {
-
+            public void SetCustomMapper(IMapper mapper);
             public void StoreComponentsInChildrenInCache(GameObject prefab);
-
             public void ConvertFromCache();
         }
 
@@ -103,13 +97,11 @@ namespace CCL.Importer
         /// </summary>
         /// <typeparam name="TSource">The proxy component type.</typeparam>
         /// <typeparam name="TDestination">The real component type.</typeparam>
-        internal static IMapConfig AddConfig<TSource, TDestination>()
+        internal static void AddConfig<TSource, TDestination>()
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            var config = new CacheConfig<TSource, TDestination>();
-            s_configCache.Add(config);
-            return config;
+            s_configCache.Add(new CacheConfig<TSource, TDestination>());
         }
 
         /// <summary>
@@ -118,13 +110,11 @@ namespace CCL.Importer
         /// <typeparam name="TSource">The proxy component type.</typeparam>
         /// <typeparam name="TDestination">The real component type.</typeparam>
         /// <param name="shouldMap">The condition that must be met for the map to be possible.</param>
-        internal static IMapConfig AddConfig<TSource, TDestination>(Predicate<TSource> shouldMap)
+        internal static void AddConfig<TSource, TDestination>(Predicate<TSource> shouldMap)
             where TSource : MonoBehaviour
             where TDestination : MonoBehaviour
         {
-            var config = new CacheConfig<TSource, TDestination>(shouldMap);
-            s_configCache.Add(config);
-            return config;
+            s_configCache.Add(new CacheConfig<TSource, TDestination>(shouldMap));
         }
 
         /// <summary>
@@ -277,6 +267,43 @@ namespace CCL.Importer
         public static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
         {
             return source.Select(scr => GetFromCacheOrSelf(scr));
+        }
+
+        /// <summary>
+        /// Begins grouping configurations for use with a custom mapper.
+        /// </summary>
+        public static void BeginConfigBlock()
+        {
+            if (s_configBlock != null)
+            {
+                CCLPlugin.Error($"{nameof(BeginConfigBlock)} was called, but a block was not cleared! Forcing purge to ensure state is clean.");
+                s_configBlock.Clear();
+            }
+            else
+            {
+                s_configBlock = new List<ICacheConfig>();
+            }
+        }
+
+        /// <summary>
+        /// Ends grouping configurations and applies the custom mapper to them.
+        /// </summary>
+        /// <param name="mapper"></param>
+        public static void EndConfigBlock(IMapper mapper)
+        {
+            if (s_configBlock == null)
+            {
+                CCLPlugin.Warning($"{nameof(EndConfigBlock)} was called, but no block exists!");
+                return;
+            }
+
+            foreach (var item in s_configBlock)
+            {
+                item.SetCustomMapper(mapper);
+            }
+
+            s_configBlock.Clear();
+            s_configBlock = null;
         }
 
         internal static void ClearComponentCache()
