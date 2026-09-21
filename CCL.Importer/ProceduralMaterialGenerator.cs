@@ -56,6 +56,9 @@ namespace CCL.Importer
                 case ProceduralMaterialDefinitions.MaterialType.TransparencyWithFog:
                     GenerateTransparencyWithFog(definition.Original);
                     break;
+                case ProceduralMaterialDefinitions.MaterialType.RenderQueue2000:
+                    GenerateRenderQueue2000(definition.Original);
+                    break;
                 default:
                     return;
             }
@@ -113,6 +116,11 @@ namespace CCL.Importer
         public static void GenerateTransparencyWithFog(Material original)
         {
             original.shader = Shader.Find("TransparencyWithFog");
+        }
+
+        public static void GenerateRenderQueue2000(Material original)
+        {
+            original.renderQueue = 2000;
         }
 
         public static Material GenerateMaterial(IGeneratedMaterial generator)

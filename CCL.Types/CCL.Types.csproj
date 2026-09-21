@@ -21,7 +21,7 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)$(OutDir)Mod"/>
-		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator"/>
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)$(OutDir)Mod" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)$(OutDir)CarCreator" />
 	</Target>
 </Project>
