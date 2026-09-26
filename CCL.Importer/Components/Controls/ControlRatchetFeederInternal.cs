@@ -12,8 +12,6 @@ namespace CCL.Importer.Components.Controls
 
         private ControlImplBase _controlSelf = null!;
         private ControlImplBase _controlOther = null!;
-        private bool _init = false;
-        private float _prev;
 
         private IEnumerator Start()
         {
@@ -21,6 +19,12 @@ namespace CCL.Importer.Components.Controls
 
             _controlSelf = GetComponent<ControlImplBase>();
             _controlOther = ControlObject.GetComponent<ControlImplBase>();
+
+            if (_controlSelf == null)
+            {
+                Debug.LogError($"Failed to find ControlImplBase on object '{name}'!", this);
+                yield break;
+            }
 
             if (_controlOther == null)
             {
@@ -30,16 +34,20 @@ namespace CCL.Importer.Components.Controls
 
             yield return null;
 
-            _prev = _controlSelf.Value;
-            _init = true;
+            _controlSelf.ValueChanged += ValueChanged;
         }
 
-        private void Update()
+        private void OnDestroy()
         {
-            if (!_init) return;
+            if (_controlSelf != null)
+            {
+                _controlSelf.ValueChanged -= ValueChanged;
+            }
+        }
 
-            var value = _controlSelf.Value;
-            var dif = value - _prev;
+        private void ValueChanged(ValueChangedEventArgs args)
+        {
+            var dif = args.delta;
 
             if (Reverse)
             {
@@ -50,8 +58,6 @@ namespace CCL.Importer.Components.Controls
             {
                 _controlOther.SetValue(_controlOther.Value + dif * Multiplier);
             }
-
-            _prev = value;
         }
     }
 }

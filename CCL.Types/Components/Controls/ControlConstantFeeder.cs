@@ -7,6 +7,7 @@ namespace CCL.Types.Components.Controls
     {
         public GameObject ControlObject = null!;
         public float Multiplier = 1.0f;
+        public float Tolerance = 0.01f;
         public bool Constant = false;
     }
 }
