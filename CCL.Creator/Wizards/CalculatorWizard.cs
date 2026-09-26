@@ -33,6 +33,8 @@ namespace CCL.Creator.Wizards
                 "Approximate tractive effort for steam locomotives"),
             new GUIContent("Adhesion Limit",
                 "Adhesion limit"),
+            new GUIContent("Factor of Adhesion",
+                "Factor of Adhesion"),
             new GUIContent("Traction Motor Properties",
                 "Motor voltage and current for different configurations"),
             new GUIContent("Generator Voltage",
@@ -79,9 +81,12 @@ namespace CCL.Creator.Wizards
                         _adhesionLimit.Draw();
                         break;
                     case 4:
-                        _tmProperties.Draw();
+                        _factorOfAdhesion.Draw();
                         break;
                     case 5:
+                        _tmProperties.Draw();
+                        break;
+                    case 6:
                         _generatorVoltage.Draw();
                         break;
                     default:
@@ -373,6 +378,51 @@ namespace CCL.Creator.Wizards
 
         [SerializeField]
         private AdhesionLimit _adhesionLimit = new AdhesionLimit();
+
+        #endregion
+
+        #region Factor of Adhesion
+
+        [Serializable]
+        private class FactorOfAdhesion
+        {
+            // Close to S060 values.
+            public float AdhesiveWeight = 50700f;
+            public float TractiveEffort = 70000f;
+
+            public void Draw()
+            {
+                AdhesiveWeight = EditorGUILayout.FloatField("Adhesive Weight (kg)", AdhesiveWeight);
+                TractiveEffort = EditorGUILayout.FloatField("Tractive Effort (N)", TractiveEffort);
+
+                // Because the original calculation was in pounds and pounds-force,
+                // so we must use kilograms and kilograms-force instead of newtons.
+                var result = AdhesiveWeight / (TractiveEffort / Units.KGFtoNewton);
+                EditorGUILayout.LabelField("Factor of Adhesion", $"{result:F2}");
+
+                EditorGUILayout.Space();
+                Guess(EditorHelpers.ObjectField<UObject>(s_context, null, true));
+            }
+
+            private void Guess(UObject? context)
+            {
+                switch (context)
+                {
+                    case CustomCarType car:
+                        AdhesiveWeight = car.mass;
+                        break;
+                    case CustomCarVariant livery:
+                        Guess(livery.parentType);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        [SerializeField]
+        private FactorOfAdhesion _factorOfAdhesion = new FactorOfAdhesion();
 
         #endregion
 

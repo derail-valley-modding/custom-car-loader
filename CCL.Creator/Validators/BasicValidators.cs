@@ -102,6 +102,27 @@ namespace CCL.Creator.Validators
                 }
             }
 
+            // Prefab checks.
+            int plates = 0;
+            foreach (var item in CarPartNames.INFO_PLATES)
+            {
+                if (livery.prefab.transform.TryFind(item, out _))
+                {
+                    plates++;
+                }
+            }
+            switch (plates)
+            {
+                case 0:
+                    result.Warning($"Livery '{livery.id}' has no car info plates", livery.prefab);
+                    break;
+                case 1:
+                    result.Warning($"Livery '{livery.id}' only has 1 car info plate", livery.prefab);
+                    break;
+                default:
+                    break;
+            }
+
             return result;
         }
     }
