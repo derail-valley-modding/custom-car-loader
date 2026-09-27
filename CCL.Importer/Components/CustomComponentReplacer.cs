@@ -82,6 +82,7 @@ namespace CCL.Importer.Components
             CreateMap<RPMDamageCalculatorDefinition, RPMDamageCalculatorDefinitionInternal>().AutoCacheAndMap();
             CreateMap<FlywheelDefinition, FlywheelDefinitionInternal>().AutoCacheAndMap();
             CreateMap<SteppableControlHandlerDefinition, SteppableControlHandlerDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<ManualLapBrakeSplitterDefinition, ManualLapBrakeSplitterDefinitionInternal>().AutoCacheAndMap();
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();
