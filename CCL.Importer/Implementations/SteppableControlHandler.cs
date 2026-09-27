@@ -1,4 +1,5 @@
 ﻿using CCL.Importer.Components.Simulation;
+using CCL.Types;
 using LocoSim.Implementations;
 using UnityEngine;
 
@@ -49,8 +50,10 @@ namespace CCL.Importer.Implementations
         {
             // If the other control changed through other means, the mode must be
             // changed to STOP or else that change will be overwritten.
+            // There's some tolerance in the check due to floating point rounding
+            // issues when setting a control and reading its value afterwards.
             var other = OtherControlIn.Value;
-            if (other != _lastValue && _lastSet)
+            if (!MathHelper.WithinTolerance(other, _lastValue, 0.0001f) && _lastSet)
             {
                 ControlIn.Value = 0.5f;
             }
