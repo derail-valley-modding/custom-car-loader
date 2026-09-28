@@ -9,14 +9,62 @@ namespace CCL.Creator.Utility
     {
         public static class PassengerJobs
         {
-            public const string MOD_ID = "PassengerJobs";
+            public const string ID = "PassengerJobs";
             public const string CARGO_ID = "Passengers";
             public const float CARGO_MASS = 3000;
+
+            public static bool RequiresMod(CustomCarType carType)
+            {
+                return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == PassengerJobs.CARGO_ID);
+            }
+        }
+
+        public static class CustomCargo
+        {
+            public const string ID = "DVCustomCargo";
+
+            public static bool RequiresMod(CustomCarType carType)
+            {
+                return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId != PassengerJobs.CARGO_ID && !Utilities.IsVanillaCargo(x.CargoId));
+            }
+        }
+
+        public static class CustomLicenses
+        {
+            public const string ID = "DVCustomLicenses";
+
+            public static bool RequiresMod(CustomCarType carType)
+            {
+                if (!string.IsNullOrWhiteSpace(carType.GeneralLicense) && !Utilities.IsVanillaLicense(carType.GeneralLicense))
+                {
+                    return true;
+                }
+
+                foreach (var license in carType.JobLicenses)
+                {
+                    if (!string.IsNullOrWhiteSpace(license) && !Utilities.IsVanillaLicense(license))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        public static class Gauge
+        {
+            public const string ID = "Gauge";
+
+            public static bool RequiresMod(CustomCarType carType)
+            {
+                return carType.UseCustomGauge;
+            }
         }
 
         public static class GenericContainerCargo
         {
-            public const string MOD_ID = "CC_GenericContainerCargo";
+            public const string ID = "CC_GenericContainerCargo";
             public const string CHEMICALS_ID = "GenericChemicals";
             public const string CLOTHING_ID = "GenericClothing";
             public const string ELECTRONICS_ID = "GenericElectronics";
@@ -28,7 +76,7 @@ namespace CCL.Creator.Utility
             public const float TOOLING_MASS = 37000;
             public const float EMPTY_MASS = 6000;
 
-            public static bool IsAnyId(string id)
+            private static bool IsAnyId(string id)
             {
                 switch (id)
                 {
@@ -42,11 +90,22 @@ namespace CCL.Creator.Utility
                         return false;
                 }
             }
+
+            public static bool RequiresMod(CustomCarType carType)
+            {
+                return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => GenericContainerCargo.IsAnyId(x.CargoId));
+            }
         }
 
-        public const string CUSTOM_CARGO = "DVCustomCargo";
-        public const string CUSTOM_LICENSES = "DVCustomLicenses";
-        public const string GAUGE = "Gauge";
+        public static class SkinManager
+        {
+            public const string ID = "SkinManagerMod";
+
+            public static bool RequiresMod(CustomCarPack pack)
+            {
+                return pack.PaintSubstitutions.Any(x => x != null && !IdV2.Paints.Contains(x.Paint));
+            }
+        }
 
         public static readonly string[] CustomCargoIds = new[]
         {
@@ -61,11 +120,13 @@ namespace CCL.Creator.Utility
         {
             var requirements = new List<string>() { ExporterConstants.MOD_ID };
 
-            CheckRequires(RequiresPassengerJobsMod, PassengerJobs.MOD_ID);
-            CheckRequires(RequiresCustomCargoMod, CUSTOM_CARGO);
-            CheckRequires(RequiresGenericContainersMod, GenericContainerCargo.MOD_ID);
-            CheckRequires(RequiresCustomLicenseMod, CUSTOM_LICENSES);
-            CheckRequires(RequiresGaugeMod, GAUGE);
+            CheckRequires(PassengerJobs.RequiresMod, PassengerJobs.ID);
+            CheckRequires(CustomCargo.RequiresMod, CustomCargo.ID);
+            CheckRequires(GenericContainerCargo.RequiresMod, GenericContainerCargo.ID);
+            CheckRequires(CustomLicenses.RequiresMod, CustomLicenses.ID);
+            CheckRequires(Gauge.RequiresMod, Gauge.ID);
+
+            CheckRequiresPack(SkinManager.RequiresMod, SkinManager.ID);
 
             foreach (var item in pack.AdditionalDependencies)
             {
@@ -83,44 +144,14 @@ namespace CCL.Creator.Utility
                     requirements.Add(id);
                 }
             }
-        }
 
-        public static bool RequiresPassengerJobsMod(CustomCarType carType)
-        {
-            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId == PassengerJobs.CARGO_ID);
-        }
-
-        public static bool RequiresCustomCargoMod(CustomCarType carType)
-        {
-            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => x.CargoId != PassengerJobs.CARGO_ID && !Utilities.IsVanillaCargo(x.CargoId));
-        }
-
-        public static bool RequiresGenericContainersMod(CustomCarType carType)
-        {
-            return carType.CargoSetup != null && carType.CargoSetup.Entries.Any(x => GenericContainerCargo.IsAnyId(x.CargoId));
-        }
-
-        public static bool RequiresCustomLicenseMod(CustomCarType carType)
-        {
-            if (!string.IsNullOrWhiteSpace(carType.GeneralLicense) && !Utilities.IsVanillaLicense(carType.GeneralLicense))
+            void CheckRequiresPack(Func<CustomCarPack, bool> check, string id)
             {
-                return true;
-            }
-
-            foreach (var license in carType.JobLicenses)
-            {
-                if (!string.IsNullOrWhiteSpace(license) && !Utilities.IsVanillaLicense(license))
+                if (check(pack))
                 {
-                    return true;
+                    requirements.Add(id);
                 }
             }
-
-            return false;
-        }
-
-        public static bool RequiresGaugeMod(CustomCarType carType)
-        {
-            return carType.UseCustomGauge /*|| carType.liveries.Any(x => x.prefab != null && x.prefab.TryGetComponent<RegaugeableMeshes>(out _))*/;
         }
     }
 }

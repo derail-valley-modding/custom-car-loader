@@ -271,6 +271,7 @@ namespace CCL.Importer.Components
         private Rect _windowRect = new(10f, 0f, WindowWidth, WindowHeight);
         private Vector2 _scroll = Vector2.zero;
         private int _ticking = 0;
+        private int _lastPort = 0;
         private bool _record = false;
         private bool _active = true;
         private DrivingForce? _drivingForce;
@@ -280,7 +281,6 @@ namespace CCL.Importer.Components
         private Port? _dummyTrainsetPower;
         private Dictionary<string, Port>? _map;
         private string[] _keys = NoKeys;
-        private int _lastPort = 0;
 
         private void Start()
         {
@@ -453,7 +453,7 @@ namespace CCL.Importer.Components
                 port = _ports[i];
 
                 // Skip drawing if there are no values.
-                if (port.Values.Count == 0) continue;
+                //if (port.Values.Count == 0) continue;
 
                 float posY = 40f + i * BoxTotalHeight;
                 float zeroOffset = BoxHeight * (1.0f - port.ZeroOffset);
@@ -494,6 +494,13 @@ namespace CCL.Importer.Components
                     {
                         _ports.Swap(i, i + 1);
                     }
+                }
+
+                if (GUI.Button(new Rect(LabelWidth + BoxWidth + 30f, posY + buttonHeight * 1.5f, 30f, buttonHeight), "x"))
+                {
+                    _ports[i].Reset();
+                    _ports.RemoveAt(i);
+                    i--;
                 }
             }
 
@@ -632,6 +639,14 @@ namespace CCL.Importer.Components
             var grade = Mathf.Tan(angle * Mathf.Deg2Rad);
             var multiplier = 1f - Mathf.Clamp(5f * Mathf.Clamp01(angle / 90f), 0f, 0.9999999f);
             GUI.Label(new(GetSideOffset(4), LowerButtonsPosY2, SideOffset * 2, 20f), $"Grade: {grade:P2} (effect: {multiplier:F3})");
+
+            GUI.Label(new(GetSideOffset(6), LowerButtonsPosY2, 60, 20f), "Tick Rate");
+            var tickText = GUI.TextField(new(GetSideOffset(6) + 60, LowerButtonsPosY2, SideOffset - 60, 20f), TickRate.ToString(), 2);
+
+            if (int.TryParse(tickText, out int ticks))
+            {
+                TickRate = Mathf.Max(1, ticks);
+            }
 
             // X offset based on button count.
             static float GetSideOffset(int count)
