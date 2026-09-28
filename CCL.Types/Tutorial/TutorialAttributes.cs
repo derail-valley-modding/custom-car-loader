@@ -199,4 +199,30 @@
 
         public TutorialDescriptionFieldAttribute() : base(Names, true) { }
     }
+
+    public class ItemPrefabFieldAttribute : StringAndSelectorFieldAttribute
+    {
+        private static readonly string[] Names =
+        {
+            "lighter",
+            "shovel",
+            "ExpertShovel",
+            "GoldenShovel",
+            "Oiler"
+        };
+
+        public ItemPrefabFieldAttribute(bool customAllowed = true) : base(Names, customAllowed) { }
+    }
+
+    public class ItemConditionsFieldAttribute : StringAndSelectorFieldAttribute
+    {
+        private static readonly string[] Names =
+        {
+            "tutorial/cond/requires_lighter",
+            "tutorial/cond/requires_shovel",
+            "tutorial/cond/requires_oiler"
+        };
+
+        public ItemConditionsFieldAttribute(bool customAllowed = true) : base(Names, customAllowed) { }
+    }
 }
