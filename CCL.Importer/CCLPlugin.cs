@@ -30,6 +30,8 @@ namespace CCL.Importer
 
         public static TranslationInjector Translations { get; private set; } = null!;
 
+        internal static ErrorSoundLogHandler? ErrorHandler { get; set; }
+
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Instance = modEntry;
@@ -46,6 +48,8 @@ namespace CCL.Importer
                 ObjectHelper.CreateFailuresHolder();
                 return false;
             }
+
+            ErrorSoundLogHandler.SoundEnabled = true;
 
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
             {
@@ -87,6 +91,7 @@ namespace CCL.Importer
         public static void Error(string message)
         {
             Instance.Logger.Error(message);
+            ErrorHandler?.HandleLog(string.Empty, string.Empty, UnityEngine.LogType.Error);
         }
 
         public static void Warning(string message)

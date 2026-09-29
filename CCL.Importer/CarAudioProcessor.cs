@@ -71,8 +71,8 @@ namespace CCL.Importer
 
                     // setup sim module
                     var simAudio = simAudioFab.gameObject.AddComponent<SimAudioModule>();
-                    simAudioFab.GetComponent<LayeredAudioSimReadersController>().OnValidate();
-                    simAudioFab.GetComponent<AudioClipSimReadersController>().OnValidate();
+                    simAudioFab.GetComponent<LayeredAudioSimReadersController>().RefreshChildren();
+                    simAudioFab.GetComponent<AudioClipSimReadersController>().RefreshChildren();
 
                     // add to main audio controller
                     modularAudio.audioModules.Add(simAudio);
