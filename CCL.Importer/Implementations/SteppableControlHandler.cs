@@ -55,7 +55,10 @@ namespace CCL.Importer.Implementations
             var other = OtherControlIn.Value;
             if (!MathHelper.WithinTolerance(other, _lastValue, 0.0001f) && _lastSet)
             {
-                ControlIn.Value = 0.5f;
+                // Set it to 0 when the value is 0 for better compatibility with
+                // control blockers, as they'll probably check for that value as
+                // it is safer to use.
+                ControlIn.Value = other == 0 ? 0 : 0.5f;
             }
 
             UpdateMode();
