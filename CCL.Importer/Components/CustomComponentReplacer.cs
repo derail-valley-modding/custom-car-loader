@@ -2,6 +2,7 @@
 using CCL.Importer.Components.Controllers;
 using CCL.Importer.Components.Controls;
 using CCL.Importer.Components.Headlights;
+using CCL.Importer.Components.HUD;
 using CCL.Importer.Components.Indicators;
 using CCL.Importer.Components.MultipleUnit;
 using CCL.Importer.Components.Simulation;
@@ -36,6 +37,7 @@ namespace CCL.Importer.Components
             CreateMap<CoupledAttachment, CoupledAttachmentInternal>().AutoCacheAndMap();
             CreateMap<VehicleIdToTMP, VehicleIdToTMPInternal>().AutoCacheAndMap();
             CreateMap<KeepCoupledInteriorLoaded, KeepCoupledInteriorLoadedInternal>().AutoCacheAndMap();
+            CreateMap<ExtraLocoControlsReader, ExtraLocoControlsReaderInternal>().AutoCacheAndMap();
 
             CreateMap<SimPortPlotter, SimPortPlotterInternal>().AutoCacheAndMap();
         }
