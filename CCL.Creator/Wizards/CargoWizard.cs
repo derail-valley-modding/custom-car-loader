@@ -602,6 +602,11 @@ namespace CCL.Creator.Wizards
             EditorGUILayout.Space();
         }
 
+        public static bool TryGetCargoMass(string id, out float mass)
+        {
+            return s_massMap.TryGetValue(id, out mass);
+        }
+
         #endregion
     }
 }

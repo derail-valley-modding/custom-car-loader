@@ -32,9 +32,11 @@ namespace CCL.Creator.Wizards
             new GUIContent("Steam Tractive Effort",
                 "Approximate tractive effort for steam locomotives"),
             new GUIContent("Adhesion Limit",
-                "Adhesion limit"),
+                "Adhesion limit of vehicles"),
             new GUIContent("Factor of Adhesion",
-                "Factor of Adhesion"),
+                "Factor of adhesion for steam locomotives"),
+            new GUIContent("Axle Load",
+                "Axle load of vehicles plus their cargo"),
             new GUIContent("Traction Motor Properties",
                 "Motor voltage and current for different configurations"),
             new GUIContent("Generator Voltage",
@@ -84,9 +86,12 @@ namespace CCL.Creator.Wizards
                         _factorOfAdhesion.Draw();
                         break;
                     case 5:
-                        _tmProperties.Draw();
+                        _axleLoad.Draw();
                         break;
                     case 6:
+                        _tmProperties.Draw();
+                        break;
+                    case 7:
                         _generatorVoltage.Draw();
                         break;
                     default:
@@ -423,6 +428,86 @@ namespace CCL.Creator.Wizards
 
         [SerializeField]
         private FactorOfAdhesion _factorOfAdhesion = new FactorOfAdhesion();
+
+        #endregion
+
+        #region Axle Load
+
+        [Serializable]
+        private class AxleLoad
+        {
+            private const float Limit = 22.0f;
+
+            public float VehicleWeight = 25000.0f;
+            public float CargoWeight = 0.0f;
+            public int AxleCount = 4;
+            public CargoSetup? CargoSetup;
+            public float MaxLoad = Limit;
+
+            public void Draw()
+            {
+                VehicleWeight = EditorGUILayout.FloatField("Vehicle Weight (kg)", VehicleWeight);
+                CargoWeight = EditorGUILayout.FloatField("Cargo Weight (kg)", CargoWeight);
+                CargoSetup = EditorHelpers.ObjectField("Cargo Setup", CargoSetup, false);
+                AxleCount = EditorGUILayout.IntField("Axle Count", AxleCount);
+
+                using (new EditorGUI.DisabledGroupScope(true))
+                {
+                    MaxLoad = EditorGUILayout.FloatField("Max Axle Load (t)", MaxLoad);
+                }
+
+                EditorGUILayout.Space();
+                DrawResults(VehicleWeight, AxleCount);
+                DrawResults(VehicleWeight + CargoWeight, AxleCount, "Cargo");
+
+                if (CargoSetup != null)
+                {
+                    foreach (var entry in CargoSetup.Entries)
+                    {
+                        if (!CargoWizard.TryGetCargoMass(entry.CargoId, out var mass)) continue;
+
+                        DrawResults(VehicleWeight + mass * entry.AmountPerCar, AxleCount, entry.CargoId);
+                    }
+                }
+
+                EditorGUILayout.Space();
+                Guess(EditorHelpers.ObjectField<UObject>(s_context, null, true));
+            }
+
+            private void DrawResults(float mass, int axles, string? text = null)
+            {
+                var load = mass * Units.ToKilo / axles;
+
+                using (new GUIColorScope(null, null, load > Limit ? EditorHelpers.Colors.DELETE_ACTION : EditorHelpers.Colors.CONFIRM_ACTION))
+                {
+                    EditorGUILayout.LabelField(string.IsNullOrEmpty(text) ? "Axle Load" : $"With {text}", $"{load:F2} t");
+                }
+            }
+
+            private void Guess(UObject? context)
+            {
+                switch (context)
+                {
+                    case CustomCarType car:
+                        VehicleWeight = car.mass;
+                        CargoSetup = car.CargoSetup;
+                        break;
+                    case CustomCarVariant livery:
+                        Guess(livery.parentType);
+                        break;
+
+                    case CargoSetup cargo:
+                        CargoSetup = cargo;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+
+        [SerializeField]
+        private AxleLoad _axleLoad = new AxleLoad();
 
         #endregion
 
