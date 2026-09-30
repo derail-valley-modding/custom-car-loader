@@ -1,4 +1,5 @@
 ﻿using CCL.Importer.Components.HUD;
+using CCL.Types.Components;
 using DV.CabControls;
 using DV.HUD;
 using DV.UI.LocoHUD;
@@ -21,7 +22,7 @@ namespace CCL.Importer.Patches
         [HarmonyPostfix, HarmonyPatch(nameof(LocoHUDProvider.SubControls))]
         private static void SubControlsPostfix(LocoHUDProvider __instance, LocoControlsReader lcr)
         {
-            if (lcr is not ExtraLocoControlsReaderInternal elcr || !__instance.TryGetComponent(out ExtraLocoHUDProvider provider)) return;
+            if (!lcr.TryGetComponent(out ExtraLocoControlsReader elcr) || !__instance.TryGetComponent(out ExtraLocoHUDProvider provider)) return;
 
             var controls = __instance.locoControls;
             SubscribeControlEvent(elcr.Alerter, controls.mechanical.alerter, provider.AlerterUpdated, ref provider.Alerter);
@@ -40,7 +41,7 @@ namespace CCL.Importer.Patches
         [HarmonyPostfix, HarmonyPatch(nameof(LocoHUDProvider.UnsubControls))]
         private static void UnsubControlsPostfix(LocoHUDProvider __instance, LocoControlsReader lcr)
         {
-            if (lcr is not ExtraLocoControlsReaderInternal elcr || !__instance.TryGetComponent(out ExtraLocoHUDProvider provider)) return;
+            if (!lcr.TryGetComponent(out ExtraLocoControlsReader elcr) || !__instance.TryGetComponent(out ExtraLocoHUDProvider provider)) return;
 
             provider.RemoveReferences();
             UnsubscribeControlEvent(elcr.Alerter, provider.AlerterUpdated);

@@ -1,12 +1,10 @@
-﻿using CCL.Types.Proxies.Controls;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace CCL.Types.Components
 {
     [AddComponentMenu("CCL/Components/Extra Loco Controls Reader")]
-    public class ExtraLocoControlsReader : LocoControlsReaderProxy
+    public class ExtraLocoControlsReader : MonoBehaviour
     {
-        [Header("Extra")]
         public GameObject? Alerter;
         public GameObject? CabOrient;
         public GameObject? Pantograph;
