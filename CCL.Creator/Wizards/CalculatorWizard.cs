@@ -472,15 +472,13 @@ namespace CCL.Creator.Wizards
 
                 EditorGUILayout.Space();
                 Guess(EditorHelpers.ObjectField<UObject>(s_context, null, true));
-            }
-
-            private void DrawResults(float mass, int axles, string? text = null)
-            {
-                var load = mass * Units.ToKilo / axles;
-
-                using (new GUIColorScope(null, null, load > Limit ? EditorHelpers.Colors.DELETE_ACTION : EditorHelpers.Colors.CONFIRM_ACTION))
+                
+                static void DrawResults(float mass, int axles, string? text = null)
                 {
-                    EditorGUILayout.LabelField(string.IsNullOrEmpty(text) ? "Axle Load" : $"With {text}", $"{load:F2} t");
+                    var load = mass * Units.ToKilo / axles;
+
+                    EditorGUILayout.LabelField(string.IsNullOrEmpty(text) ? "Axle Load" : $"With {text}", $"{load:F2} t",
+                        EditorHelpers.StyleWithTextColour(load > Limit ? EditorHelpers.Colors.DELETE_ACTION : EditorHelpers.Colors.CONFIRM_ACTION));
                 }
             }
 
