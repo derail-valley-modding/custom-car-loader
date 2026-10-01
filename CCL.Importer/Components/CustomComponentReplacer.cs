@@ -12,6 +12,7 @@ using CCL.Types.Components;
 using CCL.Types.Components.Controllers;
 using CCL.Types.Components.Controls;
 using CCL.Types.Components.Headlights;
+using CCL.Types.Components.HUD;
 using CCL.Types.Components.Indicators;
 using CCL.Types.Components.MultipleUnit;
 using CCL.Types.Components.Simulation;
@@ -31,6 +32,7 @@ namespace CCL.Importer.Components
             MapMultipleUnit();
             MapControllers();
             MapControls();
+            MapHUD();
 
             CreateMap<ControlNameTMPDisplay, ControlNameTMPDisplayInternal>().AutoCacheAndMap();
             CreateMap<HideObjectsOnCargoLoad, HideObjectsOnCargoLoadInternal>().AutoCacheAndMap();
@@ -134,6 +136,11 @@ namespace CCL.Importer.Components
                 new() { vr = typeof(PullableRopeVRTK), pc = typeof(PullableRopeNonVR) });
             ControlsInstantiator.TypeMap.Add(typeof(ScrewInternal),
                 new() { vr = typeof(ScrewVRTK), pc = typeof(ScrewNonVR) });
+        }
+
+        private void MapHUD()
+        {
+            CreateMap<ExtraLocoLampReader, ExtraLocoLampReaderInternal>().AutoCacheAndMap();
         }
     }
 }

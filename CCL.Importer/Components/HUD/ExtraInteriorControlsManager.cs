@@ -1,4 +1,4 @@
-﻿using CCL.Types.Components;
+﻿using CCL.Types.Components.HUD;
 using DV.CabControls;
 using DV.HUD;
 using UnityEngine;

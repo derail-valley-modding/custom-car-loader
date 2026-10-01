@@ -2,6 +2,7 @@
 using DV.HUD;
 using DV.Localization;
 using DV.UI.LocoHUD;
+using DV.UIFramework;
 using UnityEngine;
 
 namespace CCL.Importer.Components.HUD
@@ -20,6 +21,7 @@ namespace CCL.Importer.Components.HUD
             Pantograph = null;
         }
 
+        // Controls.
         public void AlerterUpdated(ValueChangedEventArgs value)
         {
             if (Provider.locoControls.mechanical.alerter)
@@ -59,6 +61,23 @@ namespace CCL.Importer.Components.HUD
             (string value, string unit) = impl.GetCurrentPositionName();
             control.SetTextUnit(unit);
             control.SetTextValue(value.ToString(LocalizationAPI.CC));
+        }
+
+        // Lamps.
+        public void AlerterAlarmUpdated(float value)
+        {
+            if (Provider.locoControls.mechanical.alerter)
+            {
+                Provider.locoControls.mechanical.alerter.SetIndicatorColor((value > 0.5f) ? UIColors.RED : UIColors.CLEAR);
+            }
+        }
+
+        public void PantographPowerUpdated(float value)
+        {
+            if (Provider.locoControls.mechanical.pantograph)
+            {
+                Provider.locoControls.mechanical.pantograph.SetIndicatorColor((value > 0.5f) ? UIColors.BLUE : UIColors.CLEAR);
+            }
         }
     }
 }

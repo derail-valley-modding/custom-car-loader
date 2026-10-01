@@ -1,5 +1,5 @@
 ﻿using CCL.Importer.Components.HUD;
-using CCL.Types.Components;
+using CCL.Types.Components.HUD;
 using DV.CabControls;
 using DV.HUD;
 using DV.UI.LocoHUD;
@@ -53,6 +53,41 @@ namespace CCL.Importer.Patches
                 if (control == null || !control.TryGetComponent(out ControlImplBase impl)) return;
 
                 impl.ValueChanged -= action;
+            }
+        }
+
+        [HarmonyPostfix, HarmonyPatch(nameof(LocoHUDProvider.SubLamps))]
+        private static void SubLampsPostfix(LocoHUDProvider __instance, LocoLampReader lr)
+        {
+            if (!lr.TryGetComponent(out ExtraLocoLampReaderInternal elr) || !__instance.TryGetComponent(out ExtraLocoHUDProvider provider)) return;
+
+            DoLamp(elr.Alerter, provider.AlerterAlarmUpdated);
+            DoLamp(elr.Pantograph, provider.PantographPowerUpdated);
+
+            static void DoLamp(LampControl? lamp, Action<float> action)
+            {
+                if (lamp != null)
+                {
+                    lamp.lampInd.ValueChanged += action;
+                    action?.Invoke(lamp.lampInd.Value);
+                }
+            }
+        }
+
+        [HarmonyPostfix, HarmonyPatch(nameof(LocoHUDProvider.UnsubLamps))]
+        private static void UnsubLampsPostfix(LocoHUDProvider __instance, LocoLampReader lr)
+        {
+            if (!lr.TryGetComponent(out ExtraLocoLampReaderInternal elr) || !__instance.TryGetComponent(out ExtraLocoHUDProvider provider)) return;
+
+            DoLamp(elr.Alerter, provider.AlerterAlarmUpdated);
+            DoLamp(elr.Pantograph, provider.PantographPowerUpdated);
+
+            static void DoLamp(LampControl? lamp, Action<float> action)
+            {
+                if (lamp != null)
+                {
+                    lamp.lampInd.ValueChanged -= action;
+                }
             }
         }
     }
