@@ -34,7 +34,7 @@ namespace CCL.Importer.Implementations
             Control = AddPort(def.AcknowledgeControl);
             State = AddPort(def.StateReadout);
             TimeLeft = AddPort(def.TimeLeftReadout);
-            ControllerActive = AddPort(def.ControllerActive);
+            ControllerActive = AddPort(def.ControllerActive, 1);
 
             WheelSpeed = AddPortReference(def.WheelSpeedReader);
 
@@ -50,7 +50,7 @@ namespace CCL.Importer.Implementations
         {
             if (!IsActive)
             {
-                ResetTimer();
+                Reset();
                 return;
             }
 
@@ -77,14 +77,15 @@ namespace CCL.Importer.Implementations
         {
             if (value > 0.5)
             {
-                ResetTimer();
+                Reset();
             }
         }
 
-        private void ResetTimer()
+        private void Reset()
         {
             _time = VigilanceTime;
             TimeLeft.Value = VigilanceTime;
+            State.Value = 0;
         }
     }
 }
