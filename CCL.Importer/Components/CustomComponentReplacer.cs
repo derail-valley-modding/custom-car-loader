@@ -87,6 +87,7 @@ namespace CCL.Importer.Components
             CreateMap<SteppableControlHandlerDefinition, SteppableControlHandlerDefinitionInternal>().AutoCacheAndMap();
             CreateMap<ManualLapBrakeSplitterDefinition, ManualLapBrakeSplitterDefinitionInternal>().AutoCacheAndMap();
             CreateMap<DoubledControlDefinition, DoubledControlDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<AlerterDefinition, AlerterDefinitionInternal>().AutoCacheAndMap();
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();
@@ -120,6 +121,7 @@ namespace CCL.Importer.Components
                 .ForMember(d => d.Ropes, o => o.MapFrom(s => Mapper.GetFromCache(s.Ropes)))
                 .ForMember(d => d.DistanceSlowSqr, o => o.MapFrom(s => s.DistanceSlow * s.DistanceSlow))
                 .ForMember(d => d.DistanceDisableSqr, o => o.MapFrom(s => s.DistanceDisable * s.DistanceDisable));
+            CreateMap<AlerterController, AlerterControllerInternal>().AutoCacheAndMap();
         }
 
         private void MapControls()
@@ -140,7 +142,9 @@ namespace CCL.Importer.Components
 
         private void MapHUD()
         {
-            CreateMap<ExtraLocoLampReader, ExtraLocoLampReaderInternal>().AutoCacheAndMap();
+            CreateMap<ExtraLocoLampReader, ExtraLocoLampReaderInternal>().AutoCacheAndMap()
+                .ForMember(d => d.Alerter, o => o.MapFrom(s => Mapper.GetFromCache(s.Alerter!)))
+                .ForMember(d => d.Pantograph, o => o.MapFrom(s => Mapper.GetFromCache(s.Pantograph!)));
         }
     }
 }
