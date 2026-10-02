@@ -6,5 +6,6 @@ namespace CCL.Importer.Components.HUD
     {
         public LampControl? Alerter;
         public LampControl? Pantograph;
+        public LampControl? Pantograph2;
     }
 }

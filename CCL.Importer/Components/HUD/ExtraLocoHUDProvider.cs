@@ -68,7 +68,7 @@ namespace CCL.Importer.Components.HUD
         {
             if (Provider.locoControls.mechanical.alerter)
             {
-                Provider.locoControls.mechanical.alerter.SetIndicatorColor((value > 0.5f) ? UIColors.RED : UIColors.CLEAR);
+                Provider.locoControls.mechanical.alerter.SetIndicatorColor((value > 0.5f) ? UIColors.YELLOW : UIColors.CLEAR);
             }
         }
 
@@ -77,6 +77,14 @@ namespace CCL.Importer.Components.HUD
             if (Provider.locoControls.mechanical.pantograph)
             {
                 Provider.locoControls.mechanical.pantograph.SetIndicatorColor((value > 0.5f) ? UIColors.BLUE : UIColors.CLEAR);
+            }
+        }
+
+        public void Pantograph2PowerUpdated(float value)
+        {
+            if (Provider.locoControls.mechanical.alerter)
+            {
+                Provider.locoControls.mechanical.alerter.SetIndicatorColor((value > 0.5f) ? UIColors.BLUE : UIColors.CLEAR);
             }
         }
     }

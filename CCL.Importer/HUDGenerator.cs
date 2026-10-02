@@ -461,7 +461,22 @@ namespace CCL.Importer
         private static void SetupMechanicalControls(HUDLocoControls.MechanicalReferences newHUD, Mechanical layout)
         {
             // Slot 26.
-            SetDisplay(newHUD.alerter, layout.Alerter);
+            switch (layout.Alerter)
+            {
+                case Mechanical.Slot23A.None:
+                    newHUD.alerter.gameObject.SetActive(false);
+                    break;
+                case Mechanical.Slot23A.Display:
+                    newHUD.alerter.gameObject.SetActive(true);
+                    break;
+                case Mechanical.Slot23A.Pantograph2:
+                    var panto2 = Object.Instantiate(newHUD.pantograph, newHUD.alerter.transform.parent);
+                    SetDisplayAndPosition(panto2, ShouldDisplay.Display, newHUD.alerter);
+                    newHUD.alerter = panto2;
+                    break;
+                default:
+                    break;
+            }
 
             // Slot 27.
             SetDisplay(newHUD.pantograph, layout.Pantograph);

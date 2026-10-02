@@ -64,6 +64,11 @@ namespace CCL.Importer.Patches
             DoLamp(elr.Alerter, provider.AlerterAlarmUpdated);
             DoLamp(elr.Pantograph, provider.PantographPowerUpdated);
 
+            if (elr.Alerter == null)
+            {
+                DoLamp(elr.Pantograph2, provider.PantographPowerUpdated);
+            }
+
             static void DoLamp(LampControl? lamp, Action<float> action)
             {
                 if (lamp != null)
@@ -81,6 +86,11 @@ namespace CCL.Importer.Patches
 
             DoLamp(elr.Alerter, provider.AlerterAlarmUpdated);
             DoLamp(elr.Pantograph, provider.PantographPowerUpdated);
+
+            if (elr.Alerter == null)
+            {
+                DoLamp(elr.Pantograph2, provider.PantographPowerUpdated);
+            }
 
             static void DoLamp(LampControl? lamp, Action<float> action)
             {

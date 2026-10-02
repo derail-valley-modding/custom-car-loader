@@ -8,5 +8,6 @@ namespace CCL.Types.Components.HUD
     {
         public LampControlProxy? Alerter;
         public LampControlProxy? Pantograph;
+        public LampControlProxy? Pantograph2;
     }
 }
