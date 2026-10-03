@@ -27,3 +27,5 @@ ccl/tutorial/control/stoker,Description of the control’s behaviour,This contro
 ccl/tutorial/control/deflector,Description of the control’s behaviour,This control operates a deflector to reduce damage done by high-velocity exhaust to ceilings.,,,,,,,,,,,,,,,,,,,,,,,,
 ccl/tutorial/control/selector,Description of the control’s behaviour,This control selects a mode of operation of another control from multiple options.,,,,,,,,,,,,,,,,,,,,,,,,
 ccl/tutorial/control/selector_throttle_dynamic,Description of the control’s behaviour,This control swaps the mode of operation of the power control between throttle and dynamic breaking.,,,,,,,,,,,,,,,,,,,,,,,,
+ccl/tutorial/control/alerter,Description of the control’s behaviour,"This control resets a timer to ensure there’s a driver in the locomotive. If not used quickly, the brakes will be applied.",,,,,,,,,,,,,,,,,,,,,,,,
+ccl/tutorial/control/alerter_lamp,Description of the lamp’s behaviour,This lamp indicates when the alerter has to be activated.,,,,,,,,,,,,,,,,,,,,,,,,

@@ -6,6 +6,11 @@ namespace CCL.Importer.Implementations
 {
     internal class Alerter : SimComponent
     {
+        private const int Inactive = -1;
+        private const int Working = 0;
+        private const int Warning = 1;
+        private const int Stopping = 2;
+
         public readonly float MinimumSpeed = 1;
         public readonly float VigilanceTime = 30;
         public readonly float WarningTime = 5;
@@ -50,7 +55,8 @@ namespace CCL.Importer.Implementations
         {
             if (!IsActive)
             {
-                Reset();
+                ResetTimer();
+                State.Value = Inactive;
                 return;
             }
 
@@ -58,17 +64,17 @@ namespace CCL.Importer.Implementations
 
             if (StoppingStateReached)
             {
-                State.Value = 2;
+                State.Value = Stopping;
                 TimeLeft.Value = 0;
             }
             else if (WarningStateReached)
             {
-                State.Value = 1;
+                State.Value = Warning;
                 TimeLeft.Value = WarningTime + _time;
             }
             else
             {
-                State.Value = 0;
+                State.Value = Working;
                 TimeLeft.Value = _time;
             }
         }
@@ -77,15 +83,15 @@ namespace CCL.Importer.Implementations
         {
             if (value > 0.5)
             {
-                Reset();
+                ResetTimer();
+                State.Value = Working;
             }
         }
 
-        private void Reset()
+        private void ResetTimer()
         {
             _time = VigilanceTime;
             TimeLeft.Value = VigilanceTime;
-            State.Value = 0;
         }
     }
 }
