@@ -229,8 +229,10 @@ namespace CCL.Importer
         /// </summary>
         /// <param name="source">The source (usually proxy) component.</param>
         /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, <see langword="null"/>.</returns>
-        public static MonoBehaviour GetFromCache(MonoBehaviour source)
+        public static MonoBehaviour GetFromCache(MonoBehaviour? source)
         {
+            if (source == null) return null!;
+
             s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
             return output;
         }
@@ -240,7 +242,7 @@ namespace CCL.Importer
         /// </summary>
         /// <param name="source">The enumerable of source (usually proxies) components.</param>
         /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <see langword="null"/> values.</returns>
-        public static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
+        public static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour?> source)
         {
             return source.Select(scr => GetFromCache(scr));
         }
@@ -252,7 +254,7 @@ namespace CCL.Importer
         /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, it will return instead <paramref name="source"/>.</returns>
         public static MonoBehaviour GetFromCacheOrSelf(MonoBehaviour source)
         {
-            s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
+            var output = GetFromCache(source);
             return output ?? source;
         }
 

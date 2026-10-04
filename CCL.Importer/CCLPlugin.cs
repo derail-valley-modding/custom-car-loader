@@ -49,7 +49,10 @@ namespace CCL.Importer
                 return false;
             }
 
-            ErrorSoundLogHandler.SoundEnabled = true;
+            if (!Settings.DisableErrorPing)
+            {
+                ErrorSoundLogHandler.SoundEnabled = true;
+            }
 
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
             {

@@ -143,9 +143,9 @@ namespace CCL.Importer.Components
         private void MapHUD()
         {
             CreateMap<ExtraLocoLampReader, ExtraLocoLampReaderInternal>().AutoCacheAndMap()
-                .ForMember(d => d.Alerter, o => o.MapFrom(s => Mapper.GetFromCache(s.Alerter!)))
-                .ForMember(d => d.Pantograph, o => o.MapFrom(s => Mapper.GetFromCache(s.Pantograph!)))
-                .ForMember(d => d.Pantograph2, o => o.MapFrom(s => Mapper.GetFromCache(s.Pantograph2!)));
+                .ForMember(d => d.Alerter, o => o.MapFrom(s => Mapper.GetFromCache(s.Alerter)))
+                .ForMember(d => d.Pantograph, o => o.MapFrom(s => Mapper.GetFromCache(s.Pantograph)))
+                .ForMember(d => d.Pantograph2, o => o.MapFrom(s => Mapper.GetFromCache(s.Pantograph2)));
         }
     }
 }
