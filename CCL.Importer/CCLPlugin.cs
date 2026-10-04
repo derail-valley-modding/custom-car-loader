@@ -13,7 +13,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "3.1.9";
+        public const string Version = "3.1.10";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
@@ -30,6 +30,8 @@ namespace CCL.Importer
 
         public static TranslationInjector Translations { get; private set; } = null!;
 
+        internal static ErrorSoundLogHandler? ErrorHandler { get; set; }
+
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Instance = modEntry;
@@ -45,6 +47,11 @@ namespace CCL.Importer
                 CarManager.LoadFailures.Add("[CCL] Unsupported game version");
                 ObjectHelper.CreateFailuresHolder();
                 return false;
+            }
+
+            if (!Settings.DisableErrorPing)
+            {
+                ErrorSoundLogHandler.SoundEnabled = true;
             }
 
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
@@ -87,6 +94,7 @@ namespace CCL.Importer
         public static void Error(string message)
         {
             Instance.Logger.Error(message);
+            ErrorHandler?.HandleLog(string.Empty, string.Empty, UnityEngine.LogType.Error);
         }
 
         public static void Warning(string message)

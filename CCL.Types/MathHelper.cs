@@ -96,5 +96,10 @@ namespace CCL.Types
             }
             return value;
         }
+
+        public static bool WithinTolerance(float toTest, float check, float tolerance)
+        {
+            return toTest < check + tolerance && toTest > check - tolerance;
+        }
     }
 }

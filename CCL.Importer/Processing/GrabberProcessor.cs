@@ -155,6 +155,7 @@ namespace CCL.Importer.Processing
             ProcessGrabberOnPrefab<MeshGrabber, Mesh>(prefab, s_meshCache);
 
             ProcessMaterialGrabberRenderer(prefab);
+            ProcessMaterialGrabberParticle(prefab);
             ProcessMeshGrabberFilter(prefab);
             ProcessMeshGrabberCollider(prefab);
             ProcessSoundGrabberSource(prefab);
@@ -250,6 +251,32 @@ namespace CCL.Importer.Processing
                     }
 
                     renderer.sharedMaterials = mats;
+                }
+
+                UnityEngine.Object.Destroy(grabber);
+            }
+        }
+
+        private static void ProcessMaterialGrabberParticle(GameObject prefab)
+        {
+            foreach (var grabber in prefab.GetComponentsInChildren<MaterialGrabberParticle>(true))
+            {
+                var renderer = grabber.ParticleSystem.GetComponent<ParticleSystemRenderer>();
+
+                if (renderer != null)
+                {
+                    if (s_materialCache.Cache.TryGetValue(grabber.Replacement, out Material mat))
+                    {
+                        renderer.sharedMaterial = mat;
+                    }
+                    else
+                    {
+                        CCLPlugin.Error($"Could not find cached key '{grabber.Replacement}'!");
+                    }
+                }
+                else
+                {
+                    CCLPlugin.Error($"Could not get renderer for particle system '{grabber.ParticleSystem.name}'!");
                 }
 
                 UnityEngine.Object.Destroy(grabber);

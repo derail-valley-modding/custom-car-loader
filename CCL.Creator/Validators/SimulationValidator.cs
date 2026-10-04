@@ -69,6 +69,8 @@ namespace CCL.Creator.Validators
                 }
             }
 
+            var alreadyConnected = new HashSet<string>();
+
             // Check port connections.
             foreach (var connection in connectionDef.connections)
             {
@@ -76,6 +78,20 @@ namespace CCL.Creator.Validators
                 {
                     result.Warning($"Invalid port connection \"{connection.fullPortIdOut}\"->\"{connection.fullPortIdIn}\"",
                         connectionDef, nameof(connectionDef.connections));
+                }
+                else
+                {
+                    if (alreadyConnected.Contains(connection.fullPortIdIn))
+                    {
+                        result.Fail($"Cannot connect port \"{connection.fullPortIdIn}\" because it's already connected!");
+                    }
+                    if (alreadyConnected.Contains(connection.fullPortIdOut))
+                    {
+                        result.Fail($"Cannot connect port \"{connection.fullPortIdOut}\" because it's already connected!");
+                    }
+
+                    alreadyConnected.Add(connection.fullPortIdIn);
+                    alreadyConnected.Add(connection.fullPortIdOut);
                 }
             }
 
@@ -86,8 +102,11 @@ namespace CCL.Creator.Validators
                 {
                     if (string.IsNullOrEmpty(connection.portId))
                     {
-                        result.Warning($"Empty ref connection \"{connection.portReferenceId}\"",
-                            connectionDef, nameof(connectionDef.portReferenceConnections));
+                        if (CCLEditorSettings.Settings.DisplayWarningsForEmptyPortConnections)
+                        {
+                            result.Warning($"Empty ref connection \"{connection.portReferenceId}\"",
+                                connectionDef, nameof(connectionDef.portReferenceConnections));
+                        }
                     }
                     else
                     {

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CCL.Importer.Components.HUD;
 using CCL.Types.Proxies.Controls;
 using DV.HUD;
 

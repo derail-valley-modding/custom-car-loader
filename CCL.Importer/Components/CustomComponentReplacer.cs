@@ -2,6 +2,7 @@
 using CCL.Importer.Components.Controllers;
 using CCL.Importer.Components.Controls;
 using CCL.Importer.Components.Headlights;
+using CCL.Importer.Components.HUD;
 using CCL.Importer.Components.Indicators;
 using CCL.Importer.Components.MultipleUnit;
 using CCL.Importer.Components.Simulation;
@@ -11,6 +12,7 @@ using CCL.Types.Components;
 using CCL.Types.Components.Controllers;
 using CCL.Types.Components.Controls;
 using CCL.Types.Components.Headlights;
+using CCL.Types.Components.HUD;
 using CCL.Types.Components.Indicators;
 using CCL.Types.Components.MultipleUnit;
 using CCL.Types.Components.Simulation;
@@ -30,6 +32,7 @@ namespace CCL.Importer.Components
             MapMultipleUnit();
             MapControllers();
             MapControls();
+            MapHUD();
 
             CreateMap<ControlNameTMPDisplay, ControlNameTMPDisplayInternal>().AutoCacheAndMap();
             CreateMap<HideObjectsOnCargoLoad, HideObjectsOnCargoLoadInternal>().AutoCacheAndMap();
@@ -43,6 +46,7 @@ namespace CCL.Importer.Components
         private void MapCoupling()
         {
             CreateMap<CarAutoCoupler, CarAutoCouplerInternal>().AutoCacheAndMap();
+            CreateMap<CarUncouplerFeeder, CarUncouplerFeederInternal>().AutoCacheAndMap();
             CreateMap<RigidCoupler, RigidCouplerInternal>().AutoCacheAndMap();
             CreateMap<VirtualHandbrakeOverrider, VirtualHandbrakeOverriderInternal>().AutoCacheAndMap();
             CreateMap<DuplicateHandbrakeOverrider, DuplicateHandbrakeOverriderInternal>().AutoCacheAndMap();
@@ -80,6 +84,10 @@ namespace CCL.Importer.Components
             CreateMap<ConstantMultiplierOffsetDefinition, ConstantMultiplierOffsetDefinitionInternal>().AutoCacheAndMap();
             CreateMap<RPMDamageCalculatorDefinition, RPMDamageCalculatorDefinitionInternal>().AutoCacheAndMap();
             CreateMap<FlywheelDefinition, FlywheelDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<SteppableControlHandlerDefinition, SteppableControlHandlerDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<ManualLapBrakeSplitterDefinition, ManualLapBrakeSplitterDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<DoubledControlDefinition, DoubledControlDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<AlerterDefinition, AlerterDefinitionInternal>().AutoCacheAndMap();
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();
@@ -113,6 +121,7 @@ namespace CCL.Importer.Components
                 .ForMember(d => d.Ropes, o => o.MapFrom(s => Mapper.GetFromCache(s.Ropes)))
                 .ForMember(d => d.DistanceSlowSqr, o => o.MapFrom(s => s.DistanceSlow * s.DistanceSlow))
                 .ForMember(d => d.DistanceDisableSqr, o => o.MapFrom(s => s.DistanceDisable * s.DistanceDisable));
+            CreateMap<AlerterController, AlerterControllerInternal>().AutoCacheAndMap();
         }
 
         private void MapControls()
@@ -129,6 +138,14 @@ namespace CCL.Importer.Components
                 new() { vr = typeof(PullableRopeVRTK), pc = typeof(PullableRopeNonVR) });
             ControlsInstantiator.TypeMap.Add(typeof(ScrewInternal),
                 new() { vr = typeof(ScrewVRTK), pc = typeof(ScrewNonVR) });
+        }
+
+        private void MapHUD()
+        {
+            CreateMap<ExtraLocoLampReader, ExtraLocoLampReaderInternal>().AutoCacheAndMap()
+                .ForMember(d => d.Alerter, o => o.MapFrom(s => Mapper.GetFromCache(s.Alerter)))
+                .ForMember(d => d.Pantograph, o => o.MapFrom(s => Mapper.GetFromCache(s.Pantograph)))
+                .ForMember(d => d.Pantograph2, o => o.MapFrom(s => Mapper.GetFromCache(s.Pantograph2)));
         }
     }
 }

@@ -12,6 +12,10 @@ namespace CCL.Importer
 
         [Draw("Use Verbose Logging", Tooltip = "Enable this if you experience bugs or are developing your own custom car")]
         public bool UseVerboseLogging = false;
+        [Draw("Don't Enable Error Ping", Tooltip = "Enable this to not automatically turn on error pings\n" +
+            "Pings will enable themselves if too many errors are detected anyways\n" +
+            "You must restart your game for this setting to take effect")]
+        public bool DisableErrorPing = false;
 
         // Don't show these in the settings screen.
         public bool InfoDump = false;

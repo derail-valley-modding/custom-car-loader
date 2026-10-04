@@ -25,6 +25,13 @@ namespace CCL.Types.Proxies.Indicators
             return this.Pass(out message, out highlight);
         }
 
+        private void OnValidate()
+        {
+            if (!needle) return;
+
+            needle.localRotation = Quaternion.identity;
+        }
+
         private void OnDrawGizmos()
         {
             if (!needle) return;

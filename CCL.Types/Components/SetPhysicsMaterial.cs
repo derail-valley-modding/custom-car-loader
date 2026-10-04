@@ -4,7 +4,7 @@ using UnityEngine;
 namespace CCL.Types.Components
 {
     [AddComponentMenu("CCL/Components/Set Physics Material")]
-    public class SetPhysicsMaterial : MonoBehaviour
+    public class SetPhysicsMaterial : MonoBehaviour, ISelfValidation
     {
         public enum PhysicsMaterial
         {
@@ -29,6 +29,19 @@ namespace CCL.Types.Components
                     Colliders.Add(child);
                 }
             }
+        }
+
+        public SelfValidationResult Validate(out string message, out string? highlight)
+        {
+            foreach(var collider in Colliders)
+            {
+                if (collider == null)
+                {
+                    return this.FailForNullEntries(nameof(Colliders), out message, out highlight);
+                }
+            }
+
+            return this.Pass(out message, out highlight);
         }
     }
 }

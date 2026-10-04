@@ -31,6 +31,15 @@ namespace CCL.Types.Tutorial
         }
 
         [Serializable]
+        public class ItemListWrapper
+        {
+            [ItemPrefabField]
+            public string[] ItemPrefabNames = new string[0];
+            [ItemConditionsField]
+            public string MessageKey = string.Empty;
+        }
+
+        [Serializable]
         public class NonOverridableObject
         {
             public bool Show = true;
@@ -135,6 +144,7 @@ namespace CCL.Types.Tutorial
         [Header("Conditions")]
         [Tooltip("Any shovel, oiler and lighter")]
         public bool RequireSteamerItems = false;
+        public ItemListWrapper[] OtherRequiredItems = new ItemListWrapper[0];
         public ResourceContainerType[] RequiredResources = new[]
         {
             ResourceContainerType.Fuel,
@@ -202,6 +212,8 @@ namespace CCL.Types.Tutorial
         #region Serialization and Buttons
 
         [SerializeField, HideInInspector]
+        private string? _items;
+        [SerializeField, HideInInspector]
         private string? _controls;
         [SerializeField, HideInInspector]
         private string? _indicators;
@@ -215,12 +227,14 @@ namespace CCL.Types.Tutorial
 
         public void OnValidate()
         {
+            _items = JSONObject.ToJson(OtherRequiredItems);
             _controls = JSONObject.ToJson(Controls);
             _indicators = JSONObject.ToJson(Indicators);
         }
 
         public void AfterImport()
         {
+            OtherRequiredItems = JSONObject.FromJson(_items, () => new ItemListWrapper[0]);
             Controls = JSONObject.FromJson(_controls, () => new ControlsHolder());
             Indicators = JSONObject.FromJson(_indicators, () => new IndicatorsHolder());
         }

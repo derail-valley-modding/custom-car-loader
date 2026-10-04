@@ -32,7 +32,7 @@ namespace CCL.Importer
             string[] shovels = new[] { "shovel", "ExpertShovel", "GoldenShovel" };
             string[] oiler = new[] { "Oiler" };
 
-            CCLPlugin.LogVerbose("Tutorial creation: conditions");
+            CCLPlugin.Log("Tutorial creation: conditions");
 
             // Basic conditions.
             c.Tutorial.AddStartingCheck(new PlayerInLocoCondition("tutorial/cond/in_locomotive"));
@@ -51,6 +51,13 @@ namespace CCL.Importer
                 c.Tutorial.AddStartingCheck(new AnyItemPresentCondition(oiler, "tutorial/cond/requires_oiler"));
             }
 
+            foreach (var item in settings.OtherRequiredItems)
+            {
+                if (item.ItemPrefabNames.Length == 0) continue;
+
+                c.Tutorial.AddStartingCheck(new AnyItemPresentCondition(item.ItemPrefabNames, item.MessageKey));
+            }
+
             // Cancel early.
             if (loco == null)
             {
@@ -58,7 +65,7 @@ namespace CCL.Importer
                 return c.Tutorial;
             }
 
-            CCLPlugin.LogVerbose("Tutorial creation: trainset preparation");
+            CCLPlugin.Log("Tutorial creation: trainset preparation");
 
             // Prepare the array of the trainset always to make it easy.
             switch (CarManager.TryGetInstancedTrainset(loco, out var trainset))
@@ -105,7 +112,7 @@ namespace CCL.Importer
                 }
             }
 
-            CCLPlugin.LogVerbose("Tutorial creation: resources");
+            CCLPlugin.Log("Tutorial creation: resources");
 
             // This should in theory work for all arrangements CCL does with resources.
             if (settings.RequiredResources.Length > 0)
@@ -779,7 +786,7 @@ namespace CCL.Importer
             void AddCustomPhase(TutorialPhase phase)
             {
                 c.BeginNewPhase();
-                CCLPlugin.LogVerbose($"Tutorial phase {PhaseDisplay()}: {phase.Name} (custom)");
+                CCLPlugin.Log($"Tutorial phase {PhaseDisplay()}: {phase.Name} (custom)");
 
                 SteamerDrivingBasicPrereq(phase.DisengageWaterControls, phase.OpenDamperControl,
                     phase.EngageHandbrakeControl, phase.OpenBrakeCutout, phase.EngageCompressorAndDynamo);

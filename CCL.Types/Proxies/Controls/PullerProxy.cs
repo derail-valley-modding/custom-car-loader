@@ -8,11 +8,13 @@ namespace CCL.Types.Proxies.Controls
         [Header("Rigidbody")]
         public float rigidbodyMass = 5f;
         public float rigidbodyDrag = 15f;
+        public bool zeroCenterOfMass;
+
+        [Header("Puller")]
+        public BoxCollider insideVolume = null!;
 
         [Header("Stepped puller")]
-        [Header("Puller")]
         public bool useSteppedPuller;
-
         public int notches = 20;
         public bool invertDirection;
         public float scrollWheelHoverScroll = 0.025f;
@@ -34,13 +36,15 @@ namespace CCL.Types.Proxies.Controls
             if (useCustomConnectionAnchor && connectionAnchor == null) return;
 
             Vector3 movedOffset = Vector3.up * linearLimit;
+            var start = invertDirection ? END_COLOR : START_COLOR;
+            var end = invertDirection ? START_COLOR : END_COLOR;
 
             using (GizmoUtil.MatrixScope.LocalTransform(useCustomConnectionAnchor ? connectionAnchor : transform))
             {
-                GizmoUtil.DrawGradientLine(movedOffset, -movedOffset, START_COLOR, END_COLOR);
-                Gizmos.color = START_COLOR;
+                GizmoUtil.DrawGradientLine(movedOffset, -movedOffset, start, end);
+                Gizmos.color = start;
                 Gizmos.DrawWireSphere(movedOffset, 0.01f);
-                Gizmos.color = END_COLOR;
+                Gizmos.color = end;
                 Gizmos.DrawWireSphere(-movedOffset, 0.01f);
             }
         }
@@ -59,6 +63,11 @@ namespace CCL.Types.Proxies.Controls
             {
                 var dot = Vector3.Dot(transform.up, connectionAnchor.up);
 
+                if (invertDirection)
+                {
+                    dot = -dot;
+                }
+
                 if (dot < 0.95f || dot > 1.05f)
                 {
                     message = "puller and anchor are not aligned";
@@ -69,6 +78,12 @@ namespace CCL.Types.Proxies.Controls
             if (transform.localRotation != Quaternion.identity)
             {
                 message = "local rotation should be (0, 0, 0)";
+                return SelfValidationResult.Warning;
+            }
+
+            if (insideVolume != null && insideVolume.gameObject.activeSelf)
+            {
+                message = "inside volume should be disabled";
                 return SelfValidationResult.Warning;
             }
 

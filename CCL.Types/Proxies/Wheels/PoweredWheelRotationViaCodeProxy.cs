@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Proxies.Wheels
 {
     [AddComponentMenu("CCL/Proxies/Wheels/Powered Wheel Rotation Via Code Proxy")]
-    public class PoweredWheelRotationViaCodeProxy : PoweredWheelRotationBaseProxy, ICustomSerialized
+    public class PoweredWheelRotationViaCodeProxy : PoweredWheelRotationBaseProxy, ICustomSerialized, ISelfValidation
     {
         [Serializable]
         public struct TransformRotationConfig
@@ -21,14 +22,29 @@ namespace CCL.Types.Proxies.Wheels
 
         public TransformRotationConfig[] additionalTransformsToRotate = new TransformRotationConfig[0];
 
-        [HideInInspector]
-        [SerializeField]
+        [HideInInspector, SerializeField]
         private Transform[] _transforms = new Transform[0];
-        [HideInInspector]
-        [SerializeField]
+        [HideInInspector, SerializeField]
         private Vector3[] _axis = new Vector3[0];
 
         private PoweredWheelsManagerProxy? _cachedManager;
+
+        public SelfValidationResult Validate(out string message, out string? highlight)
+        {
+            TryToGetManager();
+
+            if (_cachedManager != null)
+            {
+                if (_cachedManager.poweredWheels.Any(x => x != null && x.wheelTransform == null))
+                {
+                    message = $"{nameof(PoweredWheelProxy)} must have a transform when using {nameof(PoweredWheelRotationViaCodeProxy)}";
+                    highlight = null;
+                    return SelfValidationResult.Fail;
+                }
+            }
+
+            return this.Pass(out message, out highlight);
+        }
 
         public void OnValidate()
         {
@@ -60,10 +76,7 @@ namespace CCL.Types.Proxies.Wheels
 
         private void OnDrawGizmos()
         {
-            if (_cachedManager == null)
-            {
-                _cachedManager = transform.root.GetComponentInChildren<PoweredWheelsManagerProxy>();
-            }
+            TryToGetManager();
 
             if (_cachedManager != null)
             {
@@ -82,6 +95,14 @@ namespace CCL.Types.Proxies.Wheels
                 {
                     DrawWheelGizmo(item.transformToRotate, item.rotationAxis, wheelRadius, true);
                 }
+            }
+        }
+
+        private void TryToGetManager()
+        {
+            if (_cachedManager == null)
+            {
+                _cachedManager = transform.root.GetComponentInChildren<PoweredWheelsManagerProxy>();
             }
         }
     }

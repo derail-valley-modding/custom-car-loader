@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace CCL.Importer
 {
-    internal static class AutoMapperExtensions
+    public static class AutoMapperExtensions
     {
         /// <summary>
         /// Calling this on a mapping configuration will make it so the mapping of these components is fully automatic.
@@ -41,15 +41,15 @@ namespace CCL.Importer
             return cfg;
         }
 
-        public static IMappingExpression<TSource, TDestination> WithCachedMember<TSource, TDestination, TMember>(
-            this IMappingExpression<TSource, TDestination> cfg, Expression<Func<TDestination, TMember>> member
-        )
-            where TSource : MonoBehaviour
-            where TDestination : MonoBehaviour
-            where TMember : MonoBehaviour
-        {
-            return cfg.ForMember(member, opt => opt.MapFrom(s => Mapper.GetFromCache(s)));
-        }
+        //public static IMappingExpression<TSource, TDestination> WithCachedMember<TSource, TDestination, TMember>(
+        //    this IMappingExpression<TSource, TDestination> cfg, Expression<Func<TDestination, TMember>> member
+        //)
+        //    where TSource : MonoBehaviour
+        //    where TDestination : MonoBehaviour
+        //    where TMember : MonoBehaviour
+        //{
+        //    return cfg.ForMember(member, opt => opt.MapFrom(s => Mapper.GetFromCache(s)));
+        //}
 
         public static IMappingExpression<TSource, TDestination> ReplaceInstancedObjects<TSource, TDestination>(this IMappingExpression<TSource, TDestination> cfg)
             where TSource : ICanReplaceInstanced

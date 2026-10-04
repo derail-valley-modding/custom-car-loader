@@ -40,7 +40,7 @@ namespace CCL.Creator.Validators
                     return;
                 }
 
-                if (bogie.transform.position.y != 0)
+                if (bogie.position.y != 0)
                 {
                     result.Fail($"{livery.id} - {GetName(isFront)} must be at Y = 0", bogie);
                 }

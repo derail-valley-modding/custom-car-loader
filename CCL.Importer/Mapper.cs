@@ -17,16 +17,17 @@ namespace CCL.Importer
         private static readonly HashSet<MonoBehaviour> s_mapped = new();
         // Mapper needs to be declared after the caches, or it will cause reflection problems,
         // as the config will try to access the caches.
-        private static readonly MapperConfiguration _config = new(Configure);
+        private static readonly MapperConfiguration s_config = new(Configure);
 
-        private static IMapper? _map;
-        public static IMapper M => _map ??= _config.CreateMapper();
+        private static List<ICacheConfig>? s_configBlock;
+        private static IMapper? s_map;
+        public static IMapper M => s_map ??= s_config.CreateMapper();
 
         // This interface is only used to be able to store the generic type without the generics.
         private interface ICacheConfig
         {
+            public void SetCustomMapper(IMapper mapper);
             public void StoreComponentsInChildrenInCache(GameObject prefab);
-
             public void ConvertFromCache();
         }
 
@@ -36,6 +37,7 @@ namespace CCL.Importer
         {
             private Predicate<TSource>? _shouldMap;
             private TSource[] _sourceComponents = null!;
+            private IMapper? _mapper;
 
             public CacheConfig()
             {
@@ -45,6 +47,11 @@ namespace CCL.Importer
             public CacheConfig(Predicate<TSource> shouldMap)
             {
                 _shouldMap = shouldMap;
+            }
+
+            public void SetCustomMapper(IMapper mapper)
+            {
+                _mapper = mapper;
             }
 
             public void StoreComponentsInChildrenInCache(GameObject prefab)
@@ -69,13 +76,16 @@ namespace CCL.Importer
 
             public void ConvertFromCache()
             {
+                // Use the custom mapper if specified.
+                var mapper = _mapper ?? M;
+
                 // This is only ever called right after the previous one,
                 // so it should NEVER be null.
                 foreach (MonoBehaviour source in _sourceComponents)
                 {
                     if (!s_componentMapCache.TryGetValue(source, out MonoBehaviour cached) || s_mapped.Contains(cached)) continue;
 
-                    M.Map(source, cached);
+                    mapper.Map(source, cached);
                     UnityEngine.Object.Destroy(source);
                     s_mapped.Add(cached);
                 }
@@ -218,9 +228,11 @@ namespace CCL.Importer
         /// Gets the mapped version of a <see cref="MonoBehaviour"/> if one has been cached.
         /// </summary>
         /// <param name="source">The source (usually proxy) component.</param>
-        /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, <c>null</c>.</returns>
-        internal static MonoBehaviour GetFromCache(MonoBehaviour source)
+        /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, <see langword="null"/>.</returns>
+        public static MonoBehaviour GetFromCache(MonoBehaviour? source)
         {
+            if (source == null) return null!;
+
             s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
             return output;
         }
@@ -229,8 +241,8 @@ namespace CCL.Importer
         /// Gets an enumerable in which each <see cref="MonoBehaviour"/> is its mapped version if one has been cached.
         /// </summary>
         /// <param name="source">The enumerable of source (usually proxies) components.</param>
-        /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <c>null</c> values.</returns>
-        internal static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour> source)
+        /// <returns>The enumerable of <see cref="MonoBehaviour"/>s. If there is no mapped version, it may contain <see langword="null"/> values.</returns>
+        public static IEnumerable<MonoBehaviour> GetFromCache(IEnumerable<MonoBehaviour?> source)
         {
             return source.Select(scr => GetFromCache(scr));
         }
@@ -240,9 +252,9 @@ namespace CCL.Importer
         /// </summary>
         /// <param name="source">The source (usually proxy) component.</param>
         /// <returns>The mapped <see cref="MonoBehaviour"/>. If there is no mapped version, it will return instead <paramref name="source"/>.</returns>
-        internal static MonoBehaviour GetFromCacheOrSelf(MonoBehaviour source)
+        public static MonoBehaviour GetFromCacheOrSelf(MonoBehaviour source)
         {
-            s_componentMapCache.TryGetValue(source, out MonoBehaviour output);
+            var output = GetFromCache(source);
             return output ?? source;
         }
 
@@ -254,12 +266,49 @@ namespace CCL.Importer
         /// A collection of <see cref="MonoBehaviour"/>. If there is no mapped version for a given one, it will be the original <see cref="MonoBehaviour"/>
         /// that was in <paramref name="source"/>.
         /// </returns>
-        internal static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
+        public static IEnumerable<MonoBehaviour> GetFromCacheOrSelf(IEnumerable<MonoBehaviour> source)
         {
             return source.Select(scr => GetFromCacheOrSelf(scr));
         }
 
-        public static void ClearComponentCache()
+        /// <summary>
+        /// Begins grouping configurations for use with a custom mapper.
+        /// </summary>
+        public static void BeginConfigBlock()
+        {
+            if (s_configBlock != null)
+            {
+                CCLPlugin.Error($"{nameof(BeginConfigBlock)} was called, but a block was not cleared! Forcing purge to ensure state is clean.");
+                s_configBlock.Clear();
+            }
+            else
+            {
+                s_configBlock = new List<ICacheConfig>();
+            }
+        }
+
+        /// <summary>
+        /// Ends grouping configurations and applies the custom mapper to them.
+        /// </summary>
+        /// <param name="mapper"></param>
+        public static void EndConfigBlock(IMapper mapper)
+        {
+            if (s_configBlock == null)
+            {
+                CCLPlugin.Warning($"{nameof(EndConfigBlock)} was called, but no block exists!");
+                return;
+            }
+
+            foreach (var item in s_configBlock)
+            {
+                item.SetCustomMapper(mapper);
+            }
+
+            s_configBlock.Clear();
+            s_configBlock = null;
+        }
+
+        internal static void ClearComponentCache()
         {
             s_componentMapCache.Clear();
             s_mapped.Clear();

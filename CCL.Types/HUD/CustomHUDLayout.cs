@@ -449,8 +449,11 @@ namespace CCL.Types.HUD
     [Serializable]
     public class Mechanical
     {
+        public enum Slot23A { None, Display, Pantograph2 }
+
         [Header("Slot 23")]
-        public ShouldDisplay Alerter;
+        [Tooltip("This slot will conflict with the Tender Coal")]
+        public Slot23A Alerter;
 
         [Header("Slot 24")]
         public ShouldDisplay Pantograph;

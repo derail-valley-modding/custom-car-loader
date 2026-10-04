@@ -8,6 +8,7 @@ namespace CCL.Importer.Components.Controls
     {
         public GameObject ControlObject = null!;
         public float Multiplier = 1.0f;
+        public float Tolerance = 0.01f;
         public bool Constant = false;
 
         private ControlImplBase _controlSelf = null!;
@@ -16,10 +17,18 @@ namespace CCL.Importer.Components.Controls
 
         private IEnumerator Start()
         {
+            Tolerance = Mathf.Max(Tolerance, 0.001f);
+
             yield return null;
 
             _controlSelf = GetComponent<ControlImplBase>();
             _controlOther = ControlObject.GetComponent<ControlImplBase>();
+
+            if (_controlSelf == null)
+            {
+                Debug.LogError($"Failed to find ControlImplBase on object '{name}'!", this);
+                yield break;
+            }
 
             if (_controlOther == null)
             {
@@ -38,7 +47,7 @@ namespace CCL.Importer.Components.Controls
 
             var value = _controlSelf.Value;
 
-            if (value > 0.001f)
+            if (value > Tolerance)
             {
                 value = Constant ? Multiplier : value * Multiplier;
                 _controlOther.SetValue(_controlOther.Value + value * Time.deltaTime);

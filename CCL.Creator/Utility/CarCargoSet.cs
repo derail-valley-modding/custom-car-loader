@@ -19,6 +19,7 @@
         HopperCovered,
         Gondola,
         Passenger,
-        NuclearFlask
+        NuclearFlask,
+        UtilityFlabed
     }
 }
