@@ -49,7 +49,7 @@ namespace CCL.Importer
             MinArgCount = 0, MaxArgCount = 0)]
         public static void PrintLoadFailures(CommandArg[] args)
         {
-            if (CarManager.LoadFailures.Count == 0)
+            if (ScriptForLoadFailures.LoadFailures.Count == 0)
             {
                 Debug.Log("No failures detected!");
                 return;
@@ -57,7 +57,7 @@ namespace CCL.Importer
 
             StringBuilder sb = new();
 
-            foreach (var failure in CarManager.LoadFailures)
+            foreach (var failure in ScriptForLoadFailures.LoadFailures)
             {
                 sb.AppendLine(failure);
             }

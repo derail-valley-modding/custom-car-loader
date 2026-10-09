@@ -44,12 +44,11 @@ namespace CCL.Importer
             if (!VersionCheck())
             {
                 Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
-                CarManager.LoadFailures.Add("[CCL] Unsupported game version");
-                ObjectHelper.CreateFailuresHolder();
+                AddStaticFailure("[CCL] Unsupported game version");
                 return false;
             }
 
-            if (!Settings.DisableErrorPing)
+            if (Settings.EnableErrorPing)
             {
                 ErrorSoundLogHandler.SoundEnabled = true;
             }
@@ -57,8 +56,7 @@ namespace CCL.Importer
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
             {
                 Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
-                CarManager.LoadFailures.Add("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
-                ObjectHelper.CreateFailuresHolder();
+                AddStaticFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
             }
 
             // Build caches before any car is loaded, to only get vanilla resources.
@@ -100,6 +98,18 @@ namespace CCL.Importer
         public static void Warning(string message)
         {
             Instance.Logger.Warning(message);
+        }
+
+        public static void AddStaticFailure(string message)
+        {
+            ScriptForLoadFailures.StaticFailures.Add(message);
+            ObjectHelper.CreateFailuresHolder();
+        }
+
+        public static void AddLoadFailure(string message)
+        {
+            ScriptForLoadFailures.LoadFailures.Add(message);
+            ObjectHelper.CreateFailuresHolder();
         }
 
         private static void InfoDump()
