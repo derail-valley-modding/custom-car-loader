@@ -84,11 +84,13 @@ namespace CCL.Importer
         }
     }
 
-    internal class ScriptForLoadFailures : MonoBehaviour
+    internal class ScriptForFailures : MonoBehaviour
     {
         private const int WindowId = 9000;
 
         private static readonly GUILayoutOption s_width = GUILayout.MaxWidth(380);
+
+        private static bool s_spamFlag = false;
 
         private Rect _windowRect = new(10, 10, 400, 200);
         private Vector2 _scroll = Vector2.zero;
@@ -131,11 +133,28 @@ namespace CCL.Importer
             {
                 CloseWindow();
             }
+
+            if (s_spamFlag)
+            {
+                if (GUILayout.Button("Close And Disable Spam Warning"))
+                {
+                    CloseWindow();
+                    DV.ErrorSoundLogHandler.SoundEnabled = false;
+                    CCLPlugin.Settings.ErrorPingEnabled = false;
+                    CCLPlugin.Settings.SpamWarningDisabled = true;
+                    CCLPlugin.Settings.Save(CCLPlugin.Instance);
+                }
+            }
         }
 
         private void CloseWindow()
         {
             Destroy(this);
+        }
+
+        public static void SetSpamFlag()
+        {
+            s_spamFlag = true;
         }
     }
 }

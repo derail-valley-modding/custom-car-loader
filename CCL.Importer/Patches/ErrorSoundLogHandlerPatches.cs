@@ -9,7 +9,7 @@ namespace CCL.Importer.Patches
     internal class ErrorSoundLogHandlerPatches
     {
         private const int ErrorCount = 10;
-        private const float ErrorThreshold = 0.75f;
+        private const float ErrorThreshold = 1.0f;
 
         private static bool s_reached = false;
         private static Queue<float> s_timeStamps = new();
@@ -21,9 +21,9 @@ namespace CCL.Importer.Patches
         }
 
         [HarmonyPrefix, HarmonyPatch(nameof(ErrorSoundLogHandler.HandleLog))]
-        private static void HandleLogPrefix(ErrorSoundLogHandler __instance, LogType type)
+        private static void HandleLogPrefix(LogType type)
         {
-            if (s_reached) return;
+            if (s_reached || CCLPlugin.Settings.SpamWarningDisabled) return;
 
             if (type == LogType.Error || type == LogType.Exception)
             {
@@ -36,24 +36,14 @@ namespace CCL.Importer.Patches
                     if (current - first < ErrorThreshold)
                     {
                         s_reached = true;
-                        CCLPlugin.AddStaticFailure("[Game] Error spam detected, one of your mods is probably very broken");
-
-                        if (!ErrorSoundLogHandler.SoundEnabled)
-                        {
-                            PlaySound(__instance);
-                        }
+                        CCLPlugin.AddStaticFailure("[Game] Error spam detected, one of your mods is probably broken\n" +
+                            "If it's not a mod you're developing, you should upload the game's log to Altfuture's discord server");
+                        ScriptForFailures.SetSpamFlag();
                     }
                 }
 
                 s_timeStamps.Enqueue(current);
             }
-        }
-
-        private static void PlaySound(ErrorSoundLogHandler handler)
-        {
-            float num = handler.pitchRandomizeRange * 0.5f;
-            handler.sound.pitch = Random.Range(1f - num, 1f + num);
-            handler.sound.Play();
         }
     }
 }

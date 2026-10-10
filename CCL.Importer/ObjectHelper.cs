@@ -30,7 +30,7 @@ namespace CCL.Importer
                 s_failures = go.transform;
             }
 
-            s_failures.gameObject.GetOrAddComponent<ScriptForLoadFailures>();
+            s_failures.gameObject.GetOrAddComponent<ScriptForFailures>();
         }
 
         public static GameObject CreateModifiablePrefab(GameObject gameObject)

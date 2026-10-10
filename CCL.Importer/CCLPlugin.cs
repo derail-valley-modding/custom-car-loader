@@ -48,11 +48,6 @@ namespace CCL.Importer
                 return false;
             }
 
-            if (Settings.EnableErrorPing)
-            {
-                ErrorSoundLogHandler.SoundEnabled = true;
-            }
-
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
             {
                 Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
@@ -102,13 +97,13 @@ namespace CCL.Importer
 
         public static void AddStaticFailure(string message)
         {
-            ScriptForLoadFailures.StaticFailures.Add(message);
+            ScriptForFailures.StaticFailures.Add(message);
             ObjectHelper.CreateFailuresHolder();
         }
 
         public static void AddLoadFailure(string message)
         {
-            ScriptForLoadFailures.LoadFailures.Add(message);
+            ScriptForFailures.LoadFailures.Add(message);
             ObjectHelper.CreateFailuresHolder();
         }
 
@@ -116,21 +111,21 @@ namespace CCL.Importer
         {
             if (!Settings.InfoDump) return;
 
-            Write("Cargo IDs", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
-            Write("General Licence IDs", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Job License IDs", DV.Globals.G.Types.jobLicenses.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Garage IDs", DV.Globals.G.Types.garages.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Resource IDs", DV.Globals.G.Types.resources.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Livery IDs", DV.Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Car Type IDs", DV.Globals.G.Types.carTypes.Select(x => x.id));
-            Write("Car Kind IDs", DV.Globals.G.Types.CarKinds.Select(x => x.id));
+            Write("Cargo IDs", Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
+            Write("General Licence IDs", Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Job License IDs", Globals.G.Types.jobLicenses.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Garage IDs", Globals.G.Types.garages.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Resource IDs", Globals.G.Types.resources.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Livery IDs", Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Car Type IDs", Globals.G.Types.carTypes.Select(x => x.id));
+            Write("Car Kind IDs", Globals.G.Types.CarKinds.Select(x => x.id));
 
             WriteNoDetail("Cargo to Car",
-                DV.Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"));
+                Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"));
             WriteNoDetail("Car to Cargo",
-                DV.Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car =>
-                    $"{car.id}:\n\"{string.Join("\",    \n\"", DV.Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo))}\""));
-            WriteNoDetail("Cargo ID to Mass", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => $"{{ \"{x.id}\", {x.massPerUnit} }}" ));
+                Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car =>
+                    $"{car.id}:\n\"{string.Join("\",    \n\"", Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo))}\""));
+            WriteNoDetail("Cargo ID to Mass", Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => $"{{ \"{x.id}\", {x.massPerUnit} }}" ));
 
             static void Write(string title, IEnumerable<string> values)
             {

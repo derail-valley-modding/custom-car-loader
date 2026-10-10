@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DV;
+using System.Collections.Generic;
 using UnityModManagerNet;
 
 namespace CCL.Importer
@@ -12,11 +13,11 @@ namespace CCL.Importer
 
         [Draw("Use Verbose Logging", Tooltip = "Enable this if you experience bugs or are developing your own custom car")]
         public bool UseVerboseLogging = false;
-        [Draw("Enable Error Ping", Tooltip = "Enable this to not automatically turn on error pings\n" +
-            "You must restart your game for this setting to take effect")]
-        public bool EnableErrorPing = false;
+        [Draw("Error Ping Enabled", Tooltip = "Enables pings when the game catches errors")]
+        public bool ErrorPingEnabled = ErrorSoundLogHandler.SoundEnabled;
 
         // Don't show these in the settings screen.
+        public bool SpamWarningDisabled = false;
         public bool InfoDump = false;
         public HashSet<string> DisabledIds = new();
         public HashSet<string> DisabledLiveryIds = new();
@@ -26,6 +27,9 @@ namespace CCL.Importer
             Save(this, modEntry);
         }
 
-        public void OnChange() { }
+        public void OnChange()
+        {
+            ErrorSoundLogHandler.SoundEnabled = ErrorPingEnabled;
+        }
     }
 }
