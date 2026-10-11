@@ -38,7 +38,7 @@ namespace CCL.Importer
             Translations = new TranslationInjector(CCLPluginInfo.Guid);
             Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
 
-            Instance.OnGUI += Settings.Draw;
+            Instance.OnGUI += Settings.DrawGUI;
             Instance.OnSaveGUI += Settings.Save;
 
             if (!VersionCheck())

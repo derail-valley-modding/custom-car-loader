@@ -1,5 +1,6 @@
 ﻿using DV;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityModManagerNet;
 
 namespace CCL.Importer
@@ -13,8 +14,6 @@ namespace CCL.Importer
 
         [Draw("Use Verbose Logging", Tooltip = "Enable this if you experience bugs or are developing your own custom car")]
         public bool UseVerboseLogging = false;
-        [Draw("Error Ping Enabled", Tooltip = "Enables pings when the game catches errors")]
-        public bool ErrorPingEnabled = ErrorSoundLogHandler.SoundEnabled;
 
         // Don't show these in the settings screen.
         public bool SpamWarningDisabled = false;
@@ -27,9 +26,19 @@ namespace CCL.Importer
             Save(this, modEntry);
         }
 
-        public void OnChange()
+        public void DrawGUI(UnityModManager.ModEntry modEntry)
         {
-            ErrorSoundLogHandler.SoundEnabled = ErrorPingEnabled;
+            this.Draw(modEntry);
+
+            // This setting is already saved by the game, so we just provide a way to easily read and set it.
+            // Has the benefit of not interfering with other mods that enable/disable it.
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Error Ping Enabled");
+            ErrorSoundLogHandler.SoundEnabled = GUILayout.Toggle(ErrorSoundLogHandler.SoundEnabled, string.Empty);
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
         }
+
+        public void OnChange() { }
     }
 }

@@ -140,7 +140,6 @@ namespace CCL.Importer
                 {
                     CloseWindow();
                     DV.ErrorSoundLogHandler.SoundEnabled = false;
-                    CCLPlugin.Settings.ErrorPingEnabled = false;
                     CCLPlugin.Settings.SpamWarningDisabled = true;
                     CCLPlugin.Settings.Save(CCLPlugin.Instance);
                 }
