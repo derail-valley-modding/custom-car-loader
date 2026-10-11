@@ -95,6 +95,8 @@ namespace CCL.Creator.Validators
                 }
             }
 
+            alreadyConnected.Clear();
+
             // Check port reference connections.
             foreach (var connection in connectionDef.portReferenceConnections)
             {
@@ -113,6 +115,15 @@ namespace CCL.Creator.Validators
                         result.Warning($"Invalid ref connection \"{connection.portReferenceId}\"->\"{connection.portId}\"",
                             connectionDef, nameof(connectionDef.portReferenceConnections));
                     }
+                }
+                else
+                {
+                    if (alreadyConnected.Contains(connection.portReferenceId))
+                    {
+                        result.Fail($"Cannot connect port reference \"{connection.portReferenceId}\" because it's already connected!");
+                    }
+
+                    alreadyConnected.Add(connection.portReferenceId);
                 }
             }
 
