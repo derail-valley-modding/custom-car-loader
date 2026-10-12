@@ -13,7 +13,7 @@ namespace CCL.Importer
     {
         public const string Guid = "cc.foxden.customcarloader";
         public const string Name = "Custom Car Loader";
-        public const string Version = "3.1.10";
+        public const string Version = "3.1.11";
 
         public const string ContentFolderName = "content";
         public const string CarFolderName = "cars";
@@ -38,27 +38,20 @@ namespace CCL.Importer
             Translations = new TranslationInjector(CCLPluginInfo.Guid);
             Settings = UnityModManager.ModSettings.Load<Settings>(modEntry);
 
-            Instance.OnGUI += Settings.Draw;
+            Instance.OnGUI += Settings.DrawGUI;
             Instance.OnSaveGUI += Settings.Save;
 
             if (!VersionCheck())
             {
                 Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
-                CarManager.LoadFailures.Add("[CCL] Unsupported game version");
-                ObjectHelper.CreateFailuresHolder();
+                AddStaticFailure("[CCL] Unsupported game version");
                 return false;
-            }
-
-            if (!Settings.DisableErrorPing)
-            {
-                ErrorSoundLogHandler.SoundEnabled = true;
             }
 
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
             {
                 Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
-                CarManager.LoadFailures.Add("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
-                ObjectHelper.CreateFailuresHolder();
+                AddStaticFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
             }
 
             // Build caches before any car is loaded, to only get vanilla resources.
@@ -102,25 +95,37 @@ namespace CCL.Importer
             Instance.Logger.Warning(message);
         }
 
+        public static void AddStaticFailure(string message)
+        {
+            ScriptForFailures.StaticFailures.Add(message);
+            ObjectHelper.CreateFailuresHolder();
+        }
+
+        public static void AddLoadFailure(string message)
+        {
+            ScriptForFailures.LoadFailures.Add(message);
+            ObjectHelper.CreateFailuresHolder();
+        }
+
         private static void InfoDump()
         {
             if (!Settings.InfoDump) return;
 
-            Write("Cargo IDs", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
-            Write("General Licence IDs", DV.Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Job License IDs", DV.Globals.G.Types.jobLicenses.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Garage IDs", DV.Globals.G.Types.garages.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Resource IDs", DV.Globals.G.Types.resources.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Livery IDs", DV.Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id));
-            Write("Car Type IDs", DV.Globals.G.Types.carTypes.Select(x => x.id));
-            Write("Car Kind IDs", DV.Globals.G.Types.CarKinds.Select(x => x.id));
+            Write("Cargo IDs", Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => x.id));
+            Write("General Licence IDs", Globals.G.Types.generalLicenses.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Job License IDs", Globals.G.Types.jobLicenses.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Garage IDs", Globals.G.Types.garages.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Resource IDs", Globals.G.Types.resources.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Livery IDs", Globals.G.Types.Liveries.OrderBy(x => x.v1).Select(x => x.id));
+            Write("Car Type IDs", Globals.G.Types.carTypes.Select(x => x.id));
+            Write("Car Kind IDs", Globals.G.Types.CarKinds.Select(x => x.id));
 
             WriteNoDetail("Cargo to Car",
-                DV.Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"));
+                Globals.G.Types.CargoToLoadableCarTypes.Select(x => $"{x.Key.id}: {string.Join(", ", x.Value.Select(y => y.id))}"));
             WriteNoDetail("Car to Cargo",
-                DV.Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car =>
-                    $"{car.id}:\n\"{string.Join("\",    \n\"", DV.Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo))}\""));
-            WriteNoDetail("Cargo ID to Mass", DV.Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => $"{{ \"{x.id}\", {x.massPerUnit} }}" ));
+                Globals.G.Types.carTypes.OrderBy(car => car.id).Select(car =>
+                    $"{car.id}:\n\"{string.Join("\",    \n\"", Globals.G.Types.cargos.Where(cargo => cargo.loadableCarTypes.Any(l => l.carType.id == car.id)).Select(cargo => cargo.id).OrderBy(cargo => cargo))}\""));
+            WriteNoDetail("Cargo ID to Mass", Globals.G.Types.cargos.OrderBy(x => x.v1).Select(x => $"{{ \"{x.id}\", {x.massPerUnit} }}" ));
 
             static void Write(string title, IEnumerable<string> values)
             {
