@@ -46,6 +46,7 @@ namespace CCL.Creator.Validators
             }
             if (collision != null)
             {
+                CheckEnabled(collision, true);
                 CheckLocalOrigin(collision);
 
                 if (collision.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
@@ -64,6 +65,7 @@ namespace CCL.Creator.Validators
 
             if (walkable != null)
             {
+                CheckEnabled(walkable, false);
                 CheckLocalOrigin(walkable);
 
                 // Fall safeties.
@@ -95,6 +97,7 @@ namespace CCL.Creator.Validators
             var items = collidersRoot.FindSafe(CarPartNames.Colliders.ITEMS);
             if (items != null)
             {
+                CheckEnabled(items, false);
                 CheckLocalOrigin(items);
 
                 foreach (var disabler in items.GetComponentsInChildren<DrillingDisablerProxy>(true))
@@ -116,6 +119,7 @@ namespace CCL.Creator.Validators
             var cameraDampening = collidersRoot.FindSafe(CarPartNames.Colliders.CAMERA_DAMPENING);
             if (cameraDampening != null)
             {
+                CheckEnabled(cameraDampening, false);
                 CheckLocalOrigin(cameraDampening);
             }
 
@@ -145,6 +149,14 @@ namespace CCL.Creator.Validators
                     {
                         result.Fail("Mesh in MeshFilter is null!", filter);
                     }
+                }
+            }
+
+            void CheckEnabled(Transform t, bool enabled)
+            {
+                if (t.gameObject.activeSelf != enabled)
+                {
+                    result.Warning($"{livery.id} - {t.name} should be {(enabled ? "enabled" : "disabled")}");
                 }
             }
         }
