@@ -76,7 +76,7 @@ namespace CCL.Creator.Validators
 
                     if (IsBadId(port.ID))
                     {
-                        result.Warning($"Port ID '{component.ID}/{port.ID}' should not contain any spaces and/or slashes");
+                        result.Warning($"Port ID '{component.ID}.{port.ID}' should not contain any spaces and/or slashes");
                     }
                 }
 
@@ -84,7 +84,7 @@ namespace CCL.Creator.Validators
                 {
                     if (IsBadId(port.ID))
                     {
-                        result.Warning($"Port Reference ID '{component.ID}/{port.ID}' should not contain any spaces and/or slashes");
+                        result.Warning($"Port Reference ID '{component.ID}.{port.ID}' should not contain any spaces and/or slashes");
                     }
                 }
             }
