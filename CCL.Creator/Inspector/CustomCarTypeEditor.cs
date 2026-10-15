@@ -17,6 +17,7 @@ namespace CCL.Creator.Inspector
 
             EditorHelpers.DrawHeader("Additional Info");
             EditorGUILayout.LabelField("Force Per Bogie", $"{car.brakes.ForcePerBogie}");
+            EditorGUILayout.LabelField("Total Price", $"{car.damage.TotalPrice}");
 
             if (GUILayout.Button("Reset Physics"))
             {
@@ -25,6 +26,17 @@ namespace CCL.Creator.Inspector
                 car.wheelSlidingFrictionCoefficient = CustomCarType.WHEELSLIDE_FRICTION_COEFFICIENT;
                 car.wheelslipFrictionCoefficient = CustomCarType.WHEELSLIP_FRICTION_COEFFICIENT;
                 flag = true;
+            }
+
+            if (GUILayout.Button("Reset Damage"))
+            {
+                car.damage.ApplyWagonDefaults();
+                flag = true;
+            }
+
+            if (GUILayout.Button("Open Wiki Resources"))
+            {
+                Application.OpenURL("https://github.com/derail-valley-modding/custom-car-loader/wiki/Other-Resources#damage-properties");
             }
 
             if (flag)
