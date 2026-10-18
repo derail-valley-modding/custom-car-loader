@@ -49,7 +49,7 @@ namespace CCL.Creator.Validators
 
                 if (compIds.Contains(component.ID))
                 {
-                    result.Fail($"Duplicate component ID {component.ID}", component, nameof(component.ID));
+                    result.Fail($"Duplicate component ID \"{component.ID}\"", component, nameof(component.ID));
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace CCL.Creator.Validators
 
                 if (IsBadId(component.ID))
                 {
-                    result.Warning($"Component ID '{component.ID}' should not contain any spaces and/or slashes");
+                    result.Warning($"Component ID \"{component.ID}\" should not contain any spaces and/or slashes");
                 }
 
                 foreach (var port in component.ExposedPorts)
@@ -67,7 +67,7 @@ namespace CCL.Creator.Validators
 
                     if (portIds.Contains(fullId))
                     {
-                        result.Fail($"Duplicate port ID {fullId}", component);
+                        result.Fail($"Duplicate port ID \"{fullId}\"", component);
                     }
                     else
                     {
@@ -76,7 +76,7 @@ namespace CCL.Creator.Validators
 
                     if (IsBadId(port.ID))
                     {
-                        result.Warning($"Port ID '{component.ID}.{port.ID}' should not contain any spaces and/or slashes");
+                        result.Warning($"Port ID \"{component.ID}.{port.ID}\" should not contain any spaces and/or slashes");
                     }
                 }
 
@@ -84,7 +84,7 @@ namespace CCL.Creator.Validators
                 {
                     if (IsBadId(port.ID))
                     {
-                        result.Warning($"Port Reference ID '{component.ID}.{port.ID}' should not contain any spaces and/or slashes");
+                        result.Warning($"Port Reference ID \"{component.ID}.{port.ID}\" should not contain any spaces and/or slashes");
                     }
                 }
             }

@@ -182,6 +182,7 @@ namespace CCL.Importer.Processing
             AddController<ControlsBlockController, ControlBlocker>(prefab);
             AddController<HandbrakeFeedersController, HandbrakeFeeder>(prefab);
             AddController<ManualGearShiftingController, GearShifter>(prefab);
+            AddController<EnvironmentDamageController, EnvironmentDamager>(prefab);
 
             AddController<CoupledAttachmentController, CoupledAttachmentTag>(prefab);
             AddController<RopeInitialiseController, RopeBehaviour>(prefab);
