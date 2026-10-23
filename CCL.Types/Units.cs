@@ -64,6 +64,9 @@ namespace CCL.Types
         // Energy.
         public const float KWHtoJoule = 3600000.0f;
 
+        // Time.
+        public const float HourToSecond = 1.0f / 3600.0f;
+
         public static float FromPrefix(float value, MetricPrefix prefix)
         {
             return prefix switch
