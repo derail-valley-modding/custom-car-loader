@@ -30,8 +30,6 @@ namespace CCL.Importer
 
         public static TranslationInjector Translations { get; private set; } = null!;
 
-        internal static ErrorSoundLogHandler? ErrorHandler { get; set; }
-
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Instance = modEntry;
@@ -44,14 +42,14 @@ namespace CCL.Importer
             if (!VersionCheck())
             {
                 Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
-                AddStaticFailure("[CCL] Unsupported game version");
+                ErrorHandler.AddStaticFailure("[CCL] Unsupported game version");
                 return false;
             }
 
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
             {
                 Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
-                AddStaticFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
+                ErrorHandler.AddStaticFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
             }
 
             // Build caches before any car is loaded, to only get vanilla resources.
@@ -87,24 +85,12 @@ namespace CCL.Importer
         public static void Error(string message)
         {
             Instance.Logger.Error(message);
-            ErrorHandler?.HandleLog(string.Empty, string.Empty, UnityEngine.LogType.Error);
+            ErrorHandler.SoundHandler?.HandleLog(string.Empty, string.Empty, UnityEngine.LogType.Error);
         }
 
         public static void Warning(string message)
         {
             Instance.Logger.Warning(message);
-        }
-
-        public static void AddStaticFailure(string message)
-        {
-            ScriptForFailures.StaticFailures.Add(message);
-            ObjectHelper.CreateFailuresHolder();
-        }
-
-        public static void AddLoadFailure(string message)
-        {
-            ScriptForFailures.LoadFailures.Add(message);
-            ObjectHelper.CreateFailuresHolder();
         }
 
         private static void InfoDump()

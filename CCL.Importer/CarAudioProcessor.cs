@@ -40,7 +40,7 @@ namespace CCL.Importer
 
                 if (!NeedsCustomAudio(carType)) continue;
 
-                //carType.audioPoolSize = 10;
+                ErrorHandler.OverrideErrorLog($"{carType.id} audio");
 
                 var newAudioFab = ObjectHelper.CreateModifiablePrefab(pool.defaultAudioPrefab);
                 var modularAudio = newAudioFab.GetComponent<CarModularAudio>();
@@ -144,6 +144,8 @@ namespace CCL.Importer
 
                 carType.audioPrefab = newAudioFab;
             }
+
+            ErrorHandler.ClearOverride();
         }
 
         private static bool WheelsAudio1Transform(VehicleAudioController? simAudioFab, out Transform t)

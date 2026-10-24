@@ -61,7 +61,7 @@ namespace CCL.Importer
                 if (CCLPlugin.IsBadNumberManager(modEntry))
                 {
                     CCLPlugin.Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
-                    CCLPlugin.AddLoadFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
+                    ErrorHandler.AddLoadFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
                     ObjectHelper.CreateFailuresHolder();
                 }
 
@@ -113,7 +113,7 @@ namespace CCL.Importer
                 CCLPlugin.Error($"Pack {pack.PackId} was built with a newer version of CCL:\n" +
                     $"Current Version = {ExporterConstants.ExporterVersion}\n" +
                     $"Pack Version = {version}");
-                CCLPlugin.AddLoadFailure($"[Pack] {pack.PackId} (outdated CCL: {version} > {ExporterConstants.ExporterVersion})");
+                ErrorHandler.AddLoadFailure($"[Pack] {pack.PackId} (outdated CCL: {version} > {ExporterConstants.ExporterVersion})");
                 return loaded;
             }
             else if (version < ExporterConstants.MinimumCompatibleVersion)
@@ -121,7 +121,7 @@ namespace CCL.Importer
                 CCLPlugin.Error($"Pack {pack.PackId} was built with an incompatible version of CCL:\n" +
                     $"Minimum Version = {ExporterConstants.MinimumCompatibleVersion}\n" +
                     $"Pack Version = {version}");
-                CCLPlugin.AddLoadFailure($"[Pack] {pack.PackId} (outdated mod: {version} < {ExporterConstants.MinimumCompatibleVersion})");
+                ErrorHandler.AddLoadFailure($"[Pack] {pack.PackId} (outdated mod: {version} < {ExporterConstants.MinimumCompatibleVersion})");
                 return loaded;
             }
 
@@ -132,7 +132,7 @@ namespace CCL.Importer
                 if (pack.Cars.ContainsDuplicates(x => x.id))
                 {
                     CCLPlugin.Error($"Pack {pack.PackId} contains duplicate car IDs");
-                    CCLPlugin.AddLoadFailure($"[Pack] {pack.PackId} (duplicate car IDs)");
+                    ErrorHandler.AddLoadFailure($"[Pack] {pack.PackId} (duplicate car IDs)");
                     return loaded;
                 }
 
@@ -157,7 +157,7 @@ namespace CCL.Importer
                     }
                     else
                     {
-                        CCLPlugin.AddLoadFailure($"[Car] {car.id} ({pack.PackId} - generic failure, check log)");
+                        ErrorHandler.AddLoadFailure($"[Car] {car.id} ({pack.PackId} - generic failure, check log)");
                     }
                 }
 
@@ -172,7 +172,7 @@ namespace CCL.Importer
             catch (Exception e)
             {
                 CCLPlugin.Error($"Error loading pack {pack.PackId}:\n{e}");
-                CCLPlugin.AddLoadFailure($"[Pack] {pack.PackId} (exception: {e.Message})");
+                ErrorHandler.AddLoadFailure($"[Pack] {pack.PackId} (exception: {e.Message})");
             }
 
             return loaded;
