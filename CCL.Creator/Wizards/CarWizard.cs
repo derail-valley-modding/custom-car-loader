@@ -116,8 +116,23 @@ namespace CCL.Creator.Wizards
                 "Kind", _carSettings.Kind);
 
             _carSettings.BaseCarType = RenderEnum(
-                "Pick the base car type that you would like to use bogies and buffers from",
+                "Pick the base car type that you would like to use bogies and buffers from (not the model or simulation)",
                 "Base Type", _carSettings.BaseCarType);
+
+            EditorGUILayout.BeginHorizontal();
+            var label = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = 42;
+            EditorGUILayout.LabelField("Wiki Previews: ");
+            EditorGUIUtility.labelWidth = label;
+            if (GUILayout.Button("Bogies"))
+            {
+                Application.OpenURL("https://github.com/derail-valley-modding/custom-car-loader/wiki/Bogies");
+            }
+            if (GUILayout.Button("Buffers"))
+            {
+                Application.OpenURL("https://github.com/derail-valley-modding/custom-car-loader/wiki/Couplers-&-Buffers");
+            }
+            EditorGUILayout.EndHorizontal();
 
             using (new EditorGUI.DisabledScope(_carSettings.RoleDisabled))
             {
