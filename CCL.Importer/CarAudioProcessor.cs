@@ -40,7 +40,7 @@ namespace CCL.Importer
 
                 if (!NeedsCustomAudio(carType)) continue;
 
-                ErrorHandler.OverrideErrorLog($"{carType.id} audio");
+                ErrorHandler.OverrideErrorContext($"{carType.id} audio");
 
                 var newAudioFab = ObjectHelper.CreateModifiablePrefab(pool.defaultAudioPrefab);
                 var modularAudio = newAudioFab.GetComponent<CarModularAudio>();

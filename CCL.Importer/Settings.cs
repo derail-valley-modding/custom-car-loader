@@ -14,6 +14,8 @@ namespace CCL.Importer
 
         [Draw("Use Verbose Logging", Tooltip = "Enable this if you experience bugs or are developing your own custom car")]
         public bool UseVerboseLogging = false;
+        [Draw("Use Deep Logging", Tooltip = "This should be disabled unless you are actively debugging something")]
+        public bool UseDeepLogging = false;
 
         // Don't show these in the settings screen.
         public bool SpamWarningDisabled = false;

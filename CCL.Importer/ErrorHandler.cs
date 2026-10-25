@@ -1,5 +1,6 @@
 ﻿using DV;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 namespace CCL.Importer
@@ -22,6 +23,11 @@ namespace CCL.Importer
 
             if (type == LogType.Error || type == LogType.Exception)
             {
+                if (CCLPlugin.Settings.UseDeepLogging)
+                {
+                    CCLPlugin.Log(new StackTrace(2, true).ToString());
+                }
+
                 if (string.IsNullOrEmpty(Override))
                 {
                     RegularCheck();
@@ -53,7 +59,7 @@ namespace CCL.Importer
             s_timeStamps.Enqueue(current);
         }
 
-        public static void OverrideErrorLog(string name)
+        public static void OverrideErrorContext(string name)
         {
             ClearOverride();
             Override = name;
