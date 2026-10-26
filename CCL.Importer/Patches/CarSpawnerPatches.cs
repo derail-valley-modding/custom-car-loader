@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System;
 using UnityEngine;
 
 namespace CCL.Importer.Patches
@@ -21,9 +22,14 @@ namespace CCL.Importer.Patches
             }
         }
 
-        [HarmonyPostfix, HarmonyPatch(nameof(CarSpawner.BaseSpawn))]
-        private static void BaseSpawnPostfix()
+        [HarmonyFinalizer, HarmonyPatch(nameof(CarSpawner.BaseSpawn))]
+        private static void BaseSpawnFinalizer(Exception __exception)
         {
+            if (__exception != null)
+            {
+                ErrorHandler.TriggerOverride();
+            }
+
             ErrorHandler.ClearOverride();
         }
     }

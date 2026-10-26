@@ -34,7 +34,7 @@ namespace CCL.Importer
                 }
                 else
                 {
-                    s_overrideErrorDetected = true;
+                    TriggerOverride();
                 }
             }
         }
@@ -73,6 +73,11 @@ namespace CCL.Importer
             }
 
             Override = null;
+        }
+
+        public static void TriggerOverride()
+        {
+            s_overrideErrorDetected = true;
         }
 
         public static void AddLoadFailure(string message)

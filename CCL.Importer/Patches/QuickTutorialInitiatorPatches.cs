@@ -7,7 +7,7 @@ namespace CCL.Importer.Patches
     internal class QuickTutorialInitiatorPatches
     {
         [HarmonyPostfix, HarmonyPatch(nameof(QuickTutorialInitiator.Start))]
-        private static void StartPrefix(QuickTutorialInitiator __instance)
+        private static void StartPostfix(QuickTutorialInitiator __instance)
         {
             foreach (var type in CarManager.CustomCarTypes)
             {
