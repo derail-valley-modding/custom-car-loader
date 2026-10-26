@@ -16,6 +16,8 @@ namespace CCL.Importer
         public bool UseVerboseLogging = false;
         [Draw("Use Deep Logging", Tooltip = "This should be disabled unless you are actively debugging something")]
         public bool UseDeepLogging = false;
+        [Draw("Always Show Popups", Tooltip = "Enable this to show the error popup on contextual errors")]
+        public bool AlwaysShowPopups = false;
 
         // Don't show these in the settings screen.
         public bool SpamWarningDisabled = false;

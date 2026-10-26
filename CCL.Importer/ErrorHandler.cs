@@ -69,7 +69,8 @@ namespace CCL.Importer
         {
             if (!string.IsNullOrEmpty(Override) && s_overrideErrorDetected)
             {
-                AddStaticFailure($"{Override} failure(s) detected");
+                AddContextualFailure($"{Override} failure(s) detected");
+                CCLPlugin.Warning($"Error Override: {Override}");
             }
 
             Override = null;
@@ -90,6 +91,16 @@ namespace CCL.Importer
         {
             ScriptForFailures.StaticFailures.Add(message);
             ObjectHelper.CreateFailuresHolder();
+        }
+
+        public static void AddContextualFailure(string message)
+        {
+            ScriptForFailures.AddRepeatableFailure(message);
+
+            if (CCLPlugin.Settings.AlwaysShowPopups)
+            {
+                ObjectHelper.CreateFailuresHolder();
+            }
         }
     }
 }

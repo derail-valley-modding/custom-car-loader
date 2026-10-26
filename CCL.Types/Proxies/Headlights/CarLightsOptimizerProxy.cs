@@ -3,7 +3,7 @@
 namespace CCL.Types.Proxies.Headlights
 {
     [AddComponentMenu("CCL/Proxies/Headlights/Car Lights Optimizer Proxy")]
-    public class CarLightsOptimizerProxy : MonoBehaviour
+    public class CarLightsOptimizerProxy : MonoBehaviour//, ISelfValidation
     {
         public GameObject[] cabLights = new GameObject[0];
         public GameObject[] headLightGlass = new GameObject[0];
@@ -40,5 +40,17 @@ namespace CCL.Types.Proxies.Headlights
             glaresDisableDistance = 2000f;
             beamsDisableDistance = 500f;
         }
+
+        //public SelfValidationResult Validate(out string message, out string? highlight)
+        //{
+        //    if (headLightGlass == null || headLightGlass.Length == 0)
+        //    {
+        //        message = $"{nameof(headLightGlass)} is empty";
+        //        highlight = nameof(headLightGlass);
+        //        return SelfValidationResult.Warning;
+        //    }
+
+        //    return this.Pass(out message, out highlight);
+        //}
     }
 }
