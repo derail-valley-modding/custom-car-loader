@@ -97,7 +97,7 @@ namespace CCL.Creator.Wizards
                     case 7:
                         _generatorVoltage.Draw();
                         break;
-                    case 6:
+                    case 8:
                         _customBatteryVoltage.Draw();
                         break;
                     default:
