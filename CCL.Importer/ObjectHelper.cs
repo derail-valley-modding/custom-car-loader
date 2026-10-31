@@ -23,12 +23,14 @@ namespace CCL.Importer
 
         public static void CreateFailuresHolder()
         {
-            if (s_failures != null) return;
+            if (s_failures == null)
+            {
+                var go = new GameObject("[CCL FAILURES]");
+                Object.DontDestroyOnLoad(go);
+                s_failures = go.transform;
+            }
 
-            var go = new GameObject("[CCL FAILURES]");
-            go.AddComponent<ScriptForLoadFailures>();
-            Object.DontDestroyOnLoad(go);
-            s_failures = go.transform;
+            s_failures.gameObject.GetOrAddComponent<ScriptForFailures>();
         }
 
         public static GameObject CreateModifiablePrefab(GameObject gameObject)

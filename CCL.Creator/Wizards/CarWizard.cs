@@ -312,6 +312,8 @@ namespace CCL.Creator.Wizards
                     return BogieType.DE6;
                 case BaseTrainCarType.LocoDH4:
                     return BogieType.DH4;
+                case BaseTrainCarType.LocoDM1U:
+                    return BogieType.DM1U;
                 case BaseTrainCarType.LocoMicroshunter:
                     return BogieType.Microshunter;
                 case BaseTrainCarType.Handcar:
@@ -334,6 +336,7 @@ namespace CCL.Creator.Wizards
                 case BaseTrainCarType.LocoDE2:
                 case BaseTrainCarType.LocoDH4:
                 case BaseTrainCarType.LocoDM3:
+                case BaseTrainCarType.LocoDM1U:
                 case BaseTrainCarType.Stock:
                     return BufferType.Buffer03;
 

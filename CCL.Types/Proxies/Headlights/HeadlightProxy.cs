@@ -1,10 +1,11 @@
 ﻿using CCL.Types.Components;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace CCL.Types.Proxies.Headlights
 {
     [AddComponentMenu("CCL/Proxies/Headlights/Headlight Proxy")]
-    public class HeadlightProxy : MonoBehaviour, ICustomSerialized
+    public class HeadlightProxy : MonoBehaviour, ICustomSerialized, ISelfValidation
     {
         public VolumetricBeamControllerBaseProxy.VolumetricBeamData beamData = new VolumetricBeamControllerBaseProxy.VolumetricBeamData();
         public GameObject glare = null!;
@@ -53,6 +54,18 @@ namespace CCL.Types.Proxies.Headlights
                 intensityOutsideMax = _intensityOutsideMax,
                 intensityInsideMax = _intensityInsideMax
             };
+        }
+
+        public SelfValidationResult Validate(out string message, out string? highlight)
+        {
+            if (glare != null && ComponentUtil.HasComponent<SortingGroup>(gameObject))
+            {
+                highlight = nameof(glare);
+                message = "glare cannot have a Sorting Group component";
+                return SelfValidationResult.Fail;
+            }
+
+            return this.Pass(out message, out highlight);
         }
 
         private void CreateDefaultGlare()

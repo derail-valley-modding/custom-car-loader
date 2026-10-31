@@ -7,8 +7,7 @@
         LocoDE6Slug,
         LocoDH4,
         LocoDM3,
-        // Soon
-        //LocoRailbus,
+        LocoDM1U,
         LocoMicroshunter,
         LocoS060,
         LocoS282,
