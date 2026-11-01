@@ -10,7 +10,6 @@ namespace CCL.Types.Components.Simulation.Electric
         public int numSeriesCells = 36;
         public float internalResistance = 0.005f;
         public float baseConsumptionMultiplier = 4f;
-        public float baseRechargeMultiplier = 1f;
         public AnimationCurve chargeToVoltageCurve = null!;
 
         [FuseId(true)]
