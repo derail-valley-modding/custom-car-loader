@@ -43,17 +43,6 @@ namespace CCL.Importer
         private static Dictionary<TrainCarType, CarDamageProperties>? s_ogDamageProps;
         private static readonly Dictionary<CCL_CarType, CarDamageProperties> s_customDamageProps = new();
 
-        public static void ScanLoadedMods()
-        {
-            foreach (var mod in UnityModManager.modEntries)
-            {
-                if (mod.Active)
-                {
-                    LoadCarDefinitions(mod);
-                }
-            }
-        }
-
         public static void HandleModToggled(UnityModManager.ModEntry modEntry, bool newState)
         {
             if (newState)
@@ -157,7 +146,8 @@ namespace CCL.Importer
                     }
                     else
                     {
-                        ErrorHandler.AddLoadFailure($"[Car] {car.id} ({pack.PackId} - generic failure, check log)");
+                        ErrorHandler.ClearOverrideFromLargerFailure();
+                        ErrorHandler.AddLoadFailure($"[Car] {car.id} ({pack.PackId} - exception thrown, check log)");
                     }
                 }
 
@@ -199,6 +189,8 @@ namespace CCL.Importer
 
         private static bool LoadCar(CustomCarType car)
         {
+            ErrorHandler.OverrideErrorContext($"{car.id} loading");
+
             try
             {
                 // Ensure no duplicate IDs ever load, entire game dies otherwise.
@@ -289,10 +281,12 @@ namespace CCL.Importer
             }
             catch (Exception e)
             {
-                CCLPlugin.Error($"Error loading car from {car.id}:\n{e}");
+                CCLPlugin.Error($"Exception thrown loading car {car.id}:\n{e}");
                 return false;
             }
 
+
+            ErrorHandler.ClearOverride(true);
             return true;
         }
 

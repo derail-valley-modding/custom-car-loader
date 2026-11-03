@@ -5,6 +5,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 using UnityModManagerNet;
 
 namespace CCL.Importer
@@ -59,7 +60,7 @@ namespace CCL.Importer
             Translations.AddTranslationsFromCsv(System.IO.Path.Combine(modEntry.Path, CCLPluginInfo.TranslationCsvFile));
             Translations.AddTranslationsFromWebCsv(CCLPluginInfo.TranslationCsvUrl);
 
-            CarManager.ScanLoadedMods();
+            Application.logMessageReceived += LogReceived;
             UnityModManager.toggleModsListen += CarManager.HandleModToggled;
 
             var harmony = new Harmony(CCLPluginInfo.Guid);
@@ -85,12 +86,20 @@ namespace CCL.Importer
         public static void Error(string message)
         {
             Instance.Logger.Error(message);
-            ErrorHandler.SoundHandler?.HandleLog(string.Empty, string.Empty, UnityEngine.LogType.Error);
+            ErrorHandler.SoundHandler?.HandleLog(string.Empty, string.Empty, LogType.Error);
         }
 
         public static void Warning(string message)
         {
             Instance.Logger.Warning(message);
+        }
+
+        private static void LogReceived(string condition, string stackTrace, LogType type)
+        {
+            if (type == LogType.Error || type == LogType.Exception)
+            {
+                ErrorHandler.HandleUnityError();
+            }
         }
 
         private static void InfoDump()

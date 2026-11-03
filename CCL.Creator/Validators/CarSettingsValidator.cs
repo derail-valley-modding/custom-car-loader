@@ -37,12 +37,12 @@ namespace CCL.Creator.Validators
             {
                 if (car.unusedCarDeletePreventionMode == CustomCarType.UnusedCarDeletePreventionMode.None)
                 {
-                    result.Warning("Car is not of generic car kind but has no delete prevention set", car);
+                    result.Warning("Car is not of generic car kind but has no delete prevention set", car, nameof(CustomCarType.unusedCarDeletePreventionMode));
                 }
 
                 if (car.carIdPrefix != "-")
                 {
-                    result.Warning("Car is not of generic car kind but ID prefix is not \"-\"", car);
+                    result.Warning("Car is not of generic car kind but ID prefix is not \"-\"", car, nameof(CustomCarType.carIdPrefix));
                 }
             }
 

@@ -17,25 +17,22 @@ namespace CCL.Importer
         public static ErrorSoundLogHandler? SoundHandler { get; set; }
         public static string? Override { get; private set; }
 
-        public static void HandleUnityError(LogType type)
+        public static void HandleUnityError()
         {
             if (s_reached || CCLPlugin.Settings.SpamWarningDisabled) return;
 
-            if (type == LogType.Error || type == LogType.Exception)
+            if (CCLPlugin.Settings.UseDeepLogging)
             {
-                if (CCLPlugin.Settings.UseDeepLogging)
-                {
-                    CCLPlugin.Log(new StackTrace(2, true).ToString());
-                }
+                CCLPlugin.Log(new StackTrace(2, true).ToString());
+            }
 
-                if (string.IsNullOrEmpty(Override))
-                {
-                    RegularCheck();
-                }
-                else
-                {
-                    TriggerOverride();
-                }
+            if (string.IsNullOrEmpty(Override))
+            {
+                RegularCheck();
+            }
+            else
+            {
+                TriggerOverride();
             }
         }
 
@@ -65,14 +62,20 @@ namespace CCL.Importer
             Override = name;
         }
 
-        public static void ClearOverride()
+        public static void ClearOverride(bool forceShow = false)
         {
             if (!string.IsNullOrEmpty(Override) && s_overrideErrorDetected)
             {
-                AddContextualFailure($"{Override} failure(s) detected");
+                AddContextualFailure($"{Override} failure(s) detected", forceShow);
                 CCLPlugin.Warning($"Error Override: {Override}");
             }
 
+            Override = null;
+        }
+
+        public static void ClearOverrideFromLargerFailure()
+        {
+            s_overrideErrorDetected = false;
             Override = null;
         }
 
@@ -93,11 +96,11 @@ namespace CCL.Importer
             ObjectHelper.CreateFailuresHolder();
         }
 
-        public static void AddContextualFailure(string message)
+        public static void AddContextualFailure(string message, bool forceShow = false)
         {
             ScriptForFailures.AddRepeatableFailure(message);
 
-            if (CCLPlugin.Settings.AlwaysShowPopups)
+            if (CCLPlugin.Settings.AlwaysShowPopups || forceShow)
             {
                 ObjectHelper.CreateFailuresHolder();
             }
