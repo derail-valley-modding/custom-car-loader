@@ -1,10 +1,16 @@
 ﻿using CCL.Importer.Components.Simulation;
+using DV.JObjectExtstensions;
 using LocoSim.Implementations;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace CCL.Importer.Implementations
 {
     internal class DoubledControl : SimComponent
     {
+        private const string SaveKeyA = "valA";
+        private const string SaveKeyB = "valB";
+
         public readonly Port ControlAIn;
         public readonly Port ControlBIn;
         public readonly Port CombinedIn;
@@ -15,6 +21,9 @@ namespace CCL.Importer.Implementations
 
         private bool _lockDoubles;
         private bool _lockCombined;
+        private bool _save;
+
+        public override bool HasSaveData => _save;
 
         public DoubledControl(DoubledControlDefinitionInternal def) : base(def.ID)
         {
@@ -55,6 +64,38 @@ namespace CCL.Importer.Implementations
             ControlAIn.Value = value;
             ControlBIn.Value = value;
             _lockCombined = false;
+        }
+
+        public override JObject GetSaveStateData()
+        {
+            var jo = new JObject();
+            jo.SetFloat(SaveKeyA, ControlAIn.Value);
+            jo.SetFloat(SaveKeyB, ControlBIn.Value);
+            return jo;
+        }
+
+        public override void SetSaveStateData(JObject savedData)
+        {
+            var a = savedData.GetFloat(SaveKeyA);
+            var b = savedData.GetFloat(SaveKeyB);
+
+            if (a.HasValue)
+            {
+                ControlAIn.Value = a.Value;
+            }
+            else
+            {
+                Debug.LogError($"Unexpected state: Missing save data for {id} (control A). Loading ignored for this parameter.");
+            }
+
+            if (b.HasValue)
+            {
+                ControlBIn.Value = b.Value;
+            }
+            else
+            {
+                Debug.LogError($"Unexpected state: Missing save data for {id} (control B). Loading ignored for this parameter.");
+            }
         }
     }
 }

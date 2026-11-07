@@ -229,6 +229,10 @@ namespace CCL.Creator
                         SetBadEntry("This object must be a child of the root");
                     }
                     break;
+                case CarPartNames.Interaction.ANIMATION_TARGET:
+                    content = GetCachedContent("Transform Icon");
+                    txC = EditorHelpers.Colors.CONFIRM_ACTION;
+                    break;
 
                 // Lights.
                 case "FrontSide":

@@ -1,6 +1,7 @@
 ﻿using CCL.Types.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace CCL.Types.Components
@@ -14,6 +15,16 @@ namespace CCL.Types.Components
         [HideInInspector]
         [SerializeField]
         private string? _json;
+
+        private void Reset()
+        {
+            ResetScriptToFirst();
+        }
+
+        private void ResetScriptToFirst()
+        {
+            ScriptToAffect = GetComponents<Component>().Where(x => !(x is Transform) && !(x is VanillaResourceGrabber<T>)).FirstOrDefault();
+        }
 
         public void OnValidate()
         {

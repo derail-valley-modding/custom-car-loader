@@ -178,5 +178,10 @@
             public const string MAIN_TRIGGER_COLLIDER = "MainTriggerCollider";
             public const string NO_TELEPORT = "NO_TELEPORT";
         }
+
+        public static class Interaction
+        {
+            public const string ANIMATION_TARGET = "[animation_pose_target]";
+        }
     }
 }

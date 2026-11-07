@@ -43,6 +43,7 @@ namespace CCL.Creator.Wizards
             Compressor,
             Dynamo,
             Lubricator,
+            AshPan,
 
             Starter,
             FuelCutoff,
@@ -114,6 +115,7 @@ namespace CCL.Creator.Wizards
             { ControlType.Compressor, new KeyMap("AirPump", string.Empty, "AirPump") },
             { ControlType.Dynamo, new KeyMap("Dynamo", string.Empty, "Dynamo") },
             { ControlType.Lubricator, new KeyMap("Lubricator", string.Empty, "Lubricator") },
+            { ControlType.AshPan, new KeyMap("AshPan", string.Empty, string.Empty) },
 
             { ControlType.Starter, new KeyMap("Starter", string.Empty, "Starter") },
             { ControlType.FuelCutoff, new KeyMap("FuelCutoff", string.Empty, "FuelCutoff") },

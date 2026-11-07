@@ -36,6 +36,7 @@
         public static class Interior
         {
             public const int Bed = 300;
+            public const int Firebox = 301;
         }
 
         public static class Particles

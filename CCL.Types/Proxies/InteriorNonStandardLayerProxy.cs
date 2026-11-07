@@ -7,5 +7,13 @@ namespace CCL.Types.Proxies
     {
         public DVLayer Layer = DVLayer.Train_Walkable;
         public bool includeChildren;
+
+        public static InteriorNonStandardLayerProxy AttachToObject(GameObject go, DVLayer layer, bool includeChildren = false)
+        {
+            var proxy = go.AddComponent<InteriorNonStandardLayerProxy>();
+            proxy.Layer = layer;
+            proxy.includeChildren = includeChildren;
+            return proxy;
+        }
     }
 }

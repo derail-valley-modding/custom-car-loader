@@ -11,5 +11,10 @@ namespace CCL.Types.Proxies
         public string floatParameterName = "Main";
         [Tooltip("GameObject where HingeJointAngleFix will appear after Start")]
         public GameObject hjafObject = null!;
+
+        private void OnReset()
+        {
+            animator = GetComponent<Animator>();
+        }
     }
 }
