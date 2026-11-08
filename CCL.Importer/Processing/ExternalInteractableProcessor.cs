@@ -26,6 +26,8 @@ namespace CCL.Importer.Processing
         private static readonly GameObject _microshunterHandbrake;
         private static readonly GameObject _dm1uHandbrake;
         private static readonly GameObject _utilityHandbrake;
+        private static readonly GameObject _s282BrakeRelease;
+        private static readonly GameObject _dm1uBrakeRelease;
 
         private static readonly GameObject _de2FuelPort;
         private static readonly GameObject _be2ChargePort;
@@ -55,6 +57,11 @@ namespace CCL.Importer.Processing
                 .transform.Find(HANDBRAKE_DM1U).gameObject;
             _utilityHandbrake = QuickAccess.Wagons.UtilityFlatbed.externalInteractablesPrefab
                 .transform.Find(HANDBRAKE_UTILITY_FLATBED).gameObject;
+
+            _s282BrakeRelease = QuickAccess.Locomotives.S282A.externalInteractablesPrefab
+                .transform.Find(BRAKE_CYL_RELEASE_S282).gameObject;
+            _dm1uBrakeRelease = QuickAccess.Locomotives.DM1U.externalInteractablesPrefab
+                .transform.Find(BRAKE_CYL_RELEASE).gameObject;
 
             _de2FuelPort = QuickAccess.Locomotives.DE2.prefab
                 .transform.Find($"{FUEL_CAP_ROOT}/{FUEL_CAP_DE2}").gameObject;
@@ -143,6 +150,12 @@ namespace CCL.Importer.Processing
                         break;
                     case DUMMY_HANDBRAKE_UTILITY_FLATBED:
                         Replace(interactables.transform, current, _utilityHandbrake);
+                        break;
+                    case DUMMY_BRAKE_RELEASE_S282:
+                        Replace(interactables.transform, current, _s282BrakeRelease);
+                        break;
+                    case DUMMY_BRAKE_RELEASE_DM1U:
+                        Replace(interactables.transform, current, _dm1uBrakeRelease);
                         break;
                     default:
                         break;

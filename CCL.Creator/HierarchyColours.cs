@@ -184,7 +184,6 @@ namespace CCL.Creator
 
                 // Dummy objects.
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_SMALL:
-                case CarPartNames.Interactables.DUMMY_BRAKE_RELEASE:
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_LARGE:
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_S060:
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_S282:
@@ -194,6 +193,9 @@ namespace CCL.Creator
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_MICROSHUNTER:
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_DM1U:
                 case CarPartNames.Interactables.DUMMY_HANDBRAKE_UTILITY_FLATBED:
+                case CarPartNames.Interactables.DUMMY_BRAKE_RELEASE:
+                case CarPartNames.Interactables.DUMMY_BRAKE_RELEASE_S282:
+                case CarPartNames.Interactables.DUMMY_BRAKE_RELEASE_DM1U:
                 case CarPartNames.FuelPorts.DUMMY_FUEL_CAP_DE2:
                 case CarPartNames.FuelPorts.DUMMY_CHARGE_PORT_BE2:
                     if (IsUnderRoot(go))

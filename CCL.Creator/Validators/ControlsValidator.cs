@@ -1,6 +1,7 @@
 ﻿using CCL.Types;
 using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Weather;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -27,6 +28,7 @@ namespace CCL.Creator.Validators
         private static bool CheckPrefab(GameObject prefab, ValidationResult result)
         {
             var controls = prefab.GetComponentsInChildren<ControlSpecProxy>();
+            var iaDict = new Dictionary<StaticInteractionAreaProxy, ControlSpecProxy>();
 
             if (controls.Length == 0) return false;
 
@@ -69,6 +71,20 @@ namespace CCL.Creator.Validators
                 if (control.GetComponentsInChildren<MeshCollider>().Any(x => !x.convex))
                 {
                     result.Fail($"Control '{control.name}' - non-convex mesh colliders are not supported in controls", control);
+                }
+
+                // If the area is shared with another, it won't like it.
+                if (control.nonVrStaticInteractionArea != null)
+                {
+                    if (iaDict.TryGetValue(control.nonVrStaticInteractionArea, out var other))
+                    {
+                        result.Fail($"Controls {control.name} and {other.name} cannot share the same {nameof(StaticInteractionAreaProxy)}",
+                            control, nameof(ControlSpecProxy.nonVrStaticInteractionArea));
+                    }
+                    else
+                    {
+                        iaDict.Add(control.nonVrStaticInteractionArea, control);
+                    }
                 }
 
                 switch (control)
