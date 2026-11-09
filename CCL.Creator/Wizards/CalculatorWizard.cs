@@ -43,11 +43,11 @@ namespace CCL.Creator.Wizards
             new GUIContent("Traction Motor Properties",
                 "Motor voltage and current for different configurations"),
             new GUIContent("Diesel Engine Properties",
-                "Expected engine power output at a given RPM"),
+                "Diesel engine and corresponding throttle properties"),
             new GUIContent("Generator Voltage",
                 "Expected maximum generator voltage"),
             new GUIContent("Battery Custom Curve Voltage",
-                "Expected battery voltage at a given SoC")
+                "Expected battery voltage at a given state of charge")
         };
 
         private static readonly GUIContent s_context = new GUIContent("Context Object",
