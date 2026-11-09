@@ -8,7 +8,7 @@ namespace CCL.Creator.Inspector.SimComponents
     [CustomEditor(typeof(BatteryCustomCurveDefinition))]
     internal class BatteryCustomCurveDefinitionEditor : Editor
     {
-        private BatteryCustomCurveDefinition _def = null!;
+        private BatteryCustomCurveDefinition _proxy = null!;
         private float _nominalVoltage;
         private bool _hasCalculatedNominalVoltage;
 
@@ -16,11 +16,18 @@ namespace CCL.Creator.Inspector.SimComponents
         {
             base.OnInspectorGUI();
 
-            _def = (BatteryCustomCurveDefinition)target;
+            _proxy = (BatteryCustomCurveDefinition)target;
 
-            float minVoltage = _def.numSeriesCells * _def.chargeToVoltageCurve.Evaluate(0);
-            float maxVoltage = _def.numSeriesCells * _def.chargeToVoltageCurve.Evaluate(1);
-            float totalResistance = _def.numSeriesCells * _def.internalResistance;
+            float minVoltage = 0;
+            float maxVoltage = 0;
+            float totalResistance = 0;
+
+            if (_proxy.chargeToVoltageCurve != null)
+            {
+                minVoltage = _proxy.numSeriesCells * _proxy.chargeToVoltageCurve[0].value;
+                maxVoltage = _proxy.numSeriesCells * _proxy.chargeToVoltageCurve[_proxy.chargeToVoltageCurve.length - 1].value;
+                totalResistance = _proxy.numSeriesCells * _proxy.internalResistance;
+            }
 
             EditorHelpers.DrawHeader("Calculated Values");
             EditorGUILayout.LabelField("Min Voltage", $"{minVoltage:F2} V");
@@ -30,14 +37,19 @@ namespace CCL.Creator.Inspector.SimComponents
             if (_hasCalculatedNominalVoltage)
             {
                 EditorGUILayout.LabelField("Nominal Cell Voltage", $"{_nominalVoltage:F2} V");
-                EditorGUILayout.LabelField("Nominal Pack Voltage", $"{_nominalVoltage * _def.numSeriesCells:F2} V");
+                EditorGUILayout.LabelField("Nominal Pack Voltage", $"{_nominalVoltage * _proxy.numSeriesCells:F2} V");
             }
 
             if (GUILayout.Button("Calculate Nominal Voltages"))
             {
-                _nominalVoltage = CalculateNominalCellVoltage(_def.chargeToVoltageCurve);
-                _hasCalculatedNominalVoltage = true;
+                if (_proxy.chargeToVoltageCurve != null)
+                {
+                    _nominalVoltage = CalculateNominalCellVoltage(_proxy.chargeToVoltageCurve);
+                    _hasCalculatedNominalVoltage = true;
+                }
             }
+
+            EditorHelpers.DrawLocoDefaultsButtons(target);
         }
 
         public float CalculateNominalCellVoltage(AnimationCurve curve, int samples = 100)
