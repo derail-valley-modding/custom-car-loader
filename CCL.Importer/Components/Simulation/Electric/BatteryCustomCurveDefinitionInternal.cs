@@ -13,7 +13,6 @@ namespace CCL.Importer.Components.Simulation.Electric
         public AnimationCurve chargeToVoltageCurve = null!;
         public string powerFuseId = string.Empty;
 
-        public readonly PortDefinition internalResistanceReadOut = new(PortType.READONLY_OUT, PortValueType.OHMS, "INTERNAL_RESISTANCE");
         public readonly PortDefinition voltageReadOut = new(PortType.READONLY_OUT, PortValueType.VOLTS, "VOLTAGE");
         public readonly PortDefinition voltageNormalizedReadOut = new(PortType.READONLY_OUT, PortValueType.VOLTS, "VOLTAGE_NORMALIZED");
 

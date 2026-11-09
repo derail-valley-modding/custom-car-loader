@@ -17,7 +17,6 @@ namespace CCL.Types.Components.Simulation.Electric
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {
-            new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.OHMS, "INTERNAL_RESISTANCE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE"),
             new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.VOLTS, "VOLTAGE_NORMALIZED")
         };
