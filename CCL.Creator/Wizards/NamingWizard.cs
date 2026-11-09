@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using CCL.Creator.Utility;
+using CCL.Types.Catalog;
+using System.Linq;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
@@ -104,9 +106,15 @@ namespace CCL.Creator.Wizards
         [MenuItem("CCL/Naming Wizard", priority = MenuOrdering.MenuBar.Naming)]
         public static void ShowWindow()
         {
+            ShowWindowForPage(null);
+        }
+
+        public static void ShowWindowForPage(CatalogPage? page)
+        {
             var window = GetWindow<NamingWizard>();
             window.Show();
             window.titleContent = new GUIContent("CCL - Naming Wizard");
+            window._page = page;
         }
 
         private float _scroll = 0.0f;
@@ -124,6 +132,8 @@ namespace CCL.Creator.Wizards
         private bool _isSlug = false;
         private int _multipleWorking = 0;
         private bool _randomisePowertrain = false;
+
+        private CatalogPage? _page;
 
         private void OnEnable()
         {
@@ -333,6 +343,25 @@ namespace CCL.Creator.Wizards
             EditorGUILayout.TextField("Full Name", GetFullName());
             EditorGUILayout.TextField("Short Name", GetShortName());
 
+            EditorGUILayout.Space();
+
+            _page = EditorHelpers.ObjectField("Catalogue Page", _page, false);
+            GUI.enabled = _page != null;
+
+            if (GUILayout.Button("Apply to Catalogue Page"))
+            {
+                if (_page != null)
+                {
+                    var full = GetFullName();
+
+                    foreach (var item in _page.PageName.Items)
+                    {
+                        item.Value = full;
+                    }
+                }
+            }
+
+            GUI.enabled = true;
             EditorGUILayout.Space();
 
             if (GUILayout.Button("Randomise"))

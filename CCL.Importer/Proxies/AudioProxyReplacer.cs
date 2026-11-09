@@ -17,7 +17,7 @@ namespace CCL.Importer.Proxies
             CreateMap<AudioLayerProxy, LayeredAudio.Layer>()
                 .AfterMap(EliminateSourceWithPrejudice);
             CreateMap<LayeredAudioProxy, LayeredAudio>().AutoCacheAndMap()
-                .ForMember(d => d.audioMixerGroup, o => o.MapFrom(s => AudioHelpers.GetMixerGroup(s.audioMixGroup)));
+                .ForMember(d => d.audioMixerGroup, o => o.MapFrom(s => s.audioMixGroup.ToInstance()));
 
             CreateMap<AudioClipPortReaderProxy, AudioClipPortReader>().AutoCacheAndMap()
                 .ForMember(d => d.mixerGroup, o => o.MapFrom(s => s.audioMixGroup.ToInstance()));

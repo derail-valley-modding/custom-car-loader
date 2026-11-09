@@ -3,6 +3,7 @@
     public enum DVAudioMixerGroup
     {
         // Enable if I find a way to get them.
+        None = -1,
         Airflow = 0,
         //Boombox = 1,
         Brake = 2,
