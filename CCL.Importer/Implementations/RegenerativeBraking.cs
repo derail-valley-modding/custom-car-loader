@@ -41,6 +41,7 @@ namespace CCL.Importer.Implementations
             if (!powerFuseRef.State)
             {
                 isActive.Value = 0f;
+                powerOut.Value = 0f;
                 return;
             }
 
