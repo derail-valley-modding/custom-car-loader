@@ -15,8 +15,8 @@ namespace CCL.Importer.Components.Simulation
             new(PortValueType.POWER, "TM_POWER_IN_READ");
         public readonly PortReferenceDefinition tmPowerOutRead =
             new(PortValueType.POWER, "TM_POWER_OUT_READ");
-        public readonly PortReferenceDefinition dynamicBrkActive =
-            new(PortValueType.STATE, "DYNAMIC_BRAKE_ACTIVE");
+        public readonly PortReferenceDefinition dynamicBrkControl =
+            new(PortValueType.CONTROL, "DYNAMIC_BRAKE_CONTROL");
         public readonly PortReferenceDefinition batteryChargeNorm =
             new(PortValueType.ELECTRIC_CHARGE, "BATTERY_CHARGE_NORMALIZED");
 

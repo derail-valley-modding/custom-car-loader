@@ -10,9 +10,11 @@ namespace CCL.Importer.Components.Simulation
         public float maxChargeBatteryLevel = 0.95f;
         public float startChargeBatteryLevel = 0.6f;
         public float emergencyBatteryLevel = 0.4f;
-        public float batteryRechargePower = 200000f;
+        public float batteryRechargeRate = 200000f;
         public float engineRechargeThrottle = 0.5f;
+        public float adaptiveChargingMaxPower = 0f;
         public bool manualChargingOnly = false;
+        public bool adaptiveCharging = false;
         public bool adjustableChargeHysteresis = false;
 
         public string powerFuseId = string.Empty;

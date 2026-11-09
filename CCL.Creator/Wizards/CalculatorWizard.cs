@@ -2,11 +2,13 @@
 using CCL.Types;
 using CCL.Types.Components.Simulation;
 using CCL.Types.Components.Simulation.Electric;
+using CCL.Types.Proxies.Controls;
 using CCL.Types.Proxies.Simulation;
 using CCL.Types.Proxies.Simulation.Diesel;
 using CCL.Types.Proxies.Simulation.Electric;
 using CCL.Types.Proxies.Simulation.Steam;
 using System;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -40,6 +42,8 @@ namespace CCL.Creator.Wizards
                 "Axle load of vehicles plus their cargo"),
             new GUIContent("Traction Motor Properties",
                 "Motor voltage and current for different configurations"),
+            new GUIContent("Diesel Engine Properties",
+                "Expected engine power output at a given RPM"),
             new GUIContent("Generator Voltage",
                 "Expected maximum generator voltage"),
             new GUIContent("Battery Custom Curve Voltage",
@@ -95,9 +99,12 @@ namespace CCL.Creator.Wizards
                         _tmProperties.Draw();
                         break;
                     case 7:
-                        _generatorVoltage.Draw();
+                        _dieselEngineProperties.Draw();
                         break;
                     case 8:
+                        _generatorVoltage.Draw();
+                        break;
+                    case 9:
                         _customBatteryVoltage.Draw();
                         break;
                     default:
@@ -576,6 +583,59 @@ namespace CCL.Creator.Wizards
 
         [SerializeField]
         private TractionMotorProperties _tmProperties = new TractionMotorProperties();
+
+        #endregion
+
+        #region Diesel Engine Properties
+
+        [Serializable]
+        private class DieselEngineProperties
+        {
+            public DieselEngineDirectDefinitionProxy? Definition;
+            public ThrottleGammaPowerConversionDefinitionProxy GammaPower;
+            public float Throttle = 0f;
+
+            private float maxPower = 0f;
+            private float maxPowerRpm = 0f;
+
+            public void Draw()
+            {
+                Definition = EditorHelpers.ObjectField("Diesel Engine Direct Definition", Definition, true);
+                GammaPower = EditorHelpers.ObjectField("Throttle Gamma Power", GammaPower, true);
+
+                if (Definition == null || GammaPower == null)
+                {
+                    EditorGUILayout.HelpBox("Please link your diesel engine and throttle gamma power configurations in the field above", MessageType.Info);
+                    return;
+                }
+
+                if (maxPower <= 0f)
+                    maxPower = Definition.rpmToPowerCurve.keys.Max((Keyframe kf) => kf.value);
+
+                if (maxPowerRpm <= 0f)
+                    maxPowerRpm = Definition.rpmToPowerCurve.keys.Where((Keyframe kf) => kf.value == maxPower).First().time;
+
+                Throttle = EditorGUILayout.Slider("Throttle Value", Throttle, 0.0f, 1f);
+
+                int notch = Mathf.RoundToInt(Throttle * (GammaPower.numberOfNotches - 1));
+                float rpmPerNotch = (maxPowerRpm - Definition.engineRpmIdle) / (float)(GammaPower.numberOfNotches - 2);
+                float goalRPM = notch <= 1 ? Definition.engineRpmIdle : Definition.engineRpmIdle + rpmPerNotch * (notch - 1);
+                float goalPower = maxPower * Mathf.Pow((float)notch / (float)(GammaPower.numberOfNotches - 1), GammaPower.gamma);
+                float powerAtRpm = Definition.rpmToPowerCurve.Evaluate(goalRPM);
+
+                EditorHelpers.DrawHeader("Throttle Properties");
+                EditorGUILayout.LabelField("Notch", $"{notch}");
+                EditorGUILayout.LabelField("RPM Per Notch", $"{rpmPerNotch:F2}");
+                EditorGUILayout.LabelField("Goal RPM", $"{goalRPM:F2}");
+                EditorGUILayout.LabelField("Goal Power", $"{goalPower * 0.001f:F2} kW");
+                EditorHelpers.DrawSeparator();
+                EditorHelpers.DrawHeader("Engine Properties");
+                EditorGUILayout.LabelField("Engine Power @ RPM", $"{powerAtRpm * 0.001f:F2} kW");
+            }
+        }
+
+        [SerializeField]
+        private DieselEngineProperties _dieselEngineProperties = new DieselEngineProperties();
 
         #endregion
 

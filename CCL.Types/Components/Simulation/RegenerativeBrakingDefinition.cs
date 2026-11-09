@@ -17,7 +17,7 @@ namespace CCL.Types.Components.Simulation
         {
             new PortReferenceDefinition(DVPortValueType.POWER, "TM_POWER_IN_READ"),
             new PortReferenceDefinition(DVPortValueType.POWER, "TM_POWER_OUT_READ"),
-            new PortReferenceDefinition(DVPortValueType.STATE, "DYNAMIC_BRAKE_ACTIVE"),
+            new PortReferenceDefinition(DVPortValueType.CONTROL, "DYNAMIC_BRAKE_CONTROL"),
             new PortReferenceDefinition(DVPortValueType.ELECTRIC_CHARGE, "BATTERY_CHARGE_NORMALIZED")
         };
 

@@ -11,6 +11,7 @@ namespace CCL.Importer.Implementations
         private readonly PortReference tmPowerInRead;
         private readonly PortReference tmPowerOutRead;
         private readonly PortReference dynamicBrkActive;
+        private readonly PortReference dynamicBrkControl;
         private readonly PortReference batteryChargeNorm;
 
         private readonly Port powerOut;
@@ -25,7 +26,7 @@ namespace CCL.Importer.Implementations
 
             tmPowerInRead = AddPortReference(def.tmPowerInRead);
             tmPowerOutRead = AddPortReference(def.tmPowerOutRead);
-            dynamicBrkActive = AddPortReference(def.dynamicBrkActive);
+            dynamicBrkControl = AddPortReference(def.dynamicBrkControl);
             batteryChargeNorm = AddPortReference(def.batteryChargeNorm);
 
             powerOut = AddPort(def.powerOut);
@@ -43,7 +44,7 @@ namespace CCL.Importer.Implementations
                 return;
             }
 
-            if (dynamicBrkActive.Value >= 0.1f && batteryChargeNorm.Value < maxRechargeNorm)
+            if (dynamicBrkControl.Value > 0f && batteryChargeNorm.Value < maxRechargeNorm)
             {
                 isActive.Value = 1f;
                 powerOut.Value = Mathf.Clamp(tmPowerOutRead.Value, -maxRegenPower, 0);

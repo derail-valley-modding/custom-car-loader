@@ -16,11 +16,15 @@ namespace CCL.Types.Components.Simulation
         [Tooltip("Battery charge level to switch to diesel mode")]
         public float emergencyBatteryLevel = 0.4f;
         [Tooltip("How much power the generator should make to charge the battery, in watts")]
-        public float batteryRechargePower = 200000f;
+        public float batteryRechargeRate = 200000f;
         [Tooltip("How much the engine is throttled while charging battery")]
         public float engineRechargeThrottle = 0.5f;
+        [Tooltip("The maximum charging power drawn from the generator for adaptive charging, in watts. This value should not exceed the engine power output at the set recharge throttle RPM")]
+        public float adaptiveChargingMaxPower = 0f;
         [Tooltip("Disables battery SoC hysteresis and only charge on manual control")]
         public bool manualChargingOnly = false;
+        [Tooltip("Increases charging rate to maintain battery charging under traction load")]
+        public bool adaptiveCharging = false;
         [Tooltip("Enable adjusting battery SoC hysteresis thresholds on the fly")]
         public bool adjustableChargeHysteresis = false;
 
