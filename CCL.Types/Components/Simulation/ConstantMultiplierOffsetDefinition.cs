@@ -10,6 +10,7 @@ namespace CCL.Types.Components.Simulation
     {
         public float Multiplier = 1;
         public float Offset = 0;
+        public bool Absolute = false;
         public PortReferenceDefinition Input = new PortReferenceDefinition(DVPortValueType.GENERIC, "IN");
         public PortDefinition Output = new PortDefinition(DVPortType.READONLY_OUT, DVPortValueType.GENERIC, "OUT");
 

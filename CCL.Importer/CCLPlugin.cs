@@ -5,6 +5,7 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 using UnityModManagerNet;
 
 namespace CCL.Importer
@@ -30,8 +31,6 @@ namespace CCL.Importer
 
         public static TranslationInjector Translations { get; private set; } = null!;
 
-        internal static ErrorSoundLogHandler? ErrorHandler { get; set; }
-
         public static bool Load(UnityModManager.ModEntry modEntry)
         {
             Instance = modEntry;
@@ -44,14 +43,14 @@ namespace CCL.Importer
             if (!VersionCheck())
             {
                 Error($"Game version failure!\nGame: {BuildInfo.BUILDBOT_INFO}\nExpected: {ExporterConstants.MINIMUM_DV_BUILD}");
-                AddStaticFailure("[CCL] Unsupported game version");
+                ErrorHandler.AddStaticFailure("[CCL] Unsupported game version");
                 return false;
             }
 
             if (UnityModManager.modEntries.Any(IsBadNumberManager))
             {
                 Warning("===============\n\n\n\n\nCCL AND NUMBER MANAGER DETECTED\n\n\n\n\n===============");
-                AddStaticFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
+                ErrorHandler.AddStaticFailure("[CCL] Number Manager detected. All CCL bug reports are invalid from now on");
             }
 
             // Build caches before any car is loaded, to only get vanilla resources.
@@ -61,7 +60,7 @@ namespace CCL.Importer
             Translations.AddTranslationsFromCsv(System.IO.Path.Combine(modEntry.Path, CCLPluginInfo.TranslationCsvFile));
             Translations.AddTranslationsFromWebCsv(CCLPluginInfo.TranslationCsvUrl);
 
-            CarManager.ScanLoadedMods();
+            Application.logMessageReceived += LogReceived;
             UnityModManager.toggleModsListen += CarManager.HandleModToggled;
 
             var harmony = new Harmony(CCLPluginInfo.Guid);
@@ -87,7 +86,7 @@ namespace CCL.Importer
         public static void Error(string message)
         {
             Instance.Logger.Error(message);
-            ErrorHandler?.HandleLog(string.Empty, string.Empty, UnityEngine.LogType.Error);
+            ErrorHandler.SoundHandler?.HandleLog(string.Empty, string.Empty, LogType.Error);
         }
 
         public static void Warning(string message)
@@ -95,16 +94,12 @@ namespace CCL.Importer
             Instance.Logger.Warning(message);
         }
 
-        public static void AddStaticFailure(string message)
+        private static void LogReceived(string condition, string stackTrace, LogType type)
         {
-            ScriptForFailures.StaticFailures.Add(message);
-            ObjectHelper.CreateFailuresHolder();
-        }
-
-        public static void AddLoadFailure(string message)
-        {
-            ScriptForFailures.LoadFailures.Add(message);
-            ObjectHelper.CreateFailuresHolder();
+            if (type == LogType.Error || type == LogType.Exception)
+            {
+                ErrorHandler.HandleUnityError();
+            }
         }
 
         private static void InfoDump()

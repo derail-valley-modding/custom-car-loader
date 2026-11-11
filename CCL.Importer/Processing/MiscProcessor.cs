@@ -1,6 +1,8 @@
-﻿using CCL.Types;
+﻿using CCL.Importer.Types;
+using CCL.Types;
 using CCL.Types.Components;
 using DV.CabControls.VRTK;
+using DV.UI;
 using System.ComponentModel.Composition;
 using UnityEngine;
 
@@ -23,6 +25,8 @@ namespace CCL.Importer.Processing
                 ProcessSetPhysicsMaterial(prefab);
                 ProcessBedButtonProperties(prefab);
             }
+
+            ProcessDemoStuff(context.Car);
         }
 
         private static PhysicMaterial? s_asphalt;
@@ -75,6 +79,31 @@ namespace CCL.Importer.Processing
                 comp.gameObject.AddComponent<VRTK_InteractablePriorityOverride>().priority = -1;
                 comp.gameObject.AddComponent<InfoAreaBed>().infoType = InteractionInfoType.Bed;
                 Object.Destroy(comp);
+            }
+        }
+
+        private static void ProcessDemoStuff(CCL_CarVariant livery)
+        {
+            if (livery.LockedGaragePrefab != null)
+            {
+                ModelProcessor.DoBasicProcessing(livery.LockedGaragePrefab);
+            }
+
+            if (livery.PartsModel != PartsCargoModel.Custom) return;
+
+            ProcessPrefab(livery.PartsCargoPrefabDM1U);
+            ProcessPrefab(livery.PartsCargoPrefabFlatbed);
+
+            static void ProcessPrefab(GameObject? prefab)
+            {
+                if (prefab == null) return;
+
+                ModelProcessor.DoBasicProcessing(prefab);
+
+                if (prefab.transform.TryFind(CarPartNames.Colliders.ROOT, out var colliderRoot))
+                {
+                    ColliderProcessor.FixLayers(colliderRoot);
+                }
             }
         }
     }

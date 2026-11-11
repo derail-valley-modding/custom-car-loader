@@ -47,7 +47,9 @@ namespace CCL.Creator.Wizards
             new GUIContent("Generator Voltage",
                 "Expected maximum generator voltage"),
             new GUIContent("Battery Custom Curve Voltage",
-                "Expected battery voltage at a given state of charge")
+                "Expected battery voltage at a given state of charge"),
+            new GUIContent("Fuel Consumption",
+                "Expected fuel consumption values")
         };
 
         private static readonly GUIContent s_context = new GUIContent("Context Object",
@@ -69,9 +71,12 @@ namespace CCL.Creator.Wizards
 
             _scroll = EditorGUILayout.BeginScrollView(new Vector2(0, _scroll)).y;
 
+            var label = EditorGUIUtility.labelWidth;
+            EditorGUIUtility.labelWidth = label + 40;
+
             using (new EditorGUI.IndentLevelScope())
             {
-                int modesPerRow = Mathf.Max(1, Mathf.CeilToInt(position.width / (s_modes.Length * 120.0f)));
+                int modesPerRow = Mathf.Max(1, Mathf.FloorToInt((position.width - 120.0f) / 120.0f));
                 _mode = GUILayout.SelectionGrid(_mode, s_modes, modesPerRow, EditorStyles.miniButtonMid, GUILayout.ExpandWidth(true));
                 EditorGUILayout.Space();
 
@@ -107,12 +112,16 @@ namespace CCL.Creator.Wizards
                     case 9:
                         _customBatteryVoltage.Draw();
                         break;
+                    case 10:
+                        _fuelConsumption.Draw();
+                        break;
                     default:
                         EditorGUILayout.HelpBox("Please select an option above!", MessageType.Info);
                         break;
                 }
             }
 
+            EditorGUIUtility.labelWidth = label;
             EditorGUILayout.EndScrollView();
             _editor.ApplyModifiedProperties();
         }
@@ -685,7 +694,7 @@ namespace CCL.Creator.Wizards
         private GeneratorVoltage _generatorVoltage = new GeneratorVoltage();
 
         #endregion
-
+        
         #region Battery Custom Curve Voltage
 
         [Serializable]
@@ -712,6 +721,115 @@ namespace CCL.Creator.Wizards
 
         [SerializeField]
         private CustomBatteryVoltage _customBatteryVoltage = new CustomBatteryVoltage();
+
+        #endregion
+
+        #region Fuel Consumption
+
+        [Serializable]
+        private class FuelConsumption
+        {
+            private const float GameMultiplier = 12.0f;
+            private const float FuelDensity = 0.85f * Units.FromKilo;
+
+            public float LitresKm = 0.0f;
+            public float Speed = 0.0f;
+            public float SpecificConsumption = 0.0f;
+            public float MaxPower = 0.0f;
+            public float LitresHour = 0.0f;
+            public float Injection = 0.0f;
+
+            public void Draw()
+            {
+                // Litres/km.
+                LitresKm = EditorGUILayout.FloatField("Litres/Kilometre", LitresKm);
+                Speed = EditorGUILayout.FloatField("Speed", Speed);
+
+                if (GUILayout.Button("Calculate From Litres/km"))
+                {
+                    LitresHour = LitresKm * Speed;
+                    CalculateInjection();
+                }
+
+                // Specific Consumption.
+                SpecificConsumption = EditorGUILayout.FloatField("Specific Consumption (g/kWh)", SpecificConsumption);
+                MaxPower = EditorGUILayout.FloatField("Max Power (kW)", MaxPower);
+
+                if (GUILayout.Button("Calculate From Specific Consumption"))
+                {
+                    LitresHour = MaxPower * SpecificConsumption / FuelDensity;
+                    CalculateInjection();
+                }
+
+                // Results.
+                EditorGUI.BeginChangeCheck();
+                LitresHour = EditorGUILayout.FloatField("Litres/Hour", LitresHour);
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    CalculateInjection();
+                }
+
+                EditorGUI.BeginChangeCheck();
+                Injection = EditorGUILayout.FloatField("Game Injection", Injection);
+                
+                if (EditorGUI.EndChangeCheck())
+                {
+                    CalculateLitreHour();
+                }
+
+                if (GUILayout.Button("Calculate Others") && MaxPower > 0)
+                {
+                    CalculateOthers();
+                }
+
+                EditorGUILayout.Space();
+                Guess(EditorHelpers.ObjectField<UObject>(s_context, null, true));
+            }
+
+            private void Guess(UObject? context)
+            {
+                switch (context)
+                {
+                    case CustomCarVariant livery:
+                        Guess(livery.prefab);
+                        break;
+
+                    case DieselEngineDirectDefinitionProxy de:
+                        MaxPower = de.rpmToPowerCurve.keys.Max(x => x.value) * Units.ToKilo;
+                        Injection = de.fuelInjection;
+                        CalculateLitreHour();
+                        CalculateOthers();
+                        break;
+
+                    case GameObject prefab:
+                        Guess(prefab.GetComponentInChildren<DieselEngineDirectDefinitionProxy>());
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            private void CalculateInjection()
+            {
+                Injection = LitresHour * Units.HourToSecond * GameMultiplier;
+            }
+
+            private void CalculateLitreHour()
+            {
+                LitresHour = Injection / (Units.HourToSecond * GameMultiplier);
+            }
+
+            private void CalculateOthers()
+            {
+                SpecificConsumption = LitresHour * FuelDensity / MaxPower;
+                LitresKm = LitresHour / Speed;
+            }
+        }
+
+        [SerializeField]
+        private FuelConsumption _fuelConsumption = new FuelConsumption();
 
         #endregion
     }

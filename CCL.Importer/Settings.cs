@@ -14,12 +14,31 @@ namespace CCL.Importer
 
         [Draw("Use Verbose Logging", Tooltip = "Enable this if you experience bugs or are developing your own custom car")]
         public bool UseVerboseLogging = false;
+        [Draw("Use Deep Logging", Tooltip = "This should be disabled unless you are actively debugging something")]
+        public bool UseDeepLogging = false;
+        [Draw("Always Show Popups", Tooltip = "Enable this to show the error popup on contextual errors")]
+        public bool AlwaysShowPopups = false;
+        [Draw("Use Musical Pings", Tooltip = "???")]
+        public bool UseMusicalPings = true;
 
         // Don't show these in the settings screen.
         public bool SpamWarningDisabled = false;
         public bool InfoDump = false;
         public HashSet<string> DisabledIds = new();
         public HashSet<string> DisabledLiveryIds = new();
+
+        // The music thing is customisable lol
+        public int[] Notes = new[] {
+            4, 4, 5, 7, 7, 5, 4, 2, 0, 0, 2, 4, 4, 2, 2,
+            4, 4, 5, 7, 7, 5, 4, 2, 0, 0, 2, 4, 2, 0, 0,
+            2, 2, 4, 0, 2, 4, 5, 4, 0, 2, 4, 5, 4, 2, 0, 2, -5,
+            4, 4, 5, 7, 7, 5, 4, 2, 0, 0, 2, 4, 2, 0, 0, };
+        public float[] Timing = new[] {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5f, 0.5f, 2,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5f, 0.5f, 2,
+            1, 1, 1, 1, 1, 0.5f, 0.5f, 1, 1, 1, 0.5f, 0.5f, 1, 1, 1, 1, 2,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1.5f, 0.5f, 2, };
+        public int Tempo = 150;
 
         public override void Save(UnityModManager.ModEntry modEntry)
         {

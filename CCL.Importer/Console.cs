@@ -44,25 +44,12 @@ namespace CCL.Importer
             Debug.Log(sb.ToString());
         }
 
-        [RegisterCommand("CCL.LoadFailures",
-            Help = "Prints all car load failures",
+        [RegisterCommand("CCL.Failures",
+            Help = "Opens the failures window",
             MinArgCount = 0, MaxArgCount = 0)]
-        public static void PrintLoadFailures(CommandArg[] args)
+        public static void PrintFailures(CommandArg[] args)
         {
-            if (ScriptForFailures.LoadFailures.Count == 0)
-            {
-                Debug.Log("No failures detected!");
-                return;
-            }
-
-            StringBuilder sb = new();
-
-            foreach (var failure in ScriptForFailures.LoadFailures)
-            {
-                sb.AppendLine(failure);
-            }
-
-            Debug.Log(sb.ToString());
+            ObjectHelper.CreateFailuresHolder();
         }
 
         [RegisterCommand("CCL.AddPortPlotter",

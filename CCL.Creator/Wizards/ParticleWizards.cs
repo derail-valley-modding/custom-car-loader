@@ -758,6 +758,7 @@ namespace CCL.Creator.Wizards
             var drip = new GameObject("SteamIndicatorWaterDripping").AddComponent<CopyVanillaParticleSystem>();
             drip.SystemToCopy = VanillaParticleSystem.SteamerIndicatorWaterDrip;
             drip.transform.parent = comp.transform;
+            drip.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             comp.particlePortReaders = new List<ParticlePortReader>
             {

@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace CCL.Creator.Inspector
 {
-    [CustomEditor(typeof(VanillaLightCopy))]
+    [CustomEditor(typeof(CopyVanillaLight))]
     internal class CopyVanillaLightEditor : Editor
     {
-        private VanillaLightCopy _comp = null!;
+        private CopyVanillaLight _comp = null!;
 
         public override void OnInspectorGUI()
         {
-            _comp = (VanillaLightCopy)target;
+            _comp = (CopyVanillaLight)target;
 
             base.OnInspectorGUI();
 

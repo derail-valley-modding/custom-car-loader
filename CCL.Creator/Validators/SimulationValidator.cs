@@ -16,6 +16,8 @@ namespace CCL.Creator.Validators
     {
         public override string TestName => "Simulation";
 
+        private static readonly char[] s_badChars = new[] { ' ', '/', '\\' };
+
         protected override ValidationResult ValidateLivery(CustomCarVariant livery)
         {
             var result = Pass();
@@ -47,11 +49,16 @@ namespace CCL.Creator.Validators
 
                 if (compIds.Contains(component.ID))
                 {
-                    result.Fail($"Duplicate component ID {component.ID}", component, nameof(component.ID));
+                    result.Fail($"Duplicate component ID \"{component.ID}\"", component, nameof(component.ID));
                 }
                 else
                 {
                     compIds.Add(component.ID);
+                }
+
+                if (IsBadId(component.ID))
+                {
+                    result.Warning($"Component ID \"{component.ID}\" should not contain any spaces and/or slashes");
                 }
 
                 foreach (var port in component.ExposedPorts)
@@ -60,11 +67,24 @@ namespace CCL.Creator.Validators
 
                     if (portIds.Contains(fullId))
                     {
-                        result.Fail($"Duplicate port ID {fullId}", component);
+                        result.Fail($"Duplicate port ID \"{fullId}\"", component);
                     }
                     else
                     {
                         portIds.Add(fullId);
+                    }
+
+                    if (IsBadId(port.ID))
+                    {
+                        result.Warning($"Port ID \"{component.ID}.{port.ID}\" should not contain any spaces and/or slashes");
+                    }
+                }
+
+                foreach (var port in component.ExposedPortReferences)
+                {
+                    if (IsBadId(port.ID))
+                    {
+                        result.Warning($"Port Reference ID \"{component.ID}.{port.ID}\" should not contain any spaces and/or slashes");
                     }
                 }
             }
@@ -322,6 +342,11 @@ namespace CCL.Creator.Validators
         private bool CheckFuseSetterExists(IEnumerable<ICanSetFuses> setters, string fuseId)
         {
             return setters.Any(x => x.SettableFuses.Any(y => y == fuseId));
+        }
+
+        private bool IsBadId(string id)
+        {
+            return id.IndexOfAny(s_badChars) >= 0;
         }
     }
 }

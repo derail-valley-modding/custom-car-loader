@@ -97,6 +97,7 @@ namespace CCL.Importer
 
         public static readonly List<string> StaticFailures = new();
         public static readonly List<string> LoadFailures = new();
+        public static readonly Dictionary<string, int> RepeatableFailures = new();
 
         private void Start()
         {
@@ -124,6 +125,11 @@ namespace CCL.Importer
             foreach (var failure in LoadFailures)
             {
                 GUILayout.Label(failure, s_width);
+            }
+
+            foreach (var failure in RepeatableFailures)
+            {
+                GUILayout.Label($"{failure.Key} ({failure.Value})", s_width);
             }
 
             GUILayout.EndVertical();
@@ -154,6 +160,16 @@ namespace CCL.Importer
         public static void SetSpamFlag()
         {
             s_spamFlag = true;
+        }
+
+        public static void AddRepeatableFailure(string message)
+        {
+            if (!RepeatableFailures.TryGetValue(message, out int count))
+            {
+                count = 0;
+            }
+
+            RepeatableFailures[message] = count + 1;
         }
     }
 }

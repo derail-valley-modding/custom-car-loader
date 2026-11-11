@@ -65,6 +65,16 @@ namespace CCL.Creator.Validators
                 result.Warning("Livery can spawn in the world but is also set as a work train, this can result in unintended behaviour", livery);
             }
 
+            // Try to warn if a locomotive can't spawn.
+            if (livery.parentType != null && livery.parentType.KindSelection == DVTrainCarKind.Loco)
+            {
+                // No natural spawns, not a work train and no cargo.
+                if (livery.LocoSpawnGroups.Length == 0 && !livery.UnlockableAsWorkTrain && !livery.parentType.HasAnyCargo)
+                {
+                    result.Warning("Livery is a locomotive but has no natural spawns, is not a work train and has no cargo", livery);
+                }
+            }
+
             // Demo stuff checks.
             if (livery.DemonstratorPoster != null)
             {

@@ -8,7 +8,7 @@ namespace CCL.Creator.Utility
 {
     [AddComponentMenu("CCL Editor/Vanilla Light Copy")]
     [RequireComponent(typeof(Light))]
-    public class VanillaLightCopy : MonoBehaviour, IEditorComponent
+    public class CopyVanillaLight : MonoBehaviour, IEditorComponent
     {
         public VanillaLight LightToCopy;
 

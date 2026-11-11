@@ -41,6 +41,8 @@ namespace CCL.Importer.Proxies.Controls
             CreateMap<BrakeCylinderReleaseButtonFeederProxy, BrakeCylinderReleaseButtonFeeder>().AutoCacheAndMap();
             CreateMap<ManualTransmissionInputDefinitionProxy, ManualTransmissionInputDefinition>().AutoCacheAndMap();
             CreateMap<ThrottleGammaPowerConversionDefinitionProxy, ThrottleGammaPowerConversionDefinition>().AutoCacheAndMap();
+            CreateMap<ThrottleLinearPowerConversionDefinitionProxy, ThrottleLinearPowerConversionDefinition>().AutoCacheAndMap();
+            CreateMap<ThrottleCustomPowerConversionDefinitionProxy, ThrottleCustomPowerConversionDefinition>().AutoCacheAndMap();
 
             CreateMap<ShovelCoalPileProxy, ShovelCoalPile>().AutoCacheAndMap();
         }

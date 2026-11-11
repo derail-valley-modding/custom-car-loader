@@ -8,6 +8,7 @@ namespace CCL.Types.Components.Simulation
     public class DoubledControlDefinition : SimComponentDefinitionProxy
     {
         public float DefaultValue;
+        public bool SaveState;
 
         public override IEnumerable<PortDefinition> ExposedPorts => new[]
         {

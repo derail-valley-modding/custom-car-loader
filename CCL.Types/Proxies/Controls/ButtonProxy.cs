@@ -26,16 +26,29 @@ namespace CCL.Types.Proxies.Controls
 
         private void OnDrawGizmos()
         {
-            var offset = useJoints ? transform.TransformDirection(Vector3.back * linearLimit) : pushLocalOffset;
-            var pos = transform.position;
+            if (useJoints)
+            {
+                var offset = transform.TransformDirection(Vector3.back * linearLimit);
+                var pos = transform.position;
 
-            Gizmos.color = END_COLOR;
-            Gizmos.DrawLine(pos, pos + offset);
-            Gizmos.DrawLine(pos, pos - offset);
-            Gizmos.color = START_COLOR;
-            Gizmos.DrawWireSphere(pos + offset, 0.0025f);
-            Gizmos.color = MID_COLOR;
-            Gizmos.DrawWireSphere(pos, 0.00125f);
+                Gizmos.color = END_COLOR;
+                Gizmos.DrawLine(pos, pos + offset);
+                Gizmos.DrawLine(pos, pos - offset);
+                Gizmos.color = START_COLOR;
+                Gizmos.DrawWireSphere(pos + offset, 0.0025f);
+                Gizmos.color = MID_COLOR;
+                Gizmos.DrawWireSphere(pos, 0.00125f);
+            }
+            else
+            {
+                using (GizmoUtil.MatrixScope.LocalTransform(transform))
+                {
+                    Gizmos.color = START_COLOR;
+                    Gizmos.DrawLine(Vector3.zero, pushLocalOffset);
+                    Gizmos.color = END_COLOR;
+                    Gizmos.DrawWireSphere(pushLocalOffset, 0.0025f);
+                }
+            }
         }
     }
 }

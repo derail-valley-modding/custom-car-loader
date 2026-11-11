@@ -12,6 +12,12 @@ Content authors can find a [guide to car creation](https://foxden.cc/articles/re
 
 Before opening pull requests, developers should build and test their changes locally to make sure everything is working as expected.
 
+If you want to add custom functionality (e.g. new sim components or control types), please respect the following rules:
+* Everything must work in desktop and VR.
+* Do not rely on randomness (no random failures).
+* Follow the same architecture as the base game (like sim components not interacting directly with the world).
+* Additional controls *must* fit the F4 HUD.
+
 ### Environment Setup
 
 After cloning the repository, some setup is required in order to successfully build the mod DLLs. You will need to create a new [Directory.Build.targets](https://learn.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2022) file to specify your reference paths. This file will be located in the main directory, next to DVCustomCarLoader.sln.
@@ -36,16 +42,24 @@ The output DLLs will need to be copied into `Derail Valley install directory > M
 
 ### Proxy Configuration
 
-The simplest way to bring standard vanilla configurations into CCL is through Proxies.  Proxies are types in CCL.Types that implement the same parameters as the serialized public attributes of a vanilla behaviour.  Once that proxy exists, you can tell importer how to convert it into a vanilla behaviour with a simple class:
+The simplest way to bring standard vanilla configurations into CCL is through Proxies.  Proxies are types in CCL.Types that implement the same parameters as the serialized public attributes of a vanilla behaviour.  Once that proxy exists, you can tell importer how to convert it into a vanilla behaviour through AutoMapper's Profiles:
 ```cs
+using AutoMapper;
 using CCL.Importer.Proxies;
-using System.ComponentModel.Composition;
 
-namespace CCL.Importer.Proxies.MyCategoryOfProxies {
-  [Export(typeof(IProxyReplacer))]
-  public class MyProxyReplacer : ProxyReplacer<ProxyType, VanillaType> {}
+namespace CCL.Importer.Proxies.MyCategoryOfProxies
+{
+	public class MyProxyReplacer : Profile
+	{
+		public MyProxyReplacer()
+		{
+			CreateMap<MyCustomProxy1, RealComponent1>().AutoCacheAndMap();
+			CreateMap<MyCustomProxy2, RealComponent2>().AutoCacheAndMap();
+			// And so on...
+		}
+	}
 }
 ```
-If you need more control but only need to customize the mapper itself (perhaps there are nested proxies) then you can implement the Configure method from ProxyReplacer.  This method receives an AutoMapper `IMappingExpression<ProxyType, VanillaType>` which you can use to customize nested mappings.  You can also implement `AddAdditionalMappings` and you can configure new AutoMapper mappers in this method.  It is guaranteed to be called at the right time to allow you to create mappers.  Finally you can override CanReplace which will get the actual source component at the time of replacing and let you return a boolean to indicate whether or not to actually proceed with replacing - returning false will skip this component.  This can be used to allow a single proxy to map to multiple destination types based on something in the proxy's configuration. 
+You can follow [AutoMapper's documentation](https://docs.automapper.io/en/stable/) for further customisation of mapping. If the class you're mapping is not a `MonoBehaviour`, you do not include the call to `AutoCacheAndMap()`.
 
-In the event you need even further control, you can implement IProxyReplacer directly, but remember to include the Export annotation, and remember that it must be a public class.  You also will need to either implement an AutoMapper Profile for your type or manually map your types.  AutoMapper is pretty powerful and can do most of what you are going to need to do. You will also find some utility methods in `Mapper` for replacing components with their proxies - these are implemented as extension methods - so they are simply called on GameObject or MonoBehaviours.
+The same process is used if you're mapping an entirely custom component. In this case, it's good practice not to name it as a "Proxy" as it doesn't match a component of the original game.

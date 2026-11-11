@@ -8,16 +8,15 @@ namespace CCL.Types.Proxies
         public GameObject fireObj = null!;
         public GameObject sparksObj = null!;
         public GameObject helperTriggerVR = null!;
-        [SerializeField]
-        private SphereCollider ignitionCollider = null!;
+        public SphereCollider ignitionCollider = null!;
         public Renderer[] emissiveRenderersAffectedByFire = new Renderer[0];
         public Light fireLight = null!;
-        public float minFireIntensity;
-        public float maxFireIntensity = 1f;
+        public float minFireIntensity = 3.0f;
+        public float maxFireIntensity = 10.0f;
         public Light fillLight = null!;
-        public float fillLightMultiplier = 0.5f;
+        public float fillLightMultiplier = 1.0f;
         public Light bounceLight = null!;
-        public float bounceLightMultiplier = 0.25f;
+        public float bounceLightMultiplier = 0.175f;
         public AnimationCurve fireboxDoorCurve = AnimationCurve.Linear(0f, 0.05f, 1f, 1f);
 
         public void DoFieldReplacing()

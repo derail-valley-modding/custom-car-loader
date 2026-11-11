@@ -14,9 +14,13 @@ namespace CCL.Importer
     {
         public static void InjectLoadableCargos(CCL_CarType carType)
         {
-            CCLPlugin.LogVerbose($"Adding cargos for {carType.id} ({carType.CargoSetup?.Entries.Count})");
+            if (carType.CargoSetup == null || carType.CargoSetup.IsEmpty)
+            {
+                CCLPlugin.LogVerbose($"No cargos for {carType.id}, skipping...");
+                return;
+            }
 
-            if (carType.CargoSetup == null || carType.CargoSetup.IsEmpty) return;
+            CCLPlugin.LogVerbose($"Adding cargos for {carType.id} ({carType.CargoSetup.Entries.Count})");
 
             foreach (var entry in carType.CargoSetup.Entries)
             {

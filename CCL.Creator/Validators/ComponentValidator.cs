@@ -1,6 +1,8 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types;
+using CCL.Types.Proxies;
 using CCL.Types.Proxies.Simulation.Steam;
+using CCL.Types.Proxies.Weather;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -44,6 +46,7 @@ namespace CCL.Creator.Validators
             }
 
             count += TestLubricatorRatchet(livery, result);
+            count += TestInternalExternalSnapshotSwitcherDoorsAndWindows(livery, result);
 
             return count == 0 ? Skip() : result;
         }
@@ -148,6 +151,21 @@ namespace CCL.Creator.Validators
             }
 
             return comps.Count;
+        }
+
+        private static int TestInternalExternalSnapshotSwitcherDoorsAndWindows(CustomCarVariant livery, ValidationResult result)
+        {
+            var comp = livery.prefab!.GetComponentInChildren<InternalExternalSnapshotSwitcherDoorsAndWindowsProxy>();
+
+            if (comp == null) return 0;
+
+            if (livery.externalInteractablesPrefab == null || !ComponentUtil.HasComponentInChildren<OpenableControlProxy>(livery.externalInteractablesPrefab))
+            {
+                result.Fail($"{nameof(InternalExternalSnapshotSwitcherDoorsAndWindowsProxy)} needs {nameof(OpenableControlProxy)} components " +
+                    $"in the external interactables prefab to function!");
+            }
+
+            return 1;
         }
     }
 }

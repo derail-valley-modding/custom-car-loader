@@ -1,4 +1,5 @@
 ﻿using CCL.Creator.Utility;
+using CCL.Creator.Wizards;
 using CCL.Types.Catalog;
 using CCL.Types.Catalog.Diagram;
 using UnityEditor;
@@ -24,6 +25,16 @@ namespace CCL.Creator.Inspector.Catalog
 
                 switch (_prop.name)
                 {
+                    case nameof(CatalogPage.PageName):
+                        if (GUILayout.Button("Open Naming Wizard"))
+                        {
+                            NamingWizard.ShowWindowForPage(_page);
+                        }
+                        //if (GUILayout.Button("Open Community Naming Wizard"))
+                        //{
+                        //    NamingWizardCommunity.ShowWindowForPage(_page);
+                        //}
+                        break;
                     case nameof(CatalogPage.ShowLoadRatings):
                         GUI.enabled = _prop.boolValue;
                         break;

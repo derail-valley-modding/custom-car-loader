@@ -9,8 +9,8 @@ namespace CCL.Importer.Patches
         [HarmonyPatch(typeof(TaskTemplatePaper))]
         internal static class TaskTemplatePaperPatches
         {
-            [HarmonyPostfix, HarmonyPatch(nameof(TaskTemplatePaper.FillInData))]
-            private static void FillInDataPostfix()
+            [HarmonyFinalizer, HarmonyPatch(nameof(TaskTemplatePaper.FillInData))]
+            private static void FillInDataFinalizer()
             {
                 CargoType_v2Patches.ResetAll();
             }
@@ -19,8 +19,8 @@ namespace CCL.Importer.Patches
         [HarmonyPatch(typeof(FrontPageTemplatePaper))]
         internal static class FrontPageTemplatePaperPatches
         {
-            [HarmonyPostfix, HarmonyPatch(nameof(FrontPageTemplatePaper.FillInData))]
-            private static void FillInDataPostfix()
+            [HarmonyFinalizer, HarmonyPatch(nameof(FrontPageTemplatePaper.FillInData))]
+            private static void FillInDataFinalizer()
             {
                 CargoType_v2Patches.ResetAll();
             }
@@ -29,8 +29,8 @@ namespace CCL.Importer.Patches
         [HarmonyPatch(typeof(TrainEditorViewElement))]
         internal static class TrainEditorViewElementPatches
         {
-            [HarmonyPostfix, HarmonyPatch("UpdateView")]
-            private static void UpdateViewPostfix()
+            [HarmonyFinalizer, HarmonyPatch("UpdateView")]
+            private static void UpdateViewFinalizer()
             {
                 CargoType_v2Patches.ResetAll();
             }

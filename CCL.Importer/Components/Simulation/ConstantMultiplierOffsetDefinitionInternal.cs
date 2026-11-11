@@ -8,6 +8,7 @@ namespace CCL.Importer.Components.Simulation
     {
         public float Multiplier = 1;
         public float Offset = 0;
+        public bool Absolute = false;
         public PortReferenceDefinition Input = new(PortValueType.GENERIC, "IN");
         public PortDefinition Output = new(PortType.READONLY_OUT, PortValueType.GENERIC, "OUT");
 

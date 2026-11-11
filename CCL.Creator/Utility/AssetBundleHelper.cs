@@ -9,13 +9,24 @@ namespace CCL.Creator.Utility
 {
     internal static class AssetBundleHelper
     {
+        private const BuildAssetBundleOptions BundleOptions =
+            BuildAssetBundleOptions.DisableLoadAssetByFileName | BuildAssetBundleOptions.DisableLoadAssetByFileNameWithExtension;
+
         public static string GetAssetPath(Object asset) => Path.GetDirectoryName(AssetDatabase.GetAssetPath(asset));
 
         public static void CreateBundle(string path, IEnumerable<(Object Asset, string? Name)> assets)
         {
             BuildPipeline.BuildAssetBundles(path,
                 GetAssetBuilds(assets),
-                BuildAssetBundleOptions.None,
+                BundleOptions,
+                BuildTarget.StandaloneWindows64);
+        }
+
+        public static void CreateUncompressedBundle(string path, IEnumerable<(Object Asset, string? Name)> assets)
+        {
+            BuildPipeline.BuildAssetBundles(path,
+                GetAssetBuilds(assets),
+                BundleOptions | BuildAssetBundleOptions.UncompressedAssetBundle,
                 BuildTarget.StandaloneWindows64);
         }
 

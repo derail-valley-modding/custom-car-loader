@@ -33,6 +33,7 @@ namespace CCL.Creator.Wizards
 
         private CustomCarPack _pack = null!;
         private bool _openFolderAfterExport = false;
+        private bool _uncompressedBundle = false;
         private ModDependencyEntry[] _requirements = null!;
 
         private static string LastExportPath
@@ -116,6 +117,7 @@ namespace CCL.Creator.Wizards
             EditorGUILayout.EndVertical();
 
             _openFolderAfterExport = GUILayout.Toggle(_openFolderAfterExport, "Open build folder after export");
+            _uncompressedBundle = GUILayout.Toggle(_uncompressedBundle, "Uncompressed bundle (during development only)");
 
             DrawAdditionalInfo();
         }
@@ -141,7 +143,7 @@ namespace CCL.Creator.Wizards
             Close();
             Debug.Log($"Exporting asset bundle to: {exportFolderPath}");
 
-            Export(_pack, exportFolderPath, _requirements);
+            Export(_pack, exportFolderPath, _requirements, _uncompressedBundle);
         }
 
         private void DrawRequirements()
@@ -182,7 +184,7 @@ namespace CCL.Creator.Wizards
             EditorGUILayout.EndVertical();
         }
 
-        private static void Export(CustomCarPack pack, string exportPath, ModDependencyEntry[] requirements)
+        private static void Export(CustomCarPack pack, string exportPath, ModDependencyEntry[] requirements, bool uncompressed)
         {
             var sw = System.Diagnostics.Stopwatch.StartNew();
             pack.ExporterVersion = ExporterConstants.ExporterVersion.ToString();
@@ -199,7 +201,15 @@ namespace CCL.Creator.Wizards
                 }
 
                 if (Progress($"Exporting assets...", 0.5f)) return;
-                AssetBundleHelper.CreateBundle(exportPath, new List<(UnityEngine.Object, string?)>() { (pack, null) });
+
+                if (uncompressed)
+                {
+                    AssetBundleHelper.CreateUncompressedBundle(exportPath, new List<(UnityEngine.Object, string?)>() { (pack, null) });
+                }
+                else
+                {
+                    AssetBundleHelper.CreateBundle(exportPath, new List<(UnityEngine.Object, string?)>() { (pack, null) });
+                }
 
                 sw.Stop();
                 Debug.Log($"[{DateTime.Now:HH:mm:ss}] Finished AssetBundle build for pack: {pack.PackId} ({sw.Elapsed.TotalSeconds:F2}s).");

@@ -26,6 +26,7 @@ namespace CCL.Importer
 
             mixer = group switch
             {
+                DVAudioMixerGroup.None => null!,
                 DVAudioMixerGroup.Airflow => AudioS282.transform.Find("BrakeModule/Airflow/AirflowLayers")
                     .GetComponent<LayeredAudio>().audioMixerGroup,
                 DVAudioMixerGroup.Brake => AudioS282.transform.Find("BrakeModule/Brake/Brake_Layered")

@@ -131,6 +131,7 @@ namespace CCL.Creator.Validators
         private bool _needsCorrections = false;
         private bool _failed = false;
         private bool _exception = false;
+        private bool _warningsAcknowledged = false;
         private Vector2 _scroll = Vector2.zero;
         private TableWidths _widths = null!;
 
@@ -410,10 +411,21 @@ namespace CCL.Creator.Validators
             {
                 GUILayout.Label("Validation passed :)");
 
-                if (GUILayout.Button("Continue Export"))
+                if (_needsCorrections && !_warningsAcknowledged)
                 {
-                    ExportPackWizard.ShowWindow(_pack);
-                    Close();
+                    if (GUILayout.Button("Acknowledge Warnings"))
+                    {
+                        _warningsAcknowledged = true;
+                    }
+                }
+                else
+                {
+                    if (GUILayout.Button("Continue Export"))
+                    {
+                        _warningsAcknowledged = false;
+                        ExportPackWizard.ShowWindow(_pack);
+                        Close();
+                    }
                 }
                 if (GUILayout.Button("Cancel"))
                 {

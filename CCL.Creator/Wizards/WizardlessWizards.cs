@@ -1,7 +1,9 @@
-﻿using CCL.Types;
+﻿using CCL.Creator.Utility;
+using CCL.Types;
 using CCL.Types.Components;
 using CCL.Types.Proxies;
 using CCL.Types.Proxies.Controls;
+using CCL.Types.Proxies.Interaction;
 using UnityEditor;
 using UnityEngine;
 
@@ -134,6 +136,74 @@ namespace CCL.Creator.Wizards
 
         [MenuItem("GameObject/CCL/Add Bed", true, MenuOrdering.Interior.Bed)]
         public static bool CreateBedValidate()
+        {
+            return Selection.activeGameObject;
+        }
+
+        [MenuItem("GameObject/CCL/Add Firebox", false, MenuOrdering.Interior.Firebox)]
+        public static void CreateFirebox(MenuCommand command)
+        {
+            var target = (GameObject)command.context;
+
+            var fire = new GameObject("Firebox").AddComponent<FireProxy>();
+            fire.transform.parent = target.transform;
+            InteriorNonStandardLayerProxy.AttachToObject(fire.gameObject, DVLayer.Interactable, true);
+            fire.gameObject.AddComponent<ItemUseTargetProxy>();
+
+            var particles = new GameObject("Fire").AddComponent<CopyVanillaParticleSystem>();
+            particles.transform.parent = fire.transform;
+            particles.transform.rotation = Quaternion.Euler(-90, 0, 0);
+            particles.SystemToCopy = VanillaParticleSystem.FireboxFire;
+            fire.fireObj = particles.gameObject;
+
+            particles = new GameObject("Sparks").AddComponent<CopyVanillaParticleSystem>();
+            particles.transform.parent = fire.transform;
+            particles.transform.rotation = Quaternion.Euler(-135, 0, 0);
+            particles.SystemToCopy = VanillaParticleSystem.FireboxSparks;
+            fire.sparksObj = particles.gameObject;
+
+            var collider = new GameObject("Coal Collider").AddComponent<BoxCollider>();
+            collider.transform.parent = fire.transform;
+            collider.isTrigger = true;
+            collider.gameObject.AddComponent<NonPhysicsCoalTargetProxy>();
+            InteriorNonStandardLayerProxy.AttachToObject(collider.gameObject, DVLayer.Train_Interior);
+
+            collider = new GameObject("Coal Collider VR Helper").AddComponent<BoxCollider>();
+            collider.transform.parent = fire.transform;
+            collider.isTrigger = true;
+            collider.gameObject.AddComponent<NonPhysicsCoalTargetProxy>();
+            InteriorNonStandardLayerProxy.AttachToObject(collider.gameObject, DVLayer.Train_Interior);
+            fire.helperTriggerVR = collider.gameObject;
+
+            fire.ignitionCollider = new GameObject("Ignition Collider").AddComponent<SphereCollider>();
+            fire.ignitionCollider.transform.parent = fire.transform;
+            fire.ignitionCollider.isTrigger = true;
+
+            fire.fireLight = new GameObject("Fire Light").AddComponent<Light>();
+            fire.fireLight.transform.parent = fire.transform;
+            fire.fireLight.transform.rotation = Quaternion.Euler(180, 0, 0);
+            CopyVanillaLight.ApplyProperties(fire.fireLight, VanillaLight.S282Fire);
+            
+            fire.fillLight = new GameObject("Fire Fill Light").AddComponent<Light>();
+            fire.fillLight.transform.parent = fire.fireLight.transform;
+            fire.fillLight.transform.rotation = Quaternion.identity;
+            CopyVanillaLight.ApplyProperties(fire.fillLight, VanillaLight.S282FireFill);
+
+            fire.bounceLight = new GameObject("Fire Bounce Light").AddComponent<Light>();
+            fire.bounceLight.transform.parent = fire.fireLight.transform;
+            fire.bounceLight.transform.rotation = Quaternion.identity;
+            CopyVanillaLight.ApplyProperties(fire.bounceLight, VanillaLight.S282FireBounce);
+            fire.bounceLight.transform.position = fire.fireLight.transform.position + fire.fireLight.transform.forward * 2;
+
+            var animationTarget = new GameObject(CarPartNames.Interaction.ANIMATION_TARGET).transform;
+            animationTarget.parent = fire.transform;
+            animationTarget.rotation = Quaternion.identity;
+
+            EditorUtility.DisplayDialog("Firebox Wizard", "Don't forget to add the actual indicators for the coal!", "OK");
+        }
+
+        [MenuItem("GameObject/CCL/Add Firebox", true, MenuOrdering.Interior.Firebox)]
+        public static bool CreateFirebox()
         {
             return Selection.activeGameObject;
         }

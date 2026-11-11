@@ -124,6 +124,7 @@
             public const string HANDBRAKE_MICROSHUNTER = "HandbrakeLargeEU";
             public const string HANDBRAKE_DM1U = "RightCluster/HandbrakeEU3";
             public const string HANDBRAKE_UTILITY_FLATBED = "HandbrakeEU3";
+            public const string BRAKE_CYL_RELEASE_S282 = "Interactables/BrakeCylinderRelease-OverrideSteamer";
 
             public const string DUMMY_HANDBRAKE_SMALL = "[brake small]";
             public const string DUMMY_BRAKE_RELEASE = "[brake release]";
@@ -136,6 +137,8 @@
             public const string DUMMY_HANDBRAKE_MICROSHUNTER = "[brake microshunter]";
             public const string DUMMY_HANDBRAKE_DM1U = "[brake dm1u]";
             public const string DUMMY_HANDBRAKE_UTILITY_FLATBED = "[brake utility]";
+            public const string DUMMY_BRAKE_RELEASE_S282 = "[brake release steam]";
+            public const string DUMMY_BRAKE_RELEASE_DM1U = "[brake release small]";
         }
 
         public static class FuelPorts
@@ -177,6 +180,11 @@
             public const string LADDERS = "Ladders";
             public const string MAIN_TRIGGER_COLLIDER = "MainTriggerCollider";
             public const string NO_TELEPORT = "NO_TELEPORT";
+        }
+
+        public static class Interaction
+        {
+            public const string ANIMATION_TARGET = "[animation_pose_target]";
         }
     }
 }

@@ -40,7 +40,7 @@ namespace CCL.Creator.Wizards
 
             new ConvertBase("Pressure", "Pascals",
                 new ExtraUnit("Bars", Units.BarToPascal) { Highlight = true },
-                new ExtraUnit("PSI", Units.PSItoBar),
+                new ExtraUnit("PSI", Units.PSItoBar * Units.BarToPascal),
                 new ExtraUnit("kgf/cm²", Units.KGFCM2toPascal),
                 new ExtraUnit("Atmospheres", Units.ATMtoPascal))
             { Value = Units.BarToPascal, Highlight = false },

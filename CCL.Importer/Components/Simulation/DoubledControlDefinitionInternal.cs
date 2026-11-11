@@ -7,6 +7,7 @@ namespace CCL.Importer.Components.Simulation
     internal class DoubledControlDefinitionInternal : SimComponentDefinition
     {
         public float DefaultValue;
+        public bool SaveState;
 
         public readonly PortDefinition ControlAIn = new(PortType.EXTERNAL_IN, PortValueType.CONTROL, "CONTROL_A_EXT_IN");
         public readonly PortDefinition ControlBIn = new(PortType.EXTERNAL_IN, PortValueType.CONTROL, "CONTROL_B_EXT_IN");

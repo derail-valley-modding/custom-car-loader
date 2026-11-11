@@ -103,6 +103,7 @@ namespace CCL.Types
         private string? damageJson;
 
         public bool IsActualSteamLocomotive => IsSteamLocomotive && KindSelection == DVTrainCarKind.Loco;
+        public bool HasAnyCargo => CargoSetup != null && !CargoSetup.IsEmpty;
 
         public CustomCarType()
         {
@@ -277,6 +278,8 @@ namespace CCL.Types
             public float wheelsPrice = 0f;
             public float electricalPowertrainPrice = 0f;
             public float mechanicalPowertrainPrice = 0f;
+
+            public float TotalPrice => bodyPrice + wheelsPrice + electricalPowertrainPrice + mechanicalPowertrainPrice;
 
             public void ApplyWagonDefaults()
             {
