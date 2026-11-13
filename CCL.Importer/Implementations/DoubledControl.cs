@@ -43,8 +43,20 @@ namespace CCL.Importer.Implementations
         public override void Tick(float delta)
         {
             var effect = Effect.Value;
-            EffectA.Value = effect * ControlAIn.Value;
-            EffectB.Value = effect * ControlBIn.Value;
+            var a = ControlAIn.Value;
+            var b = ControlBIn.Value;
+            var total = a + b;
+
+            if (total < 0.001f)
+            {
+                EffectA.Value = 0;
+                EffectB.Value = 0;
+            }
+            else
+            {
+                EffectA.Value = 2 * effect * (a / total);
+                EffectB.Value = 2 * effect * (b / total);
+            }
         }
 
         private void AnyUpdated(float value)

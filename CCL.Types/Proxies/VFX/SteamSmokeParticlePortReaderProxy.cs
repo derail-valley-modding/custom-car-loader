@@ -28,11 +28,6 @@ namespace CCL.Types.Proxies.VFX
         public AnimationCurve emberEmissionRateMultiplier = null!;
         public AnimationCurve emberMaxParticlesMultiplier = null!;
 
-        [RenderMethodButtons]
-        [MethodButton(nameof(ApplyS060Defaults), "Apply S060 Defaults")]
-        [MethodButton(nameof(ApplyS282Defaults), "Apply S282 Defaults")]
-        public bool buttonRender;
-
         public IEnumerable<PortIdField> ExposedPortIdFields => new[]
         {
             new PortIdField(this, nameof(fireOnPortId), fireOnPortId, DVPortValueType.STATE),

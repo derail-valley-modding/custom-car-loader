@@ -55,7 +55,6 @@ namespace CCL.Types.Proxies.Audio
     [AddComponentMenu("CCL/Proxies/Audio/Audio Layer Proxy")]
     public class AudioLayerProxy : MonoBehaviour
     {
-        public string name;
         public AnimationCurve volumeCurve = null!;
         public bool usePitchCurve;
         public AnimationCurve pitchCurve = null!;

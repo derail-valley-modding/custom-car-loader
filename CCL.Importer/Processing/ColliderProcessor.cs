@@ -2,8 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using System.ComponentModel.Composition;
-using DV.ThingTypes;
-using DV.ThingTypes.TransitionHelpers;
 
 namespace CCL.Importer.Processing
 {
@@ -47,6 +45,7 @@ namespace CCL.Importer.Processing
             if (walkable)
             {
                 Transform items = colliderRoot.Find(CarPartNames.Colliders.ITEMS);
+
                 if (!items)
                 {
                     CCLPlugin.LogVerbose("Reusing walkable colliders as item colliders");
@@ -90,13 +89,13 @@ namespace CCL.Importer.Processing
 
             // No more base livery so what a mess this is.
             var basePrefab = context.Car.UseCustomFrontBogie ?
-                TrainCarType.FlatbedEmpty.ToV2().prefab :
+                QuickAccess.Wagons.Flatbed.prefab :
                 context.Car.FrontBogie.ToTypePrefab();
             Transform baseBogieColliderRoot = basePrefab.transform.Find($"{CarPartNames.Colliders.ROOT}/{CarPartNames.Colliders.BOGIES}");
             var c1 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().First();
 
             basePrefab = context.Car.UseCustomRearBogie ?
-                TrainCarType.FlatbedEmpty.ToV2().prefab :
+                QuickAccess.Wagons.Flatbed.prefab :
                 context.Car.RearBogie.ToTypePrefab();
             baseBogieColliderRoot = basePrefab.transform.Find($"{CarPartNames.Colliders.ROOT}/{CarPartNames.Colliders.BOGIES}");
             var c2 = baseBogieColliderRoot.GetComponentsInChildren<CapsuleCollider>().Last();
@@ -115,21 +114,33 @@ namespace CCL.Importer.Processing
             if (colliderRoot.TryFind(CarPartNames.Colliders.WALKABLE, out t))
             {
                 t.SetLayersNonRecursive(DVLayer.Train_Walkable);
+                FixActiveIfNeeded(t);
             }
 
             if (colliderRoot.TryFind(CarPartNames.Colliders.ITEMS, out t))
             {
                 t.SetLayersNonRecursive(DVLayer.Train_Interior);
+                FixActiveIfNeeded(t);
             }
 
             if (colliderRoot.TryFind(CarPartNames.Colliders.CAMERA_DAMPENING, out t))
             {
                 t.SetLayersNonRecursive(DVLayer.Camera_Dampening);
+                FixActiveIfNeeded(t);
             }
 
             if (colliderRoot.TryFind(CarPartNames.Colliders.BOGIES, out t))
             {
                 t.SetLayersNonRecursive(DVLayer.Train_Big_Collider);
+            }
+
+            static void FixActiveIfNeeded(Transform t)
+            {
+                if (t.gameObject.activeSelf)
+                {
+                    CCLPlugin.Warning($"{t.name} should be disabled in the prefab!");
+                    t.gameObject.SetActive(false);
+                }
             }
         }
     }
