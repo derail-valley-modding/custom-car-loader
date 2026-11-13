@@ -794,7 +794,7 @@ namespace CCL.Importer.Components
             PortValueType.SAND => "kg",
             PortValueType.WATER => "l",
             PortValueType.COAL => "kg",
-            PortValueType.ELECTRIC_CHARGE => "C",
+            PortValueType.ELECTRIC_CHARGE => "MJ",
             _ => string.Empty,
         };
 
