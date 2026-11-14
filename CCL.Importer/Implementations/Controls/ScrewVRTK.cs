@@ -30,9 +30,9 @@ namespace CCL.Importer.Implementations.Controls
             force.forceMultiplier = Spec.RotatorForceMultiplier;
             if (Spec.UseHaptics)
             {
-                var haptics = gameObject.AddComponent<WheelRotatorHaptics>();
-                haptics.enableWhenTouching = Spec.EnableWhenTouching;
-                haptics.notchAngle = Spec.NotchAngle;
+                var haptics = gameObject.AddComponent<ScrewRotatorHaptics>();
+                haptics.EnableWhenTouching = Spec.EnableWhenTouching;
+                haptics.NotchAngle = Spec.NotchAngle;
                 DiffThreshold = Spec.NotchAngle;
             }
 

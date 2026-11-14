@@ -285,7 +285,7 @@ namespace CCL.Importer.Implementations.Controls
 
             if (!InteractionAllowed) return;
 
-            SetSpringStrength(0, Spec.Damper * 0.1f);
+            SetSpringStrength(0, Spec.Damper * 0.025f);
             _rb.AddRelativeTorque(AXIS * _scroll * -action.IsPositive().ToDir(), ForceMode.Impulse);
         }
 

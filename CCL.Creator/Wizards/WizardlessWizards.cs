@@ -178,6 +178,7 @@ namespace CCL.Creator.Wizards
             fire.ignitionCollider = new GameObject("Ignition Collider").AddComponent<SphereCollider>();
             fire.ignitionCollider.transform.parent = fire.transform;
             fire.ignitionCollider.isTrigger = true;
+            InteriorNonStandardLayerProxy.AttachToObject(fire.ignitionCollider.gameObject, DVLayer.Grabbed_Item);
 
             fire.fireLight = new GameObject("Fire Light").AddComponent<Light>();
             fire.fireLight.transform.parent = fire.transform;
