@@ -728,7 +728,7 @@ namespace CCL.Creator.Wizards
                     portId = exhaust != null ? exhaust.GetFullPortId("TOTAL_FLOW_NORMALIZED") : "",
                     inputModifier = new ValueModifier(),
                     changeType = ColorPropertyChange.ALPHA_ONLY,
-                    startColorMin = new Color(0.5f, 0.5f, 0.5f, 1),
+                    startColorMin = new Color(0.5f, 0.5f, 0.5f, 0),
                     startColorMax = new Color(0.5f, 0.5f, 0.5f, 0.3137255f),
                     colorLerpCurve = new AnimationCurve(
                         new Keyframe(0, 0, 1, 1),
