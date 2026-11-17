@@ -6,7 +6,7 @@ using UnityEngine;
 
 using static DV.Tutorial.QT.QuickTutorialFactory;
 
-namespace CCL.Importer.Patches
+namespace CCL.Importer.Patches.Tutorial
 {
     [HarmonyPatch(typeof(TrainTutorialConstructor))]
     internal class TrainTutorialConstructorPatches

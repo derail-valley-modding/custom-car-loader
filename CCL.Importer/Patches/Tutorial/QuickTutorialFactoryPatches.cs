@@ -4,12 +4,12 @@ using HarmonyLib;
 
 using static DV.Tutorial.QT.QuickTutorialFactory;
 
-namespace CCL.Importer.Patches
+namespace CCL.Importer.Patches.Tutorial
 {
     [HarmonyPatch(typeof(QuickTutorialFactory))]
     internal class QuickTutorialFactoryPatches
     {
-        [HarmonyPrefix, HarmonyPatch(nameof(QuickTutorialFactory.PrepareFor))]
+        [HarmonyPrefix, HarmonyPatch(nameof(PrepareFor))]
         private static bool PrepareForPrefix(TrainCar loco, ref QuickTutorial __result)
         {
             if (loco == null) return true;

@@ -27,6 +27,8 @@ namespace CCL.Importer.Implementations
 
         public DoubledControl(DoubledControlDefinitionInternal def) : base(def.ID)
         {
+            _save = def.SaveState;
+
             ControlAIn = AddPort(def.ControlAIn, def.DefaultValue);
             ControlBIn = AddPort(def.ControlBIn, def.DefaultValue);
             CombinedIn = AddPort(def.CombinedIn, def.DefaultValue);

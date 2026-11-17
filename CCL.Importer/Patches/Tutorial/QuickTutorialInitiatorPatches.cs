@@ -1,7 +1,7 @@
 ﻿using DV.Tutorial.QT;
 using HarmonyLib;
 
-namespace CCL.Importer.Patches
+namespace CCL.Importer.Patches.Tutorial
 {
     [HarmonyPatch(typeof(QuickTutorialInitiator))]
     internal class QuickTutorialInitiatorPatches
