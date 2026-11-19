@@ -10,6 +10,7 @@ namespace CCL.Importer
         private const int ErrorCount = 10;
         private const float ErrorThreshold = 1.0f;
 
+        private static bool s_deepLog = false;
         private static bool s_reached = false;
         private static bool s_overrideErrorDetected = false;
         private static Queue<float> s_timeStamps = new();
@@ -21,7 +22,7 @@ namespace CCL.Importer
         {
             if (s_reached || CCLPlugin.Settings.SpamWarningDisabled) return;
 
-            if (CCLPlugin.Settings.UseDeepLogging)
+            if (CCLPlugin.Settings.UseDeepLogging || s_deepLog)
             {
                 CCLPlugin.Log(new StackTrace(2, true).ToString());
             }

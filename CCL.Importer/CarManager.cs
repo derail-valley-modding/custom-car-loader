@@ -285,8 +285,14 @@ namespace CCL.Importer
                 return false;
             }
 
-
             ErrorHandler.ClearOverride(true);
+
+            if (car.AllPrefabs.Any(x => x.GetComponentsInChildren<ISelfValidation>().Any(comp => comp.Validate(out _, out _) > SelfValidationResult.Warning)))
+            {
+                ErrorHandler.AddLoadFailure($"Validation errors were detected on car {car.id}");
+                CCLPlugin.Warning($"Validation errors were detected on car {car.id}");
+            }
+
             return true;
         }
 
