@@ -89,6 +89,8 @@ namespace CCL.Importer.Components
             CreateMap<ManualLapBrakeSplitterDefinition, ManualLapBrakeSplitterDefinitionInternal>().AutoCacheAndMap();
             CreateMap<DoubledControlDefinition, DoubledControlDefinitionInternal>().AutoCacheAndMap();
             CreateMap<AlerterDefinition, AlerterDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<DieselBatteryHybridDefinition, DieselBatteryHybridDefinitionInternal>().AutoCacheAndMap();
+            CreateMap<RegenerativeBrakingDefinition, RegenerativeBrakingDefinitionInternal>().AutoCacheAndMap();
 
             // Electric.
             CreateMap<BatteryCustomCurveDefinition, BatteryCustomCurveDefinitionInternal>().AutoCacheAndMap();
