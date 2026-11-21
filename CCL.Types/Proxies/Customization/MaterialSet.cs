@@ -6,7 +6,7 @@ namespace CCL.Types.Proxies.Customization
 {
     [AddComponentMenu("CCL/Proxies/Customization/Material Set")]
     [NotProxied]
-    public class MaterialSet : MonoBehaviour, ICustomSerialized
+    public class MaterialSet : MonoBehaviour, ICustomSerialized, ISelfValidation
     {
         [Serializable]
         public class RendererMaterialReplacement
@@ -26,6 +26,7 @@ namespace CCL.Types.Proxies.Customization
         [RenderMethodButtons]
         [MethodButton(nameof(AddAllChildRenderers), "Add all child renderers")]
         [MethodButton(nameof(AddAllChildRenderersWithMaterial), "Add all child renderers with material")]
+        [MethodButton(nameof(ReapplyMaterial), "Reapply material")]
         public bool buttonRender;
 
         private void AddAllChildRenderers()
@@ -43,6 +44,18 @@ namespace CCL.Types.Proxies.Customization
                 .Where(x => x.sharedMaterials.Contains(OriginalMaterial))
                 .Select(x => new RendererMaterialReplacement { Renderer = x, MaterialIndex = Array.IndexOf(x.sharedMaterials, OriginalMaterial) }))
                 .ToArray();
+        }
+
+        private void ReapplyMaterial()
+        {
+            foreach (var item in Replacements)
+            {
+                if (item == null || item.Renderer == null || item.Renderer.sharedMaterials.Length >= item.MaterialIndex) continue;
+
+                var mats = item.Renderer.sharedMaterials;
+                mats[item.MaterialIndex] = OriginalMaterial;
+                item.Renderer.materials = mats;
+            }
         }
 
         public void OnValidate()
@@ -71,6 +84,16 @@ namespace CCL.Types.Proxies.Customization
                     MaterialIndex = _indexes[i]
                 };
             }
+        }
+
+        public SelfValidationResult Validate(out string message, out string? highlight)
+        {
+            if (Replacements.Any(x => x == null || x.Renderer == null))
+            {
+                return this.FailForNullEntries(nameof(Replacements), out message, out highlight);
+            }
+
+            return this.Pass(out message, out highlight);
         }
     }
 
