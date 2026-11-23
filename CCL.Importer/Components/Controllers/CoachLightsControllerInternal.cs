@@ -14,6 +14,7 @@ namespace CCL.Importer.Components.Controllers
 
         public static bool StreetlightState => Events.LightTypeOn[(int)SpriteLightType.StreetSpriteLight];
 
+        public bool SelfPowered = false;
         public Light[] InteriorLights = new Light[0];
         public Renderer[] InteriorLamps = new Renderer[0];
         public Material LampsOn = null!;
@@ -99,6 +100,11 @@ namespace CCL.Importer.Components.Controllers
 
             foreach (var loco in _car.trainset.GetAllLocos())
             {
+                if (SelfPowered)
+                {
+                    return true;
+                }
+
                 if (loco.TryGetComponent(out TrainCarCustomization tcc) &&
                     tcc.electronicsFuse != null &&
                     tcc.electronicsFuse.State)

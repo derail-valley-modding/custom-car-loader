@@ -6,6 +6,8 @@ namespace CCL.Types.Components.Controllers
     [AddComponentMenu("CCL/Components/Controllers/Coach Lights Controller")]
     public class CoachLightsController : MonoBehaviour, ISelfValidation
     {
+        public bool SelfPowered = false;
+
         [Header("Interior Lights")]
         public Light[] InteriorLights = new Light[0];
         public Renderer[] InteriorLamps = new Renderer[0];
