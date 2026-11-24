@@ -607,6 +607,12 @@ namespace CCL.Creator.Wizards
             private float maxPower = 0f;
             private float maxPowerRpm = 0f;
 
+            private int notch = 0;
+            private float rpmPerNotch = 0f;
+            private float goalRPM = 0f;
+            private float goalPower = 0f;
+            private float powerAtRpm = 0f;
+
             public void Draw()
             {
                 Definition = EditorHelpers.ObjectField("Diesel Engine Direct Definition", Definition, true);
@@ -619,11 +625,7 @@ namespace CCL.Creator.Wizards
                     EditorGUILayout.HelpBox("Please link your diesel engine and throttle gamma power configurations in the field above", MessageType.Info);
                 }
 
-                int notch = 0;
-                float rpmPerNotch = 0f;
-                float goalRPM = 0f;
-                float goalPower = 0f;
-                float powerAtRpm = 0f;
+
 
                 if (Definition != null && GammaPower != null)
                 {
@@ -715,24 +717,53 @@ namespace CCL.Creator.Wizards
             public BatteryCustomCurveDefinition? Definition;
             public float NormalizedStateOfCharge = 1f;
 
+            private bool nominalVoltagesRefreshed = false;
+            private float voltage = 0f;
+            private float nominalVoltage = 0f;
+            private float nominalPackVoltage = 0f;
+
             public void Draw()
             {
                 Definition = EditorHelpers.ObjectField("Battery Custom Curve Definition", Definition, true);
                 NormalizedStateOfCharge = EditorGUILayout.Slider("Normalized Battery SoC", NormalizedStateOfCharge, 0.0f, 1.0f);
 
+                if (GUILayout.Button("Refresh Nominal Voltages"))
+                {
+                    nominalVoltagesRefreshed = false;
+                }
+
                 if (Definition == null)
                 {
                     EditorGUILayout.HelpBox("Please link your battery custom curve configuration in the field above", MessageType.Info);
                 }
-
-                float voltage = 0f;
-
-                if (Definition != null)
+                else
                 {
                     voltage = Definition.chargeToVoltageCurve.Evaluate(NormalizedStateOfCharge) * Definition.numSeriesCells;
+
+                    if (!nominalVoltagesRefreshed)
+                    {
+                        nominalVoltage = CalculateNominalCellVoltage(Definition.chargeToVoltageCurve);
+                        nominalPackVoltage = nominalVoltage * Definition.numSeriesCells;
+                        nominalVoltagesRefreshed = true;
+                    }
                 }
 
                 EditorGUILayout.LabelField("Voltage at SoC", $"{voltage:F2} V");
+                EditorGUILayout.LabelField("Nominal Cell Voltage", $"{nominalVoltage:F2} V");
+                EditorGUILayout.LabelField("Nominal Pack Voltage", $"{nominalPackVoltage:F2} V");
+            }
+
+            private float CalculateNominalCellVoltage(AnimationCurve curve, int samples = 100)
+            {
+                float sum = 0f;
+
+                for (int i = 0; i < samples; i++)
+                {
+                    float soc = i / (samples - 1f);
+                    sum += curve.Evaluate(soc);
+                }
+
+                return sum / samples;
             }
         }
 

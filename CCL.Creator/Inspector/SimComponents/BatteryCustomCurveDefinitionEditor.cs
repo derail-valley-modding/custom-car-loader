@@ -9,8 +9,6 @@ namespace CCL.Creator.Inspector.SimComponents
     internal class BatteryCustomCurveDefinitionEditor : Editor
     {
         private BatteryCustomCurveDefinition _proxy = null!;
-        private float _nominalVoltage;
-        private bool _hasCalculatedNominalVoltage;
 
         public override void OnInspectorGUI()
         {
@@ -34,35 +32,9 @@ namespace CCL.Creator.Inspector.SimComponents
             EditorGUILayout.LabelField("Max Voltage", $"{maxVoltage:F2} V");
             EditorGUILayout.LabelField("Total Resistance", $"{totalResistance:F2} Ω");
 
-            if (_hasCalculatedNominalVoltage)
-            {
-                EditorGUILayout.LabelField("Nominal Cell Voltage", $"{_nominalVoltage:F2} V");
-                EditorGUILayout.LabelField("Nominal Pack Voltage", $"{_nominalVoltage * _proxy.numSeriesCells:F2} V");
-            }
-
-            if (GUILayout.Button("Calculate Nominal Voltages"))
-            {
-                if (_proxy.chargeToVoltageCurve != null)
-                {
-                    _nominalVoltage = CalculateNominalCellVoltage(_proxy.chargeToVoltageCurve);
-                    _hasCalculatedNominalVoltage = true;
-                }
-            }
-
             EditorHelpers.DrawLocoDefaultsButtons(target);
         }
 
-        public float CalculateNominalCellVoltage(AnimationCurve curve, int samples = 100)
-        {
-            float sum = 0f;
-
-            for (int i = 0; i < samples; i++)
-            {
-                float soc = i / (samples - 1f);
-                sum += curve.Evaluate(soc);
-            }
-
-            return sum / samples;
-        }
+        
     }
 }
