@@ -601,7 +601,7 @@ namespace CCL.Creator.Wizards
         private class DieselEngineProperties
         {
             public DieselEngineDirectDefinitionProxy? Definition;
-            public ThrottleGammaPowerConversionDefinitionProxy GammaPower;
+            public ThrottleGammaPowerConversionDefinitionProxy? GammaPower;
             public float Throttle = 0f;
 
             private float maxPower = 0f;
@@ -612,25 +612,37 @@ namespace CCL.Creator.Wizards
                 Definition = EditorHelpers.ObjectField("Diesel Engine Direct Definition", Definition, true);
                 GammaPower = EditorHelpers.ObjectField("Throttle Gamma Power", GammaPower, true);
 
+                Throttle = EditorGUILayout.Slider("Throttle Value", Throttle, 0.0f, 1f);
+
                 if (Definition == null || GammaPower == null)
                 {
                     EditorGUILayout.HelpBox("Please link your diesel engine and throttle gamma power configurations in the field above", MessageType.Info);
-                    return;
                 }
 
-                if (maxPower <= 0f)
-                    maxPower = Definition.rpmToPowerCurve.keys.Max((Keyframe kf) => kf.value);
+                int notch = 0;
+                float rpmPerNotch = 0f;
+                float goalRPM = 0f;
+                float goalPower = 0f;
+                float powerAtRpm = 0f;
 
-                if (maxPowerRpm <= 0f)
-                    maxPowerRpm = Definition.rpmToPowerCurve.keys.Where((Keyframe kf) => kf.value == maxPower).First().time;
+                if (Definition != null && GammaPower != null)
+                {
+                    if (maxPower <= 0f)
+                    {
+                        maxPower = Definition.rpmToPowerCurve.keys.Max((Keyframe kf) => kf.value);
+                    }
 
-                Throttle = EditorGUILayout.Slider("Throttle Value", Throttle, 0.0f, 1f);
+                    if (maxPowerRpm <= 0f)
+                    {
+                        maxPowerRpm = Definition.rpmToPowerCurve.keys.Where((Keyframe kf) => kf.value == maxPower).First().time;
+                    }
 
-                int notch = Mathf.RoundToInt(Throttle * (GammaPower.numberOfNotches - 1));
-                float rpmPerNotch = (maxPowerRpm - Definition.engineRpmIdle) / (float)(GammaPower.numberOfNotches - 2);
-                float goalRPM = notch <= 1 ? Definition.engineRpmIdle : Definition.engineRpmIdle + rpmPerNotch * (notch - 1);
-                float goalPower = maxPower * Mathf.Pow((float)notch / (float)(GammaPower.numberOfNotches - 1), GammaPower.gamma);
-                float powerAtRpm = Definition.rpmToPowerCurve.Evaluate(goalRPM);
+                    notch = Mathf.RoundToInt(Throttle * (GammaPower.numberOfNotches - 1));
+                    rpmPerNotch = (maxPowerRpm - Definition.engineRpmIdle) / (float)(GammaPower.numberOfNotches - 2);
+                    goalRPM = notch <= 1 ? Definition.engineRpmIdle : Definition.engineRpmIdle + rpmPerNotch * (notch - 1);
+                    goalPower = maxPower * Mathf.Pow((float)notch / (float)(GammaPower.numberOfNotches - 1), GammaPower.gamma);
+                    powerAtRpm = Definition.rpmToPowerCurve.Evaluate(goalRPM);
+                }
 
                 EditorHelpers.DrawHeader("Throttle Properties");
                 EditorGUILayout.LabelField("Notch", $"{notch}");
@@ -711,10 +723,15 @@ namespace CCL.Creator.Wizards
                 if (Definition == null)
                 {
                     EditorGUILayout.HelpBox("Please link your battery custom curve configuration in the field above", MessageType.Info);
-                    return;
                 }
 
-                var voltage = Definition.chargeToVoltageCurve.Evaluate(NormalizedStateOfCharge) * Definition.numSeriesCells;
+                float voltage = 0f;
+
+                if (Definition != null)
+                {
+                    voltage = Definition.chargeToVoltageCurve.Evaluate(NormalizedStateOfCharge) * Definition.numSeriesCells;
+                }
+
                 EditorGUILayout.LabelField("Voltage at SoC", $"{voltage:F2} V");
             }
         }

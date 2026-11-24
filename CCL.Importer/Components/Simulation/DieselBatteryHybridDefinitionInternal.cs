@@ -41,7 +41,7 @@ namespace CCL.Importer.Components.Simulation
             new(PortValueType.POWER, "TM_TOTAL_AMPS");
         public readonly PortReferenceDefinition transitionCurrentLimit =
             new(PortValueType.POWER, "TM_TRANSITION_CURRENT_LIMIT");
-        public readonly PortReferenceDefinition tmPowerIn =
+        public readonly PortReferenceDefinition tmPowerInRead =
             new(PortValueType.POWER, "TM_POWER_IN_READ");
         public readonly PortReferenceDefinition chargeDisableOverride =
             new(PortValueType.CONTROL, "CHARGING_DISABLE_OVERRIDE");

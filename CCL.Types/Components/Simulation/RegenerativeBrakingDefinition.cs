@@ -7,6 +7,7 @@ namespace CCL.Types.Components.Simulation
     [AddComponentMenu("CCL/Components/Simulation/Regenerative Braking Definition")]
     public class RegenerativeBrakingDefinition : SimComponentDefinitionProxy
     {
+        [Tooltip("The maximum amount of recovered power should be used for regen, in watts")]
         public float maximumRegenPower = 200000f;
         public float maxChargeBatteryLevel = 0.95f;
 

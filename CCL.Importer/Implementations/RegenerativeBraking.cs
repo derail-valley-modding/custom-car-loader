@@ -10,7 +10,6 @@ namespace CCL.Importer.Implementations
 
         private readonly PortReference tmPowerInRead;
         private readonly PortReference tmPowerOutRead;
-        private readonly PortReference dynamicBrkActive;
         private readonly PortReference dynamicBrkControl;
         private readonly PortReference batteryChargeNorm;
 

@@ -25,7 +25,7 @@ namespace CCL.Importer.Implementations
         private readonly PortReference manualChargeToggle;
         private readonly PortReference chargeLimitUpperBound;
         private readonly PortReference chargeLimitLowerBound;
-        private readonly PortReference hybridMode;
+        private readonly PortReference hybridModeControl;
         private readonly PortReference extAmpLimitGen;
         private readonly PortReference extAmpLimitVoltReg;
 
@@ -50,7 +50,7 @@ namespace CCL.Importer.Implementations
         private readonly float maxChargeBatteryLevel;
         private readonly float startChargeBatteryLevel;
         private readonly float emergencyBatteryLevel;
-        private readonly float rechargeRate;
+        private readonly float batteryRechargeRate;
         private readonly float chargingThrottle;
         private readonly float adaptiveChargingMaxPower;
         private readonly bool manualChargingOnly;
@@ -92,7 +92,7 @@ namespace CCL.Importer.Implementations
             maxChargeBatteryLevel = def.maxChargeBatteryLevel;
             startChargeBatteryLevel = def.startChargeBatteryLevel;
             emergencyBatteryLevel = def.emergencyBatteryLevel;
-            rechargeRate = def.batteryRechargeRate;
+            batteryRechargeRate = def.batteryRechargeRate;
             chargingThrottle = def.engineRechargeThrottle;
             adaptiveChargingMaxPower = def.adaptiveChargingMaxPower;
             manualChargingOnly = def.manualChargingOnly;
@@ -112,12 +112,12 @@ namespace CCL.Importer.Implementations
             genPowerOutRead = AddPortReference(def.genPowerOutRead);
             tmTotalAmps = AddPortReference(def.tmTotalAmps);
             tmTransitionCurrentLimit = AddPortReference(def.transitionCurrentLimit);
-            tmPowerInRead = AddPortReference(def.tmPowerIn);
+            tmPowerInRead = AddPortReference(def.tmPowerInRead);
             chargeDisableOverride = AddPortReference(def.chargeDisableOverride);
             manualChargeToggle = AddPortReference(def.manualChargeToggle);
             chargeLimitUpperBound = AddPortReference(def.chargeLimitUpperBound);
             chargeLimitLowerBound = AddPortReference(def.chargeLimitLowerBound);
-            hybridMode = AddPortReference(def.hybridModeControl);
+            hybridModeControl = AddPortReference(def.hybridModeControl);
             extAmpLimitGen = AddPortReference(def.extAmpLimitGen);
             extAmpLimitVoltReg = AddPortReference(def.extAmpLimitVoltReg);
 
@@ -149,15 +149,18 @@ namespace CCL.Importer.Implementations
         {
             // Sanitize limiter
             extAmpLimitFloatIn = extCurrentLimitExtIn.Value;
-            if (extAmpLimitFloatIn == 0) extAmpLimitFloatIn = float.PositiveInfinity;
+            if (extAmpLimitFloatIn == 0)
+            {
+                extAmpLimitFloatIn = float.PositiveInfinity;
+            }
 
             // Mode selector
-            if (hybridMode.Value < 0.5)
+            if (hybridModeControl.Value < 0.5)
             {
                 selectorMode = HybridMode.Diesel;
             }
 
-            else if (hybridMode.Value >= 0.5)
+            else if (hybridModeControl.Value >= 0.5)
             {
                 selectorMode = HybridMode.Battery;
             }
@@ -281,6 +284,10 @@ namespace CCL.Importer.Implementations
             float lower = Mathf.Lerp(emergencyBatteryLevel, maxChargeBatteryLevel, chargeLimitLowerBound.Value);
             float upper = Mathf.Lerp(emergencyBatteryLevel, maxChargeBatteryLevel, chargeLimitUpperBound.Value);
 
+            // Controllable hysteresis always has a 0.1 gap between both thresholds
+            // Increasing lower threshold above upper threshold control will increase internal upper threshold
+            // to maintain hysteresis gap
+            // Done so to handle lower threshold control being set higher than upper threshold control
             float lowerClamped = Mathf.Clamp(lower, minLower, maxUpper - gap);
             float upperClamped = Mathf.Clamp(upper, lowerClamped + gap, maxUpper);
 
@@ -296,9 +303,13 @@ namespace CCL.Importer.Implementations
             chargeOverride = manualChargeToggle.Value >= 0.5f;
 
             if (!manualChargingOnly)
+            {
                 ProcessHysteresis();
+            }
             else
+            {
                 withinChargeRange = false;
+            }
         }
 
         private void ProcessHysteresis()
@@ -355,8 +366,8 @@ namespace CCL.Importer.Implementations
         private void CalculateChargeTarget()
         {
             chargingTarget = adaptiveCharging ?
-                Mathf.Clamp(tmPowerInRead.Value + rechargeRate, 0f, adaptiveChargingMaxPower) :
-                rechargeRate;
+                Mathf.Clamp(tmPowerInRead.Value + batteryRechargeRate, 0f, adaptiveChargingMaxPower) :
+                batteryRechargeRate;
         }
 
         private float CalculateChargeResistance()
@@ -371,8 +382,7 @@ namespace CCL.Importer.Implementations
 
         private float CalculateChargeAmps(float resistance)
         {
-            if (resistance <= 0f || float.IsInfinity(resistance))
-                return 0f;
+            if (resistance <= 0f || float.IsInfinity(resistance)) return 0f;
 
             return generatorVoltage.Value / resistance;
         }
