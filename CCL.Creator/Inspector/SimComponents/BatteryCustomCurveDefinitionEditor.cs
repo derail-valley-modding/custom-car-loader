@@ -1,6 +1,7 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types.Components.Simulation.Electric;
 using UnityEditor;
+using UnityEngine;
 
 namespace CCL.Creator.Inspector.SimComponents
 {
@@ -17,18 +18,23 @@ namespace CCL.Creator.Inspector.SimComponents
 
             float minVoltage = 0;
             float maxVoltage = 0;
+            float totalResistance = 0;
 
             if (_proxy.chargeToVoltageCurve != null)
             {
                 minVoltage = _proxy.numSeriesCells * _proxy.chargeToVoltageCurve[0].value;
                 maxVoltage = _proxy.numSeriesCells * _proxy.chargeToVoltageCurve[_proxy.chargeToVoltageCurve.length - 1].value;
+                totalResistance = _proxy.numSeriesCells * _proxy.internalResistance;
             }
 
             EditorHelpers.DrawHeader("Calculated Values");
             EditorGUILayout.LabelField("Min Voltage", $"{minVoltage:F2} V");
             EditorGUILayout.LabelField("Max Voltage", $"{maxVoltage:F2} V");
+            EditorGUILayout.LabelField("Total Resistance", $"{totalResistance:F2} Ω");
 
             EditorHelpers.DrawLocoDefaultsButtons(target);
         }
+
+        
     }
 }

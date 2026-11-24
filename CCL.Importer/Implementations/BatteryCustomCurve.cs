@@ -12,7 +12,7 @@ namespace CCL.Importer.Implementations
         private readonly AnimationCurve _chargeToVoltageCurve;
         private readonly float _minVoltage;
         private readonly float _maxVoltage;
-
+        
         private readonly FuseReference _powerFuseRef;
         private readonly Port _voltageReadOut;
         private readonly Port _voltageNormalizedReadOut;
@@ -55,6 +55,7 @@ namespace CCL.Importer.Implementations
             voltage = _powerFuseRef.ProcessInput(0.5f * (voltage + Mathf.Sqrt(num)));
             _voltageReadOut.Value = voltage;
             _voltageNormalizedReadOut.Value = Mathf.InverseLerp(_minVoltage, _maxVoltage, voltage);
+
             float consumption = gameParams.ResourceConsumptionModifier * _baseConsumptionMultiplier * _powerReader.Value;
             _chargeConsumption.Value = consumption * delta / 1000000f;
         }
