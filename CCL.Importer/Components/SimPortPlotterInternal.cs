@@ -37,6 +37,7 @@ namespace CCL.Importer.Components
         private const float LowerButtonsPosY = WindowHeight - WindowBorder - 2 * LabelHeight;
         private const float LowerButtonsPosY2 = WindowHeight - WindowBorder - LabelHeight;
         private const float CloseButtonPosX = WindowWidth - 18.75f;
+        private const string RefEnd = "(Ref)";
 
         private class PortData
         {
@@ -124,8 +125,16 @@ namespace CCL.Importer.Components
                 // If there's no difference to draw yet, draw a single line with the correct length.
                 if (Min == Max)
                 {
-                    pos1 = ToGLPosition(0, box.height - 2);
-                    pos2 = ToGLPosition(Offset * Values.Count, box.height - 2);
+                    if (Min == 0)
+                    {
+                        pos1 = ToGLPosition(0, box.height - 2);
+                        pos2 = ToGLPosition(Offset * Values.Count, box.height - 2);
+                    }
+                    else
+                    {
+                        pos1 = ToGLPosition(0, box.height * 0.5f);
+                        pos2 = ToGLPosition(Offset * Values.Count, box.height * 0.5f);
+                    }
 
                     // Only draw if the line is within the view rectangle.
                     if (WithinViewBounds(pos1, view, out _) | WithinViewBounds(pos2, view, out _))
@@ -241,7 +250,7 @@ namespace CCL.Importer.Components
         private static GUIStyle? s_graphNumStyle = null;
         private static GUIStyle? s_portIdStyle = null;
         private static GUIStyle? s_windowButtons = null;
-        private static bool s_round = false;
+        private static bool s_round = true;
 
         private static GUIStyle GraphNumberStyle => Extensions.GetCached(ref s_graphNumStyle, () => new GUIStyle(GUI.skin.label)
         {
@@ -272,6 +281,7 @@ namespace CCL.Importer.Components
         private Vector2 _scroll = Vector2.zero;
         private int _ticking = 0;
         private int _lastPort = 0;
+        private int? _remove = null;
         private bool _record = false;
         private bool _active = true;
         private DrivingForce? _drivingForce;
@@ -430,6 +440,13 @@ namespace CCL.Importer.Components
 
         private void Window(int id)
         {
+            if (_remove.HasValue)
+            {
+                _ports[_remove.Value].Reset();
+                _ports.RemoveAt(_remove.Value);
+                _remove = null;
+            }
+
             DrawButtons();
 
             // Prepare scroll view.
@@ -498,9 +515,7 @@ namespace CCL.Importer.Components
 
                 if (GUI.Button(new Rect(LabelWidth + BoxWidth + 30f, posY + buttonHeight * 1.5f, 30f, buttonHeight), "x"))
                 {
-                    _ports[i].Reset();
-                    _ports.RemoveAt(i);
-                    i--;
+                    _remove = i;
                 }
             }
 
@@ -522,7 +537,7 @@ namespace CCL.Importer.Components
 
             unit ??= string.Empty;
 
-            if (s_round && unit != "kg")
+            if (s_round && !HasPrefix(unit))
             {
                 if (value >= 1000000000 || value <= -1000000000)
                 {
@@ -542,6 +557,8 @@ namespace CCL.Importer.Components
 
             // 3 decimal spaces looks ugly, so only keep them for very small values.
             return (value < 10 || value > -10) ? $"{value:0.###} {unit}" : $"{value:0.##} {unit}";
+
+            static bool HasPrefix(string unit) => unit[0] is 'k' or 'M' or 'G';
         }
 
         private void DrawButtons()
@@ -765,7 +782,23 @@ namespace CCL.Importer.Components
 
             if (_map.TryGetValue(port, out var match))
             {
-                _ports.Add(new PortData(port, match));
+                if (match == null)
+                {
+                    RebuildMap();
+
+                    if (port.EndsWith(RefEnd))
+                    {
+                        Debug.LogWarning($"Port reference '{port.Substring(0, port.Length - 4)}' is not connected");
+                    }
+                    else
+                    {
+                        Debug.LogError($"Port '{port.Substring(0, port.Length - 4)}' is null, something has gone bad");
+                    }
+                }
+                else
+                {
+                    _ports.Add(new PortData(port, match));
+                }
             }
             else
             {
@@ -776,7 +809,7 @@ namespace CCL.Importer.Components
 
         private static string AsReferenceId(string pordId)
         {
-            return $"{pordId} (Ref)";
+            return $"{pordId} {RefEnd}";
         }
 
         public static string GetUnitForValueType(PortValueType valueType) => valueType switch

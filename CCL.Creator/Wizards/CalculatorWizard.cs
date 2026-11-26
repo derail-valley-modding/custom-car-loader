@@ -607,11 +607,11 @@ namespace CCL.Creator.Wizards
             private float maxPower = 0f;
             private float maxPowerRpm = 0f;
 
-            private int notch = 0;
-            private float rpmPerNotch = 0f;
-            private float goalRPM = 0f;
-            private float goalPower = 0f;
-            private float powerAtRpm = 0f;
+            private int _notch = 0;
+            private float _rpmPerNotch = 0f;
+            private float _goalRPM = 0f;
+            private float _goalPower = 0f;
+            private float _powerAtRpm = 0f;
 
             public void Draw()
             {
@@ -625,8 +625,6 @@ namespace CCL.Creator.Wizards
                     EditorGUILayout.HelpBox("Please link your diesel engine and throttle gamma power configurations in the field above", MessageType.Info);
                 }
 
-
-
                 if (Definition != null && GammaPower != null)
                 {
                     if (maxPower <= 0f)
@@ -639,21 +637,21 @@ namespace CCL.Creator.Wizards
                         maxPowerRpm = Definition.rpmToPowerCurve.keys.Where((Keyframe kf) => kf.value == maxPower).First().time;
                     }
 
-                    notch = Mathf.RoundToInt(Throttle * (GammaPower.numberOfNotches - 1));
-                    rpmPerNotch = (maxPowerRpm - Definition.engineRpmIdle) / (float)(GammaPower.numberOfNotches - 2);
-                    goalRPM = notch <= 1 ? Definition.engineRpmIdle : Definition.engineRpmIdle + rpmPerNotch * (notch - 1);
-                    goalPower = maxPower * Mathf.Pow((float)notch / (float)(GammaPower.numberOfNotches - 1), GammaPower.gamma);
-                    powerAtRpm = Definition.rpmToPowerCurve.Evaluate(goalRPM);
+                    _notch = Mathf.RoundToInt(Throttle * (GammaPower.numberOfNotches - 1));
+                    _rpmPerNotch = (maxPowerRpm - Definition.engineRpmIdle) / (float)(GammaPower.numberOfNotches - 2);
+                    _goalRPM = _notch <= 1 ? Definition.engineRpmIdle : Definition.engineRpmIdle + _rpmPerNotch * (_notch - 1);
+                    _goalPower = maxPower * Mathf.Pow((float)_notch / (float)(GammaPower.numberOfNotches - 1), GammaPower.gamma);
+                    _powerAtRpm = Definition.rpmToPowerCurve.Evaluate(_goalRPM);
                 }
 
                 EditorHelpers.DrawHeader("Throttle Properties");
-                EditorGUILayout.LabelField("Notch", $"{notch}");
-                EditorGUILayout.LabelField("RPM Per Notch", $"{rpmPerNotch:F2}");
-                EditorGUILayout.LabelField("Goal RPM", $"{goalRPM:F2}");
-                EditorGUILayout.LabelField("Goal Power", $"{goalPower * 0.001f:F2} kW");
+                EditorGUILayout.LabelField("Notch", $"{_notch}");
+                EditorGUILayout.LabelField("RPM Per Notch", $"{_rpmPerNotch:F2}");
+                EditorGUILayout.LabelField("Goal RPM", $"{_goalRPM:F2}");
+                EditorGUILayout.LabelField("Goal Power", $"{_goalPower * 0.001f:F2} kW");
                 EditorHelpers.DrawSeparator();
                 EditorHelpers.DrawHeader("Engine Properties");
-                EditorGUILayout.LabelField("Engine Power @ RPM", $"{powerAtRpm * 0.001f:F2} kW");
+                EditorGUILayout.LabelField("Engine Power @ RPM", $"{_powerAtRpm * 0.001f:F2} kW");
             }
         }
 
@@ -717,10 +715,10 @@ namespace CCL.Creator.Wizards
             public BatteryCustomCurveDefinition? Definition;
             public float NormalizedStateOfCharge = 1f;
 
-            private bool nominalVoltagesRefreshed = false;
-            private float voltage = 0f;
-            private float nominalVoltage = 0f;
-            private float nominalPackVoltage = 0f;
+            private bool _nominalVoltagesRefreshed = false;
+            private float _voltage = 0f;
+            private float _nominalVoltage = 0f;
+            private float _nominalPackVoltage = 0f;
 
             public void Draw()
             {
@@ -729,7 +727,7 @@ namespace CCL.Creator.Wizards
 
                 if (GUILayout.Button("Refresh Nominal Voltages"))
                 {
-                    nominalVoltagesRefreshed = false;
+                    _nominalVoltagesRefreshed = false;
                 }
 
                 if (Definition == null)
@@ -738,19 +736,19 @@ namespace CCL.Creator.Wizards
                 }
                 else
                 {
-                    voltage = Definition.chargeToVoltageCurve.Evaluate(NormalizedStateOfCharge) * Definition.numSeriesCells;
+                    _voltage = Definition.chargeToVoltageCurve.Evaluate(NormalizedStateOfCharge) * Definition.numSeriesCells;
 
-                    if (!nominalVoltagesRefreshed)
+                    if (!_nominalVoltagesRefreshed)
                     {
-                        nominalVoltage = CalculateNominalCellVoltage(Definition.chargeToVoltageCurve);
-                        nominalPackVoltage = nominalVoltage * Definition.numSeriesCells;
-                        nominalVoltagesRefreshed = true;
+                        _nominalVoltage = CalculateNominalCellVoltage(Definition.chargeToVoltageCurve);
+                        _nominalPackVoltage = _nominalVoltage * Definition.numSeriesCells;
+                        _nominalVoltagesRefreshed = true;
                     }
                 }
 
-                EditorGUILayout.LabelField("Voltage at SoC", $"{voltage:F2} V");
-                EditorGUILayout.LabelField("Nominal Cell Voltage", $"{nominalVoltage:F2} V");
-                EditorGUILayout.LabelField("Nominal Pack Voltage", $"{nominalPackVoltage:F2} V");
+                EditorGUILayout.LabelField("Voltage at SoC", $"{_voltage:F2} V");
+                EditorGUILayout.LabelField("Nominal Cell Voltage", $"{_nominalVoltage:F2} V");
+                EditorGUILayout.LabelField("Nominal Pack Voltage", $"{_nominalPackVoltage:F2} V");
             }
 
             private float CalculateNominalCellVoltage(AnimationCurve curve, int samples = 100)

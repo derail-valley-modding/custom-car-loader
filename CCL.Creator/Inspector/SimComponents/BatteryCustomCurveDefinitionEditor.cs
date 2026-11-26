@@ -1,7 +1,6 @@
 ﻿using CCL.Creator.Utility;
 using CCL.Types.Components.Simulation.Electric;
 using UnityEditor;
-using UnityEngine;
 
 namespace CCL.Creator.Inspector.SimComponents
 {
